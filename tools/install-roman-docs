@@ -1,0 +1,5 @@
+#!/bin/sh
+
+( cd ~/workspace/Romance ; ant -f javadoc.xml )
+echo `grep -a -1 WRITEME -r ~/workspace/Romance/doc/ | wc -l` WRITEME tags found in output docs
+( cd ~/workspace/Romance ; rsync -rv -essh doc www.star-hope.org:/home/starhope/star-hope.org/games/Romance/ )

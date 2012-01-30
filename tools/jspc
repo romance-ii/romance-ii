@@ -1,0 +1,8 @@
+export JAVA_HOME=/usr
+cd ~/workspace/Members/jsproot
+jar -cf WEB-INF/lib/Romance.jar  -C ~/workspace/Romance/bin .
+jar -cf WEB-INF/lib/Tootsville.jar -C ~/workspace/Core/bin .
+find ~/workspace/Members/jsproot/membership -name \*.jsp -exec \
+  jspc5.sh -uribase / -source 1.5 -d ../jspc/ -compile -webapp . {} ';'
+
+# jspc5.sh -uribase / -uriroot ./ -v -source 1.5 -d ~/workspace/Members/jspc -compile {} ';' 

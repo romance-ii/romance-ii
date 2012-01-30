@@ -1,0 +1,26 @@
+s: <sky.swf>[ ":" <sky2.swf>][ ":" ... ]
+w: <weather.swf>[ ":" <weather.swf>][ ":" ... ]
+cl: <itemID>
+wl: <itemID>
+fl: <itemID>
+f: <floor.swf>[":" <floor2.swf>][ ":" ... ]
+
+* server will dual-set both types:
+item<N>: <itemID> "~" <x> "~" <y> "~" <facing>
+furn "~" <N>: <itemID> "~" <x> "~" <y> "~" <z> "~" <facing> "~" <colorInt>
+
+text<N>: <x> "~" <y> "~" <width> "~" <colorRGBInt> "~" <size> "~" <text>
+	[  "~" <align> "~" <font> ]
+image<N>: <x> "~" <y> "~" <fullURL>
+video<N>: <x> "~" <y> "~" <width> "~" <height> "~" <fullURL>
+
+<size> of text = height in pixels
+<align> = { "left" || "right" || "center" }
+<font> = { "Arial Black" || "Arial" || "Arial Bold" }
+
+image <fullURL> = "http://" { png-url ".png"
+				|| jpeg-url { ".jpeg" || ".jpg" } }
+video <fullURL> = { "http://" <path> ".flv" || "rtsp://" <path> }
+
+where no colorisation: <colorInt> = ""
+
