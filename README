@@ -1,0 +1,92 @@
+README
+-*- text -*-
+
+Appius Claudius Caecus, Gaius Valerius Catullus, Publius Vergilius Maro,
+and related classes provided in the org.starhope namespace are licensed
+to the general public under the terms of the GNU Affero General  Public
+License, either  Version 3 or (at  your option) any later version to be
+published   by   the   Free   Software  Foundation.    See   the   file
+"COPYING.Affero" for details.
+
+ * SPECIAL EXEMPTION:
+
+ If your videogame is committing changes back to the “master” version
+ control repository (currently Star-Hope.org, and in the near future
+ migrating to SourceForge.net), you are given a special exemption from
+ the AGPL publication requirements, IF you meet the following
+ conditions:
+
+  > Your contributions must be checked in to either the trunk or a
+    branch on the main version-control server, and therefore visible
+    to all other contributors and users through that system;
+
+   -AND-
+
+  > Whenever you release a new version of code to your publicly-
+    accessible beta or production game server(s), you must add a “tag”
+    in the version control system of the form:
+
+      (YOURGAMENAME)_(YEAR)_(MONTH)_(DAY).(OPTIONAL-NOTE)
+
+    For example,
+
+      /Romance/tags/Tootsville_2010_11_15.Production_release
+
+   -AND-
+
+  > The appropriate check-ins must be performed either prior to making
+    your executable code accessible to the general public (e.g. beta
+    or production servers), or within 24 hours.
+
+  > IF you comply with ALL THREE of the above requirements, we will
+    give you the following special exemption:
+
+    1. You are not OBLIGATED to include the AGPL notification from
+       within your game (as would otherwise be required by § 5.b & d
+       of COPYING.Affero)
+
+    2. You are not OBLIGATED to provide a local copy of the source
+       code for download (as would otherwise be required by § 13 of
+       COPYING.Affero)
+
+This  license  does   not  apply  to  the  contents   of  the  package
+com.tootsville  or  other packages.  See  the  individual packages  or
+classes for their own licensing terms.
+
+Most of this code is Copyright © 2008-2012, Bruce-Robert Pocock. Major
+contributors include Tim Heys and Edward Winkelman.
+
+Individual Java classes and other files may have their own copyright
+notices, which supersede this one.
+
+The com.tootsville package (which should be absent from most public
+distributions of this code) is NOT licensed under the GNU GPL (with
+few exceptions). The com.tootsville package contains proprietary code
+created for Res Interactive, LLC., and licensed for their perpetual
+use, with restrictive copyrights. (There are a couple of GPL files in
+the Romance distribution in this package. They should/will be renamed
+into the org.starhope namespace before Appius 1.2.)
+
+CONTRIBUTING:
+
+Contact me at brpocock@star-hope.org for commit privileges
+
+BUILDING:
+
+Currently we're just autobuilding in Eclipse. I haven't built a proper
+Ant script yet.
+
+Note that you must supply (at least) classes to implement User and
+provide a RunCommands for your game to boot. See Empires_of_the_Air
+project in Star-Hope Subversion for examples.
+
+You'll also need the (heavily) edited version of WebSockets4J to
+boot Caesar, also available in Star-Hope's Subversion.
+
+ > Look under Documents/ for more documentation.
+
+PLANS:
+
+Contact me for discussion of directions as we move toward Appius 1.2
+
+Note that we may be migrating to Sourceforge shortly.

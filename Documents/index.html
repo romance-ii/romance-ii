@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> “Romance” Game System </title>
+</head>
+<body>
+<h1> “Romance” Game System </h1>
+<p> This is the development home of the “Romance” game system, based around
+the Appius Claudius Cæcus game server and Publius Vergilius Maro game client
+framework. </p>
+<h2> What is here? </h2>
+<p> Here, you can: </p>
+<ul>
+<li> <a href="src/latest/">Download</a> the Romance source code </li>
+<li> With <a
+href="mailto:brpocock+svnrequest@star-hope.org?subject=Subversion+Access+Requested+for+Romance">permission</a>,
+access the Subversion repository to contribute to Romance </li>
+<li> Read the current <a href="doc/">JavaDoc</a> documentation, and <a
+href="Designer/">Designer</a> and <a href="Developer/">Developer</a>
+documents, as well. </li>
+</ul>
+<h2> What does it do? </h2>
+<p> Appius Claudius Cæcus is a Java-based videogame server. It handles
+communications between players, enforcing game-specific rules, and managing
+things like inventory and currency. </p>
+<p> Appius supports access using a JSON-based protocol called Infinity. It
+also supports a subset of the communications protocol of <a
+href="http://www.gotoandplay.it/">Smart Fox Server Pro</a> for
+compatibility, but the feature sets do not align (SFS has features which
+Appius does not implement, and vice-versa) so there are still some client
+changes necessary to integrate with Appius. Communications using Infinity
+can be conducted in TCP stream-oriented fashion, in a TCP
+batched-command-set mode, or using a WebSocket. </p>
+<p> Publius Vergilius Maro is a Java-based client-side architecture for
+communicating with Appius and playing a game (e.g. drawing a scene). It is
+being developed currently for use with <a
+href="http://www.android.com/">Android</a> applications, and can also be
+compiled into native binary applications for many platforms using GCC (GCJ),
+into JavaScript (EcmaScript) using Google Web Toolkit (GWT), and is intended
+to be potentially portable to Java Mobile Edition and other Java-based
+application hosts. </p>
+<h2> Who uses it? </h2>
+<ul>
+<li> <a href="http://www.resinteractive.com/">Res Interactive, LLC</a> uses
+Appius as the server for the kids' MMO <a
+href="https://members.tootsville.com/brp/">Tootsville.com</a> </li>
+<li> Appius is being used for an upcoming steampunk MMO using HTML5 </li>
+<li> Appius is being used for an upcoming RPG for Android </li>
+<li> Appius is being used for an upcoming news and discussion web site </li>
+<li> Appius is being used for an upcoming  </li>
+</ul>
+</body>
+</html>

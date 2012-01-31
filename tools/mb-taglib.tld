@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib
+        PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
+        "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+
+<!-- a tag library descriptor -->
+
+<taglib>
+   <tlibversion>1.0</tlibversion>
+   <jspversion>1.1</jspversion>
+   <shortname>mb</shortname>
+   <uri></uri>
+   <info>Romance game system Membership &amp; Billing assistance tag library</info>
+
+  <tag>
+    <name>toasts</name>
+    <tagclass>org.starhope.appius.mb.taglib.Toasts</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>Display toasts or errors on the page</info>
+  </tag>
+
+  <tag>
+    <name>engine</name>
+    <tagclass>org.starhope.appius.mb.taglib.Engine</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>Dispatching engine</info>
+  </tag>
+
+   <tag>
+    <name>entry</name>
+    <tagclass>org.starhope.appius.mb.taglib.Entry</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>Display a form entry with value prefilled if available</info>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>if-error</name>
+    <tagclass>org.starhope.appius.mb.taglib.IfError</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>Include the contents if a certain field has an error</info>
+    <attribute>
+      <name>for</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>if-need</name>
+    <tagclass>org.starhope.appius.mb.taglib.IfNeed</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>Include the contents if a certain field is blank or in error</info>
+    <attribute>
+      <name>for</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>if-no-need</name>
+    <tagclass>org.starhope.appius.mb.taglib.IfNoNeed</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <info>Include the contents if a certain field is NOT blank and NOT in error</info>
+    <attribute>
+      <name>for</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+
+
+</taglib>

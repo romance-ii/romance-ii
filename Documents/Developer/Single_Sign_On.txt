@@ -1,0 +1,57 @@
+This is a brief on the new single-sign-on technology being specified
+for Appius 1.2:
+
+The ideal of SSO is to provide a way to sign in to the game without
+slipping a password in the public eye. So, as expected, we use a lot
+of nonces and hashes.
+
+Ultimately, this requires all affected hosts to be linked over
+CVCRMI (Catullus).
+
+First, the authenticating server decides that the user has been
+somehow authenticated successfully, e.g. entered a password or such.
+Their User object is used to produce a magic cookie that in turn
+encapsulates some *relatively* unchanging attributes of the user
+account:
+
+ * User ID
+ * Original registration date
+ * Date of Birth
+
+We take these values and combine them into a base-36 value as follows:
+
+ Decimal Combination Step:
+
+	Using E(n) to mean × 10 ** (n) power:
+
+ userID E(16) + register.year E(12) + register.month E(10)
+  + register.day E(8) + dob.year E(4) + dob.month E(2) + dob.day
+
+… which basically means, taking the decimal values of each and doing
+a string concatenation of them;
+
+Then, take base36 ( bcd ( decimalCombination ) )
+
+That is, convert from decimal to binary-coded-decimal by packing each
+decimal digit into a nybble, then taking the base36 value using the
+digit set of ('0'…'9', 'a'…'z')
+
+This produces a usefully unique and hard-to-predict user identifier
+that the client application can't determine; but one that could be
+susceptible to discovery by an attacker, so it's not something we're
+going to rely on as a “secret” value in any way. It just guarantees
+that we can reproduce this token consistently.
+
+There are now three parties involved in the authentication process:
+
+ * The client platform and/or user
+ * The authenticating party, who claims that this client is, in fact,
+   the user they claim to be
+ * The service questioning that authentication
+
+The authenticating party will generate a time-limited token which is
+associated to the client in the database, by combining a few factors:
+
+ base
+
+ … TO BE CONTINUED …

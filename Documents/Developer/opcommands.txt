@@ -1,0 +1,663 @@
+Appius Claudius Caecus and Tootsville Configuration Guide
+
+>> NOTE This is largely out of date and the JavaDocs are by far better authoritative sources.
+I'll endeavour to create some kind of doclet to make this more manageable ASAP.
+
+>> INTRODUCTION
+
+Operator commands enable runtime configuration and alteration of the
+ongoing game engine. Most operator commands are prefaced with the '#'
+character (pound, octothorpe, hash) and therefore cannot be typed by
+the end-user without staff-level privileges.
+
+Many commands are dangerous if misused, and most commands require a
+specific minimum staff level to execute.
+
+>> BASIC OPERATOR COMMANDS
+
+Commands outlined in this section are available and applicable to the
+broadest audience.
+
+»» NAVIGATION
+
+These commands assist in moving throughout the game environment.
+
+
+
+#beam <ROOM-MONIKER>
+
+     Teleport to the given room.
+
+
+
+»» USER INFORMATION
+
+These commands assist in obtaining information about users.
+
+
+
+#finger <USER-LOGIN>
+
+     Obtain basic information about the named user
+
+
+
+#whereis <USER-LOGIN>
+
+     Identify the room in which the named user can be found. If the
+     user is not participating in a room, this will return “nowhere.”
+     If the user has never joined a room, they will generally report
+     as being “lost” or “null.”
+
+
+
+#whereami
+
+     Identify the zone in which you are located
+     
+
+
+
+
+>> SERVER STATUS INFORMATION
+
+
+
+#whoareyou
+
+     Identify the version of server software running by giving the
+     Subversion revision levels of various critical components. Of
+     these, generally the revision number of the AppiusClaudiusCaecus
+     class is the most significant. 
+
+
+#dumpthreads
+
+     The importance of this operator command cannot be understated. It
+     creates a log file containing a vast array of critically important
+     information in the /opt/appius/run/ folder, including all running
+     threads, all active user accounts, and all active game zones and
+     rooms.
+     
+     If there is any difficulty with the server at all, execute this
+     command and then eMail or telephone the systems programmer
+     immediately.
+
+     This command can also be executed through the “peephole” backdoor
+     interface.
+
+
+>> COMMUNICATIONS
+
+The commands detailed in this section are useful for communicating
+with players.
+
+
+
+#shout <ZONE> <ROOM-MONIKER> <STRING...>
+
+     Send a message <STRING...> (most likely another operator command)
+     into a room, potentially in another zone.
+
+
+
+@<USER-LOGIN> <MESSAGE...>
+
+     Send an administrative message (“voice of God”) to the specified
+     user
+     
+     Note that this command is executed simply by typing the user's
+     login preceded by an '@' sign
+
+
+
+#wall <MESSAGE...>
+
+     Send an administrative message to all users in the current zone
+     
+
+
+#wallops <MESSAGE...>
+
+     Send an administrative message to all operators in the current
+     Zone
+
+
+
+#whoami
+
+     Causes your character to say, “Hello, my name is <LOGIN>” in the
+     current room
+
+
+
+#wallzones <MESSAGE...>
+
+     Send an administrative message to all users in all zones in the
+     multiverse.
+     
+     
+  
+  
+  
+  
+  
+*** Documentation beyond this point is still fragmentary and has not
+    yet been cleaned up.
+
+#setbadge <BADGE> <PLACE>
+#clearbadge <BADGE> <PLACE>
+	<BADGE> can be #me
+	<PLACE> can be #here
+	<BADGE> can be #all for #clearbadge
+	<PLACE> can be #all for #clearbadge
+	if <PLACE> is missing, default is #here
+	if <PLACE> and <BADGE> are missing, default is:
+		#setbadge #me #here
+		or
+		#clearbadge #me #all
+		
+	This is for placing the badge icons onto the map screen
+
+#ping		admin message “pong” — test server roundtrip time
+#time		get time in Unix timestamp on server
+
+#scotty <KIRK> <ROOM-WITH-GREEN-BABE>
+
+#scores <EVENT-ID> <START-DATE-YYYY-MM-DD> <COUNT>
+
+#imprison <PRISONER>
+
+#getvars <ROOM>
+#getuvars <USER>
+#getuvars #me
+#stfu <USER>
+
+#spawnzone
+#spawnroom <MONIKER> <MONIKER>
+
+#givenuts <NUMNUTS> <USER>	send gift; negative = steal peanuts
+#grant <ITEM-ID> <USER>		gift items
+
+
+#layegg		place KaTootel egg here (in all Zones)
+#killegg	remove KaTootel egg from game
+
+#headcount #all		who is online in all Zones
+#headcount #rooms	who is in each room in this Zone
+#headcount #members	breakdown of membership in this Zone
+
+Rule codes for kicking (and banning) users:
+
+You can use the generic 3 character or the more specific 8 character
+forms, as you see fit.
+
+per=Don't share personal information
+per.mail = Don't share personal information like eMail addresses!
+per.name = Don't share personal information like your real name!
+per.pass = Don't share personal information like passwords!
+per.chat = Don't share personal information like chat and instant 
+	messaging information!
+per.loca = Don't share personal information like your location!
+per.ages = Don't share personal information like your age!
+per.bday = Don't share personal information like your birth date!
+per.site = Don't share personal information about web sites!
+
+bul=Don't be mean
+bul.mean = Don't be mean!
+
+obs=Don't use bad language
+obs.rude = Don't be rude!
+obs.foul = Don't use foul words!
+
+net=No cheating!
+net.chtr = No cheating!
+
+
+app.parn = You need your parent's permission in order to chat in
+	Tootsville.
+app.mail = You need to confirm your eMail address in order to chat in
+	Tootsville.
+app.ages = Lying about your birth date is against the law!
+
+
+
+List of all rooms for #beam, #shout, etc.
+
++--------------------------+
+| moniker                  |
++--------------------------+
+| artStudio                | 
+| bigTootoona              | 
+| bigTootoonaVolleyball    | 
+| bigTopCircus             | 
+| bigTree                  | 
+| comicWorld               | 
+| dinoLand                 | 
+| enchantedForest          | 
+| halloweenInside          | 
+| halloweenOrgan           | 
+| halloweenOutside         | 
+| holidayWorld             | 
+| iceCastleInside          | 
+| moonBaseT                | 
+| moonbaseTLandingSite     | 
+| moonbaseTrans            | 
+| motorSpeedway            | 
+| piratesCove              | 
+| pirateShipDeck           | 
+| pirateShipHold           | 
+| soccerField              | 
+| shaddowFalls             | 
+| tootArcade               | 
+| tootBurger               | 
+| tootCastle               | 
+| tootCastleJoust          | 
+| tootlantis               | 
+| tootlympicsFirstVillage  | 
+| tootlympicsScoreBoard    | 
+| tootlympicsSecondVillage | 
+| tootSafari               | 
+| tootSafariTikiJungle     | 
+| tootsIdol                | 
+| tootsMall                | 
+| tootSquare               | 
+| tootSquareWest           | 
+| tootSweets               | 
+| tootTheater              | 
+| tootUniversity           | 
+| userRoom                 | 
+| zapLobby                 | 
++--------------------------+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+Client-side commands:
+
+#beam <ROOM>		teleport
+	** NEVER teleport into or out of the zapArena[1-4] rooms
+
+Server-side commands:
+
+#finger <USER>		get information about user
+
+#whereis <USER>		locate online user
+#whereis #everyone	locate all users
+
+#whoareyou	server version
+
+#metronome #rate
+#metronome #last
+#metronome #stop
+#metronome #start
+#metronome #restart
+#metronome #tick
+
+#dumpthreads		log stack traces of all running threads to
+					/opt/appius/run/thread<BLAHBLAH>dump file.
+					Useful for debugging
+
+#setbadge <BADGE> <PLACE>
+#clearbadge <BADGE> <PLACE>
+	<BADGE> can be #me
+	<PLACE> can be #here
+	<BADGE> can be #all for #clearbadge
+	<PLACE> can be #all for #clearbadge
+	if <PLACE> is missing, default is #here
+	if <PLACE> and <BADGE> are missing, default is:
+		#setbadge #me #here
+		or
+		#clearbadge #me #all
+
+#game zapAttack <Command...>
+
+#shout <ZONE> <ROOM> <Command...>
+	** sample structures:
+	#shout <ZONE> <ROOM> #headcount #members
+	#shout <ZONE> <ROOM> #wall <message...>
+	#shout <ZONE> <ROOM> #game zapAttach <command...>
+	** eg:
+	#shout Zap tootSquare #headcount #members
+
+@<USER> <message...>		whisper
+#wall <message...>		this zone
+#wallops <message...>		staff only
+#wallzones <message...>		everyone, every zone
+
+#whoami		speaks your name in room
+
+#addtowarnlist <PAT>		aka Black List
+#addtokicklist <PAT>		aka Red List
+#addtowhitelist <PAT>
+	** These are temporary additions only
+
+#setvar <VAR> <VALUE>			set room variable
+#setvar @<ROOM> <VAR> <VALUE>
+#setuvar <VAR> <VALUE>			set user variable
+#setuvar @<USER> <VAR> <VALUE>
+
+#loadlists	reload warn/kick/whitelists from database
+#checklists	stats on warn/kick/whitelists
+
+#ping		admin message “pong” — test server roundtrip time
+#time		get time in Unix timestamp on server
+
+#spawnzone	create next empty zone (test only)
+
+#givenuts <NUMNUTS> <USER>	send gift; negative = steal peanuts
+#grant <ITEM-ID> <USER>		gift items
+
+#whereami	identify current zone
+
+#setconfig <KEY> <STRING>	alter running server config
+#getconfig <KEY>		provide running server config
+#reloadconfig			reread /etc/appius/config.properties
+~DUMP:world.roomsVars	dump all roomvars
+~DUMP:<VARNAME>		any scalar public variable to dump
+~RV:<VARNAME>:<VALUE>	alter room variable
+
+#mem	memory debug info (broken)
+
+#kick <CAUSE> <USER> <MINUTES>
+	<CAUSE> code from list
+	<MINUTES> can be omitted, defaults to 15
+
+#layegg		place KaTootel egg here (in all Zones)
+#killegg	remove KaTootel egg from game
+
+#headcount #all		who is online in all Zones
+#headcount #rooms	who is in each room in this Zone
+#headcount #members	breakdown of membership in this Zone
+
+/squashDeBugs		enable debugging mode
+
+
+
+////////////////////////////////////////////////////////////////////////
+
+
+
+configuration values: Developers only
+
+Tootsville-specific configurations:
+
+
+com.tootsville.coupon.annotation
+	
+	WRITEME: twheys@gmail.com
+	
+	
+com.tootsville.coupons.plushToot
+	
+	WRITEME: twheys@gmail.com
+	
+	
+com.tootsville.coupon.templates.freeplush
+
+	WRITEME: twheys@gmail.com
+	
+	
+com.tootsville.coupon.templates.freeplush.subject
+
+	WRITEME: twheys@gmail.com
+
+
+com.tootsville.disperseLogins
+
+	If true, disperse logins across several rooms (lobbies)
+	
+
+com.tootsville.game.ZapAttack.bottom
+
+	Lower boundary of the arena screens
+
+
+com.tootsville.game.ZapAttack.combatRocks
+
+	If true, leave rocks in the arena during combat mode
+	
+
+com.tootsville.game.ZapAttack.left
+
+	Left boundary of the arena screens
+	
+
+com.tootsville.game.ZapAttack.maxTargets
+
+	The maximum number of rocks to generate per screen
+
+
+com.tootsville.game.ZapAttack.minTargets
+
+	The minimum number of rocks to generate per screen
+
+
+com.tootsville.game.ZapAttack.right
+
+	The right boundary of the arena screens
+
+
+com.tootsville.game.ZapAttack.rockRatio
+
+	Ratio of rocks to premium targets
+
+
+com.tootsville.game.ZapAttack.top
+
+	Top boundary of the arena screens
+	
+
+com.tootsville.game.ZapAttack.<TYPE>.<SUBTYPE>.score
+	{	obs.0	rock (“asteroid”)
+	{	itm.0	gear?
+	{	itm.1	box?
+	{	itm.2	barrel?
+	
+	Number of points awarded for various target types
+	
+	
+com.tootsville.hedgeWaddleHack
+
+	Force Hedge and Waddle to appear as paid members. Bug work-around,
+	should never be needed again
+	
+	
+com.tootsville.registration.freePeanuts
+
+    The number of free peanuts given to every user upon his/her
+    initial registration. (default is 500)
+    
+
+com.tootsville.shade.hurts
+
+	If a player is shot by Shade, should s/he lose peanuts?
+
+
+com.tootsville.ShaddowFalls.attrition
+
+	Number of peanuts lost for standing in Shaddow Falls
+
+
+com.tootsville.ShaddowFalls.rate
+
+	Interval between attrition hits in Shaddow Falls
+
+
+com.tootsville.sfs
+
+	Smart Fox Pro Server (¿do we still use this?)
+
+
+com.tootsville.showNameFilter
+	
+	WRITEME?? twheys@gmail.com?
+
+
+com.tootsville.store.jdbc.driver
+	
+	WRITEME?? twheys@gmail.com?
+
+
+com.tootsville.store.jdbc.password
+	
+	WRITEME?? twheys@gmail.com?
+
+
+com.tootsville.store.jdbc.url
+	
+	WRITEME?? twheys@gmail.com?
+
+
+com.tootsville.tootSquareBusy
+	
+	Define the number of users before we decide that Toot Square is busy
+
+
+org.apache.commons.dbcp.maxActive
+org.apache.commons.dbcp.minIdle
+org.apache.commons.dbcp.maxIdle
+org.apache.commons.dbcp.maxWait
+org.apache.commons.dbcp.validationQuery
+org.apache.commons.dbcp.whenExhaustedAction
+
+	Apache DBCP configuration settings
+	(WRITEME)
+
+
+org.starhope.appius.autoRestartMetronome
+
+	Attempt to restart the metronome if we think it has failed. Old
+	bug work-around, deprecated
+	
+
+org.starhope.appius.backdoor.open
+
+	Boolean: open the administrative backend?
+	
+
+org.starhope.appius.backdoor.port
+org.starhope.appius.backdoor.receiveBufferSize
+org.starhope.appius.charon.reaperSleep
+org.starhope.appius.charon.threadJoinTimeout
+org.starhope.appius.debug
+org.starhope.appius.dumpLiveCache
+org.starhope.appius.filter.chat
+org.starhope.appius.filter.login
+org.starhope.appius.futureDatagramsMax
+org.starhope.appius.game.LaserTag.cantShoot.<TYPE>
+
+	Disable shooting items of a certain type by setting this to true.
+	Types are “obs” and “itm”
+	
+
+org.starhope.appius.game.LaserTag.leaderBonus
+
+	A number of bonus points given to the leader after a round of the
+	game (first place bonus)
+	
+
+org.starhope.appius.games.countdownTime
+org.starhope.appius.games.playTime
+org.starhope.appius.gameStateChangeTime
+org.starhope.appius.idleKickTime
+org.starhope.appius.idleWarnTime
+org.starhope.appius.ioDelay
+
+org.starhope.appius.jdbc.driver
+org.starhope.appius.jdbc.login
+org.starhope.appius.jdbc.password
+org.starhope.appius.jdbc.host
+org.starhope.appius.jdbc.schema
+org.starhope.appius.jdbc.zoneSchema
+org.starhope.appius.jdbc.storeSchema
+org.starhope.appius.jdbc.journalSchema
+org.starhope.appius.jdbc.dbcpEnabled
+org.starhope.appius.jdbc.killStatements
+org.starhope.appius.jdbc.killConnections
+
+org.starhope.appius.load.test
+
+    Enable autocreation of load test client user accounts. This will
+    spawn an incredible number 
+
+org.starhope.appius.loggerName
+org.starhope.appius.mailBugs
+org.starhope.appius.mailTo
+org.starhope.appius.maxInputSize
+org.starhope.appius.mb.messageFile
+org.starhope.appius.metronome.tick
+org.starhope.appius.metronomeTime=2000
+org.starhope.appius.npc.tickSeconds
+org.starhope.appius.nudgeTime
+org.starhope.appius.parent.maxChildren
+org.starhope.appius.parent.maxFreeChildren
+org.starhope.appius.pets.botherFriend.distraction
+org.starhope.appius.pets.botherFriend.spazDistance
+org.starhope.appius.server.port
+org.starhope.appius.smartFaux.traceRoomDisjoints
+org.starhope.appius.socket.receiveBufferSize
+org.starhope.appius.statsTimer
+org.starhope.appius.test.ConnectionDebug
+org.starhope.appius.topLevelDomain
+org.starhope.appius.userRoom.maxUsers
+org.starhope.appius.util.Mail.template_folder
+org.starhope.appius.zones.fullRatio
+org.starhope.appius.zones.lightRatio
+org.starhope.appius.zones.maxUsers
+org.starhope.appius.zones.spawnSeconds
+
+
+
+////////////////////////////////////////////////////////////////////////
+
+
+#game <GAMECODE> <COMMAND...>
+
+<GAMECODE>:
+	zapAttack
+
+<COMMAND...>:
+	#state					get state
+	#changestate <STATE>	set new state (must be pumped, usually by
+											the metronome)
+		<STATE>:
+			#solo			practice/attract mode
+			#countdown		prepare to play/between rounds
+			#running		running
+	#pumpstate				activate the next state selected
+							normally run by the metronome
+	#roster					list roster of players
+	#resetplayers			rebuild players list based upon those
+							present in the game rooms
+	#purge					remove dead or nullified players
+	#scores					list all players' scores
+
+To check game in other Zone:
+
+#shout Dottie nowhere #game zapAttack #score
+#shout Superstar nowhere #game zapAttack #state
+
+
+
+Global commands (available to all users):
+
+
+/frameRate		Show a framerate counter in the corner
+/squashDeBugs	Enable debugging mode
+
