@@ -5,9 +5,8 @@ package org.starhope.vergil.net.smartFaux;
 
 /**
  * WRITEME: Document this type.
- *
+ * 
  * @author brpocock@star-hope.org
- *
  */
 public interface SmartFauxEventListener {
 	

@@ -5,12 +5,12 @@ import org.starhope.appius.net.datagram.AbstractDatagram;
 /**
  * WRITEME: Document this type.
  * 
- * @author ewinkelman
+ * @author ewinkelman@resinteractive.com
  * @param <T>
  */
 public interface ChannelListener {
 	/**
-	 * WRITEME: Document this method ewinkelman
+	 * WRITEME: Document this method ewinkelman@resinteractive.com
 	 * 
 	 * @param datagram
 	 */

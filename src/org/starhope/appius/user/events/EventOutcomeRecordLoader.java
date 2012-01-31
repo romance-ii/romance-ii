@@ -7,12 +7,11 @@ import org.starhope.appius.util.RecordLoader;
 
 /**
  * WRITEME: Document this type.
- *
+ * 
  * @author brpocock@star-hope.org
- *
  */
 public interface EventOutcomeRecordLoader extends
 		RecordLoader <EventOutcomeRecord> {
 	// //TODO
-
+	
 }

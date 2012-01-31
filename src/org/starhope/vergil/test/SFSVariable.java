@@ -5,9 +5,8 @@ package org.starhope.vergil.test;
 
 /**
  * WRITEME: Document this type.
- *
+ * 
  * @author brpocock@star-hope.org
- *
  */
 public class SFSVariable {
 	
@@ -17,7 +16,7 @@ public class SFSVariable {
 	 * @param string WRITEME
 	 * @param valueOf WRITEME
 	 */
-	public SFSVariable (String string, String valueOf) {
+	public SFSVariable (final String string, final String valueOf) {
 		// TODO Auto-generated constructor stub brpocock@star-hope.org
 	}
 	

@@ -4,7 +4,7 @@
 package org.starhope.appius.except;
 
 /**
- * @author ewinkelman
+ * @author ewinkelman@resinteractive.com
  */
 public class ParameterException extends Exception {
 	
@@ -42,6 +42,7 @@ public class ParameterException extends Exception {
 	@Override
 	public String getMessage () {
 		final String superMessage = super.getMessage ();
-		return null == superMessage ? reason : superMessage + "\t" + reason;
+		return null == superMessage ? reason : superMessage + "\t"
+				+ reason;
 	}
 }
