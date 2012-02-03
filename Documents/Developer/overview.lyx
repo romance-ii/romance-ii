@@ -1,0 +1,893 @@
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass IEEEtran
+\use_default_options false
+\language english
+\inputencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement tbh
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 2
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "Appius Claudius Caecus"
+description "A videogame server. The subject of this overview."
+
+\end_inset
+
+Appius Claudius Cæcus Game Server Overview
+\end_layout
+
+\begin_layout Author
+Bruce-Robert Pocock
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Bruce-Robert Pocock is the author of Appius and the Chief Engineer of Res
+ Interactive, LLC
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+This document gives an overview of the functionality of the Appius Claudius
+ Cæcus game server and related facilities
+\end_layout
+
+\begin_layout Keywords
+game, videogame, network, socket, Appius Claudius Cæcus, Gaius Valerius
+ Catullus, Publius Vergilius Maro, Clodia Metelli Pulcher
+\end_layout
+
+\begin_layout Footernote
+Created January, 2010.
+\end_layout
+
+\begin_layout MarkBoth
+Appius Claudius Cæcus
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+Game Server Overview
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+PARstart{A}{ppius}
+\end_layout
+
+\end_inset
+
+
+\noun on
+ Claudius Cæcus
+\noun default
+ is a videogame server currently being developed for the games Sideres
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "Sideres"
+description "A space-based videogame being developed using Appius Claudius Caecus"
+
+\end_inset
+
+, 
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "Tootsville"
+description "A virtual world for 6-12 years olds using Appius Claudius Caecus as the game server"
+
+\end_inset
+
+Tootsville™, and 
+\noun on
+
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "Li'l Vampies"
+description "A mobile videogame being developed using Appius Claudius Caecus"
+
+\end_inset
+
+
+\noun default
+Li'l Vampies.
+ The family of applications supporting Appius Claudius Cæcus take their
+ names from notable Romans of the late Republican period.
+ The game server is generally referred-to as simply 
+\begin_inset Quotes eld
+\end_inset
+
+Appius.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Appius provides TCP communications in a format specifically suitable for
+ Adobe™ Flash™ clients, as well as support for raw communications.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "Publius Vergilius Maro"
+description "A Java game framework abstraction, including support for Appius servers"
+
+\end_inset
+
+
+\noun on
+Publius Vergilius Maro
+\noun default
+ is a Java-based client library which provides support for communications
+ with Appius, as well as a game development framework for events, input,
+ graphics, sound, and haptic support in Java.
+ Vergil is being developed in parallel to Appius.
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Gaius Valerius Catullus
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "Gaius Valerius Catullus"
+description "An Android game framework based upon Vergil and using Appius for its server."
+
+\end_inset
+
+
+\noun default
+is a Vergil client environment being developed to provide low-level bindings
+ to the Google Android operating system.
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Clodia Metelli Pulcher
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "Clodia Metelli Pulcher"
+description "A Google Web Toolkit videogame front-end, based upon Vergil, and supported by the Appius server."
+
+\end_inset
+
+
+\noun default
+is a Vergil client environment being developed to provide low-level bindings
+ to the Google Web Toolkit for in-browser games.
+\end_layout
+
+\begin_layout Standard
+A separate parallel port of the networking stack of Vergil is planned for
+ Adobe Flash as well.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Overview of the World Model
+\end_layout
+
+\begin_layout Standard
+The game world in Appius exists within a 
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "Zone"
+description "A Zone (known in other situations as a shard) is an instance of a game world. "
+
+\end_inset
+
+.
+ In other implementations, this is generally referred to as a shard.
+ Each Zone is a distinct copy of the same game world, albeit with different
+ players.
+ Zones can exist on multiple server processes, on multiple hosts (or the
+ same host on multiple ports).
+ Each Zone is instantiated with an identical initial configuration, but
+ can be changed over time.
+ The Persistent Room Variables setting (not currently implemented) would
+ share room variables between Zones, which would cause changes to perpetuate
+ between Zones and across server restarts.
+\end_layout
+
+\begin_layout Standard
+Each Appius server can host one or more Zones.
+ These are coordinated — albeit imperfectly — via the Appius Zones database
+ system.
+ There can be a race condition during zone spawning, which is suppressed
+ through the Via Appia mechanism cross-checking.
+\end_layout
+
+\begin_layout Standard
+A special login zone is named 
+\begin_inset Quotes eld
+\end_inset
+
+$Eden
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The leading $ is used notationally to indicate a 
+\begin_inset Quotes eld
+\end_inset
+
+hidden
+\begin_inset Quotes erd
+\end_inset
+
+ zone that is not meant to be user-visible.
+ This notation also carries through to room names.
+\end_layout
+
+\begin_layout Standard
+Zones are broken down into Rooms.
+ Rooms are analogous to Internet Relay Chat channels — all public communications
+ within a room are reflected to all users in that room.
+ Public events also can propagate to non-player characters and game events.
+ Collectively, these make up Room Listeners.
+\end_layout
+
+\begin_layout Standard
+The third leg of the Appius model are users.
+\end_layout
+
+\begin_layout Standard
+Collectively, there are four principal abstract interfaces which are critical
+ to Appius: AbstractZone, AbstractRoom, RoomListener, and AbstractUser.
+\end_layout
+
+\begin_layout Standard
+AbstractZone and AbstractRoom each are implemented by local, substantial
+ implementations (Zone and Room, resp.) and by Via Appia remote proxy instances
+ (RemoteZone and RemoteRoom).
+ AbstractUser's implementation is slightly more complex, as it is implemented
+ by a Via Appia proxy instance (RemoteUser), but is also implemented by
+ a subclass of User specific to a game implementation (e.g.
+ Toot for Tootsville), as well as non-player character processes.
+\end_layout
+
+\begin_layout Section
+Overview of the Code's Organization
+\end_layout
+
+\begin_layout Subsection
+Breakdown of Namespace Packages
+\end_layout
+
+\begin_layout Standard
+Since Star-Hope.org is the home of the Appius server, the namespaces are
+ prefixed org.starhope (the hyphen being forbidden in Java package names).
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius
+\emph on
+ 
+\emph default
+\noun on
+Appius Claudius Cæcus
+\noun default
+ — all general (non-game-specific) server code
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.except generally-applicable exceptions.
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.game
+\emph on
+ 
+\emph default
+the game server proper and multiple classes that don't belong in a more
+ specific package (or, haven't yet been refactored into them)
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.game.inventory classes relating to an user's inventory
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.game.npc non-player character drivers general to all games
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.mb support for membership and billing functionality
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.messaging in-game messaging and text filtering
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.pay support for payment systems for microtransactions,
+ physical objects, and subscription enrolments
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.sql support for low-level SQL backend access.
+ Appius was originally intended to mix SQL data objects with Sun's Project
+ Darkstar distributed real-time game database; however, there is currently
+ no support for Project Darkstar in any production-ready code.
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.sys.admin should hold support for administrative tasks like
+ managing multiple servers, games, and zones across a cluster of machines;
+ however, this package is presently empty
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.sys.op facilities related to system operator (e.g.
+ moderator or designer) commands
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.test self-test code was meant to go into this class; however,
+ this has largely been implemented instead using 
+\begin_inset Quotes eld
+\end_inset
+
+power-on self-tests
+\begin_inset Quotes erd
+\end_inset
+
+ (the 
+\begin_inset Quotes eld
+\end_inset
+
+is it good?
+\begin_inset Quotes erd
+\end_inset
+
+ model, q.v.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: Write about the 
+\begin_inset Quotes eld
+\end_inset
+
+Is it good?
+\begin_inset Quotes erd
+\end_inset
+
+ model
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.types generic types of objects that aren't provided by
+ other libraries, as well as some arbitrary interfaces that made their way
+ in here, &c — really a trashbin of random stuff
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.user The user class and some (hopefully) relevant support
+ stuff
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.util Miscellaneous stuff that probably doesn't even belong
+ in Appius but is there anyways
+\end_layout
+
+\begin_layout Itemize
+org.starhope.appius.via Via Appia and Via Munita classes, and the implementations
+ thereof as RemoteZone, RemoteRoom, and RemoteUser
+\end_layout
+
+\begin_layout Itemize
+org.starhope.util General-purpose utility methods for everybody
+\end_layout
+
+\begin_layout Itemize
+org.starhope.util.types Support types for org.starhope.util (interfaces or structure-
+type datas)
+\end_layout
+
+\begin_layout Itemize
+org.starhope.valerius 
+\noun on
+Gaius Valerius Catullus
+\noun default
+ — Android client — implementor of Vergil
+\end_layout
+
+\begin_layout Itemize
+org.starhope.vergil 
+\noun on
+Publius Vergilius Maro
+\noun default
+ — Java client (general) — implemented by Gaius Valerius Catullus, Clodia
+ Metelli Pulcher, &c
+\end_layout
+
+\begin_layout Standard
+Specific implementations for a given game are encapsulated under that game's
+ reversed-domain-name namespace package.
+ For example, Sideres would live under net.sidereal, Li'l Vampies under org.starho
+pe.lilvampies, and Tootsville under com.tootsville.
+\end_layout
+
+\begin_layout Subsection
+Particularly Significant Classes of Note
+\end_layout
+
+\begin_layout Standard
+The main server exists in org.starhope.appius.game.AppiusClaudiusCaecus.
+ The main method there is the entry-point for the game server.
+ It then instantiates threads running itself for each connected socket,
+ as well as running through its own static methods for the metronome thread.
+ When reading the class, it is sometimes useful to imagine it as two different
+ classes, one laden with static methods and properties, one with the instance
+ methods and properties.
+ The static version constitutes the port listener and metronome tasks, while
+ the istantiated AppiusClaudiusCaecus objects represent individual threads.
+\end_layout
+
+\begin_layout Standard
+The other classes of special interest are most likely: AbstractZone, Zone,
+ & RemoteZone; AbstractRoom, Room, & RemoteRoom; and AbstractUser, User,
+ & RemoteUser.
+\end_layout
+
+\begin_layout Section
+Actions Model
+\end_layout
+
+\begin_layout Standard
+Actions in the game generally propagate through Rooms.
+ The Room code contains code for joins, parts, public speech (including
+ emotes, which are simply public speech using keywords beginning with a
+ 
+\begin_inset Quotes eld
+\end_inset
+
+/
+\begin_inset Quotes erd
+\end_inset
+
+ character), game events, earnings, and out of band messages.
+\end_layout
+
+\begin_layout Standard
+An out of band message is a JSON packet that is propagated to a single user
+ or to a room.
+ This is used particular for invitations.
+\end_layout
+
+\begin_layout Standard
+Earnings messages are a particle-effect-like message telling the user that
+ s/he has earned an item, currency, &c.
+ and are usually private messages fired off as a result of some other action;
+ e.g.
+ the operator command #grant.
+\end_layout
+
+\begin_layout Standard
+Game events are specific to game arena areas, and like out of band messages,
+ are propagated as repeated JSON packets.
+\end_layout
+
+\begin_layout Section
+Special Rooms
+\end_layout
+
+\begin_layout Subsection
+nowhere
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "nowhere"
+description "A limbo room created by default in every zone"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The special room 
+\begin_inset Quotes eld
+\end_inset
+
+nowhere
+\begin_inset Quotes erd
+\end_inset
+
+ is a 
+\begin_inset Quotes eld
+\end_inset
+
+limbo
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "limbo"
+description "A limbo room does not permit propagation of public events, like speech, join and part, or variable updates."
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ room.
+ (Other limbo rooms can be potentially created, if necessary, but there
+ has never been a compelling need for same.) No public events or messages
+ should ever propagate in a limbo room: joins, parts, chat, &c.
+\end_layout
+
+\begin_layout Subsection
+$Eaves
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "Eaves"
+description "A special room created in each zone in which eavesdropping staff members can spy upon all public events in the world."
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The special room 
+\begin_inset Quotes eld
+\end_inset
+
+$Eaves
+\begin_inset Quotes erd
+\end_inset
+
+ exists only for administrators.
+ It requires staff level privileges to enter.
+ Inside the $Eaves, users can eavesdrop upon all chat and significant public
+ events in the zone; they are echoed as public messages to all users in
+ the $Eaves.
+\end_layout
+
+\begin_layout Section
+Attached Variables
+\end_layout
+
+\begin_layout Standard
+Rooms and users (AbstractRoom and AbstractUser) provide a variable
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+symbol "variable"
+description "In Appius, rooms and users can have attached variables. These are implemented as, and act like, a String:String associative array (hashmap, hashtable)"
+
+\end_inset
+
+ facility, to attach arbitrary string key:value pairs to themselves.
+ Upon joining a room, the user receives notifications of all room variables
+ set upon that room, or user variables set upon any user within that room.
+ Likewise, updates to room or user variables are propagated in real time.
+\end_layout
+
+\begin_layout Standard
+Specific room and user variables can be used for game-specific purposes,
+ however, some general variables are supported specially by the server.
+ It is recommended that game-specific room or user variables begin with
+ more than 4 alphabetic characters to protect against potential future changes
+ to Appius (new reserved variables).
+\end_layout
+
+\begin_layout Subsection
+Reserved Room Variables
+\end_layout
+
+\begin_layout Subsubsection
+s — Sky
+\end_layout
+
+\begin_layout Standard
+The sky is the background plane to be displayed behind other geometry in
+ the room.
+ In Flash clients, this is generally a SWF file; in other clients, the implement
+ation may vary.
+ This is probably the filename of the sky to be loaded.
+ Rooms which do not allow the sky to be seen can set a flag to indicate
+ that loading the sky is unnecessary.
+\end_layout
+
+\begin_layout Subsubsection
+f — File (Room contents)
+\end_layout
+
+\begin_layout Standard
+This is the filename of the principal geometry or content of the room.
+ It is not 
+\emph on
+necessarily
+\emph default
+ unique to a room, but will likely be.
+\end_layout
+
+\begin_layout Subsubsection
+m — Musical theme
+\end_layout
+
+\begin_layout Standard
+This is the filename of a musical file or playlist.
+\end_layout
+
+\begin_layout Subsubsection
+w — Weather
+\end_layout
+
+\begin_layout Standard
+This is the filename of a weather overlay; e.g.
+ fog, snow, tumbleweeds or even ticker-tape or confetti.
+\end_layout
+
+\begin_layout Subsubsection
+furn* — Furniture Placement
+\end_layout
+
+\begin_layout Standard
+Furniture is placed using specially-formatted room variables beginning with
+ 
+\begin_inset Quotes eld
+\end_inset
+
+furn
+\begin_inset Quotes erd
+\end_inset
+
+ followed by an opaque identifier (The furniture's slot number).
+\end_layout
+
+\begin_layout Standard
+The contents of the variable are several values joined using 
+\begin_inset Quotes eld
+\end_inset
+
+~
+\begin_inset Quotes erd
+\end_inset
+
+ (tilde) as a divider.
+ The 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+zone* — Zone System
+\end_layout
+
+\begin_layout Standard
+The Zone System is the mechanism for defining the room's “shape” to the
+ client application.
+ Individual implementations may choose to ignore the zone system; however,
+ it is documented here for convenience, as it may be specially supported
+ (in particular by operator commands)
+\end_layout
+
+\begin_layout Standard
+TODO
+\end_layout
+
+\begin_layout Subsection
+Reserved User Variables
+\end_layout
+
+\begin_layout Subsubsection
+d — Delta and Position
+\end_layout
+
+\begin_layout Standard
+...
+ start x, start y, end x, end y, facing, time ...
+\end_layout
+
+\begin_layout Section
+Command Interpreters
+\end_layout
+
+\begin_layout Standard
+The commands received from the client are encoded in JSON data (the protocol
+ format differs between Smart Fox Server Pro V 1.58 compatibility mode or
+ Infinity mode) as an imperative with attached JSON data.
+\end_layout
+
+\begin_layout Standard
+The imperative command is used to form the name of a method, and the class
+ org.starhope.appius.Commands is searched for a method with a signature like:
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+static void do_
+\family default
+\emph on
+imperative
+\family typewriter
+\emph default
+ (JSONObject, AbstractUser, AbstractRoom)
+\end_layout
+
+\begin_layout Standard
+The extension class system permits a configuration key of the form xtn.org.starhop
+e.appius.Commands to define one additional
+\end_layout
+
+\begin_layout Section
+Events
+\end_layout
+
+\begin_layout Standard
+Events represent anything in-game that can alter the user's inventory (such
+ as purchasing an item), as well as their arbitrary scores for events like
+ game events, minigames, &c.
+\end_layout
+
+\begin_layout Subsection
+Event Types
+\end_layout
+
+\begin_layout Standard
+All events must be an instance of a valid event type.
+ These are used in formulating high scores, &c.
+\end_layout
+
+\begin_layout Subsection
+Game Events
+\end_layout
+
+\begin_layout Standard
+Game Events are in-world games that count as a running event.
+ Game Events have sets of players and observers; runnings scores for each
+ player; and act as a RoomListener in a set of rooms referred to as the
+ game's “arena.” Typically, they will observe Game Event messages and user
+ positional information (user variable d) to determine how well players
+ are doing, and possibly interact with NPC's as well.
+ After each round of the game, or after key actions occur in the game, the
+ event (or a playwise-related, 
+\begin_inset Quotes eld
+\end_inset
+
+sub
+\begin_inset Quotes erd
+\end_inset
+
+ event, which is logically a separate event) is recorded on the User object.
+\end_layout
+
+\begin_layout Subsubsection
+Laser Tag
+\end_layout
+
+\begin_layout Standard
+All abstraction aside, the practical 
+\begin_inset Quotes eld
+\end_inset
+
+Laser Tag
+\begin_inset Quotes erd
+\end_inset
+
+ abstract class allows users (including NPC's, potentially) to 
+\end_layout
+
+\begin_layout Section
+Via Appia and Via Munita
+\end_layout
+
+\begin_layout Standard
+Via Appia is the RPC mechanism that runs over the JSON data stream, and
+ is what RemoteZone, RemoteRoom, and RemoteUser use.
+\end_layout
+
+\begin_layout Section
+Use the Source
+\end_layout
+
+\begin_layout Standard
+Actually, refer to the JavaDocs for rather extensive breakdown of things
+ ...
+ This overview is just a sketch to help you find the classes you need to
+ read in the JavaDocs ...
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset nomencl_print
+LatexCommand printnomenclature
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Biography
+\end_layout
+
+\begin_layout Biography
+Bruce-Robert Pocock is the author of the open-source Appius Claudius Cæcus
+ application stack, and the Chief Engineer of Res Interactive, LLC, the
+ principal commercial implementor of the application (in the Tootsville™
+ videogame, hosted at http://www.Tootsville.com/playnow )
+\end_layout
+
+\end_body
+\end_document

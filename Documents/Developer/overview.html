@@ -1,0 +1,117 @@
+<html>
+<head>
+<meta header="Content-Type" contents="text/html;charset=utf-8" />
+<title> Appius Claudius Cæcus Overview </title>
+</head>
+<body>
+
+<h1> Appius Claudius Caecus </h1>
+
+<p> First: Apologies. The documentation for this application is, at
+best, fragmentary. </p>
+
+<p> Appius Claudius Cæcus is a videogame server, and part of the
+Romance application stack. Appius provides a game server and a number of facilities that
+can be shared by Java-based client applications. </p>
+
+<p> Appius was initially developed for the work-in-progress game Siderēs, but
+most development at this point is being done for the principal
+commercial sponsor of Appius, <a href="http://resinteractive.com/">Res Interactive, LLC</a>,
+principally for the game <a href="http://www.tootsville.com/playnow">Tootsville</a>™. </p>
+
+<h2> Starting Point Vocabulary </h2>
+
+<p> A User is a player of the game. For COPPA registrations, a Parent
+record exists to give authorization. Both a User and a Parent are
+instances of an AbstractPerson, with a few basic methods. </p>
+
+<p> A Zone contains more than one Room; except for special zones, whose
+names begin with a '$', which are hidden from logins and serve special
+purposes. The Zone "$Eden" is used for handling logins and giving players a list of zones.
+Each Zone can be hosted on a different server. Zones are all instances
+of the same original game universe. 
+</p>
+
+<p> A World is a collection of Rooms within a Zone. </p>
+
+<p> A Room is a region of space in which events propagate. Events do not
+generally pass from one room to another (e.g. speech; game actions; &amp;c.).
+</p>
+
+<p> A StoreItem is a template item; an InventoryItem is an instance
+of an item that is owned by an user. </p>
+
+<p> An Event is a specific action in-world, which can take a period of time, such
+as a minigame, combat, purchase, or other activity. Events are started,
+proceed through their lifetime, and are ended. Events have Outcomes,
+which reward the creator of the event in some way (e.g. giving a
+currency or item reward for completing a minigame). Events also have
+high score lists. </p>
+
+<p> An Action is what most programmers would call an “event,” but that would
+lead to too much vocabulary confusion. Actions are registered through
+the Quaestor, and can fire off script actions asynchronously. </p>
+
+<h2> DataRecord model </h2>
+
+<p> Most objects in the game world are instances of DataRecord. This
+provides an interface for loading and saving objects to/from some kind
+of backing-store. Typically, this will be an SQL database, but any
+kind of storage or communications service is permissible. </p>
+
+<p> A DataRecord is loaded <em>and saved</em> by a RecordLoader bound
+to its class type through the Java “generics” system. </p>
+
+<p> The RecordLoader for any class can be specified in the
+configuration file. Default SQL-backed RecordLoaders are provided
+for most classes. </p>
+
+<p> The “universal factory” for DataRecord-based objects is the
+Nomenclator class. There are specific methods for instantiating
+users, because special handling is required for NPC's and such. </p>
+
+<h2> Authorship </h2>
+
+<p> Appius Claudius Cæcus (formerly known as Braque) is © 2007-2010,
+<a href="mailto:brpocock@star-hope.org?subject=Appius">Bruce-Robert Pocock</a>. All Rights Reserved except as granted under
+license. </p>
+
+<p> Portions of Appius Claudius Cæcus contributed by: </p>
+
+<ul>
+ <li> <a href="http://resinteractive.com/">Res Interactive, LLC.</a> </li>
+ <li> <a href="mailto:twheys@gmail.com?subject=Appius">Timothy W. Heys</a> </li>
+ <li> <a href="mailto:edward.winkelman@gmail.com?subject=Appius">Edward Winkelman</a> </li>
+</ul>
+
+<p>
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or (at
+ your option) any later version; or, you may choose to obtain license to
+ this program under the terms of the GNU Affero General Public License; in which case, substitute the terms of the GNU AGPL 
+ for the GNU GPL in every file which otherwise states that it is GPL-licensed.
+</p>
+
+<p>
+For the purposes of the GNU GPL, “this program” consists of all of the
+class files included in the “Romance” distribution, with the exception
+of (very few) other files which have their own license. Where a file provides its own license,
+that license supercedes this one.
+</p>
+
+<p>
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+</p>
+
+<p>
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+</p>
+
+
+</body>
+</html>

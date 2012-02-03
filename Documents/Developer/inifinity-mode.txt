@@ -1,0 +1,213 @@
+Basic Login using Infinity Protocol:
+
+ * This expects a spoken lecture to accompany it, but here's the gist.
+ 
+   The “Infinity Mode” communications system is based around the
+   exchange of JSON packets terminated with \0 (NUL) bytes over a TCP
+   connection.
+   
+   There's a special batch-mode version for automated tools.
+   
+   There's a WebSocket version in development, as well.
+   
+   Essentially, the “normal” usage goes something like this:
+   
+   You'll connect to the server port of a “well known server,” which
+   is the login address for your game server (or servers). You'll get
+   a spew of Adobe Flash XML garbage that some users might need. Once
+   you get to the end of that spoilage (or, why wait? right away
+   upon connection…) you send an Infinity character. That's 
+   \x{221e} in Perl or \u221e in Java, or just plain "∞" pretty much
+   anywhere UTF-8 is spoken.
+   
+   Upon sending in the ∞ character, if you're speaking Infinity mode
+   according to the current (Appius 1.1) version, you'll get back a
+   version banner, which (unusually) is tab-delimited and ends in a
+   \n\0 pair. The interesting bit, to you, is that you need to make
+   sure that the first field is ∞, followed by a tab, some stretch
+   of characters, another tab, and either “0” or “1,” but you're
+   probably looking for a “1” only. There's also a tab, and then
+   maybe another number. That's for future ranges of versions that might
+   be spoken by one server.
+   
+   Oh — version numbers are DECIMAL not INTEGER, so if you speak 1
+   you must accept “1.0” or similar as a valid value!
+   
+   Once you've found the version banner and satisfied yourself that
+   you're going to be able to talk to the server, you'll start the
+   handshaking.
+   
+   Everything transmitted from client to server boils down to JSON-
+   encoded packets with the form {"c":$cmd,"d":{$data}} \0 — a single
+   command verb string in the “c” field, and a JSON Object in the
+   “d” field. Sometimes the “d” (data) field is empty, i.e. “ {} ”,
+   but that's where any arguments/parameters will go.
+   
+   Everything from the server (in Appius 1.1 / Infinity Mode 1) is
+   in JSON form, also, with the slightly more verbose notation of
+   {"from":$source,"status":"true",…$data…} for success / good messages,
+   or {"from":$source,"status":"false","msg":$errMessage,…$data…}
+   for errors.
+   
+   So, to do your initial handshaking, you'll need to:
+   
+    * Log in to the $Eden zone
+    * Figure out what zone you want to actually be in
+    * Log in to that Zone
+    
+   In logging in, you'll usually be using the login command with a
+   SHA-1-encoded password. Basically, you call “getApple” to get a
+   pseudorandom cookie, you append the user's password, get the SHA-1
+   hash of that concatenated string, convert it to hex (using lower-
+   case chars for “a”…“f”), and send it in the login command.
+   
+   Note that you have to repeat the SHA-1 hashing with a new apple
+   value when you log in to the user's desired zone.
+   
+   For details on available commands you can call, check out the
+   PreLoginCommands and Commands classes in Appius.
+   
+   For details on the responses that the server might throw back at
+   you, check out the ServerCommands class in Vergil.
+
+©2009,2010 BRP
+
+Connect to <HOST> port 2770
+
+get <? xml > — ignore it up to the end
+ "</cross-domain-policy>\n"
+ 
+Send Infinity:
+
+Unicode "∞" 
+∞
+
+	U+221E INFINITY
+
+	UTF-8: 0xE2 0x88 0x9E
+	UTF-16: 0x221E
+
+	C octal escaped UTF-8: \342\210\236
+	XML decimal entity: &#8734;
+	
+	\u221e
+
+ ... followed by "\0"
+ 
+Receive: "∞\tYou're quite welcome.\t0\n\0";
+
+∞\t<IGNORE>\t<VERSION>\n\0
+
+<VERSION> > 0 ... ?
+
+Current version is “1” generally for Appius 1.1 ?
+
+
+
+
+send and receive JSON {"key":"value"} \0
+
+{ "c": COMMAND, "d": { DATA } } \0
+
+Pre-Login Commands:
+
+org.starhope.appius.game.PreLoginCommands
+
+do_<COMMAND>
+
+First stage login:
+
+{ "c": "getApple", d: {} }
+
+All replies:
+
+{ "from": <METHOD>, "status": <TRUE/FALSE>, ... }
+{ "from": <METHOD>, "status": "false", "msg": <MSG>, ... }
+
+print $reply->{msg} unless $reply->{status} eq 'true';
+
+{ "from": "getApple", "apple": <KEY> }
+
+SHA1PASS := hex( sha1( <APPLE> . <PASSWORD> ) )
+
+{ "c": "login", "d": { "userName": WHO, "password": SHA1PASS,
+					   "zone": ZONENAME } }
+
+$o = new JSONObject;
+$o->c = "login";
+
+{ "from": "login", "status": "true", ... }
+
+
+JSON commands:
+
+org.starhope.appius.game.Commands
+com.tootsville.game.ExtensionCommands
+
+
+do_SOMETHING => { "c": SOMETHING ... }
+"jso" => "d": {...}
+
+
+
+
+op commands:
+
+org.starhope.appius.sys.op.OpCommands
+com.tootsville.game.ExtensionCommands
+
+op_SOMETHING => "#" . SOMETHING
+
+{ "c": "speak", d: { "speech": "#" . SOMETHING  . [ " " . PARAM , ... ]} }
+
+
+{ "c": "speak", "d": { "speech": "#headcount #all" } }
+
+
+{ "from": "admin", ... }
+
+
+
+
+
+
+Interactive login process:
+
+$Eden = first Zone
+
+Log in to $Eden
+
+{ 0: { name: ZONE NAME, host: SERVER HOSTNAME, port: NUM
+	(if missing, port == port you already used)
+	usersOn: ###, maxUsers: ###, bg: IMAGE,
+	assetPath: URL-PART (usually "")
+	buddies: ###
+      },
+   1: { ... },
+}
+
+pick a Zone, & repeat login process with new Apple
+
+
+for my $zone (@zones) { ... }
+
+
+
+
+
+{ "c": "speak", "d": { "speech": "#setvar @tootSquareWest nowPlaying TITLE..." } }
+{ "c": "speak", "d": { "speech": "#setvar @tootTheater movie FILE.flv" } }
+
+
+"$@" => admin msg title
+
+admin msg with details ... often just print admin messages
+
+Join the room, get room vars...
+
+
+
+
+
+
+
