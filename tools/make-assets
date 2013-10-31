@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ "$1x" = "x" ] 
+then
+    echo "Usage: $0 SWFDIR" >&2
+    exit -2
+fi
+
+export SWFDIR=$1
+
+find $SWFDIR -type f -name \*.swf -print0 | \
+    perl -0 -e 'while (my $swf = <>) { 
+  my $svg = $swf; $svg =~ s/\.swf$/\.svg/g; $svg =~ s,\Q$ENV{SWFDIR}\E,build/svg/,g; 
+  print "$svg:\t\\\n\t\t$swf\n\n" }' \
+    > assets.mak
+
+find $SWFDIR -type f -name \*.ttf -o -name \*.mp3 -print0 | \
+    perl -0 -e 'while (my $src = <>) { chomp $src;
+  my $dest = $src; $dest =~ s,\Q$ENV{SWFDIR}\E,build/assets.bin/,g; 
+  print "$dest:\t\\\n\t\t$src\n\n" }' \
+    > assets.mak
+
+
+
+

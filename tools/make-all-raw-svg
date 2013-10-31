@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cd ~/Projects/Tootsville/Flash.Quicksilver/trunk
+
+find . -type f -name \*.swf -exec ~/Projects/violet-volts/tools/tosvg {} \;
+
+
+
