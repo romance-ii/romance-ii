@@ -4,3 +4,9 @@
 *.fas
 *.dxl
 *.a
+build/*
+dist/*
+doc/*/*dvi
+doc/*/*ps
+doc/*/*pdf
+doc/*/*toc
