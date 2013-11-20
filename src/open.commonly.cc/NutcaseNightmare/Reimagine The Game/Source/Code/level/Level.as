@@ -1,0 +1,1 @@
+﻿package level{	public interface Level	{		function init():void;		function enterFrame():void;		function endGame():void;	}}
