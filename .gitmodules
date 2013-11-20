@@ -1,0 +1,21 @@
+[submodule "src/glitch/avatars"]
+	path = src/glitch/avatars
+	url = https://github.com/tinyspeck/glitch-avatars
+[submodule "src/glitch/locations"]
+	path = src/glitch/locations
+	url = https://github.com/tinyspeck/glitch-locations
+[submodule "src/glitch/overlays"]
+	path = src/glitch/overlays
+	url = https://github.com/tinyspeck/glitch-overlays
+[submodule "src/glitch/items"]
+	path = src/glitch/items
+	url = https://github.com/tinyspeck/glitch-items
+[submodule "src/glitch/client"]
+	path = src/glitch/client
+	url = https://github.com/tinyspeck/glitch-client
+[submodule "src/glitch/hq-android"]
+	path = src/glitch/hq-android
+	url = https://github.com/tinyspeck/glitch-hq-android
+[submodule "src/glitch/gameserverjs"]
+	path = src/glitch/gameserverjs
+	url = https://github.com/tinyspeck/glitch-GameServerJS
