@@ -1,8 +1,7 @@
 #!/bin/sh
 
-cd ~/Projects/Tootsville/Flash.Quicksilver/trunk
-
-find . -type f -name \*.swf -exec ~/Projects/violet-volts/tools/tosvg {} \;
+find src/glitch -type f -name \*.swf -exec \
+   sh -c 'mkdir -p build/$(dirname {}) ; ~/Projects/violet-volts/tools/swf2svg {} > build/{}.svg' \;
 
 
 
