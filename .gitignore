@@ -12,3 +12,7 @@ doc/*/*pdf
 doc/*/*toc
 *#
 DEADJOE
+*.aux
+*.log
+*.out
+*.toc
