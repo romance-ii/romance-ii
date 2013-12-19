@@ -1,2 +1,40 @@
+# Legacy Subversion directories
 .svn
-bin
+
+# Temporary files
+.#*
+*#
+*.tmp
+*.temp
+tmp.*
+
+# Backup files
+*~
+*.bak
+*.orig
+
+# Compilation artefacts
+*.fasl
+*.fas
+*.dxl
+*.a
+
+build/*
+
+# Distribution files
+dist/*
+
+# Rendered documentation
+doc/*/*dvi
+doc/*/*ps
+doc/*/*pdf
+
+# Editor crash files
+DEADJOE
+
+# (La)TeX intermediate files
+*.aux
+*.log
+*.out
+*.toc
+

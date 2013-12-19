@@ -1,0 +1,1 @@
+﻿package particle{	public class LoopParticle extends PlayParticle	{		public function LoopParticle(p:String,frm:uint=1):void		{			super(p,frm);		}		override public function enterFrame():void		{			if(mc.currentFrame==mc.totalFrames){				mc.gotoAndStop(1);			}else{				mc.nextFrame();			}		}	}}

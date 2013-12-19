@@ -1,0 +1,1 @@
+﻿package math{	import flash.display.DisplayObject;	public class PointRect extends Rect	{		public function PointRect(p:DisplayObject,size:uint):void		{			super(new Array(p.x-size,p.y-size,p.x+size,p.y+size));		}	}}
