@@ -2,5 +2,6 @@
   (:use :cl :alexandria :bordeaux-threads)
   (:nicknames :clodia-metelli :clodia-metelli-pulcher
               :claudia-metelli :clodia-metelli-pvlcher)
-  (:documentation "Clodia has AI brains WRITEM"))
+  (:documentation "Clodia has AI brains WRITEME")
+  (:export #:start-server))
 
