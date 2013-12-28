@@ -7,7 +7,8 @@ long-term storage and disaster recovery.
 
 Gaius Asinius Pollio was a consul noted for constructing the first
 public library in Rome, the Atrium Libertatis, as a posthumous favor
-to Caesar."))
+to Caesar.")
+  (:export #:start-server))
 
 (in-package :asinius)
 
@@ -22,3 +23,10 @@ to Caesar."))
 
 (defun map-entity-data-to-postgres ())
 
+
+
+(defun start-server (argv)
+  (romance:server-start-banner "Asinius"
+                               "Gaius Asinius Pollio"
+                               "Database persistence layer")
+  (format t "~&Gaius Asinius Pollio: No-op."))

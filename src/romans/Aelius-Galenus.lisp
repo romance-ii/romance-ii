@@ -7,4 +7,13 @@ other words: Galen burgeons areas that had been quiesced previously.
 
 Galen was a noted philosopher, logician, and inventor.
 
-This subsystem won't be in place yet for Romance 2.0"))
+This subsystem won't be in place yet for Romance 2.0")
+  (:export #:start-server))
+
+(defun start-server (argv)
+  (romance:server-start-banner "Galen"
+                               "Ælius Claudius Galenus"
+                               "Burgeoning quiesced subspace server")
+  (format t "~&Galen: no op."))
+
+
