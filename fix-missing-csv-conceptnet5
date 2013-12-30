@@ -1,0 +1,1 @@
+cd src/conceptnet5-csv/assertions; for f in *bz2; do bzip2 -d < $f > $(basename $f); done
