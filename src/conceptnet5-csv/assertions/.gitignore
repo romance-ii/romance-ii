@@ -1,0 +1,3 @@
+# The CSV files are too large for GitHub,
+# so we only check in their BZ2 forms. (I know, crazy/backwards)
+*.csv
