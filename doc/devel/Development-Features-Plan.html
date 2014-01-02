@@ -1,0 +1,5019 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Development-Features-Plan</title>
+<!-- 2013-11-21 Thu 18:23 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Bruce-Robert Fenn Pocock" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/javascript" src="http://orgmode.org/mathjax/MathJax.js"></script>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        // Only one of the two following lines, depending on user settings
+        // First allows browser-native MathML display, second forces HTML/CSS
+        //  config: ["MMLorHTML.js"], jax: ["input/TeX"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 100,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        }
+    });
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Development-Features-Plan</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">Violet Volts: Overview</a>
+<ul>
+<li><a href="#sec-1-1">Manifesto</a>
+<ul>
+<li><a href="#sec-1-1-1">Axiom: Violence is filler in most games.</a></li>
+<li><a href="#sec-1-1-2">Hypothesis: Non-violence can be fun.</a></li>
+<li><a href="#sec-1-1-3">About Animal Crossing</a></li>
+<li><a href="#sec-1-1-4">About World Rasslin Federation</a></li>
+<li><a href="#sec-1-1-5">About in-world minigames</a></li>
+<li><a href="#sec-1-1-6">Miyamoto is my Hero</a></li>
+<li><a href="#sec-1-1-7">Caillois</a></li>
+<li><a href="#sec-1-1-8">The Great Experiment</a></li>
+<li><a href="#sec-1-1-9">The danger</a></li>
+<li><a href="#sec-1-1-10">Major Point: Sidekicks</a></li>
+<li><a href="#sec-1-1-11">Major Point: Persistent World</a></li>
+<li><a href="#sec-1-1-12">Major Failure: Monetization</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-2">The Team</a>
+<ul>
+<li><a href="#sec-1-2-1">Me! Bruce-Robert Fenn Pocock</a></li>
+<li><a href="#sec-1-2-2">Gene Cronk</a></li>
+<li><a href="#sec-1-2-3">Erick Feiling</a></li>
+<li><a href="#sec-1-2-4">Joseph Williamson</a></li>
+<li><a href="#sec-1-2-5">Mark Mc Corkle</a></li>
+<li><a href="#sec-1-2-6">Chris Brunner</a></li>
+<li><a href="#sec-1-2-7">Testers</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-3">Rough plans</a>
+<ul>
+<li><a href="#sec-1-3-1">No Tootsville?</a></li>
+<li><a href="#sec-1-3-2"><span class="done DONE">DONE</span> awaiting answer from Louis Pecci&#xa0;&#xa0;&#xa0;<span class="tag"><span class="RES">RES</span></span></a></li>
+<li><a href="#sec-1-3-3"><span class="todo TODO">TODO</span> set up fucking Bugzilla and log tickets for all this shit</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-4">Core Design</a></li>
+<li><a href="#sec-1-5">Front-end: HTML5, pseudo-3D.</a>
+<ul>
+<li><a href="#sec-1-5-1">Partial 3D: “Diorama” style</a></li>
+<li><a href="#sec-1-5-2">UI Stuff</a></li>
+<li><a href="#sec-1-5-3">Server communication</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-6">Navigation&#xa0;&#xa0;&#xa0;<span class="tag"><span class="NAV">NAV</span>&#xa0;<span class="PHYSICS">PHYSICS</span></span></a>
+<ul>
+<li><a href="#sec-1-6-1">Adrenaline, Exertion</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-7">Equipment, Slots, Valences</a></li>
+<li><a href="#sec-1-8">Server Model</a></li>
+<li><a href="#sec-1-9">Dev Infrastructure&#xa0;&#xa0;&#xa0;<span class="tag"><span class="DEVEL">DEVEL</span></span></a>
+<ul>
+<li><a href="#sec-1-9-1"><span class="todo TODO">TODO</span> Separate "assets" git tree.</a></li>
+<li><a href="#sec-1-9-2"><span class="todo TODO">TODO</span> set up Bugzilla&#xa0;&#xa0;&#xa0;<span class="tag"><span class="GENE">GENE</span></span></a></li>
+<li><a href="#sec-1-9-3"><span class="todo TODO">TODO</span> set up Koji&#xa0;&#xa0;&#xa0;<span class="tag"><span class="GENE">GENE</span></span></a></li>
+<li><a href="#sec-1-9-4"><span class="todo TODO">TODO</span> Postfix</a></li>
+<li><a href="#sec-1-9-5"><span class="todo TODO">TODO</span> static web server?</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-10">Tap And Talk&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TAPNTALK">TAPNTALK</span></span></a>
+<ul>
+<li><a href="#sec-1-10-1">SINGING tortoises&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span></span></a></li>
+</ul>
+</li>
+<li><a href="#sec-1-11"><span class="todo TODO">TODO</span> Sound effects; foley&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span></span></a></li>
+<li><a href="#sec-1-12"><span class="todo TODO">TODO</span> background music&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span>&#xa0;<span class="MUSIC">MUSIC</span></span></a>
+<ul>
+<li><a href="#sec-1-12-1"><span class="todo TODO">TODO</span> Creative Commons music</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-13">Geography&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span></span></a>
+<ul>
+<li><a href="#sec-1-13-1"><span class="todo TODO">TODO</span> re-draw a non-Tootanga map.&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span>&#xa0;<span class="BRP">BRP</span></span></a></li>
+</ul>
+</li>
+<li><a href="#sec-1-14">Physics&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PHYSICS">PHYSICS</span></span></a>
+<ul>
+<li><a href="#sec-1-14-1"><span class="todo TODO">TODO</span> make new Lisp bindings, the old ones are kinda shitty</a></li>
+<li><a href="#sec-1-14-2"><span class="todo TODO">TODO</span> make a JavaScript binding?</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-15">AI planners&#xa0;&#xa0;&#xa0;<span class="tag"><span class="AGENT">AGENT</span></span></a></li>
+<li><a href="#sec-1-16">Teams&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TEAMS">TEAMS</span></span></a></li>
+<li><a href="#sec-1-17">Buddy List?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="BUDDYLIST">BUDDYLIST</span></span></a></li>
+<li><a href="#sec-1-18">Sidekick&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SIDEKICK">SIDEKICK</span></span></a></li>
+<li><a href="#sec-1-19">Pets&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PETS">PETS</span></span></a></li>
+<li><a href="#sec-1-20">Vehicles&#xa0;&#xa0;&#xa0;<span class="tag"><span class="VEHICLE">VEHICLE</span></span></a></li>
+<li><a href="#sec-1-21">Passports&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PASSPORT">PASSPORT</span></span></a>
+<ul>
+<li><a href="#sec-1-21-1"><span class="todo TODO">TODO</span> better name than “Passport”</a></li>
+</ul>
+</li>
+<li><a href="#sec-1-22">Compass; Metal Detector; Dowsing Rod&#xa0;&#xa0;&#xa0;<span class="tag"><span class="COMPASS">COMPASS</span></span></a>
+<ul>
+<li><a href="#sec-1-22-1"><span class="todo TODO">TODO</span> develop the list of prizes and ways to search&#xa0;&#xa0;&#xa0;<span class="tag"><span class="COLLECTIONS">COLLECTIONS</span>&#xa0;<span class="COMPASS">COMPASS</span></span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-2">The Story</a>
+<ul>
+<li><a href="#sec-2-1">The Back Story</a>
+<ul>
+<li><a href="#sec-2-1-1"><span class="todo TODO">TODO</span> world name</a></li>
+<li><a href="#sec-2-1-2"><span class="todo TODO">TODO</span> why can't you go everywhere?</a></li>
+</ul>
+</li>
+<li><a href="#sec-2-2">Characters</a>
+<ul>
+<li><a href="#sec-2-2-1"><span class="todo TODO">TODO</span> leader</a></li>
+<li><a href="#sec-2-2-2"><span class="todo TODO">TODO</span> wacky inventor</a></li>
+<li><a href="#sec-2-2-3"><span class="todo TODO">TODO</span> earth person</a></li>
+<li><a href="#sec-2-2-4"><span class="todo TODO">TODO</span> metal person</a></li>
+<li><a href="#sec-2-2-5"><span class="todo TODO">TODO</span> water person</a></li>
+<li><a href="#sec-2-2-6"><span class="todo TODO">TODO</span> wood person</a></li>
+<li><a href="#sec-2-2-7"><span class="todo TODO">TODO</span> fire person</a></li>
+<li><a href="#sec-2-2-8"><span class="todo TODO">TODO</span> killer person</a></li>
+<li><a href="#sec-2-2-9"><span class="todo TODO">TODO</span> achiever person</a></li>
+<li><a href="#sec-2-2-10"><span class="todo TODO">TODO</span> explorer person</a></li>
+<li><a href="#sec-2-2-11"><span class="todo TODO">TODO</span> socializer person</a></li>
+<li><a href="#sec-2-2-12"><span class="todo TODO">TODO</span> conqueror person</a></li>
+<li><a href="#sec-2-2-13"><span class="todo TODO">TODO</span> manager person</a></li>
+<li><a href="#sec-2-2-14"><span class="todo TODO">TODO</span> wanderer person</a></li>
+<li><a href="#sec-2-2-15"><span class="todo TODO">TODO</span> participant person</a></li>
+<li><a href="#sec-2-2-16"><span class="todo TODO">TODO</span> hoarder person</a></li>
+<li><a href="#sec-2-2-17"><span class="todo TODO">TODO</span> zoner person</a></li>
+<li><a href="#sec-2-2-18"><span class="todo TODO">TODO</span> juggernaut</a></li>
+<li><a href="#sec-2-2-19"><span class="todo TODO">TODO</span> monster</a></li>
+<li><a href="#sec-2-2-20"><span class="todo TODO">TODO</span> hotshot person</a></li>
+<li><a href="#sec-2-2-21"><span class="todo TODO">TODO</span> agon person</a></li>
+<li><a href="#sec-2-2-22"><span class="todo TODO">TODO</span> alea person</a></li>
+<li><a href="#sec-2-2-23"><span class="todo TODO">TODO</span> mimicry person</a></li>
+<li><a href="#sec-2-2-24"><span class="todo TODO">TODO</span> ilinx person</a></li>
+<li><a href="#sec-2-2-25"><span class="todo TODO">TODO</span> ludus person</a></li>
+<li><a href="#sec-2-2-26"><span class="todo TODO">TODO</span> paida person</a></li>
+</ul>
+</li>
+<li><a href="#sec-2-3">Non-Tortoise Characters</a>
+<ul>
+<li><a href="#sec-2-3-1">The Mockingbird</a></li>
+<li><a href="#sec-2-3-2">Finches</a></li>
+<li><a href="#sec-2-3-3"><span class="todo TODO">TODO</span> The Big Bad</a></li>
+<li><a href="#sec-2-3-4"><span class="todo TODO">TODO</span> the polluter</a></li>
+<li><a href="#sec-2-3-5"><span class="todo TODO">TODO</span> the mail thief</a></li>
+</ul>
+</li>
+<li><a href="#sec-2-4">Currency&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MONEY">MONEY</span></span></a>
+<ul>
+<li><a href="#sec-2-4-1"><span class="todo TODO">TODO</span> how do the AI's decide?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-3">Minigames</a>
+<ul>
+<li><a href="#sec-3-1">Football Core&#xa0;&#xa0;&#xa0;<span class="tag"><span class="FOOTBALL">FOOTBALL</span></span></a></li>
+<li><a href="#sec-3-2">House and Lot&#xa0;&#xa0;&#xa0;<span class="tag"><span class="HOUSE">HOUSE</span></span></a></li>
+<li><a href="#sec-3-3">The Mazes&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAZE">MAZE</span></span></a></li>
+<li><a href="#sec-3-4">Cleaning up after Smudge</a></li>
+<li><a href="#sec-3-5">Tower Defense Picnic</a></li>
+<li><a href="#sec-3-6">Digging Game</a></li>
+<li><a href="#sec-3-7">Zuma/Luxor concept</a></li>
+<li><a href="#sec-3-8">Insaniquarium-inspired fish pond?</a></li>
+<li><a href="#sec-3-9">Mail&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAIL">MAIL</span></span></a></li>
+<li><a href="#sec-3-10">Luigi's Mansion?</a></li>
+<li><a href="#sec-3-11">Platformer areas</a></li>
+<li><a href="#sec-3-12">the spaceship game&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SPACESHIPS">SPACESHIPS</span></span></a></li>
+<li><a href="#sec-3-13">Dangerous areas: The Big Bad</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">Places&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span></span></a>
+<ul>
+<li><a href="#sec-4-1">Downtown</a>
+<ul>
+<li><a href="#sec-4-1-1">Main plaza</a></li>
+<li><a href="#sec-4-1-2">School?</a></li>
+<li><a href="#sec-4-1-3">Sports Arena</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-2">The Beach</a>
+<ul>
+<li><a href="#sec-4-2-1"><span class="todo TODO">TODO</span> Volleyball&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></a></li>
+<li><a href="#sec-4-2-2"><span class="todo TODO">TODO</span> watercraft</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-3">Manatee Village</a>
+<ul>
+<li><a href="#sec-4-3-1">Underwater lab</a></li>
+<li><a href="#sec-4-3-2"><span class="todo TODO">TODO</span> Coral Reef Maze&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></a></li>
+</ul>
+</li>
+<li><a href="#sec-4-4">Space station</a>
+<ul>
+<li><a href="#sec-4-4-1"><span class="todo TODO">TODO</span> asteroid mining&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></a></li>
+<li><a href="#sec-4-4-2"><span class="todo TODO">TODO</span> hamster tube maze&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></a></li>
+<li><a href="#sec-4-4-3"><span class="todo TODO">TODO</span> contact SpaceX about allowing use of Dragon/Falcon in game</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-5">jungle, savannah, prarie</a></li>
+<li><a href="#sec-4-6">Forest</a>
+<ul>
+<li><a href="#sec-4-6-1">Butterflies&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></a></li>
+<li><a href="#sec-4-6-2">Finch Village</a></li>
+<li><a href="#sec-4-6-3">caves lead to Lost World&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></a></li>
+<li><a href="#sec-4-6-4">Lost World</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-7">Ranch</a></li>
+<li><a href="#sec-4-8">The Manor</a></li>
+<li><a href="#sec-4-9">Snowy place</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">Time, Weather</a>
+<ul>
+<li><a href="#sec-5-1">Time</a>
+<ul>
+<li><a href="#sec-5-1-1">Non\=es</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-2">Weather</a></li>
+<li><a href="#sec-5-3">Other minigame ideas?</a>
+<ul>
+<li><a href="#sec-5-3-1">Pac-Man.</a></li>
+<li><a href="#sec-5-3-2">Tic Tac Toe</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-4">Building the code</a>
+<ul>
+<li><a href="#sec-5-4-1">Directory Structure</a></li>
+<li><a href="#sec-5-4-2"><span class="done DONE">DONE</span> <code>Makefile</code></a></li>
+<li><a href="#sec-5-4-3"><span class="todo TODO">TODO</span> Parenscript compilation</a></li>
+<li><a href="#sec-5-4-4"><span class="done DONE">DONE</span> Minifiers for JS, CSS, HTML</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-6">Policies</a></li>
+<li><a href="#sec-7">Non-Violence Manifesto</a>
+<ul>
+<li><a href="#sec-7-1">The original notes from 2009</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Violet Volts: Overview</h2>
+<div class="outline-text-2" id="text-1">
+</div><div id="outline-container-sec-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> Manifesto</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+The concept I'm running off of goes a bit like this
+</p>
+</div>
+
+<div id="outline-container-sec-1-1-1" class="outline-4">
+<h4 id="sec-1-1-1"><span class="section-number-4">1.1.1</span> Axiom: Violence is filler in most games.</h4>
+<div class="outline-text-4" id="text-1-1-1">
+<p>
+EG: Zelda is mostly about solving the puzzles, and while a few of them
+(shoot  the boss  in  the  eye) are  couched  themselves  in terms  of
+violence,  the  majority  of  the   violence  in  the  game  world  is
+filler. Killing Bokoblins to maybe get a Rupee can be kinda fun, sure,
+but it's not moving the plot forward or really providing much “puzzle”
+content, &amp;c &amp;c.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-1-2" class="outline-4">
+<h4 id="sec-1-1-2"><span class="section-number-4">1.1.2</span> Hypothesis: Non-violence can be fun.</h4>
+<div class="outline-text-4" id="text-1-1-2">
+<p>
+OTOH, non-violent games tend to be of a very few sorts;
+</p>
+
+<ul class="org-ul">
+<li>Some, like Pac-Man = Katamari Damacy, are basically aiming to
+“clear the board” in some way. Alchemy from Pop Cap is another of
+this sort.
+</li>
+
+<li>Others, like Bejeweled or Tetris, are basically “endless.” You just
+repeat the same task over and over, until you lose.
+
+<ul class="org-ul">
+<li>The alternative are games in which the designers have spent a great
+deal of time creating a puzzle — which you can probably (a) solve
+faster than they can create new ones; (b) look up the solution on
+the 'Net in 45 seconds or less.
+</li>
+</ul>
+</li>
+</ul>
+
+<p>
+All of  these put the idea  of a non-violent MMO-RPG  in a persistent,
+shared world at risk.
+</p>
+
+<ul class="org-ul">
+<li>We  can't use violence as  filler.  
+</li>
+
+<li>We can't let someone “clear the board,” because the next person
+will have nothing to do. 
+
+<ul class="org-ul">
+<li>We can, but shouldn't, make it an endless toil: that, eventually,
+isn't fun.  
+</li>
+
+<li>We can't afford the time effort to have more designers than players
+to create specific puzzles.
+</li>
+</ul>
+</li>
+</ul>
+
+<p>
+So, the sandbox world has these things going for it:
+</p>
+
+<ul class="org-ul">
+<li>User generated content: Building and decorating houses and
+landscaping your yard, designing and wearing clothes, and so
+forth. 
+</li>
+
+<li>Crafting and similar rôte tasks; these are like Bejeweled, but you
+only do it when you want the results
+</li>
+
+<li>AI's who have their own wants/needs/likes. They provide Quest
+drivers, basically. The AI's can “intentionally” create situations
+which are puzzles to be solved.
+</li>
+</ul>
+
+<p>
+EG:  Some “naughty”  AI character  likes to  build mazes  and has  the
+ability  to  create  a  certain   type  of  item  that  is  reasonably
+valuable. Solving the maze gives a  reward; but the AI re-arranges the
+maze from  time to time,  so you can re-visit  it later, and  it'll be
+different. We  started to build  something like this in  Tootsville 3,
+but the  front-end choked  on the  number of  “furniture” items  to be
+placed on the screen.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-1-1-3" class="outline-4">
+<h4 id="sec-1-1-3"><span class="section-number-4">1.1.3</span> About Animal Crossing</h4>
+<div class="outline-text-4" id="text-1-1-3">
+<p>
+Animal Crossing is  really more about:
+</p>
+
+<ul class="org-ul">
+<li>meeting and interacting with the characters, making friends
+</li>
+
+<li>creating User Generated Content: decorate your house, design your
+clothes, decorate signs, change the Town Song, …
+</li>
+
+<li>discovering and collecting artefacts: shells, fruit, fossils, … ;
+sometimes these can be traded
+</li>
+
+<li>special events [The jazz playing dog on Saturday nights; the Turnip
+“stock exchange”; holiday events; special visiting characters]
+</li>
+</ul>
+
+<p>
+In  MMO  context, you  can 
+</p>
+
+<ul class="org-ul">
+<li>meet and interact with AI and human controlled characters, make
+friends
+</li>
+
+<li>create User Generate Content of many of the same kinds
+</li>
+
+<li>explore new regions of the world as they are added
+</li>
+
+<li>collect different kinds of artefacts and trade them with other
+characters
+</li>
+
+<li>special events of similar kinds
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1-1-4" class="outline-4">
+<h4 id="sec-1-1-4"><span class="section-number-4">1.1.4</span> About World Rasslin Federation</h4>
+<div class="outline-text-4" id="text-1-1-4">
+<p>
+Chris Brunner  brought us the  world of WWF Tootsville.  AI characters
+get controlled by staff members to act  out a story for the players to
+watch / join in. This takes it further: we give the AI's programs that
+inherently create “fun” situations when they interact.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-1-5" class="outline-4">
+<h4 id="sec-1-1-5"><span class="section-number-4">1.1.5</span> About in-world minigames</h4>
+<div class="outline-text-4" id="text-1-1-5">
+<p>
+In Tootsville  4, we had  a (working)  soccer park. [I  think actually
+that Meixell  had tried to make  something like this in  Tootsville 2,
+but it didn't work because the  roomVariable system in SFS didn't work
+right.] The  Referee (Stu) was a  robot that kept score  [and reset it
+after a while].  The players “kicked” the ball by  walking into it. If
+it rolled into a  goal, they got a point; if it  rolled out of bounds,
+the Referee would walk over and put it at the bounds. The rules of the
+game were otherwise unenforced. The kids still played the game. We got
+more complaints about  people “cheating” by buying things  in the Mall
+than about the soccer game.
+</p>
+
+<p>
+Putting open-ended things like this in  the game world might be enough
+to  amuse some  people. Perhaps  a “mission”  or “greater  purpose” is
+needed  only  to  give you  an  excuse  to  explore  and play  in  the
+world. How often have we ignored Navi so we could play some other game
+and ignore our Great Quest?
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-1-6" class="outline-4">
+<h4 id="sec-1-1-6"><span class="section-number-4">1.1.6</span> Miyamoto is my Hero</h4>
+<div class="outline-text-4" id="text-1-1-6">
+<p>
+Miyamoto-san:
+</p>
+
+<p>
+How do I want gamers to play Super Mario Sunshine? In each Mario game,
+players sometimes move  around without any specific  purpose, yet they
+may find some secret as a  result. While wandering around, players get
+accustomed to the  gameplay so that Mario moves just  as they want him
+to. Then  gamers feel some  attachment to the  game and don't  want to
+sell  it to  used-software  shops. So,  the more  you  play, the  more
+attachment  you  feel.  This  is  an important  element  we  want  you
+to advertise.
+</p>
+
+<p>
+(Will Wright on  Miyamoto) Wright had said, “When you  play his games,
+you feel like you’re a kid and  you’re out in the back yard playing in
+the dirt.”
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-1-7" class="outline-4">
+<h4 id="sec-1-1-7"><span class="section-number-4">1.1.7</span> Caillois</h4>
+<div class="outline-text-4" id="text-1-1-7">
+<p>
+Caillois divides  play into four categories:  agon [competition], alea
+[chance], mimicry [simulation], and ilinx [vertigo].
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-1-8" class="outline-4">
+<h4 id="sec-1-1-8"><span class="section-number-4">1.1.8</span> The Great Experiment</h4>
+<div class="outline-text-4" id="text-1-1-8">
+<p>
+Altogether it's mostly an experiment: can we use AI characters to help
+the players create their own stories that aren't “a war?”
+</p>
+
+<ul class="org-ul">
+<li>Eve  has shown  that players  can organize  themselves to  create a
+story  built  around  war;  but  we  can  enforce  a  Shapir-Whorff
+hypothesis in a game world. You lack the vocabulary in the language
+of  actions  presented  to  you  as a  player  to  conduct  literal
+violence.  There  are no  swords.  So,  will players  devolve  into
+bullies in  some other way, and  end up creating their  own war? Or
+will  they  find  a  way  to tell  more  interesting  stories  with
+their play?
+</li>
+
+<li>So  many stories we  do tell  are simple and  non-violent. Romantic
+comedies.  Sitcoms.  Even  horror  classics  are  not  “about”  the
+violence;  even   in  action  films,   the  violence  is   often  a
+filler. Given a vocabulary of  activities that tends to push toward
+creativity and  forbids violence, will players  use that creativity
+and keep coming back? or will they feel like “what this game really
+needs is to let me kill the ogres?”
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1-1-9" class="outline-4">
+<h4 id="sec-1-1-9"><span class="section-number-4">1.1.9</span> The danger</h4>
+<div class="outline-text-4" id="text-1-1-9">
+<p>
+Nonetheless, there is a certain amount of “danger” necessary.
+</p>
+
+<p>
+Having someone trash your garden because you didn't stop him from
+coming into your neighbourhood, or ogres steal your furniture, or
+something making you unable to do things in the world are forms of
+“hurting” you that mean you have consequences of your actions, but you
+can't just “shoot him with a BFG-2000,” you need to find a way to
+“trick” him or convince him to somehow be beneficial.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-1-10" class="outline-4">
+<h4 id="sec-1-1-10"><span class="section-number-4">1.1.10</span> Major Point: Sidekicks</h4>
+<div class="outline-text-4" id="text-1-1-10">
+<p>
+The Sidekick model (bring along a player who hasn't registered
+themself; they share your inventory) might help lure more players in,
+particularly with the low barrier to start playing (Click this link in
+Firefox, and you're in the game now)
+</p>
+
+<p>
+With some  luck, that means  we could grow  the player base  better as
+people  use their  existing social  networks [literal  or digital]  to
+expose  the game  to more  people, particularly  kids. Tootsville  4's
+registration took about 4 minutes. This  brings it down to almost zero
+effort to join  in, if you know  an existing player. It  also makes me
+hope that  most new players  will see the  benefits of having  a guide
+with them, so we won't have to worry so much about tutorial needs.
+</p>
+
+<p>
+Bonus: marketing: “play the game with your kids” and so forth.
+</p>
+
+<p>
+Analogy:  “girlfriend   mode”  was  the  nickname   for  options  like
+<a href="http://zeldawiki.org/Tingle_Tuner">http://zeldawiki.org/Tingle_Tuner</a>  which allowed  a  second player  to
+“help” without having to “commit” to playing an 80-hour-long RPG.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-1-11" class="outline-4">
+<h4 id="sec-1-1-11"><span class="section-number-4">1.1.11</span> Major Point: Persistent World</h4>
+<div class="outline-text-4" id="text-1-1-11">
+<p>
+No instanced areas. Very little Adamantium construction.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-1-12" class="outline-4">
+<h4 id="sec-1-1-12"><span class="section-number-4">1.1.12</span> Major Failure: Monetization</h4>
+<div class="outline-text-4" id="text-1-1-12">
+<p>
+I have no solid idea how we could hope to make any money doing this.
+</p>
+
+<ul class="org-ul">
+<li>Selling items? But then, can't people cheat by buying things for
+USD$ rather than earning them in game?
+
+<ul class="org-ul">
+<li>Paying to clone an item that you have earned, e.g. if you have
+multiple characters? to give to a friend?  
+</li>
+
+<li>Cosmetic items only?  Charge them 50¢ to dye their clothing?
+</li>
+</ul>
+</li>
+
+<li>Subscription? :-P I doubt that could be a good idea.
+
+<ul class="org-ul">
+<li>Hibernation charge?  Protect your  character from entropy. Pay us
+$1 to freeze time when you're not logged in.  No need to mow your
+lawn. But: it breaks the  shared, persistent world model. Need an
+in-game excuse for this to work.
+</li>
+</ul>
+</li>
+
+<li>Merchandising
+</li>
+</ul>
+
+<p>
+There's no profit model
+</p>
+
+<p>
+OTOH, the hosting  costs should be pretty light and  it's a fun hobby,
+so  I'm  willing to  dump  a  certain amount  towards  it  for my  own
+amusement &amp;  my friends'; and,  maybe we  can sell enough  manuals and
+coffee mugs on Cafe Press to pay the hosting bill.
+</p>
+
+<p>
+There's not  much of a  marketing model,  which is why  Tootsville 1-4
+ultimately failed. “Word of mouth” takes longer than “pay your hosting
+bill” will accept.  The ideas of the Manifesto might  be unique enough
+that we could  luck out and get Slashdotted by  someone like Upworthy,
+but I wouldn't want to count on it.
+</p>
+
+<p>
+Without solving these  two, I wouldn't want to  accept any investment,
+meagre or  otherwise, because  it's being  built, realistically,  as a
+money pit.
+</p>
+
+<p>
+Perhaps getting someone to pay me (us)  to do this over again for them
+is the real profit model.
+</p>
+
+<p>
+Louis        wants         to        build         these        things
+<a href="http://resinteractive.com/portfolio.html">http://resinteractive.com/portfolio.html</a>  but who  would give  him the
+money with that track record?
+</p>
+
+<p>
+Maybe we get a better royalty split and a better revenue model (more
+adult players or more affluent players) and create something that's
+more marketable/profitable.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-1-2" class="outline-3">
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> The Team</h3>
+<div class="outline-text-3" id="text-1-2">
+</div><div id="outline-container-sec-1-2-1" class="outline-4">
+<h4 id="sec-1-2-1"><span class="section-number-4">1.2.1</span> Me! Bruce-Robert Fenn Pocock</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<p>
+designer and programmer and stuff. whatever is needed 
+</p>
+
+<p>
+Res co-owner
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-2-2" class="outline-4">
+<h4 id="sec-1-2-2"><span class="section-number-4">1.2.2</span> Gene Cronk</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<p>
+has volunteered to help with some sysop tasks (at least)
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-2-3" class="outline-4">
+<h4 id="sec-1-2-3"><span class="section-number-4">1.2.3</span> Erick Feiling</h4>
+<div class="outline-text-4" id="text-1-2-3">
+<p>
+may be interested in some hacking
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-2-4" class="outline-4">
+<h4 id="sec-1-2-4"><span class="section-number-4">1.2.4</span> Joseph Williamson</h4>
+<div class="outline-text-4" id="text-1-2-4">
+<p>
+may be interested in some hacking
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-2-5" class="outline-4">
+<h4 id="sec-1-2-5"><span class="section-number-4">1.2.5</span> Mark Mc Corkle</h4>
+<div class="outline-text-4" id="text-1-2-5">
+<p>
+may be interested in some hacking &amp; has good industry advice on 
+</p>
+
+<p>
+Res co-owner
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-2-6" class="outline-4">
+<h4 id="sec-1-2-6"><span class="section-number-4">1.2.6</span> Chris Brunner</h4>
+<div class="outline-text-4" id="text-1-2-6">
+<p>
+moral support
+</p>
+
+<p>
+also a Res co-owner
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-1-2-7" class="outline-4">
+<h4 id="sec-1-2-7"><span class="section-number-4">1.2.7</span> Testers</h4>
+<div class="outline-text-4" id="text-1-2-7">
+<p>
+Kittie,  Sage, Jess,  James,  Carly  + kids,  Meredith  + kids,  Megan
+Griffith, 
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-1-3" class="outline-3">
+<h3 id="sec-1-3"><span class="section-number-3">1.3</span> Rough plans</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+Violet Volts,  of course, is an  anagram for Tootsville V; so that
+name has got to go, because Louis decided to piss himself. Not
+shocking, but sad.
+</p>
+</div>
+
+<div id="outline-container-sec-1-3-1" class="outline-4">
+<h4 id="sec-1-3-1"><span class="section-number-4">1.3.1</span> No Tootsville?</h4>
+<div class="outline-text-4" id="text-1-3-1">
+<p>
+No Tootsville.
+</p>
+</div>
+
+<ol class="org-ol"><li>Plan B: Tortoises<br  /><div class="outline-text-5" id="text-1-3-1-1">
+<p>
+Conversation with Carly Robb:
+</p>
+
+<p>
+BRFP but, like I said, this is my hobby project, so I might as well
+     resurrect the thing.  and if not, maybe we'll use owls.
+     anybody using owls?
+</p>
+
+<p>
+CR hehe, you never know&#x2026;. not that i know of&#x2026;  owls are good&#x2026;
+</p>
+
+<p>
+BRFP or something else that's easy to draw :-) I like owls.
+     Big hats. Funny glasses.
+</p>
+
+<p>
+CR tortoises are nice too&#x2026;.
+</p>
+
+<p>
+BRPF Hmm.  true paint their shells difficult to dress as a spaceman?
+     I guess bipedal.
+</p>
+
+<p>
+CR and they're semi-elephantish with the stumpy legs&#x2026;  just give 'em
+     a helmet, they'll do fine&#x2026;.
+</p>
+
+<p>
+BRFP no real elbows to speak of.  makes animation easier.
+</p>
+
+<p>
+CR hehe
+</p>
+</div>
+</li></ol>
+</div>
+
+<div id="outline-container-sec-1-3-2" class="outline-4">
+<h4 id="sec-1-3-2"><span class="section-number-4">1.3.2</span> <span class="done DONE">DONE</span> awaiting answer from Louis Pecci&#xa0;&#xa0;&#xa0;<span class="tag"><span class="RES">RES</span></span></h4>
+<div class="outline-text-4" id="text-1-3-2">
+<p>
+Louis would “never” consider a free game offer. Oh, well, fuck him.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="done DONE">DONE</span> nag Louis a little&#xa0;&#xa0;&#xa0;<span class="tag"><span class="RES">RES</span></span><br  /><div class="outline-text-5" id="text-1-3-2-1">
+</div>
+</li></ol>
+</div>
+<div id="outline-container-sec-1-3-3" class="outline-4">
+<h4 id="sec-1-3-3"><span class="section-number-4">1.3.3</span> <span class="todo TODO">TODO</span> set up fucking Bugzilla and log tickets for all this shit</h4>
+<div class="outline-text-4" id="text-1-3-3">
+<p>
+instead of having it in a text file
+</p>
+</div>
+
+<ol class="org-ol"><li>Maybe Gene would “like” to do this ?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="GENE">GENE</span></span><br  /></li></ol>
+</div>
+</div>
+<div id="outline-container-sec-1-4" class="outline-3">
+<h3 id="sec-1-4"><span class="section-number-3">1.4</span> Core Design</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+Romance II server core. New  message queue based system, replacing the
+packet system from Quaestor; binary compiled Lisp, so much faster than
+Java; lots of nice stuff.
+</p>
+
+<p>
+I'm writing up a  rather exhaustive manual for that. I  hope to sell a
+few copies of the book. I'm even  trying to write some of the chapters
+up  like  academic papers;  I  hope  to circulate  them  individually,
+as well.
+</p>
+
+<p>
+The  real  reason  for  the  great manual,  though,  is  to  get  more
+contributors.  If  some  companies  start using  this  for  their  own
+MMO-RPG's, then, yay.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-5" class="outline-3">
+<h3 id="sec-1-5"><span class="section-number-3">1.5</span> Front-end: HTML5, pseudo-3D.</h3>
+<div class="outline-text-3" id="text-1-5">
+</div><div id="outline-container-sec-1-5-1" class="outline-4">
+<h4 id="sec-1-5-1"><span class="section-number-4">1.5.1</span> Partial 3D: “Diorama” style</h4>
+<div class="outline-text-4" id="text-1-5-1">
+<p>
+The  world itself  will  be largely  3D polygonal,  but  with lots  of
+"billboard" elements.  The opposite of  how FF-VII did it,  where they
+had painted backgrounds and 3D characters.
+</p>
+
+<p>
+If I  have to create new  avatars, they might be  low-poly 3D instead,
+and fuck the 2D part.
+</p>
+
+<p>
+The camera is permanently fixed looking  down, and to the "north." So,
+we never see the north-facing side  of anything, ever. This also means
+that the billboarded graphics won't look as silly.
+</p>
+
+<p>
+If I  could afford to recreate  everything in "real" 3D,  I'd consider
+it, but this seems like the  best "cheat" for now, and the performance
+should be  good even on  (for example)  cheap Android tablets.  But, I
+might have to  use a native (Java or binary)  client to get reasonable
+3D on them. Not sure yet.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> Consider buying a tablet<br  /><div class="outline-text-5" id="text-1-5-1-1">
+<p>
+like Ginny's kids have for testing.
+</p>
+
+<p>
+Some kind of 7-10" Android tab
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> 3D library<br  /><div class="outline-text-5" id="text-1-5-1-2">
+<p>
+I don't  give a shit  if it  works in MSIE,  although I guess  MSIE 10
+might be worth looking into someday.
+</p>
+
+<p>
+Want something for WebKit + Blink + Gecko though.
+</p>
+
+<p>
+WebGL is still kinda shitty. Sad panda.
+</p>
+
+<p>
+How good can I get without
+</p>
+
+<ul class="org-ul">
+<li>needing to spend a year in Blender to get shit done;
+</li>
+<li>requiring players to buy a $3,500 PC and reconfigure their video
+card to get the thing to load
+</li>
+<li>taking advanced math classes to figure out WTF is going on in the
+engine's API
+</li>
+</ul>
+</div>
+
+<ol class="org-ol"><li>GEGL<br  /><div class="outline-text-6" id="text-1-5-1-2-1">
+<p>
+So far, this looks like a winner.
+</p>
+
+<p>
+Not “married” to it, but it looks pretty good.
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> MSIE WebGL plug-in&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MSIE">MSIE</span>&#xa0;<span class="HELP">HELP</span></span><br  /><div class="outline-text-6" id="text-1-5-1-2-2">
+<p>
+I set up something that might help people install the plug-in, but
+haven't really tested it
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> Android/Chrome enabler help&#xa0;&#xa0;&#xa0;<span class="tag"><span class="HELP">HELP</span>&#xa0;<span class="ANDROID">ANDROID</span>&#xa0;<span class="CHROME">CHROME</span></span><br  /></li>
+
+<li><span class="done DONE">DONE</span> Opera desktop enabler help&#xa0;&#xa0;&#xa0;<span class="tag"><span class="HELP">HELP</span>&#xa0;<span class="OPERA">OPERA</span></span><br  /></li></ol>
+</li></ol>
+</div>
+<div id="outline-container-sec-1-5-2" class="outline-4">
+<h4 id="sec-1-5-2"><span class="section-number-4">1.5.2</span> UI Stuff</h4>
+<div class="outline-text-4" id="text-1-5-2">
+<p>
+The UI is JUST A UI. There's no real game-logic on the UI side, except
+for knowing how to interact with the user.
+</p>
+
+<p>
+If  I get  a  chance to  rewrite  it for  other  platforms, then,  all
+the better.
+</p>
+</div>
+
+<ol class="org-ol"><li>Basic Screen layout<br  /><div class="outline-text-5" id="text-1-5-2-1">
+<p>
+The UI  is all one-finger; we  look for taps/clicks, and  drags. Mouse
+buttons 2 &amp; 3 should be ignored for now (this includes trapping button
+3 so it can't throw up a context menu)
+</p>
+
+
+<p>
+In the four corners of the screen we have the four main controls:
+</p>
+
+<ul class="org-ul">
+<li>equipped item;  tap to  "use" it;  what that  means depends  on the
+item; also mapped to the Spacebar
+</li>
+
+<li>a "status"  icon to bring  up various things,  including inventory;
+also mapped to the Escape key and Tab key.
+
+<p>
+Probably  derived from  the equipment  icon but  with some  kind of
+player-avatar representation in it.
+</p>
+</li>
+
+<li>a "face/step"  control. Tap  once to  turn to  face a  direction (8
+ways); tap when already facing that way to take 1 step. Also mapped
+to  the  cursor   keys  and  the  numeric   keypad  (digits  except
+5). Basically meant  to look like a gamepad stick  and be easier to
+“tap”   to  move   in   narrow  spaces   or  turn-to-face   without
+actually walking.
+</li>
+
+<li>"Action"  control. Depends  on  context. Think  the  (A) button  in
+Ocarina  of Time.  Also mapped  to  Enter, Return,  or the  numeric
+keypad 5  key. A small "side"  icon (which jumps up  and takes over
+when you're near someone) is for "say something" all the time. (See
+"tap and talk") 
+</li>
+</ul>
+
+
+<p>
+For a11y we  may need/want to be  able to cluster these in  one or two
+corners,   also.  I   have  some   ideas  about   giving  pre-arranged
+re-arrangements for  this for  users who  (a) are  using a  tablet and
+holding it from  the bottom corners (thumby controls) and  (b) who are
+using some kind of pointer (say,  a trackball) where it's difficult to
+move  across  the  width  of  the   screen,  so  they  want  them  all
+combined together.
+</p>
+
+<p>
+Tap on the ground to move to a position, using pathfinding.
+</p>
+</div>
+</li>
+<li>Items and stuff<br  /><div class="outline-text-5" id="text-1-5-2-2">
+<p>
+"Usable  items" &#x2014;  you can  only  equip one  item to  the button  at
+a time.
+</p>
+
+<p>
+Items  can have  continuous (percentage-full)  or discrete  (countable
+number)  quantities associated  with them;  both  have a  "max" and  a
+"current" amount. This was done in Romance 1.1 as well.
+</p>
+
+<p>
+Items can be "targeted," "directed," or "directional," or "immediate."
+</p>
+
+<p>
+TARGETED:  Click  on   a  specific  entity  to   affect.  Click  item;
+click entity.  Entity should “highlight”  when mouse over  to indicate
+that it's eligible for selection. Gamepad: L-target then “Fire”
+</p>
+
+<p>
+DIRECTED: Click on a coördinate; tries  to affect that point in space,
+regardless  of  whether  there  is   any  entity  there.  Click  item;
+click  space.  Cursor  should  be  a “ball”  of  some  kind.  Gamepad:
+R-stick aim? 
+</p>
+
+<p>
+DIRECTIONAL:  Click   to  set  a  direction,   relative  to  yourself;
+e.g.  click up  top-left when  standing at  center screen  means, "aim
+north-westerly"  Click  item,  then   position  pointer  “around”  the
+character; should  maybe show a  vector moving parallel to  the ground
+plane in  the chosen direction  toward infinity to indicate  this mode
+of selection. Gamepad: R-stick aim?
+</p>
+
+<p>
+IMMEDIATE: Click to use, here, now. No second click.
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> Gamepad support?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="W3C">W3C</span>&#xa0;<span class="CHROME">CHROME</span></span><br  /><div class="outline-text-5" id="text-1-5-2-3">
+<p>
+There  looks   to  be  a   Gamepad  support  for   HTML5  supplemental
+recommendation,  but I  don't see  any  signs that  anybody is  really
+supporting it yet?
+</p>
+</div>
+</li></ol>
+</div>
+<div id="outline-container-sec-1-5-3" class="outline-4">
+<h4 id="sec-1-5-3"><span class="section-number-4">1.5.3</span> Server communication</h4>
+<div class="outline-text-4" id="text-1-5-3">
+<p>
+streaming, probably WebSockets; server should accept raw TCP too.
+</p>
+
+<p>
+Entities get tracks;  maybe we can use the CSS  animation functions in
+some  cases, which  is  nifty. (*no,  we can't,  in  WebGL things  are
+different)
+</p>
+
+<p>
+Aggregate  entities  (e.g.   character  +  costumes)  are  manipulated
+hierarchically; so if  I move the aggregate, the  parts move ensemble.
+Normal  behaviour for  OpenGL. Different  than what  I was  sending to
+Persephone, though, where Osiris was handling the subspace summing for
+the most part.
+</p>
+
+<p>
+Basically sending  sexp's, probably want  to use the  MongoDB protocol
+for the  wire protocol  this time  around, it's  pretty nice.  BSON, I
+think. It's Binary JSON. Just a little tighter.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-1-6" class="outline-3">
+<h3 id="sec-1-6"><span class="section-number-3">1.6</span> Navigation&#xa0;&#xa0;&#xa0;<span class="tag"><span class="NAV">NAV</span>&#xa0;<span class="PHYSICS">PHYSICS</span></span></h3>
+<div class="outline-text-3" id="text-1-6">
+<p>
+"walkable  spaces" are  totally different  in this  model, plus  we're
+going to have server-side physics, so there.
+</p>
+
+
+<p>
+"walkable"  surfaces =  defined  by interaction  of  character type  +
+surface;  always  must be  a  "real"  3D  surface (not  a  billboarded
+object); generally defines as  "navigable" "difficult" or "impassible"
+for the character; the client shouldn't need to know this stuff.
+</p>
+
+<p>
+The character will pathfind "navigable" before "difficult" usually.
+</p>
+
+<p>
+eg:  "navigable" terrain  = flat  earth. "difficult"  terrain =  loose
+sand, or steep incline uphill. "impassible"  might be a wall. They may
+be able to jump it, but they should usually walk around.
+</p>
+</div>
+
+
+<div id="outline-container-sec-1-6-1" class="outline-4">
+<h4 id="sec-1-6-1"><span class="section-number-4">1.6.1</span> Adrenaline, Exertion</h4>
+<div class="outline-text-4" id="text-1-6-1">
+<p>
+Character "adrenaline" v "exertion" scale similar to Skyward Sword. If
+you  start going  acrobatics (e.g.  navigating difficult  terrain) the
+"adrenaline" scale  goes up,  so you'll accept  the "penalty"  to your
+exertion scale and  use the more difficult route (e.g.  jumping over a
+small wall) rather than walking around.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-1-7" class="outline-3">
+<h3 id="sec-1-7"><span class="section-number-3">1.7</span> Equipment, Slots, Valences</h3>
+<div class="outline-text-3" id="text-1-7">
+<p>
+Some equipment are clothes. All clothes are equipment.
+</p>
+
+<p>
+Equipment can:
+</p>
+
+<ul class="org-ul">
+<li>have  a  passive effect;  simply  equipping  it  allows it  to  "do
+something"
+</li>
+
+<li>have  an active  effect; this  usually  means it  becomes the  item
+mapped to your "current item" button.
+</li>
+</ul>
+
+<p>
+Slots:  are  like  "shirt/chest"  "pants/groin"  "left  hand"  and  so
+forth. Items are only equippable in certain slots.
+</p>
+
+<p>
+Valences: Some  things can be stacked  within a slot. Like,  you could
+maybe have a character wearing
+</p>
+
+<ul class="org-ul">
+<li>body paint (pattern layer)
+</li>
+<li>pasties
+</li>
+<li>bra
+</li>
+<li>undershirt
+</li>
+<li>shirt
+</li>
+<li>waistcoast
+</li>
+<li>jacket
+</li>
+<li>overcoat
+</li>
+<li>cape
+</li>
+</ul>
+
+<p>
+… all of these taking the "shirt" slot. Some of them block other slots
+at the same valence though. Like, the  cape might have a hoot and thus
+extend into a "hat" slot. The "pattern" might cover the whole body. &amp;c
+</p>
+
+<p>
+The avatar "exports" its slots. The item "imports" them.
+</p>
+
+<p>
+Basic "DON/DOFF" commands.
+</p>
+
+<p>
+Hot-swap icon  for equipment on  a "swipe?"  Hide one icon  behind the
+other and "swipe" to swap them? worth considering.
+</p>
+
+<p>
+In real life it takes a second to swap items, so no worries if it does
+in the game, too.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-8" class="outline-3">
+<h3 id="sec-1-8"><span class="section-number-3">1.8</span> Server Model</h3>
+<div class="outline-text-3" id="text-1-8">
+<p>
+Multiple servers running lightweight containers
+</p>
+
+<p>
+Containers  win for  sharing  mmapped regions  of  RO content  between
+themselves  so we  don't lose  anything  if we  run multiple  "logical
+servers"  on  one  "physical"  (possibly   also  a  VM,  e.g.  Amazon)
+server.  And  we  just  design  each one  to  run  in  a  dead-minimal
+environment all by itself, no  worries about other services running on
+the same host.
+</p>
+
+<p>
+Game core itself  = monolithic executable that  sniffs its environment
+and command-line  to decide which task  to do on that  instance; thus,
+lots of shared  RO storage, and so  much of a game  server is overhead
+logic stuff that there isn't much of a ballooning either way.
+</p>
+
+
+<p>
+Message  Queue  =  leaning  toward ZeroMQ  or  RabbitMQ.  No  opinions
+yet. Need to research. Main question, which  is easier to set up for a
+dynamic  environment where  we  might spin  up  more server  instances
+(containers or hosts)
+</p>
+
+<p>
+DB = Postgres. Need to figure out a clustering solution.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-9" class="outline-3">
+<h3 id="sec-1-9"><span class="section-number-3">1.9</span> Dev Infrastructure&#xa0;&#xa0;&#xa0;<span class="tag"><span class="DEVEL">DEVEL</span></span></h3>
+<div class="outline-text-3" id="text-1-9">
+<p>
+Open source components <a href="http://github.com/romance-ii">http://github.com/romance-ii</a>
+</p>
+
+<p>
+Private stuff @ Raven:/pub/Software/ for now. Git also.
+</p>
+
+<pre class="example">
+git clone username@elysium.star-hope.org:/pub/Software/violet-volts ~/Projects/
+</pre>
+</div>
+
+<div id="outline-container-sec-1-9-1" class="outline-4">
+<h4 id="sec-1-9-1"><span class="section-number-4">1.9.1</span> <span class="todo TODO">TODO</span> Separate "assets" git tree.</h4>
+</div>
+
+<div id="outline-container-sec-1-9-2" class="outline-4">
+<h4 id="sec-1-9-2"><span class="section-number-4">1.9.2</span> <span class="todo TODO">TODO</span> set up Bugzilla&#xa0;&#xa0;&#xa0;<span class="tag"><span class="GENE">GENE</span></span></h4>
+<div class="outline-text-4" id="text-1-9-2">
+<p>
+Bugzilla &#x2013;  I can  set up the  config, but  it's a bit  of a  pain to
+build. Separate  Postgres instance  for hosting  its data,  versus the
+game; or at least its own schema, if it knows how to do that. (They're
+cool with pg these days, right?)
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-9-3" class="outline-4">
+<h4 id="sec-1-9-3"><span class="section-number-4">1.9.3</span> <span class="todo TODO">TODO</span> set up Koji&#xa0;&#xa0;&#xa0;<span class="tag"><span class="GENE">GENE</span></span></h4>
+<div class="outline-text-4" id="text-1-9-3">
+<p>
+Koji &#x2013;  argh. requires some  other infrastructure  to set it  up, but
+it's really what we need. If I can't get it running, I might fall back
+on Jenkins instead, but ick. Infrastructure like Kerberos.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-9-4" class="outline-4">
+<h4 id="sec-1-9-4"><span class="section-number-4">1.9.4</span> <span class="todo TODO">TODO</span> Postfix</h4>
+<div class="outline-text-4" id="text-1-9-4">
+<p>
+Mail server = Postfix.
+</p>
+
+<p>
+Eventually we'll want some automated mail handling stuff.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-9-5" class="outline-4">
+<h4 id="sec-1-9-5"><span class="section-number-4">1.9.5</span> <span class="todo TODO">TODO</span> static web server?</h4>
+<div class="outline-text-4" id="text-1-9-5">
+<p>
+Web (static) server  = flip a coin, nginx or  Apache? shouldn't matter
+much, the "fun" stuff will all be on the dynamic server anyways
+</p>
+
+<p>
+Might just say fuckall and use aserve or Hunchintoot and build it into
+the same executable …
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-1-10" class="outline-3">
+<h3 id="sec-1-10"><span class="section-number-3">1.10</span> Tap And Talk&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TAPNTALK">TAPNTALK</span></span></h3>
+<div class="outline-text-3" id="text-1-10">
+<p>
+Madlibs-style interface
+</p>
+
+<p>
+limited vocabulary
+</p>
+
+<p>
+map directly to logical assertions or queries
+</p>
+
+<p>
+separate content from language
+</p>
+
+<p>
+big issue = selecting nouns. lots of stuff to choose from, how to make
+it not take forever to bring up a concept?
+</p>
+
+<p>
+most-recently-used set will help
+</p>
+
+<p>
+but might need to "talk about"  things that are not in your inventory,
+far away, whatever; that will make them ornery to select
+</p>
+
+<p>
+if you haven't "heard of it," you can't talk about it.
+</p>
+
+<p>
+Shapir-Whorff Hypothesis in action for the AI's too.
+</p>
+</div>
+
+
+<div id="outline-container-sec-1-10-1" class="outline-4">
+<h4 id="sec-1-10-1"><span class="section-number-4">1.10.1</span> SINGING tortoises&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span></span></h4>
+<div class="outline-text-4" id="text-1-10-1">
+<p>
+Pick a voice and we'll run the dialogue through some kind of "note
+generator" so whenever you say the same word, it'll "sound"
+the same.
+</p>
+
+<p>
+Not English hashes like we had looked at before. I'll just take the
+conceptual tokens used in the AI and use them as indices to pick a
+starting and ending frequency and duration.
+</p>
+
+<p>
+Maybe MOD-style. Pitch-bend, duration, and pick a "sample" to play.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> What kinds of sounds do tortoises make?<br  /></li>
+
+<li><span class="todo TODO">TODO</span> sound in the browser<br  /><div class="outline-text-5" id="text-1-10-1-2">
+<p>
+How shitty is it? Is it as bad as I think it is?
+</p>
+
+<p>
+Might need to create a "sound rendering" server and stream this to
+the client.
+</p>
+
+<p>
+My initial tests at synthesizing music had “crackling” effects that I
+couldn't shake. Need to reconsider/re-evaluate this.
+</p>
+</div>
+</li></ol>
+</div>
+</div>
+<div id="outline-container-sec-1-11" class="outline-3">
+<h3 id="sec-1-11"><span class="section-number-3">1.11</span> <span class="todo TODO">TODO</span> Sound effects; foley&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span></span></h3>
+</div>
+<div id="outline-container-sec-1-12" class="outline-3">
+<h3 id="sec-1-12"><span class="section-number-3">1.12</span> <span class="todo TODO">TODO</span> background music&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span>&#xa0;<span class="MUSIC">MUSIC</span></span></h3>
+<div class="outline-text-3" id="text-1-12">
+</div><div id="outline-container-sec-1-12-1" class="outline-4">
+<h4 id="sec-1-12-1"><span class="section-number-4">1.12.1</span> <span class="todo TODO">TODO</span> Creative Commons music</h4>
+<div class="outline-text-4" id="text-1-12-1">
+<p>
+Look into pulling Creative Commons music en masse for the “radio”
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-1-13" class="outline-3">
+<h3 id="sec-1-13"><span class="section-number-3">1.13</span> Geography&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span></span></h3>
+<div class="outline-text-3" id="text-1-13">
+<p>
+There WILL be one big map. I'll probably run some noise generator over
+a sketched map to create a huge heightmap of the island.
+</p>
+</div>
+
+<div id="outline-container-sec-1-13-1" class="outline-4">
+<h4 id="sec-1-13-1"><span class="section-number-4">1.13.1</span> <span class="todo TODO">TODO</span> re-draw a non-Tootanga map.&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span>&#xa0;<span class="BRP">BRP</span></span></h4>
+</div>
+</div>
+<div id="outline-container-sec-1-14" class="outline-3">
+<h3 id="sec-1-14"><span class="section-number-3">1.14</span> Physics&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PHYSICS">PHYSICS</span></span></h3>
+<div class="outline-text-3" id="text-1-14">
+<p>
+Looks like it's Bullet.
+</p>
+
+<p>
+NB: this is handled server-side mostly, but the client will need/want
+to predict things also. Having the same library compiled two ways
+would be the optimal solution, of course.
+</p>
+</div>
+
+<div id="outline-container-sec-1-14-1" class="outline-4">
+<h4 id="sec-1-14-1"><span class="section-number-4">1.14.1</span> <span class="todo TODO">TODO</span> make new Lisp bindings, the old ones are kinda shitty</h4>
+</div>
+<div id="outline-container-sec-1-14-2" class="outline-4">
+<h4 id="sec-1-14-2"><span class="section-number-4">1.14.2</span> <span class="todo TODO">TODO</span> make a JavaScript binding?</h4>
+</div>
+</div>
+<div id="outline-container-sec-1-15" class="outline-3">
+<h3 id="sec-1-15"><span class="section-number-3">1.15</span> AI planners&#xa0;&#xa0;&#xa0;<span class="tag"><span class="AGENT">AGENT</span></span></h3>
+<div class="outline-text-3" id="text-1-15">
+<p>
+A-star Djikstra style (give or take)
+</p>
+
+<p>
+their "intelligence"  score is kinda  the number of steps  the planner
+evaluates per "turn"
+</p>
+
+<p>
+same I/O as players. only distinction P-C v NPC = where the I/O goes.
+</p>
+
+<p>
+temporal associative logic
+</p>
+
+<p>
+Andi-land style stuff
+</p>
+
+<p>
+conceptual trees for memory: when do they forget?
+</p>
+
+<p>
+when  do   they  "notice"   something?  &#x2014;  interests   trip  passive
+perception; active perception triggered on other events
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-16" class="outline-3">
+<h3 id="sec-1-16"><span class="section-number-3">1.16</span> Teams&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TEAMS">TEAMS</span></span></h3>
+<div class="outline-text-3" id="text-1-16">
+<p>
+loose thing
+</p>
+
+<p>
+really just a UI thing?
+</p>
+
+<p>
+any net effects? maybe passive items  activate for a whole team. (mass
+buff/debuff)
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-17" class="outline-3">
+<h3 id="sec-1-17"><span class="section-number-3">1.17</span> Buddy List?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="BUDDYLIST">BUDDYLIST</span></span></h3>
+<div class="outline-text-3" id="text-1-17">
+<p>
+eh. I really don't care.
+</p>
+
+<p>
+double-accept? (Facebook-style or Google+-style?)
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-18" class="outline-3">
+<h3 id="sec-1-18"><span class="section-number-3">1.18</span> Sidekick&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SIDEKICK">SIDEKICK</span></span></h3>
+<div class="outline-text-3" id="text-1-18">
+<p>
+Non-registered player-character shows up as "XXXX's friend"
+</p>
+
+<p>
+basically treated like a pet
+</p>
+
+<p>
+but  they share  the same  inventory, so  you have  to loan  them your
+clothes and tools.
+</p>
+
+<ul class="org-ul">
+<li>Zero barrier to entry to play
+</li>
+<li>Parents can bring their kids on or vice-versa
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1-19" class="outline-3">
+<h3 id="sec-1-19"><span class="section-number-3">1.19</span> Pets&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PETS">PETS</span></span></h3>
+<div class="outline-text-3" id="text-1-19">
+<p>
+follow you around, and stuff
+</p>
+
+<p>
+basically simpler AI's
+</p>
+
+<p>
+non-linguistic
+</p>
+
+<p>
+same as any other animal, but they "like" you a lot
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-20" class="outline-3">
+<h3 id="sec-1-20"><span class="section-number-3">1.20</span> Vehicles&#xa0;&#xa0;&#xa0;<span class="tag"><span class="VEHICLE">VEHICLE</span></span></h3>
+<div class="outline-text-3" id="text-1-20">
+<p>
+definitely want a  <b>high</b> speed rail network
+</p>
+
+<p>
+also revamp the idea of cars for both transportation and racing — the
+mechanic/inventor will invent them after we're online
+</p>
+
+<p>
+“walkable space” concept to keep cars only on the road
+</p>
+
+<p>
+“obey the crosswalk” magic gimmicks, like a teaching video; as soon as
+someone enters a crosswalk, they proceed across it without running,
+cars must stop.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-21" class="outline-3">
+<h3 id="sec-1-21"><span class="section-number-3">1.21</span> Passports&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PASSPORT">PASSPORT</span></span></h3>
+<div class="outline-text-3" id="text-1-21">
+<p>
+In Tootsville 2,  once you got invited  to a place, you  could go back
+there by clicking on your passport  icon, but we ditched or broke that
+concept pretty early on.
+</p>
+
+<p>
+Now  that you  can walk  across the  whole world,  though, maybe  once
+you've found  a train  station or  fountain in a  village you  can get
+your passport stamped  &#x2014; perhaps even have some  minigame type thing
+to get your stamp  &#x2014; and once your passport is  stamped, you can buy
+train tickets to go back there any time
+</p>
+
+<p>
+How about sidekicks? They must be able to come with you
+</p>
+</div>
+
+<div id="outline-container-sec-1-21-1" class="outline-4">
+<h4 id="sec-1-21-1"><span class="section-number-4">1.21.1</span> <span class="todo TODO">TODO</span> better name than “Passport”</h4>
+</div>
+</div>
+<div id="outline-container-sec-1-22" class="outline-3">
+<h3 id="sec-1-22"><span class="section-number-3">1.22</span> Compass; Metal Detector; Dowsing Rod&#xa0;&#xa0;&#xa0;<span class="tag"><span class="COMPASS">COMPASS</span></span></h3>
+<div class="outline-text-3" id="text-1-22">
+<p>
+Like in Zelda, give or take. Some kind of Compass, Metal Detector,
+and other item(s) that can be used to find certain types of prizes in
+the world. Dowsing Rod.
+</p>
+</div>
+
+<div id="outline-container-sec-1-22-1" class="outline-4">
+<h4 id="sec-1-22-1"><span class="section-number-4">1.22.1</span> <span class="todo TODO">TODO</span> develop the list of prizes and ways to search&#xa0;&#xa0;&#xa0;<span class="tag"><span class="COLLECTIONS">COLLECTIONS</span>&#xa0;<span class="COMPASS">COMPASS</span></span></h4>
+<div class="outline-text-4" id="text-1-22-1">
+<p>
+Not every collectible item needs to be detectable in the same way
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> The Story</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+“Why is it so dark?”
+</p>
+
+<p>
+“In the beginning, it is always dark. … This one grain of sand; it is
+all that is left of my vast empire.”
+</p>
+</div>
+
+<div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> The Back Story</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+A bunch of big tortoises found themselves on top of a magical
+elephant graveyard, which turned out to be a gateway to a special
+alternate dimension
+</p>
+
+<p>
+BLAH BLAH
+</p>
+
+<p>
+Somehow they mutated. Somehow, in a way that does not involve rats,
+little alien guys with no legs, or bank drive-through tubes full
+of jelly.
+</p>
+
+<p>
+Seriously, I want to be <b>very careful</b> to avoid any potential for
+comparison with the Teenage Mutant Ninja Turtles.
+</p>
+
+<p>
+BLAH BLAH
+</p>
+
+<p>
+So now, tortoises can cross through this one-way portal and find
+themselves in TODO WORLD-NAME
+</p>
+
+<p>
+Their birdy friends &#x2014; finches &#x2014; come along for the ride and serve
+as a mail service.
+</p>
+
+<p>
+A few other random critters might exist, but they're special-case
+one-off beasties with very specific jobs.
+</p>
+
+<p>
+The world is somehow TODO cloaked in some kind of impenetrable fog or
+something so that we have a natural barrier that gradually disappears
+as we (designers) add more terrain to the geography.
+</p>
+</div>
+
+<div id="outline-container-sec-2-1-1" class="outline-4">
+<h4 id="sec-2-1-1"><span class="section-number-4">2.1.1</span> <span class="todo TODO">TODO</span> world name</h4>
+</div>
+
+<div id="outline-container-sec-2-1-2" class="outline-4">
+<h4 id="sec-2-1-2"><span class="section-number-4">2.1.2</span> <span class="todo TODO">TODO</span> why can't you go everywhere?</h4>
+<div class="outline-text-4" id="text-2-1-2">
+<p>
+fog of war
+</p>
+
+<p>
+magic barrier
+</p>
+
+<p>
+edge of scroll radius doesn't really work in 3D
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Characters</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+There are a team of characters who provide the basic story-movement
+capabilities for the game designers. They'll have the most developed
+personalities and are regarded as being particularly “special” by all
+of the other AI's.
+</p>
+
+<p>
+They're also the original group that arrived first.
+</p>
+
+<p>
+These basic characters also serve as models that players can
+(hopefully) identify-with; and, by virtue of building their
+personality types, other characters will in turn be able to exhibit
+features of them.
+</p>
+
+<p>
+They're the archetypes, from which all AI's descend.
+</p>
+
+<p>
+They're intentionally based upon the models of how (we wish) players
+will interact with the world, thus by merely existing and
+participating, themselves, we'll see a continuous test of the game
+world's ability to withstand players.
+</p>
+
+<p>
+The current working models here have been drawn from the elemental
+system of Chinese astrology as well as various psychological
+documentation with a bit more scientific rigour; the various
+categories will likely be merged into fewer characters as we
+develop them.
+</p>
+
+<p>
+<a href="http://www.gamasutra.com/view/feature/6474/personality_and_play_styles_a_.php">http://www.gamasutra.com/view/feature/6474/personality_and_play_styles_a_.php</a>
+</p>
+
+<p>
+<a href="http://www.yukaichou.com/gamification-study/user-types-gamified-systems/">http://www.yukaichou.com/gamification-study/user-types-gamified-systems/</a>
+</p>
+</div>
+
+<div id="outline-container-sec-2-2-1" class="outline-4">
+<h4 id="sec-2-2-1"><span class="section-number-4">2.2.1</span> <span class="todo TODO">TODO</span> leader</h4>
+<div class="outline-text-4" id="text-2-2-1">
+<p>
+A Leader.
+</p>
+
+<p>
+The natural leader, capable of making a binding decision for
+everyone; a monarch, a benevolent-dictator-for-life, and the leader of
+the group; s/he takes everyone's opinions into account, but they
+accept his/her decisions as law.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-2" class="outline-4">
+<h4 id="sec-2-2-2"><span class="section-number-4">2.2.2</span> <span class="todo TODO">TODO</span> wacky inventor</h4>
+</div>
+
+<div id="outline-container-sec-2-2-3" class="outline-4">
+<h4 id="sec-2-2-3"><span class="section-number-4">2.2.3</span> <span class="todo TODO">TODO</span> earth person</h4>
+<div class="outline-text-4" id="text-2-2-3">
+<p>
+Most Earth-type people are trustful, steady, loyal and
+responsible. They are honest, religious, reliable, and keep
+their promises.
+</p>
+
+<p>
+The characteristics of Earth are standing still, being slow and
+steady, and stationary. Therefore the Earth people don't like to move
+their body and change their mind too often. They are honest,
+trustworthy, and responsible. They also have good faith. They can sit
+in one position for a long time. They accept religion since they like
+rumination and meditation. They are slow to react. They like to
+collect things, and enjoy their collectables at home, but
+not outdoors.
+</p>
+
+<p>
+People lacking Earth are selfish, insincere, and self-indulgent. They
+tend to ignore other people's opinions. They might take immediate
+advantage of others unethically. They don't care about the people
+around them and do not keep their promises.
+</p>
+
+<p>
+People with excess Earth are stubborn, inflexible, cheap, lonely,
+plain and simple. They cannot keep their word either. 
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-4" class="outline-4">
+<h4 id="sec-2-2-4"><span class="section-number-4">2.2.4</span> <span class="todo TODO">TODO</span> metal person</h4>
+<div class="outline-text-4" id="text-2-2-4">
+<p>
+Metal-type people are righteous, faithful, gallant and
+chivalrous. They like to know and help people.
+</p>
+
+<p>
+Metal is the substance in which internal particles squeeze and
+condense together. There is a force from the outside to the inside
+that keeps Metal hard. Metal reflects light, so it is shiny. It may
+have a clear sound when it's hit. Therefore, a Metal-type person has
+great strength, discipline and enough courage to aid needy people,
+which may make them famous.
+</p>
+
+<p>
+Metal people are brave, disciplined, trained, organized,
+authoritative, determinative, routine, firm, resolute and have an
+urge to win. They have a large sense of honor. They like to spread
+their fame. They are sensitive in grief and sadness.
+</p>
+
+<p>
+People that lack Metal are quiet, cautious and nervous. They tend to
+think too much, and cannot make quick decisions. They do not express
+what is on their minds in public, but will complain about
+something afterwards.
+</p>
+
+<p>
+People with excess Metal are often unkind and destructive. They are
+brave but may have no resourcefulness and no intelligence. They have
+little grace and no mercy. They do not keep secrets.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-5" class="outline-4">
+<h4 id="sec-2-2-5"><span class="section-number-4">2.2.5</span> <span class="todo TODO">TODO</span> water person</h4>
+<div class="outline-text-4" id="text-2-2-5">
+<p>
+Water-type people are smart, wise, frank, and resourceful. They have
+good memories and think before they leap.
+</p>
+
+<p>
+There are two types of Water: Floating Water and Still
+Water. Floating Water makes people active and restless and feel
+like traveling. Still Water makes people clam and peaceful.
+</p>
+
+<p>
+People lacking Water are unstable, cowardly, narrow-minded, and have
+no stamina. They lack intellect, good sense, understanding,
+and foresight. They also tend to keep changing their mind.
+</p>
+
+<p>
+People with excess Water are smart, sly, tricky and plot
+dark schemes. They like to move or travel around and have a
+sensual life. They are likely to dream too much, and keep changing
+their mind as well. They also are only interested in what concerns
+them and have no interest in outside world affairs.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-6" class="outline-4">
+<h4 id="sec-2-2-6"><span class="section-number-4">2.2.6</span> <span class="todo TODO">TODO</span> wood person</h4>
+<div class="outline-text-4" id="text-2-2-6">
+<p>
+Wood-type people are kind, steady, sympathy-sharing, understanding
+and gentle. They like to help people and make donations.
+</p>
+
+<p>
+The essence of Wood is a tree. The force inside the tree is like
+growing upward to the sky. Trees often compete with each other
+aggressively when growing up. Because of the characteristics of
+trees, Wood-type people are steadfast, organized, logical, practical,
+innovative, unique, assertive, fortitudinous, independent,
+challenging and direct. They like to plan things, take action, and go
+on adventures and challenges. They are perfectionists who tend to
+push themselves to the limit and seek out the best, and take first
+place in competition.
+</p>
+
+<p>
+When their ambition and optimism is overwhelming, Wood-types can
+become upset, nervous, unstable, impatient, intolerant, and lose
+their humor by the frustration of many obstacles.
+</p>
+
+<p>
+People lacking Wood essentially are weak in their opinions. They lack
+the determination to change their options when situations
+change. They are likely to be jealous when they don't have a strong
+viewpoint of their own.
+</p>
+
+<p>
+People with excess Wood are often inflexible, prejudiced and
+biased. They tend not to accept or absorb others' opinions.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-7" class="outline-4">
+<h4 id="sec-2-2-7"><span class="section-number-4">2.2.7</span> <span class="todo TODO">TODO</span> fire person</h4>
+<div class="outline-text-4" id="text-2-2-7">
+<p>
+A Fire-type person is courteous, eloquent, polite and
+expressive. They are good at compliments in speech.
+</p>
+
+<p>
+Fire people are energetic, artistic, passionate, easily excitable,
+and have a tendency to rapidly change emotional states as well as
+become aggressive. They love sensation, drama and sentiment. They
+seek joy, gratification and the attention of others. They like to be
+invited to a party and dislike being alone.
+</p>
+
+<p>
+People lacking Fire are aggressive but have no persistence. They are
+inclined to have little confidence and have plenty of worries.
+</p>
+
+<p>
+People with excess Fire are often talkative, overstated, overexcited,
+overheated, sweet-talking, smart and restless. They tend to lecture
+and offend others because of their short temper. 
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2-2-8" class="outline-4">
+<h4 id="sec-2-2-8"><span class="section-number-4">2.2.8</span> <span class="todo TODO">TODO</span> killer person</h4>
+<div class="outline-text-4" id="text-2-2-8">
+<p>
+Killers like to provoke and cause drama and/or impose them over other
+players in the scope provided by the virtual world. Trolls, hackers,
+cheaters, and attention farmers belong in this category, along with
+the most ferocious and skillful PvP (player versus player) opponents.
+</p>
+
+<p>
+Artisan/Killer: Finally, there are the Killers (or, as I prefer to
+call them, Manipulators). These can be difficult to understand in a
+gameplay context because most virtual worlds have encoded rules that
+marginalize their play style as "griefing" (i.e., upsetting other
+players) and try to prevent it. As Bartle puts it, "Killers get their
+kicks from imposing themselves on others." He also points out that
+Killers "wish only to demonstrate their superiority over
+fellow humans."
+</p>
+
+<p>
+This desire for power over everything in their world is most closely
+echoed in the Keirseian description of Artisans, who (as their
+temperament name suggests) delight in the skillfully artistic
+manipulation of their environment. The Artisan/Killers are the
+tool-users, the adrenaline junkies, the natural politicians, the
+combat pilots, the high-stakes gamblers, and the negotiators
+par excellence. They instinctively find and exploit advantages in any
+tactical situation, and they express this need for dominance of their
+world in order to retain the greatest amount of personal freedom
+possible (External Change).
+</p>
+
+<p>
+I believe a very good example of this can be found in Ryan
+Creighton's "social engineering" of the coin-collecting game at the
+Social Game Developers Rant of the 2011 Game Developers Conference. A
+Guardian/Achiever would have played by the rules and raced around the
+room begging others for their coins to try to win the game; an
+Idealist/Socializer would have asked for coins as a way to meet new
+people or help others win; and a Rational/Explorer would have sat
+quietly watching the flow of coin exchanges to try to understand the
+nature of the game. But an Artisan/Killer would instantly see how to
+short-circuit the designed system, and, as a born negotiator, would
+find it easy to persuade the person holding one of the bags of coins
+to hand the whole thing over&#x2026; which is exactly what happened.
+</p>
+
+<p>
+If the attendees needed to hear a rant from anyone, it would be the
+Manipulator who is out there, just waiting to exploit any opportunity
+to bring a little chaos to the carefully designed order of a
+social game. (See Ryan's description of the event for a wonderful
+first-hand account of gameplay from what appears to me to be a
+classic Artisan/Killer perspective.)
+</p>
+
+<p>
+A final note on the Keirsey/Bartle linkage: the Keirsey temperaments
+and Bartle Types may appear not to line up directly where attitudes
+toward other people are concerned. This is because the Bartle Types
+were developed within a multi-player environment, which selects for
+more extroverted, sociable gamers, while the temperaments include
+both extroverts and introverts.
+</p>
+
+<p>
+So, for example, the "Socializer" term that makes sense within the
+Bartle Types for its emphasis on interacting with other people can
+seem not to apply to an introverted Idealist who prefers to play
+single-player games. These less-social Socializers are more likely to
+prefer individualized entertainment or abstract games, making it
+difficult to distinguish them from Rational/Explorer gamers. Closer
+study is usually required to see whether their primary reason for
+playing is to feel good (an Idealist preference) or to exercise their
+thinking skills (a Rational goal).
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-9" class="outline-4">
+<h4 id="sec-2-2-9"><span class="section-number-4">2.2.9</span> <span class="todo TODO">TODO</span> achiever person</h4>
+<div class="outline-text-4" id="text-2-2-9">
+<p>
+Achievers are competitive and enjoy beating difficult challenges
+whether they are set by the game or by themselves. The more
+challenging the goal, the most rewarded they tend to feel.
+</p>
+
+<p>
+Guardian/Achiever: For the Guardian, the world is an insecure place,
+so it's necessary to protect oneself by accumulating material
+possessions&#x2026; just in case. Thus, Guardians focus on earning money,
+on competing with others for resources perceived as scarce, on buying
+nice things and maintaining them, on forming stable and hierarchical
+group relationships, and generally on working hard to make their
+place in the world secure by locking down their connections to the
+world as possessions (External Structure).
+</p>
+
+<p>
+Compare that to Bartle's description of Achievers: "Achievers regard
+points-gathering and rising in levels as their main goal" and
+"Achievers are proud of their formal status in the game's built-in
+level hierarchy, and of how short a time they took to reach it."
+Leveling up, leaderboards, and the accumulation of vast quantities of
+looted items are all behaviors that are driven more by a
+security-seeking motivation than by other motivations such as
+powerful sensations, understanding or self-growth.
+</p>
+
+<p>
+This explains why the Guardian/Achiever is willing to persist in long
+stretches of "grind" that other kinds of gamers don't perceive as fun
+at all. To this gamer, rewards should be proportional to the amount of
+effort invested. When a game is designed around simple, well-defined
+tasks that enable the competitive accumulation of status tokens, that
+game is virtually guaranteed to attract security-seeking
+Guardian/Achievers.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-10" class="outline-4">
+<h4 id="sec-2-2-10"><span class="section-number-4">2.2.10</span> <span class="todo TODO">TODO</span> explorer person</h4>
+<div class="outline-text-4" id="text-2-2-10">
+<p>
+Explorers like to explore the world – not just its geography but also
+the finer details of the game mechanics. These players may end up
+knowing how the game works and behave better than the game
+creators themselves. They know all the mechanics, short-cuts, tricks,
+and glitches that there are to know in the game and thrive on
+discovering more.
+</p>
+
+<p>
+Rational/Explorer: Rationals play in the same way that they do
+everything else &#x2013; they find pleasure in discovering the organized
+structural patterns behind raw data (Internal Structure). These can
+be patterns in space (as in geography) or patterns in time (as in
+morphology). Or they can be cause-and-effect patterns (entailment) or
+relationship patterns (connections). Ultimately, it's all about
+achieving a strategic understanding of the system as a whole thing.
+</p>
+
+<p>
+As Bartle describes Explorers: "The real fun comes only from
+discovery, and making the most complete set of maps in existence." Of
+the core motivations &#x2013; sensation-seeking, security-seeking,
+knowledge-seeking, and identity-seeking &#x2013; exploration as "discovery"
+is most closely aligned with the Rational's
+knowledge-seeking preference. For the Rational/Explorer, once the
+principle behind the data is revealed, that's enough &#x2013; understanding
+is its own reward. These gamers can enjoy imparting knowledge to
+others, but no extrinsic reward for doing so is needed or expected.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-11" class="outline-4">
+<h4 id="sec-2-2-11"><span class="section-number-4">2.2.11</span> <span class="todo TODO">TODO</span> socializer person</h4>
+<div class="outline-text-4" id="text-2-2-11">
+<p>
+Socializers are often more interested in having relations with the
+other players than playing the game itself. They help to spread
+knowledge and a human feel, and are often involved in the community
+aspect of the game (by means of managing guilds or role-playing, for
+instance).
+</p>
+
+<p>
+Idealist/Socializer: Socializers are described by Bartle as
+"&#x2026; interested in people, and what they have to
+say. &#x2026; Inter-player relationships are important &#x2026; seeing [people]
+grow as individuals, maturing over time. &#x2026; The only ultimately
+fulfilling thing is &#x2026; getting to know people, to understand them,
+and to form beautiful, lasting relationships."
+</p>
+
+<p>
+This is closely related to the Keirseian description of Idealists,
+who are very aware of other people as part of their lifelong journey
+of self-discovery (Internal Change). In a way, the highly imaginative
+Idealists are always roleplaying; they are constantly creating images
+of themselves (or others) that they feel they should model through
+their own actions in order to produce the emotions in themselves that
+they want to feel.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-12" class="outline-4">
+<h4 id="sec-2-2-12"><span class="section-number-4">2.2.12</span> <span class="todo TODO">TODO</span> conqueror person</h4>
+<div class="outline-text-4" id="text-2-2-12">
+<p>
+“I’ll beat any challenge”
+</p>
+
+<p>
+Play: Hard Agon
+Emotions: Anger/Fiero, (Fear?)
+Skills: Strategic, Tactical &amp; Logistical 
+</p>
+
+<p>
+The fiero-seeking Conqueror is the economic mainstay of the upper
+market of videogames, thriving on a diet rich in First
+Person Shooters. Challenge is the draw for this player – when the
+complaint “it was too easy” is heard, it is heard from a
+Conqueror. Fiero, the emotion of “triumph over adversity” requires
+that the player be put through the ringer, pushed to their limits,
+and as a result anger and (possibly) fear are likely to be
+related emotions. It is likely that Conquerors are younger on average
+than other players.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-13" class="outline-4">
+<h4 id="sec-2-2-13"><span class="section-number-4">2.2.13</span> <span class="todo TODO">TODO</span> manager person</h4>
+<div class="outline-text-4" id="text-2-2-13">
+<p>
+“I have to know how it works”
+</p>
+
+<p>
+Play: Complex Ludus, Agon
+Emotions: Contentment, Fiero
+Skills: Strategic 
+</p>
+
+<p>
+The strategic-minded manager is a complexity-seeking player. Games
+with many rules, including both strategy games, and certain cRPGs,
+are the mainstay of such a player, although adventure games will also
+be enjoyed by many. Although fiero is likely to be a theme, the
+Manager is less dependent upon this one emotion, and seeks the
+satisfaction of knowledge or mastery, expressed through the feeling
+of contentment. They can rack up serious hours on the games they
+really love.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-sec-2-2-14" class="outline-4">
+<h4 id="sec-2-2-14"><span class="section-number-4">2.2.14</span> <span class="todo TODO">TODO</span> wanderer person</h4>
+<div class="outline-text-4" id="text-2-2-14">
+<p>
+“Escape to another world”
+</p>
+
+<p>
+Play: Mimicry, Paidia
+Emotions: Wonder, Curiosity, (Fear?)
+Skills: Tactical &amp; Diplomatic?
+</p>
+
+<p>
+The escapist Wanderer seeks immersion in the sense of engagement with
+an imaginary world. Such a player enjoys the beauty of fantasy
+worlds, and is driven by a curiosity to see what is out there. Story
+(specifically characters) is a greater drive than challenge, and
+indeed the desire to know how the story ends may drive engagement
+with any game. Fear may be enjoyed for the experience, in the manner
+of a fairground spook house.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-15" class="outline-4">
+<h4 id="sec-2-2-15"><span class="section-number-4">2.2.15</span> <span class="todo TODO">TODO</span> participant person</h4>
+<div class="outline-text-4" id="text-2-2-15">
+<p>
+“Let’s play together”
+</p>
+
+<p>
+Play: Agon? Paidia?
+Emotions: Belonging, Amusement, Naches
+Skills: Any?
+</p>
+
+<p>
+The archetypal social player, the Participant doesn’t want to
+play alone. Although competition (agon) is enjoyed, it is enjoyed
+principally for the opportunity to be part of something taking place
+between people. The need to belong, to be part of something, is
+likely to be expressed most strongly with such a player.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-16" class="outline-4">
+<h4 id="sec-2-2-16"><span class="section-number-4">2.2.16</span> <span class="todo TODO">TODO</span> hoarder person</h4>
+<div class="outline-text-4" id="text-2-2-16">
+<p>
+“As much as I can get”
+</p>
+
+<p>
+Play: Mimicry, Ludus?
+Emotions: Greed, Contentment
+Skills: Logistical
+</p>
+
+<p>
+The logistically minded Hoarder cannot resist acquisition of
+game resources. Likely found playing equipment-heavy cRPGs, as well
+as MMORPGs, the Hoarder is a thorough player, gaining satisfaction
+(and hence contentment) from the completion of “stamp collections”
+and the like. When they finish a game, they usually find they have
+accumulated an absurd amount of equipment, ammunition or money.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-17" class="outline-4">
+<h4 id="sec-2-2-17"><span class="section-number-4">2.2.17</span> <span class="todo TODO">TODO</span> zoner person</h4>
+<div class="outline-text-4" id="text-2-2-17">
+<p>
+“Time has lost all meaning”
+</p>
+
+<p>
+Play: Simple Ludus, Alea, Ilinx?
+Emotions: Excitement, Relief
+Skills: Tactical 
+</p>
+
+<p>
+Puzzle games are the zoner’s remit – lost in the flow of an abstract
+game, they become intent upon the actions of the game they are
+playing to the exclusion of all else. However, as much as they love
+the games they play, they may not play for long period of
+times. Short games played often is the nature of the experience.
+</p>
+</div>
+</div>
+
+
+
+<div id="outline-container-sec-2-2-18" class="outline-4">
+<h4 id="sec-2-2-18"><span class="section-number-4">2.2.18</span> <span class="todo TODO">TODO</span> juggernaut</h4>
+<div class="outline-text-4" id="text-2-2-18">
+<p>
+“Knock ‘em down”
+</p>
+
+<p>
+Play: Easy Agon, Mimicry, Paidia
+Emotions: Amusement, Contentment, Excitement
+Skills: Tactical?
+</p>
+
+<p>
+The Juggernaut seeks a little resistance in the game they are
+playing, but mostly wants to push through everything with comparative
+(and amusing!) ease. A little excitement is desired, but the
+Juggernaut isn’t looking for the degree of challenge that would
+consistently supply fiero. Rather, they just want to play around –
+often completely dominating the game they are playing. For the
+Juggernaut, games aren’t about stress, they’re about unwinding. 
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-19" class="outline-4">
+<h4 id="sec-2-2-19"><span class="section-number-4">2.2.19</span> <span class="todo TODO">TODO</span> monster</h4>
+<div class="outline-text-4" id="text-2-2-19">
+<p>
+“Evil is my middle name”
+</p>
+
+<p>
+Play: Agon, Paidia
+Emotions: Schadenfreude, Amusement
+Skills: Strategic? Tactical 
+</p>
+
+<p>
+The emotion of schadenfreude – taking delight in the misfortune of
+others – drives the Monster. Mischief is their primary occupation –
+“griefing” of strangers in a MMOG, and playful annoyance when
+among friends. The Monster player is not interested in rules – except
+in so much as they can find new ways to break them.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-20" class="outline-4">
+<h4 id="sec-2-2-20"><span class="section-number-4">2.2.20</span> <span class="todo TODO">TODO</span> hotshot person</h4>
+<div class="outline-text-4" id="text-2-2-20">
+<p>
+“The thrill of the ride”
+</p>
+
+<p>
+Play: Ilinx, Mimicry
+Emotions: Excitement, Relief, (Fear?)
+Skills: Tactical
+</p>
+
+<p>
+The master of high speeds and nail biting rides, the Hotshot is the
+master of vertigo (ilinx). The ultimate payoff of victory (fiero)
+will be enjoyed, but it is the experience of being at the brink of
+control – the excitement (and perhaps fear) of being right on the
+edge that is the driving force. 
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-21" class="outline-4">
+<h4 id="sec-2-2-21"><span class="section-number-4">2.2.21</span> <span class="todo TODO">TODO</span> agon person</h4>
+<div class="outline-text-4" id="text-2-2-21">
+<p>
+<a href="http://onlyagame.typepad.com/only_a_game/2006/03/the_challenge_o.html">http://onlyagame.typepad.com/only_a_game/2006/03/the_challenge_o.html</a>
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-22" class="outline-4">
+<h4 id="sec-2-2-22"><span class="section-number-4">2.2.22</span> <span class="todo TODO">TODO</span> alea person</h4>
+<div class="outline-text-4" id="text-2-2-22">
+<p>
+<a href="http://onlyagame.typepad.com/only_a_game/2005/11/the_rituals_of_.html">http://onlyagame.typepad.com/only_a_game/2005/11/the_rituals_of_.html</a>
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-23" class="outline-4">
+<h4 id="sec-2-2-23"><span class="section-number-4">2.2.23</span> <span class="todo TODO">TODO</span> mimicry person</h4>
+<div class="outline-text-4" id="text-2-2-23">
+<p>
+<a href="http://onlyagame.typepad.com/only_a_game/2006/01/the_imagination.html">http://onlyagame.typepad.com/only_a_game/2006/01/the_imagination.html</a>
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-24" class="outline-4">
+<h4 id="sec-2-2-24"><span class="section-number-4">2.2.24</span> <span class="todo TODO">TODO</span> ilinx person</h4>
+<div class="outline-text-4" id="text-2-2-24">
+<p>
+<a href="http://onlyagame.typepad.com/only_a_game/2006/05/the_joy_of_ilin.html">http://onlyagame.typepad.com/only_a_game/2006/05/the_joy_of_ilin.html</a>
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-25" class="outline-4">
+<h4 id="sec-2-2-25"><span class="section-number-4">2.2.25</span> <span class="todo TODO">TODO</span> ludus person</h4>
+<div class="outline-text-4" id="text-2-2-25">
+<p>
+<a href="http://onlyagame.typepad.com/only_a_game/2006/04/the_complexity_.html">http://onlyagame.typepad.com/only_a_game/2006/04/the_complexity_.html</a>
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-2-26" class="outline-4">
+<h4 id="sec-2-2-26"><span class="section-number-4">2.2.26</span> <span class="todo TODO">TODO</span> paida person</h4>
+<div class="outline-text-4" id="text-2-2-26">
+<p>
+<a href="http://onlyagame.typepad.com/only_a_game/2005/12/the_anarchy_of__1.html">http://onlyagame.typepad.com/only_a_game/2005/12/the_anarchy_of__1.html</a>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-3" class="outline-3">
+<h3 id="sec-2-3"><span class="section-number-3">2.3</span> Non-Tortoise Characters</h3>
+<div class="outline-text-3" id="text-2-3">
+</div><div id="outline-container-sec-2-3-1" class="outline-4">
+<h4 id="sec-2-3-1"><span class="section-number-4">2.3.1</span> The Mockingbird</h4>
+<div class="outline-text-4" id="text-2-3-1">
+<p>
+The Parrot is a “village elder” who gives advice to new players.
+This is the tutorial section also.  New players come in throught the
+portal and have to follow the mockingbird's instructions to
+get through.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> name him<br  /></li></ol>
+</div>
+<div id="outline-container-sec-2-3-2" class="outline-4">
+<h4 id="sec-2-3-2"><span class="section-number-4">2.3.2</span> Finches</h4>
+<div class="outline-text-4" id="text-2-3-2">
+<p>
+The Finches travel around spreading whatever news we (admins) want
+them to.  They're the Town Criers and also deliver
+mail/packages.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> need a list of names<br  /><div class="outline-text-5" id="text-2-3-2-1">
+<p>
+I'm tempted to get themey and use, say, famous literary figures' names
+</p>
+</div>
+</li></ol>
+</div>
+<div id="outline-container-sec-2-3-3" class="outline-4">
+<h4 id="sec-2-3-3"><span class="section-number-4">2.3.3</span> <span class="todo TODO">TODO</span> The Big Bad</h4>
+<div class="outline-text-4" id="text-2-3-3">
+<p>
+The Big Bad wants  to do something cataclysmic to seek power for
+himself, but is never seen ; 
+</p>
+
+<p>
+He gives “gifts” to his minions
+</p>
+
+<p>
+Probably the source of the thing that obstructs access to most of the map
+</p>
+
+<p>
+Now he's a boogeyman, never seen; like Sauron, he lurks in the (TODO)
+region and marshalls his forces without ever being seen, himself. All
+of the characters fear the day that The Big Bad shows up again; they
+don't know if he's regaining his evil magic as fast as they've been
+building up their skills
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-3-4" class="outline-4">
+<h4 id="sec-2-3-4"><span class="section-number-4">2.3.4</span> <span class="todo TODO">TODO</span> the polluter</h4>
+<div class="outline-text-4" id="text-2-3-4">
+<p>
+Goal  is to  pollute the world,  he leaves trash  around that
+players need to wash up.
+</p>
+
+<p>
+Very much Super Mario Sunshine. Sorry, Nintendo. 
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-3-5" class="outline-4">
+<h4 id="sec-2-3-5"><span class="section-number-4">2.3.5</span> <span class="todo TODO">TODO</span> the mail thief</h4>
+<div class="outline-text-4" id="text-2-3-5">
+<p>
+tries to steal the mail and such, but if he gets caught, he'll drop
+what he's taken. Otherwise, he'll take the packages and stash them in
+various places throughout the world.
+</p>
+
+<p>
+Players “catching” him will “free” up whatever packages he's stolen
+but not yet hidden; the hidden things will be in trapped boxes.
+Recovered, stolen goods should be dropped into any mailbox for
+re-delivery.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-4" class="outline-3">
+<h3 id="sec-2-4"><span class="section-number-3">2.4</span> Currency&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MONEY">MONEY</span></span></h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+Need to come up with something to use for currency.
+</p>
+
+<p>
+Scottish Pounds in the underwater area. Manatee money is only for
+manatees. Teach them to deal with currency exchanges.
+</p>
+
+<p>
+No money on the space station. Totally socialist.
+</p>
+
+<p>
+When you "own" something like a house people know it's yours
+</p>
+
+<p>
+if you drop other shit in public you might be littering or it might be
+civic improvement —
+</p>
+</div>
+
+<div id="outline-container-sec-2-4-1" class="outline-4">
+<h4 id="sec-2-4-1"><span class="section-number-4">2.4.1</span> <span class="todo TODO">TODO</span> how do the AI's decide?</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<p>
+if you drop other shit in public you might be littering or it might be
+civic improvement —
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Minigames</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Note, none of these are pop-up minigames or whatever. They're just
+things to do in the game with the same interface as any other things.
+</p>
+</div>
+
+<div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Football Core&#xa0;&#xa0;&#xa0;<span class="tag"><span class="FOOTBALL">FOOTBALL</span></span></h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Basic  core that  we can  use different  rules variations  easily for:
+soccer,  volleyball, baseball  or  softball  or kickball,  basketball,
+possibly miniature golf or croquet, …
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> House and Lot&#xa0;&#xa0;&#xa0;<span class="tag"><span class="HOUSE">HOUSE</span></span></h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Lots: Miami-style. Each village has a  town square with a main Ave and
+a main St that are analogous to 0 Ave / 0 St
+</p>
+
+<p>
+Streets run E-W and have numbers running north or south.
+</p>
+
+<p>
+Avenues run N-S and have numbers running east or west
+</p>
+
+<p>
+Buy a lot and build a house on it
+</p>
+
+<p>
+Build more rooms and decorate the yard
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> The Mazes&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAZE">MAZE</span></span></h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+Originally planned for Tootsville IV, but we never got decent art and
+then the client-side support blew up. Yay Sam.
+</p>
+
+<p>
+Mazes exist as:
+</p>
+
+<ul class="org-ul">
+<li>lilypads across the lake near the treehouses where the finches live
+</li>
+
+<li>lava floes in the caves into the Lost World
+</li>
+
+<li>under The Manor, Venetian theme; Venice, Roman catacombs, or the
+Temple Of The Gods in Wind Waker.
+</li>
+
+<li>The Manor maybe also a hedge maze
+</li>
+
+<li>something like a maze around the Ranch?
+</li>
+
+<li>going down hamster tubes on the space station
+</li>
+
+<li>traversing a Coral Reef near the Manatee village &#x2026;
+</li>
+</ul>
+
+
+<p>
+The Maze areas are made up of “tile”-like objects that are either
+“positive” (places one <b>can</b> walk) or “negative” (one can only walk
+where they are <b>not</b>); e.g. lilypads are a positive-space maze; hedge
+mazes are negative-space; lava floes might be a combination of both,
+with positive-space islands amid negative-space lava amid
+positive-space.
+</p>
+
+<p>
+Before a space transitions, there's an obvious transitional state;
+e.g. lily pads partially submerged/arisen.
+</p>
+
+<p>
+Some spaces may be “dangerous” and reset the player to something like
+the start of the maze, but will have obvious “hints” to warn the
+player of this.
+</p>
+
+<p>
+Over time, the dynamic stepping stones are changed slightly: one
+might appear or disappear randomly.
+</p>
+
+<p>
+Stones won't disappear or become dangerous while someone is
+standing upon them?
+</p>
+
+<p>
+Keys and locked doors (of whatever kinds) may exist in each maze
+</p>
+
+<pre class="example">
+The Locked Door can only be opened if the player possesses the
+Key Pivitz and is standing nearby to it, within a
+predefined area. Once unlocked, the Key is "destroyed" [but
+therefore can be obtained again], and the door remains unlocked
+[and passable] as long as the player remains nearby. Once the
+player leaves the area [either by walking away or walking through
+the door], the door locks again, requiring someone [same or other
+player] find the Key to the door again.
+</pre>
+
+<p>
+doors can also be teleports
+</p>
+
+<pre class="example">
+The exits from each room re-enter other maze rooms more-or-less
+at random: they are not laid out in a grid, and walking back
+through the same door may not return you to the same room. Doors
+may change where they go over time, perhaps daily or hourly.
+</pre>
+
+<p>
+Possible alternate Key/Lock mechanism might be to obtain a Key and
+require it to go to a Lock elsewhere in the maze, which then opens a
+door distant from the lock for a given time (say, 5 minutes or
+so).
+</p>
+
+<p>
+NPC hinting, per the old Tootsville IV plan it went like
+</p>
+
+<pre class="example">
+A Super Toot Bot will stand just inside the entrance from the
+Castle with a short phrasebook explaining the basic rules, e.g.:
+    The maze is changing all the time.
+    If you can find the key, there's a prize behind the
+    locked door.
+    Watch out for slippery stones or you might be sent to
+    Shaddow Falls!
+    If you get lost, use your Compass to escape.
+    Run away if you see The Big Bad! He'll steal your peanuts!
+</pre>
+
+<p>
+Upsides: serves puzzle-solving players; fairly good replayability
+</p>
+
+<p>
+Downsides: requires new assets [prizes, rooms] to be added from time
+to time.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Cleaning up after Smudge</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+Vacuum (?) up stains left by Smudge
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-5" class="outline-3">
+<h3 id="sec-3-5"><span class="section-number-3">3.5</span> Tower Defense Picnic</h3>
+<div class="outline-text-3" id="text-3-5">
+<p>
+One idea: columns of ants marching in. The "towers" throw
+ant-foodstuffs at them: seeds and such. When the ants have "absorbed"
+enough "hit points" [carbs?] worth of food, they turn around and
+march peacefully away. "Sated" ants change colors and move faster;
+they're not targeted by the weapons.
+</p>
+
+<p>
+The player's "base," then, is a picnic basket, with a certain number
+of peanuts in it. As the ants successfully take peanuts, they are
+"sated" and rush off screen. Once the entire picnic has been stolen
+by the ants, the game ends.
+</p>
+
+<p>
+Since kids crave closure, we could have the game "end" after a
+certain number of rounds.
+</p>
+
+<p>
+This could be done now [Nightmare] as a minigame, or later [Osiris]
+as an in-world game. 
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-6" class="outline-3">
+<h3 id="sec-3-6"><span class="section-number-3">3.6</span> Digging Game</h3>
+<div class="outline-text-3" id="text-3-6">
+<p>
+This was a knock-off of Astro-Pop.
+</p>
+
+<p>
+Basically:
+</p>
+
+<p>
+Move spaceship left or right across bottom of board.
+</p>
+
+<p>
+Use "tractor beam" to pull down blocks which are the same
+color. Collect blocks from one or more columns, then push them back
+into another column by dropping them.
+</p>
+
+<p>
+When enough blocks of the same colour collide, they "pop," and trigger
+any adjacent special blocks to drop their prizes as well.
+</p>
+
+<p>
+Note that the implementation of the pattern-search for the blocks
+array was something that PopCap? did very badly in their first
+implementation of this game, so we should watch out for "gotchas"
+in that.
+</p>
+
+<p>
+We could probably invert the screen vertically and have this as a
+digging game. The blocks would be various chunks of earth; moving them
+together causes little "cave ins." The prizes are carried up out of
+the earth by grateful bugs [earthworms, ladybirds, etc.] to the player
+walking across a scaffold at the top of the screen. The players could
+them collect a certain type of prizes as a goal, once they receive
+enough of these [gems?] they could move on to a higher level.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-7" class="outline-3">
+<h3 id="sec-3-7"><span class="section-number-3">3.7</span> Zuma/Luxor concept</h3>
+<div class="outline-text-3" id="text-3-7">
+<p>
+Games like "Zuma," include the popular "Luxor" clone, we could easily
+produce one of these.
+</p>
+
+<p>
+The only difficulties we had in production of Zuma from PopCap? were:
+asynchronous ball-rolling animations in the axis of forward travel
+tended to cost a lot of CPU power; we went to a synchronous, general
+animation for the seat-back systems; and the tunnels code gave
+me trouble.  
+</p>
+
+<p>
+Oh, wait, we're 3D now. Squelch that.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-8" class="outline-3">
+<h3 id="sec-3-8"><span class="section-number-3">3.8</span> Insaniquarium-inspired fish pond?</h3>
+<div class="outline-text-3" id="text-3-8">
+<p>
+"Feed fish; fight aliens."
+</p>
+
+<p>
+The bear kids were stoned or something, but it's an addictive
+format. We should probably rework it into something other than an
+aquarium, of course.
+</p>
+
+<p>
+Basically, you drop fish-food into the tank, to feed the fish, who in
+turn both grow, and crap out gold coins. Clicking coins collects them,
+to give you money, to buy more fish [and some other helpful creatures
+that assist in feeding and collecting coins].
+</p>
+
+<p>
+From time to time, aliens beam into the tank, and you click on them
+to LASER them until they explode back to their alien universe.
+</p>
+
+<p>
+Both aliens and larger fish eat the smaller fish.
+</p>
+
+<p>
+The object, naturally, is to have your fish survive for as long
+as possible. 
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-9" class="outline-3">
+<h3 id="sec-3-9"><span class="section-number-3">3.9</span> Mail&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAIL">MAIL</span></span></h3>
+<div class="outline-text-3" id="text-3-9">
+<p>
+Leave mail in mailboxes; finches distribute
+</p>
+
+<p>
+Write messages, wrap parcels
+</p>
+
+<p>
+monsters tries to steal them
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-10" class="outline-3">
+<h3 id="sec-3-10"><span class="section-number-3">3.10</span> Luigi's Mansion?</h3>
+</div>
+<div id="outline-container-sec-3-11" class="outline-3">
+<h3 id="sec-3-11"><span class="section-number-3">3.11</span> Platformer areas</h3>
+</div>
+<div id="outline-container-sec-3-12" class="outline-3">
+<h3 id="sec-3-12"><span class="section-number-3">3.12</span> the spaceship game&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SPACESHIPS">SPACESHIPS</span></span></h3>
+<div class="outline-text-3" id="text-3-12">
+<p>
+used to be called Zap's spaceship battle or something
+</p>
+
+<p>
+Let's make it into “asteroids”
+</p>
+
+<p>
+When there aren't human players, some robots will have to jump in, to
+keep the space station from being damaged by the never-ending barrage
+of falling rocks and space junk
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-13" class="outline-3">
+<h3 id="sec-3-13"><span class="section-number-3">3.13</span> Dangerous areas: The Big Bad</h3>
+<div class="outline-text-3" id="text-3-13">
+<p>
+On a pseudorandom schedule, The Big Bad will appear in one of the maze
+rooms and steal peanuts from all players who don't flee fast
+enough, e.g.:
+</p>
+
+<ul class="org-ul">
+<li>The Big Bad appears
+</li>
+<li>Tendrils weather sets in
+</li>
+<li>"Hahaha! I'll steal # peanuts from you all!"
+</li>
+<li>Wait for # seconds
+</li>
+<li>steal peanuts [#givenuts -# @room]
+</li>
+<li>The Big Bad vanishes
+</li>
+<li>Repeat randomly every 2 hours or so
+</li>
+</ul>
+
+<p>
+Consideration: Perhaps not The Big Bad himself. I don't want to introduce
+the character too early and end up making him a mere nuisance.
+</p>
+
+<p>
+Perhaps having Targ or Welduh or something do this kind of harassment
+makes more sense.
+</p>
+
+<p>
+Allowing some use of Wishes to stop them would be good
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Places&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span></span></h2>
+<div class="outline-text-2" id="text-4">
+</div><ol class="org-ol"><li><span class="todo TODO">TODO</span> map<br  /></li>
+
+<div id="outline-container-sec-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Downtown</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Tortoise St and James Ave
+</p>
+</div>
+
+<div id="outline-container-sec-4-1-1" class="outline-4">
+<h4 id="sec-4-1-1"><span class="section-number-4">4.1.1</span> Main plaza</h4>
+<div class="outline-text-4" id="text-4-1-1">
+</div><ol class="org-ol"><li>The shopping area&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SHOP">SHOP</span></span><br  /><div class="outline-text-5" id="text-4-1-1-1">
+<p>
+From 2009, I wrote:
+</p>
+
+<p>
+9.6 Shopping
+</p>
+
+<ul class="org-ul">
+<li>Shopping is  now an  in-world action.  If desired,  storekeepers can
+even be conversant NPC:s.
+</li>
+
+<li>Players can walk  through shops and view items on  shelves, and then
+purchase them by  clicking on the items and choosing  to buy them or
+not. When clicked upon, store items  will pop up a detail sub-window
+similar to the previous “web catalog” views.
+</li>
+
+<li>This gains  us the  additional psychological advantage  that players
+will  literally see  “everything” for  sale, rather  than only  ever
+seeing a few items at a time. This makes the shops look much bigger,
+even though  from an artwork perspective  we only need to  draw [and
+then replicate] a couple of “shelves” graphics.
+</li>
+
+<li>None  of the  shopping  functions require  special  handling on  the
+client side, since  the stores are just ordinary 3D  rooms with some
+special logic  on the server  side to handle purchasing  items [and,
+possibly, speaking with the clarks at the stores].
+</li>
+</ul>
+
+<p>
+We didn't really live up to it at the time, but the examples of
+actually trying to do so in Tootsville (like Capes &amp; Cowls) seemed to
+validate the statement.
+</p>
+</div>
+</li>
+<li>Restaurants<br  /><div class="outline-text-5" id="text-4-1-1-2">
+<p>
+a few of these.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> Cooking&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-1-2-1">
+<p>
+Cooking game, like Cooking Mama.
+</p>
+
+<p>
+Baking  Mama. 
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> Waiting Tables&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-1-2-2">
+<p>
+Waiting tables game, like Diner Dash
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> Washing Dishes&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-1-2-3">
+<p>
+Washing dishes game
+</p>
+</div>
+</li></ol>
+</li>
+<li>Train station&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TRAINS">TRAINS</span></span><br  /><div class="outline-text-5" id="text-4-1-1-3">
+<p>
+main station
+</p>
+</div>
+</li>
+<li>Theater<br  /><div class="outline-text-5" id="text-4-1-1-4">
+<p>
+The Theater …  will need some ideas here, but  Archive.org and &lt;video&gt;
+might   be  a   cool   fit,  if   we   can  overcome   browser-related
+issues. Running old cartoons and such.
+</p>
+
+<p>
+Yes, this is the same idea I used for Tootsville when Louis's
+original content didn't come through, so it's kinda “been there, done
+that,” but it <b>is</b> an idea.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> Video "recording"?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-1-4-1">
+<p>
+What if players could act out scenes on a soundstage and record them,
+and then enter a contest of some kind to have their videos
+posted here?
+</p>
+
+<p>
+Kinda rehashes something the Tootsville players had "invented" on
+their own.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> YouTube?<br  /><div class="outline-text-7" id="text-4-1-1-4-1-1">
+<p>
+It's even possible we could share out the "best of" to YouTube.
+</p>
+</div>
+</li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> Video playback?<br  /><div class="outline-text-6" id="text-4-1-1-4-2">
+<p>
+Tech issues? &lt;VIDEO&gt; element support, transcoding, bandwidth
+</p>
+</div>
+</li></ol>
+</li>
+<li>Inventor's Shop<br  /><div class="outline-text-5" id="text-4-1-1-5">
+<p>
+crazy Rube Goldberg physics engine tests
+</p>
+</div>
+</li>
+<li>Fairgrounds<br  /><div class="outline-text-5" id="text-4-1-1-6">
+<p>
+for events
+</p>
+</div>
+</li>
+
+<li>Hall Of Heroes<br  /><div class="outline-text-5" id="text-4-1-1-7">
+<p>
+statues for famous players?
+</p>
+</div>
+</li>
+<li>Spaceport<br  /><div class="outline-text-5" id="text-4-1-1-8">
+<p>
+the launch/landing pads for rockets to the space station are here
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> Launch minigame&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-1-8-1">
+<p>
+minigame to help run the countdown from Mission Control; if you fail,
+the rocket launch will abort and you'll have to wait for them to
+refuel; nobody else can go to the space station until the next launch
+window
+</p>
+</div>
+</li></ol>
+</li></ol>
+</div>
+<div id="outline-container-sec-4-1-2" class="outline-4">
+<h4 id="sec-4-1-2"><span class="section-number-4">4.1.2</span> School?</h4>
+<div class="outline-text-4" id="text-4-1-2">
+<p>
+need some actual contents here
+</p>
+
+<p>
+walk the halls
+</p>
+
+<p>
+get a locker
+</p>
+
+<p>
+take a class…
+</p>
+
+<p>
+honour roll?
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> design classes&#xa0;&#xa0;&#xa0;<span class="tag"><span class="RESEARCH">RESEARCH</span>&#xa0;<span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-2-0-1">
+<p>
+actual minigames based on learning things in classes
+</p>
+
+<ul class="org-ul">
+<li>maths: basic arithmetic, fractions
+</li>
+
+<li>money handling (US currency, coins, arithmetic)
+</li>
+
+<li>basic physics: simple tools and such (lever, plane, pulley)
+</li>
+
+<li>English grammar and vocabulary (?)
+</li>
+
+<li>Spanish vocabulary
+</li>
+
+<li>penmanship? tough sell with a mouse but OK on touchscreens or so
+forth, but will require deeper level coöperation with the front-end
+</li>
+
+<li>drama class? Acting out simple plays? shadowcasting?
+</li>
+
+<li>very simple real world history/geography. Where is Rome? Where was
+the Roman Empire? Where was Alexander's Empire? Who were the
+Ancient Egyptians?
+</li>
+</ul>
+</div>
+</li></ol>
+</div>
+<div id="outline-container-sec-4-1-3" class="outline-4">
+<h4 id="sec-4-1-3"><span class="section-number-4">4.1.3</span> Sports Arena</h4>
+<div class="outline-text-4" id="text-4-1-3">
+</div><ol class="org-ol"><li><span class="todo TODO">TODO</span> Soccer game&#xa0;&#xa0;&#xa0;<span class="tag"><span class="FOOTBALL">FOOTBALL</span>&#xa0;<span class="MINIGAME">MINIGAME</span></span><br  /></li>
+
+<li><span class="todo TODO">TODO</span> Baseball game&#xa0;&#xa0;&#xa0;<span class="tag"><span class="FOOTBALL">FOOTBALL</span>&#xa0;<span class="MINIGAME">MINIGAME</span></span><br  /></li>
+
+<li><span class="todo TODO">TODO</span> Archery?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span><br  /></li>
+
+<li><span class="todo TODO">TODO</span> Track?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-3-0-4">
+<p>
+(tough sell. speed stats?)
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> Relay race?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-3-0-5">
+<p>
+(maybe better than track)
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> Mini Golf!&#xa0;&#xa0;&#xa0;<span class="tag"><span class="FOOTBALL">FOOTBALL</span>&#xa0;<span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-3-0-6">
+<p>
+Based on the football model; but knock the ball through various
+obstacles 
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> Kids' Calisthenics&#xa0;&#xa0;&#xa0;<span class="tag"><span class="RESEARCH">RESEARCH</span>&#xa0;<span class="MINIGAME">MINIGAME</span></span><br  /><div class="outline-text-6" id="text-4-1-3-0-7">
+<p>
+teach them useful stuff. I dunno. VAGUE idea.
+</p>
+
+<p>
+Tag or Kick the Can or so forth
+</p>
+
+<p>
+interval training?
+</p>
+</div>
+</li></ol>
+</div>
+</div>
+<div id="outline-container-sec-4-2" class="outline-3">
+<h3 id="sec-4-2"><span class="section-number-3">4.2</span> The Beach</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+Peninsula to the south, around the bay of TODO, where the Manatees live
+</p>
+
+<p>
+Note: tortoises can swim.
+</p>
+</div>
+
+<div id="outline-container-sec-4-2-1" class="outline-4">
+<h4 id="sec-4-2-1"><span class="section-number-4">4.2.1</span> <span class="todo TODO">TODO</span> Volleyball&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></h4>
+<div class="outline-text-4" id="text-4-2-1">
+<p>
+Volleyball game: Character  keeps score, join a team and  play a game,
+same as soccer and baseball basically
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4-2-2" class="outline-4">
+<h4 id="sec-4-2-2"><span class="section-number-4">4.2.2</span> <span class="todo TODO">TODO</span> watercraft</h4>
+<div class="outline-text-4" id="text-4-2-2">
+<p>
+maybe jet-skiing, small boat rental
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> Pirate Ship&#xa0;&#xa0;&#xa0;<span class="tag"><span class="LATER">LATER</span></span><br  /><div class="outline-text-5" id="text-4-2-2-1">
+<p>
+Pirate Ship: when it arrives (future), it'll go on tours of the area
+to various small desert islands; the pirates will collect and bury
+treasure, maybe give out treasure maps with X marks the spot
+</p>
+</div>
+</li></ol>
+</div>
+</div>
+<div id="outline-container-sec-4-3" class="outline-3">
+<h3 id="sec-4-3"><span class="section-number-3">4.3</span> Manatee Village</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+Manatee residents?  because  Manatees are huggable
+</p>
+
+<p>
+The currency here are different than on land, and only useful in the
+sea, like how Scottish Pounds are (were?) useless in London.
+</p>
+</div>
+
+<div id="outline-container-sec-4-3-1" class="outline-4">
+<h4 id="sec-4-3-1"><span class="section-number-4">4.3.1</span> Underwater lab</h4>
+<div class="outline-text-4" id="text-4-3-1">
+<p>
+Let's see about  getting some “wonders of the undersea  world” kind of
+educational content in here, too
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-4-3-2" class="outline-4">
+<h4 id="sec-4-3-2"><span class="section-number-4">4.3.2</span> <span class="todo TODO">TODO</span> Coral Reef Maze&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></h4>
+</div>
+</div>
+<div id="outline-container-sec-4-4" class="outline-3">
+<h3 id="sec-4-4"><span class="section-number-3">4.4</span> Space station</h3>
+<div class="outline-text-3" id="text-4-4">
+<p>
+need a launchpad to get here
+</p>
+
+<p>
+rockets launch and land periodically
+</p>
+</div>
+
+<div id="outline-container-sec-4-4-1" class="outline-4">
+<h4 id="sec-4-4-1"><span class="section-number-4">4.4.1</span> <span class="todo TODO">TODO</span> asteroid mining&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></h4>
+<div class="outline-text-4" id="text-4-4-1">
+<p>
+The space game should be  reproduced; Buy spaceships, fly them around,
+play asteroids
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4-4-2" class="outline-4">
+<h4 id="sec-4-4-2"><span class="section-number-4">4.4.2</span> <span class="todo TODO">TODO</span> hamster tube maze&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></h4>
+<div class="outline-text-4" id="text-4-4-2">
+<p>
+Hamster tubes through the station; like Jeffries tubes, but for
+tortoises. They get re-arranged by space station engineers all the
+time, this is one of the ‘always changing maze’ areas.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4-4-3" class="outline-4">
+<h4 id="sec-4-4-3"><span class="section-number-4">4.4.3</span> <span class="todo TODO">TODO</span> contact SpaceX about allowing use of Dragon/Falcon in game</h4>
+<div class="outline-text-4" id="text-4-4-3">
+<p>
+permission to use Dragon vehicles to access?
+</p>
+
+<p>
+It'd be cool to include actual spacecraft, just need a trademark
+license.  Maybe Musk is feeling excitable about merchandising and will
+feel like manufacturing some spacecraft toys :-)
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-5" class="outline-3">
+<h3 id="sec-4-5"><span class="section-number-3">4.5</span> jungle, savannah, prarie</h3>
+<div class="outline-text-3" id="text-4-5">
+<p>
+jungle exploration — jungle turns into the forest — this is
+yet another maze area that is always changing
+</p>
+
+<p>
+Savannah turns into prarie for ranch
+</p>
+
+<p>
+Digging in the savannah you might find different things buried
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4-6" class="outline-3">
+<h3 id="sec-4-6"><span class="section-number-3">4.6</span> Forest</h3>
+<div class="outline-text-3" id="text-4-6">
+<p>
+Elders' Cottage for healing
+</p>
+
+<p>
+Hopping around tree-tops, swinging on vines, platformer-style play
+</p>
+</div>
+
+<div id="outline-container-sec-4-6-1" class="outline-4">
+<h4 id="sec-4-6-1"><span class="section-number-4">4.6.1</span> Butterflies&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></h4>
+<div class="outline-text-4" id="text-4-6-1">
+<p>
+gather wild butterflies — chase them around, with a net or a bubble
+wand, catch with a net and they'll give you rewards, or you can do
+something different with them
+</p>
+
+<p>
+fairy in bottle?
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4-6-2" class="outline-4">
+<h4 id="sec-4-6-2"><span class="section-number-4">4.6.2</span> Finch Village</h4>
+<div class="outline-text-4" id="text-4-6-2">
+<p>
+singing frogs?
+</p>
+
+<p>
+maze of super-sized lily pads across the lake, always changing
+</p>
+
+<p>
+Located near the big lake
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-4-6-3" class="outline-4">
+<h4 id="sec-4-6-3"><span class="section-number-4">4.6.3</span> caves lead to Lost World&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></h4>
+<div class="outline-text-4" id="text-4-6-3">
+<p>
+avoid lava floes, which shift around from time to time (maze)
+</p>
+
+<p>
+navigate them on floating rock islands
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4-6-4" class="outline-4">
+<h4 id="sec-4-6-4"><span class="section-number-4">4.6.4</span> Lost World</h4>
+<div class="outline-text-4" id="text-4-6-4">
+<p>
+dinosaurs roaming around
+</p>
+
+<p>
+maybe some in-world gaming things regarding the dinos?
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-7" class="outline-3">
+<h3 id="sec-4-7"><span class="section-number-3">4.7</span> Ranch</h3>
+<div class="outline-text-3" id="text-4-7">
+<p>
+Homes out here on the prarie
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4-8" class="outline-3">
+<h3 id="sec-4-8"><span class="section-number-3">4.8</span> The Manor</h3>
+<div class="outline-text-3" id="text-4-8">
+<p>
+big old French Chateau kind of thing
+</p>
+</div>
+</div>
+<div id="outline-container-sec-4-9" class="outline-3">
+<h3 id="sec-4-9"><span class="section-number-3">4.9</span> Snowy place</h3>
+<div class="outline-text-3" id="text-4-9">
+<p>
+ice and snow and stuff
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Time, Weather</h2>
+<div class="outline-text-2" id="text-5">
+</div><div id="outline-container-sec-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Time</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+Time flows in an \(18 \frac{2}{3}\)-hour day. (\(\frac{56}{3}\))
+</p>
+
+<p>
+Perhaps we should invent a “clock” that treats \(18 \frac{2}{3}\) hour
+days normally?  Like, we stretch the hours such that 24:00 = midnight;
+12:00 = noon; 06:00 and 18:00 are sunrise and sunset;
+</p>
+
+<p>
+By that scale, an hour = \(\frac{140}{3}\) minutes or \(46 \frac{2}{3}\)
+minutes of real world time.
+</p>
+
+<p>
+If  we  call  these  “star  hours”  we  can  even  vary  the  seasonal
+sunrise/sunset tables based on some arbitrary real-world latitude
+</p>
+</div>
+
+<div id="outline-container-sec-5-1-1" class="outline-4">
+<h4 id="sec-5-1-1"><span class="section-number-4">5.1.1</span> Non\=es</h4>
+<div class="outline-text-4" id="text-5-1-1">
+<p>
+“Weeks” have 9 days (Non\=es like Roman calendar)
+</p>
+
+<p>
+Every 9th day is Market Day
+</p>
+
+<p>
+The days need renaming based on the basic characters we end up having
+</p>
+
+
+<p>
+The days are: (mapped to Eastern TZ)
+</p>
+</div>
+
+<ol class="org-ol"><li>1 Star Day<br  /><div class="outline-text-5" id="text-5-1-1-1">
+<p>
+(Sat/Sun M - Sun 1846)
+</p>
+
+<p>
+The sun is a star
+</p>
+</div>
+</li>
+<li>2 Sport Day<br  /><div class="outline-text-5" id="text-5-1-1-2">
+<p>
+(Sun 1846 - Mon 1334)
+</p>
+
+<p>
+Aligns with football night
+</p>
+</div>
+</li>
+<li>3 Music Day<br  /><div class="outline-text-5" id="text-5-1-1-3">
+<p>
+(Mon 1333 - Tue 0820)
+</p>
+
+<p>
+New music releases on Mondays
+</p>
+
+<p>
+Special events: ?
+</p>
+</div>
+</li>
+<li>4 Electric Day<br  /><div class="outline-text-5" id="text-5-1-1-4">
+<p>
+(Tue 0820 - Wed 0306)
+</p>
+</div>
+</li>
+
+
+<li>5 Science Day<br  /><div class="outline-text-5" id="text-5-1-1-5">
+<p>
+(Wed 0306 - Wed 2153)
+</p>
+
+<p>
+new comic book day
+</p>
+</div>
+</li>
+
+<li>6 Animal Day<br  /><div class="outline-text-5" id="text-5-1-1-6">
+<p>
+(Wed 2153 - Thu 1639)
+</p>
+</div>
+</li>
+
+
+<li>7 Friends Day<br  /><div class="outline-text-5" id="text-5-1-1-7">
+<p>
+(Thu 1639 - Fri 1126)
+</p>
+
+<p>
+new movie releases Thursday midnights
+</p>
+
+<p>
+ok, maybe we'll release <b>really old</b> movies instead?
+</p>
+</div>
+</li>
+<li>8 Flowers Day<br  /><div class="outline-text-5" id="text-5-1-1-8">
+<p>
+(Fri 1126 - Sat 0613)
+</p>
+
+<p>
+Special events: ?
+</p>
+</div>
+</li>
+<li>9 Market Day<br  /><div class="outline-text-5" id="text-5-1-1-9">
+<p>
+(Sat 0613 - Sat/Sun M)
+</p>
+
+<p>
+the main day for major special events
+</p>
+
+<p>
+The Market  Day should align  with Saturday for  the UK through  Au as
+much as possible, so when we  do special things for Market Day they're
+accessible to the most players
+</p>
+</div>
+</li></ol>
+</div>
+</div>
+<div id="outline-container-sec-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> Weather</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+Weather flows pseudo-randomly. Maybe we just pick random cities in the
+real  world and  follow its  weather. 
+</p>
+
+<p>
+Weather conditions: rain; cloudiness; fog; snow
+</p>
+</div>
+</div>
+<div id="outline-container-sec-5-3" class="outline-3">
+<h3 id="sec-5-3"><span class="section-number-3">5.3</span> Other minigame ideas?</h3>
+<div class="outline-text-3" id="text-5-3">
+</div><div id="outline-container-sec-5-3-1" class="outline-4">
+<h4 id="sec-5-3-1"><span class="section-number-4">5.3.1</span> Pac-Man.</h4>
+<div class="outline-text-4" id="text-5-3-1">
+<p>
+If we're going to do Pac-Man, do it like Katamari Damacy. That was a
+cool Pac-Man clone; and it can be done in-world.
+</p>
+
+<p>
+Perhaps a “harvesting” theme.
+</p>
+
+<p>
+Problem is resetting the “board”
+</p>
+</div>
+</div>
+<div id="outline-container-sec-5-3-2" class="outline-4">
+<h4 id="sec-5-3-2"><span class="section-number-4">5.3.2</span> Tic Tac Toe</h4>
+<div class="outline-text-4" id="text-5-3-2">
+<p>
+do I have to explain this one?
+</p>
+
+<p>
+Actually, we could give users the ability to play Tic-Tac-Toe
+multi-player by positioning oversized tokens in the game world.
+</p>
+
+<p>
+Kinda like Hobo Chess.
+<img src="http://i14.photobucket.com/albums/a349/benjistour/P1010228.jpg" alt="P1010228.jpg" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5-4" class="outline-3">
+<h3 id="sec-5-4"><span class="section-number-3">5.4</span> Building the code</h3>
+<div class="outline-text-3" id="text-5-4">
+</div><div id="outline-container-sec-5-4-1" class="outline-4">
+<h4 id="sec-5-4-1"><span class="section-number-4">5.4.1</span> Directory Structure</h4>
+<div class="outline-text-4" id="text-5-4-1">
+</div><ol class="org-ol"><li><code>build</code><br  /><div class="outline-text-5" id="text-5-4-1-1">
+<p>
+Everything that gets temporarily constructed during a <code>make</code> should
+be in here, and is wiped out by <code>make clean</code>
+</p>
+</div>
+</li>
+<li><code>dist</code><br  /><div class="outline-text-5" id="text-5-4-1-2">
+<p>
+The actual final distribution files go in here.
+</p>
+
+<p>
+There are two bundles, one for code, one for pure assets. Eventually
+these would be on the game server and on a static asset
+server/network/farm potentially.
+</p>
+
+<p>
+They're also versioned separately, see the control-cards § at top of
+Makefile
+</p>
+</div>
+</li>
+<li><code>doc</code><br  /><div class="outline-text-5" id="text-5-4-1-3">
+<p>
+documentation sources live here
+</p>
+</div>
+
+<ol class="org-ol"><li><code>doc/design</code><br  /><div class="outline-text-6" id="text-5-4-1-3-1">
+<p>
+docs for game designers
+</p>
+
+<p>
+how to use editing functions and such
+</p>
+</div>
+</li>
+<li><code>doc/devel</code><br  /><div class="outline-text-6" id="text-5-4-1-3-2">
+<p>
+docs for people working on the game code here. like this mess you're
+reading, it lives there.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> devel docs into <code>Makefile</code><br  /><div class="outline-text-7" id="text-5-4-1-3-2-1">
+<p>
+that includes this big mess you're reading now
+</p>
+</div>
+</li></ol>
+</li>
+
+<li><code>doc/legal</code><br  /><div class="outline-text-6" id="text-5-4-1-3-3">
+<p>
+contractual stuff and all of that
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> <code>doc/legal/licenses</code><br  /><div class="outline-text-7" id="text-5-4-1-3-3-1">
+<p>
+Licenses for all program components and assets need to make their way
+here with some kind of system for concatenating them to generate the
+“full spiel”
+</p>
+</div>
+</li></ol>
+</li>
+<li><code>doc/user</code><br  /><div class="outline-text-6" id="text-5-4-1-3-4">
+<p>
+user-facing docs
+</p>
+
+<ul class="org-ul">
+<li>marketing
+</li>
+<li>help files
+</li>
+</ul>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> user docs into <code>Makefile</code><br  /><div class="outline-text-7" id="text-5-4-1-3-4-1">
+<p>
+they need to be distributed with the game assets
+</p>
+
+<p>
+<code>ui-help.lisp</code> is going to reference them as well so the names need
+to be stable
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> user docs templating system<br  /><div class="outline-text-7" id="text-5-4-1-3-4-2">
+<p>
+probably want to write them in LaTeX or something and render via a
+templating system to give consistent and manageable headers, footers,
+CSS, whatever
+</p>
+</div>
+</li></ol>
+</li></ol>
+</li>
+<li><code>src</code><br  /><div class="outline-text-5" id="text-5-4-1-4">
+<p>
+All source code should pretty much live here
+</p>
+
+<p>
+anything that's getting compiled (or minified), for sure
+</p>
+</div>
+
+<ol class="org-ol"><li><code>src/css</code><br  /><div class="outline-text-6" id="text-5-4-1-4-1">
+<p>
+CSS to be minified
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> consider Closure CSS or LESS or something?<br  /></li></ol>
+</li>
+<li><code>src/ps</code><br  /><div class="outline-text-6" id="text-5-4-1-4-2">
+<p>
+Parenscript code: the entire front-end lives here.
+</p>
+
+<p>
+Keep it flat, for now, the compiler doesn't descend subdirectories
+</p>
+
+<p>
+cross-module dependencies are not resolved in any way; don't share
+variables and things if you can help it
+</p>
+</div>
+
+
+<ol class="org-ol"><li><code>src/ps/00-preamble.lisp</code><br  /><div class="outline-text-7" id="text-5-4-1-4-2-1">
+<p>
+The macros needed by other Parenscript files
+</p>
+</div>
+</li>
+<li><code>src/ps/01-preamble.js</code><br  /><div class="outline-text-7" id="text-5-4-1-4-2-2">
+<p>
+Common JS code that hasn't been converted to PS yet
+</p>
+
+<p>
+gets glued to the front of the concatenated js files before
+minification
+</p>
+</div>
+</li>
+<li><code>src/ps/asset-loader.lisp</code><br  /><div class="outline-text-7" id="text-5-4-1-4-2-3">
+<p>
+pre-load assets of all kinds as needed
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> show loading indicator<br  /><div class="outline-text-8" id="text-5-4-1-4-2-3-1">
+<p>
+partially done
+</p>
+
+<p>
+needs some TLC but it's a viable start
+</p>
+
+<p>
+see how it actually works when we start loading shit
+</p>
+</div>
+</li></ol>
+</li>
+<li><code>src/ps/gl-utils.lisp</code><br  /><div class="outline-text-7" id="text-5-4-1-4-2-4">
+<p>
+all the WebGL-related stuff goes in here
+</p>
+
+<p>
+might end up with the 3D sound stuff as well
+</p>
+
+<p>
+mostly should be just some glue and helper functions in the end
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> camera movement<br  /><div class="outline-text-8" id="text-5-4-1-4-2-4-1">
+<p>
+camera angle relatively doesn't change, but has to scroll around to
+follow the player
+</p>
+
+<p>
+also change the zoom level to bring up panoramas or pull in closer
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> translucency<br  /><div class="outline-text-8" id="text-5-4-1-4-2-4-2">
+<p>
+when player moves behind things, make them translucent
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> indoors rooms<br  /></li>
+
+<li><span class="todo TODO">TODO</span> billboarded vectors<br  /><div class="outline-text-8" id="text-5-4-1-4-2-4-4">
+<p>
+might not need these so much after all
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> billboarded text labels<br  /><div class="outline-text-8" id="text-5-4-1-4-2-4-5">
+<p>
+mostly for character names and maybe other selected items
+</p>
+
+<p>
+try to keep them from getting obstructed, and scale based on browser
+text size perhaps?
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> speech bubbles<br  /><div class="outline-text-8" id="text-5-4-1-4-2-4-6">
+<p>
+basically a special case of billboarded text / billboarded vectors,
+but an important special case
+</p>
+
+<p>
+when they fade out, it would be nice to show some kind of affordance
+that they're going away to the chat log area
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> entity picker<br  /><div class="outline-text-8" id="text-5-4-1-4-2-4-7">
+<p>
+needed for various other things, perhaps allow hover highlighting and
+display name if it has one (and isn't already displayed)
+</p>
+</div>
+</li></ol>
+</li>
+<li><code>src/ps/network.lisp</code><br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> connect to server WebSockets<br  /></li>
+
+<li><span class="todo TODO">TODO</span> exchange login credentials<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> log in as sidekick<br  /></li>
+
+<li><span class="todo TODO">TODO</span> log in using openid?<br  /></li>
+
+<li><span class="todo TODO">TODO</span> log in using password<br  /></li></ol>
+</li>
+
+<li><span class="todo TODO">TODO</span> login box<br  /><div class="outline-text-8" id="text-5-4-1-4-2-5-3">
+<p>
+needs to handle all in one easy place:
+</p>
+
+<ul class="org-ul">
+<li>MOTD
+</li>
+<li>QoS indicators
+</li>
+<li>log in with user name + password
+</li>
+<li>log in with openid
+</li>
+<li>log in as a sidekick
+</li>
+<li>register new user
+</li>
+<li>recover forgotten user name / reset password
+</li>
+<li>general link to m+b subsystem
+</li>
+</ul>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> invite sidekick<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> sidekick share via social media?<br  /></li>
+
+<li><span class="todo TODO">TODO</span> sidekick share via other channels?<br  /></li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> redirect to M&amp;B system for registration<br  /></li>
+
+<li><span class="todo TODO">TODO</span> redirect to M&amp;B system for forgotten passwords<br  /></li>
+
+<li><span class="todo TODO">TODO</span> accept entity data and populate simulation<br  /></li>
+
+<li><span class="todo TODO">TODO</span> send actions to the server<br  /></li>
+
+<li><span class="todo TODO">TODO</span> check for disconnections<br  /></li>
+
+<li><span class="todo TODO">TODO</span> auto-reconnect<br  /></li>
+
+<li><span class="todo TODO">TODO</span> diagnostics for disconnections<br  /></li>
+
+<li><span class="todo TODO">TODO</span> integrate with offline-detection<br  /></li>
+
+<li><span class="todo TODO">TODO</span> polyfill for browsers without WebSockets ?<br  /></li>
+
+
+<li><span class="todo TODO">TODO</span> migration support<br  /><div class="outline-text-8" id="text-5-4-1-4-2-5-14">
+<p>
+gentle migration:
+</p>
+
+<ul class="org-ul">
+<li>First, connect to the new node
+</li>
+<li>Test that connection
+</li>
+<li>Transfer it to being the primary
+</li>
+<li>Then, close the old one
+</li>
+</ul>
+</div>
+</li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> <code>src/ps/mb.lisp</code><br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> registration<br  /></li>
+
+<li><span class="todo TODO">TODO</span> change gecos info<br  /></li>
+
+<li><span class="todo TODO">TODO</span> change password<br  /></li>
+
+<li><span class="todo TODO">TODO</span> change openid binding<br  /></li>
+
+<li><span class="todo TODO">TODO</span> view account activity<br  /></li>
+
+<li><span class="todo TODO">TODO</span> parental controls<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> create child account<br  /></li>
+
+<li><span class="todo TODO">TODO</span> annex child account<br  /></li>
+
+<li><span class="todo TODO">TODO</span> edit child account gecos<br  /></li>
+
+<li><span class="todo TODO">TODO</span> set restrictions on child account<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> time limits<br  /></li>
+
+<li><span class="todo TODO">TODO</span> sidekick limiter<br  /></li>
+
+<li><span class="todo TODO">TODO</span> sidekick required / baby-sat mode<br  /></li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> assign other guardians to child<br  /></li>
+
+<li><span class="todo TODO">TODO</span> view child account activity<br  /></li>
+
+
+<li><span class="todo TODO">TODO</span> disable child account<br  /></li>
+
+<li><span class="todo TODO">TODO</span> delete child account<br  /></li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> delete account<br  /></li></ol>
+</li>
+<li><code>src/ps/string-utils.lisp</code><br  /><div class="outline-text-7" id="text-5-4-1-4-2-7">
+<p>
+The big thing here is for the string table accessed via <code>(msg)</code> in
+the code.
+</p>
+
+<p>
+All user-visible strings should be in that message catalog, and we'll
+later be able to translate it en masse
+</p>
+
+<p>
+We use a simple formatting thing for these that is similar to Java's
+String.format as well, so re-ordering words in the message won't
+break on params
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> analogue of ~R<br  /><div class="outline-text-8" id="text-5-4-1-4-2-7-1">
+<p>
+Actually I think I like the idea of having a few variants
+</p>
+
+<ul class="org-ul">
+<li>spell out words or fall back on numerals when they're “too long,”
+as defined by the language. In English, we usually stop at
+“nineteen” … “20” boundary.
+</li>
+<li>abbreviate to no more than 2 significant figures, with
+rounding. “two thousand” for 2,000; “about two thousand” for
+1,994
+</li>
+<li>the proper pluralization system described below
+</li>
+</ul>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> handle pluralizations in a sane way<br  /><div class="outline-text-8" id="text-5-4-1-4-2-7-2">
+<p>
+test cases:
+</p>
+
+<p>
+(and (equal "one car" (plural 1 'car))
+     (equal "two cars" (plural 2 'car))
+     (equal "un auto" (with-language :es (plural 1 'car)))
+     (equal "один машина" (with-language :ru (plural 1 'car)))
+     (equal "nine cars" (plural 9 'car))
+     (equal "nineteen cars" (plural 19 'car))
+     (equal "20 cars" (plural 20 'car))
+     (equal "no cars" (plural 0 'car))
+     (equal "four children" (plural 4 'child))
+     (equal "four red houses" (plural 4 '(house red))))
+</p>
+
+<p>
+Note that Russian counting is about the worst-case-scenario because
+it's not going to fit the singular/plural pattern like EN, ES, FR.
+</p>
+
+<p>
+Note also that Asian counting requires that the symbol → word
+dictionary provide the counting words type.
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> handle full inflections, including plurals<br  /><div class="outline-text-8" id="text-5-4-1-4-2-7-3">
+<p>
+needed for some languages like DE, RU, GR, LA
+</p>
+
+<p>
+not usually needed for EN, ES, FR, JA, CN 
+</p>
+
+<p>
+<b>EXCEPT</b> in EN, ES, FR needed for pronouns only (I/me, he/him &amp;c in
+EN; tu/te/ti in ES…)
+</p>
+</div>
+</li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> <code>src/ps/ui-help</code><br  /><div class="outline-text-7" id="text-5-4-1-4-2-8">
+<p>
+user interface helper stuff
+</p>
+
+<p>
+dialog box creation and all
+</p>
+
+<p>
+should be doing this using nice HTML overlays within the page
+</p>
+
+<p>
+possibly also a way to load help screens without opening new
+windows/tabs
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> pop-up message<br  /></li>
+
+<li><span class="todo TODO">TODO</span> multiple choice buttons yes/no ok/cancel dialog<br  /></li>
+
+<li><span class="todo TODO">TODO</span> help viewer<br  /></li>
+
+<li><span class="todo TODO">TODO</span> launch external page gently<br  /><div class="outline-text-8" id="text-5-4-1-4-2-8-4">
+<p>
+evading pop-up blockers and the like
+</p>
+</div>
+</li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> <code>src/ps/controls</code><br  /><div class="outline-text-7" id="text-5-4-1-4-2-9">
+<p>
+UI controls
+</p>
+
+<p>
+tap-n-talk
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> selected inventory item display<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> engage paperdoll display<br  /></li>
+
+<li><span class="todo TODO">TODO</span> click-to-use item, no target<br  /></li>
+
+<li><span class="todo TODO">TODO</span> directional item<br  /></li>
+
+<li><span class="todo TODO">TODO</span> target-positional item<br  /></li>
+
+<li><span class="todo TODO">TODO</span> target-entity item<br  /></li>
+
+<li><span class="todo TODO">TODO</span> discrete counter<br  /></li>
+
+<li><span class="todo TODO">TODO</span> scalar display<br  /></li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> tap-n-talk<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> load possible vocabulary from server<br  /></li>
+
+<li><span class="todo TODO">TODO</span> allow user selections<br  /></li>
+
+<li><span class="todo TODO">TODO</span> compose sexp and send<br  /></li>
+
+<li><span class="todo TODO">TODO</span> chat log<br  /></li></ol>
+</li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> <code>src/ps/paperdoll</code><br  /><div class="outline-text-7" id="text-5-4-1-4-2-10">
+<p>
+inventory/paperdoll system
+</p>
+</div>
+</li></ol>
+</li>
+
+<li><code>src/romans</code><br  /><div class="outline-text-6" id="text-5-4-1-4-3">
+<p>
+The server components
+</p>
+
+<p>
+The software components are named for (in)famous figures of Roman
+history. Note, if you are familiar with the components in Romance 1.x,
+some of these may have changed in their tasks slightly.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> need to nail down the MQ service type<br  /><div class="outline-text-7" id="text-5-4-1-4-3-1">
+<p>
+ZeroMQ and RabbitMQ seem to be my favourites for the moment
+</p>
+
+<p>
+Requirements:
+</p>
+
+<ul class="org-ul">
+<li>FAST
+</li>
+<li>FUCKING FAST
+</li>
+<li>Easy to marshall arbitrary stream data OR BSON data
+</li>
+<li>BSON is nicer but I don't much care
+</li>
+<li>Flexible distribution grid
+</li>
+<li>Lossless
+</li>
+<li>In order of preference: Quicklisp sources that work; Lisp sources
+that work; clear enough docs to write Lisp bindings without crying
+</li>
+<li>Doesn't require PhD to install/configure
+</li>
+</ul>
+</div>
+</li>
+<li>Appius<br  /><div class="outline-text-7" id="text-5-4-1-4-3-2">
+<p>
+Appius Claudius Caecus handles network I/O. All socket connections
+from clients are routed through Appius, and into the message queues
+for the game itself.
+</p>
+
+<p>
+Appius Claudius Caecus was notable for building a major road out of
+Rome, the Appian Way, as well as being blind, and twice Consul.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> socket-activation server<br  /><div class="outline-text-8" id="text-5-4-1-4-3-2-1">
+<p>
+working with SystemD for TCP streams (and WebSockets streams as well?)
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> TCP stream binding<br  /><div class="outline-text-8" id="text-5-4-1-4-3-2-2">
+<ul class="org-ul">
+<li>return packets the same way regardless of TCP or WS
+</li>
+</ul>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> WebSockets binding<br  /><div class="outline-text-8" id="text-5-4-1-4-3-2-3">
+<p>
+how to listen? native listener seems best, is that Kosher with
+same-origin policy?
+</p>
+
+<p>
+if not, how do we tie in to the HTTP server enough to make
+same-origin happy? serve the live HTML from the chat servers?
+</p>
+
+<p>
+some experimentation will be required for this bit
+</p>
+
+<ul class="org-ul">
+<li>return packets the same way regardless of TCP or WS
+</li>
+</ul>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> binding to MQ<br  /></li>
+
+<li><span class="todo TODO">TODO</span> BSON coding for packets<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> BSON-to-MQ<br  /></li>
+
+<li><span class="todo TODO">TODO</span> MQ-to-BSON<br  /></li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> JSON coding for packets<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> JSON-to-MQ<br  /></li>
+
+<li><span class="todo TODO">TODO</span> MQ-to-JSON<br  /></li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> QoS indicators<br  /></li>
+
+<li><span class="todo TODO">TODO</span> connection pool moderation<br  /><div class="outline-text-8" id="text-5-4-1-4-3-2-8">
+<p>
+when one guy's getting too many connections and another one is light,
+alter the usual round-robin selection to balance the load
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> migration support<br  /><div class="outline-text-8" id="text-5-4-1-4-3-2-9">
+<p>
+when bringing up/down Appius nodes, migrate users around to balance
+the load
+</p>
+</div>
+</li></ol>
+</li>
+<li>Asinius<br  /><div class="outline-text-7" id="text-5-4-1-4-3-3">
+<p>
+Asinius handles connectivity to the Postgres database server, for
+long-term storage and disaster recovery.
+</p>
+
+<p>
+Gaius Asinius Pollio was a consul noted for constructing the first
+public library in Rome, the Atrium Libertatis, as a posthumous
+favor to Caesar.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> MQ-to-Postmodern<br  /></li>
+
+<li><span class="todo TODO">TODO</span> Postmodern-to-MQ<br  /></li>
+
+<li><span class="todo TODO">TODO</span> QoS indicators<br  /></li>
+
+<li><span class="todo TODO">TODO</span> QoS indicators extracted from Postgres<br  /></li>
+
+<li><span class="todo TODO">TODO</span> Postmodern schema mapping to entity data<br  /></li></ol>
+</li>
+<li>Caesar<br  /><div class="outline-text-7" id="text-5-4-1-4-3-4">
+<p>
+Caesar oversees the system on which it is running, and ensures that
+sufficient resources are available for uninterrupted
+operations. Caesar may terminate workers when they are no longer
+needed, or requisition additional resources (such as starting a new
+virtual machine or requesting additional storage space)
+when necessary.
+</p>
+
+<p>
+Gaius Julius Caesar was known as a famous general.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> collation of QoS reports<br  /></li>
+
+<li><span class="todo TODO">TODO</span> heartbeat failure detection<br  /></li>
+
+<li><span class="todo TODO">TODO</span> start a new program container<br  /></li>
+
+<li><span class="todo TODO">TODO</span> remote start a program container<br  /></li>
+
+<li><span class="todo TODO">TODO</span> stop a program over MQ<br  /></li>
+
+<li><span class="todo TODO">TODO</span> remote stop a program over MQ<br  /></li>
+
+<li><span class="todo TODO">TODO</span> shut down a program container<br  /></li>
+
+<li><span class="todo TODO">TODO</span> remote shut down a container<br  /></li>
+
+<li><span class="todo TODO">TODO</span> kill a program<br  /></li>
+
+<li><span class="todo TODO">TODO</span> remote kill a program<br  /></li>
+
+<li><span class="todo TODO">TODO</span> STONITH a container<br  /></li></ol>
+</li>
+<li>Catullus<br  /><div class="outline-text-7" id="text-5-4-1-4-3-5">
+<p>
+Catullus handles the textual interface whereby human-provided strings
+are parsed and tokenized into propositions understandable to the AI
+characters, and rendering the “thoughts" of AI characters into
+string form.
+</p>
+
+<p>
+Gaius Valerius Catullus was a noted poet/songwriter.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> accept sexp from MQ / tap-n-talk<br  /></li>
+
+<li><span class="todo TODO">TODO</span> parse incoming utterance properly<br  /></li>
+
+<li><span class="todo TODO">TODO</span> return utterance in English<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> proper handling of edge cases of English<br  /></li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> adjudicate utterance<br  /></li>
+
+<li><span class="todo TODO">TODO</span> evaluate utterance<br  /></li>
+
+<li><span class="todo TODO">TODO</span> answer yes/no questions<br  /></li>
+
+<li><span class="todo TODO">TODO</span> anaphora resolution<br  /></li>
+
+<li><span class="todo TODO">TODO</span> unbound anaphora resolution: ask questions<br  /></li>
+
+<li><span class="todo TODO">TODO</span> unbound anaphora resolution: take a guess<br  /></li>
+
+<li><span class="todo TODO">TODO</span> adjudication trust levels / lie, joke<br  /></li>
+
+<li><span class="todo TODO">TODO</span> failed adjudication: decide joke or lie<br  /></li>
+
+<li><span class="todo TODO">TODO</span> encode utterance for MQ / reply<br  /></li>
+
+<li><span class="todo TODO">TODO</span> prompted utterances: self-introduction<br  /></li>
+
+<li><span class="todo TODO">TODO</span> prompted utterances: curiosity<br  /></li>
+
+<li><span class="todo TODO">TODO</span> prompted utterances: make a request<br  /></li>
+
+<li><span class="todo TODO">TODO</span> prompted utterances: imperative<br  /></li>
+
+<li><span class="todo TODO">TODO</span> prompted utterances: statement of interest<br  /></li>
+
+<li><span class="todo TODO">TODO</span> imperative handling: adjudicate obedience<br  /></li>
+
+<li><span class="todo TODO">TODO</span> imperative handling: resolve ambiguities<br  /></li></ol>
+</li>
+<li>Clodia<br  /><div class="outline-text-7" id="text-5-4-1-4-3-6">
+<p>
+Clodia handles the processing of the artificially intelligent
+characters.
+</p>
+
+<p>
+Clodia Metelli Pulcher (also spelled Claudia) was the
+grand-daughter of Appius Claudius Caecus, and notable for her
+political intrigues, enmity with Cicero, disregard for the
+admiration of Catullus, and allegations of murdering political
+figures by poison.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> QoS reporting<br  /></li>
+
+<li><span class="todo TODO">TODO</span> AI core identity, intelligence, control subroutines<br  /></li>
+
+<li><span class="todo TODO">TODO</span> core memory model<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> forgetfulness<br  /></li>
+
+<li><span class="todo TODO">TODO</span> common data core<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> knowledge of physics<br  /></li>
+
+<li><span class="todo TODO">TODO</span> knowledge of game world history<br  /></li>
+
+<li><span class="todo TODO">TODO</span> knowledge of geography<br  /></li>
+
+<li><span class="todo TODO">TODO</span> knowledge of inventory<br  /></li></ol>
+</li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> observation<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> passive attention<br  /></li>
+
+<li><span class="todo TODO">TODO</span> active attention<br  /></li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> like/dislike system<br  /></li>
+
+<li><span class="todo TODO">TODO</span> virtue evaluation<br  /></li>
+
+<li><span class="todo TODO">TODO</span> clothing selection<br  /></li>
+
+<li><span class="todo TODO">TODO</span> self-preservation instincts<br  /></li>
+
+<li><span class="todo TODO">TODO</span> navigation<br  /></li>
+
+<li><span class="todo TODO">TODO</span> conversation<br  /></li>
+
+<li><span class="todo TODO">TODO</span> crafting<br  /></li>
+
+<li><span class="todo TODO">TODO</span> game-linked behaviours<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> playing sport<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> observing and refereeing<br  /></li>
+
+<li><span class="todo TODO">TODO</span> playing soccer<br  /></li>
+
+<li><span class="todo TODO">TODO</span> playing volleyball<br  /></li>
+
+<li><span class="todo TODO">TODO</span> playing baseball<br  /></li>
+
+<li><span class="todo TODO">TODO</span> playing basketball<br  /></li>
+
+<li><span class="todo TODO">TODO</span> playing “asteroids”<br  /></li></ol>
+</li>
+<li><span class="todo TODO">TODO</span> Smudge: making a mess<br  /></li>
+
+<li><span class="todo TODO">TODO</span> Targ: breaking shit<br  /></li>
+
+<li><span class="todo TODO">TODO</span> crafting things<br  /></li>
+
+<li><span class="todo TODO">TODO</span> generating mazes<br  /></li>
+
+<li><span class="todo TODO">TODO</span> pirates: burying treasure<br  /></li>
+
+<li><span class="todo TODO">TODO</span> mail delivery<br  /></li>
+
+<li><span class="todo TODO">TODO</span> mail theft<br  /></li>
+
+<li><span class="todo TODO">TODO</span> construction crew<br  /></li>
+
+<li><span class="todo TODO">TODO</span> singing<br  /></li>
+
+<li><span class="todo TODO">TODO</span> space launch crew<br  /></li></ol>
+</li></ol>
+</li>
+<li>Galen<br  /><div class="outline-text-7" id="text-5-4-1-4-3-7">
+<p>
+Galen handles the system whereby superposed states of quiesced
+arrondissements are collapsed into a discrete state. In other
+words: Galen burgeons areas that had been quiesced previously.
+</p>
+
+<p>
+Galen was a noted philosopher, logician, and inventor.
+</p>
+
+<p>
+This subsystem won't be in place yet for Romance 2.0 
+</p>
+</div>
+</li>
+<li>Narcissus<br  /><div class="outline-text-7" id="text-5-4-1-4-3-8">
+<p>
+Narcissus handles the simulation of physical forces.
+</p>
+
+<p>
+Named for the famous wrestler Narcissus, who may have once
+assassinated an emperor, not the mythological character who was
+turned into a flower.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> Interim basic ground-based non-physics<br  /><div class="outline-text-8" id="text-5-4-1-4-3-8-1">
+<p>
+just enough to get us going, for testing and such, not enough to keep
+us running indefinitely.
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> New CL bindings for Bullet<br  /></li>
+
+<li><span class="todo TODO">TODO</span> world sub-region divisions<br  /><div class="outline-text-8" id="text-5-4-1-4-3-8-3">
+<p>
+how to load-balance physics between Narcissus / Bullet nodes without
+having weird freakish edges
+</p>
+</div>
+</li></ol>
+</li>
+<li>Lutatius<br  /><div class="outline-text-7" id="text-5-4-1-4-3-9">
+<p>
+Gaius Lutatius Catulus [Latin: C·LVTATIVS·C·F·CATVLVS] was a Roman
+statesman and naval commander in the First Punic War.
+Temple to Juturna, built by Catulus to celebrate his victory at
+Aegades islands, in Largo di Torre Argentina, Rome.
+</p>
+
+<p>
+He was elected as a consul in 242 BC, a novus homo. During his
+consulship he supervised the construction of a new Roman fleet. This
+fleet was funded by donations from wealthy citizens, since the public
+treasury was virtually empty. He then led the fleet into victory over
+Hanno the Great's Carthaginian fleet in the Battle of the
+Aegates Islands. This was the decisive battle of the First Punic
+War. To celebrate his victory, he built a temple to Juturna in Campus
+Martius, in the area currently known as Largo di Torre Argentina.
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> inventory equipping<br  /></li>
+
+<li><span class="todo TODO">TODO</span> using an item<br  /></li>
+
+<li><span class="todo TODO">TODO</span> sidekick enablement<br  /></li></ol>
+</li>
+<li>unnamed module / system needed for …<br  /><ol class="org-ol"><li><span class="todo TODO">TODO</span> player registration<br  /></li>
+
+<li><span class="todo TODO">TODO</span> player passwd<br  /></li>
+
+<li><span class="todo TODO">TODO</span> player chfn<br  /></li>
+
+<li><span class="todo TODO">TODO</span> player authentication<br  /></li>
+
+<li><span class="todo TODO">TODO</span> child account manipulation / sudo-like<br  /></li>
+
+<li><span class="todo TODO">TODO</span> enforcing parental controls<br  /></li>
+
+<li><span class="todo TODO">TODO</span> sidekick enablement<br  /></li></ol>
+</li></ol>
+</li>
+<li><code>src/static</code><br  /><div class="outline-text-6" id="text-5-4-1-4-4">
+<p>
+JavaScript that we blindly copy into place
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> get upstream libs into the build system<br  /></li></ol>
+</li>
+<li><code>src/tools</code><br  /><div class="outline-text-6" id="text-5-4-1-4-5">
+<p>
+Homebrew tools used <b>during compilation</b> go in here, e.g. the
+parenscript compiler utility should be here;
+</p>
+
+<p>
+only the ones that get compiled, stuff like Bash or Perl scripts can
+live in <code>tools</code> directly
+</p>
+</div>
+</li>
+<li><code>src/violetvolts.html</code><br  /><div class="outline-text-6" id="text-5-4-1-4-6">
+<p>
+the actual “play now” HTML page
+</p>
+
+<p>
+all the HTML overlays should be in here, styled display:none; might
+want to break them into separate files/fragments and build the file up
+somehow, but for now that doesn't seem to be much of a problem
+</p>
+</div>
+</li></ol>
+</li>
+<li><code>tools</code><br  /><div class="outline-text-5" id="text-5-4-1-5">
+<p>
+Stuff used to compile that isn't in Stock Fedora. 
+</p>
+
+<p>
+Should be Git Submodules where possible or inherited Subversion
+repos possibly. 
+</p>
+
+<p>
+Google Closure Compiler
+</p>
+
+<p>
+YUI compressor
+</p>
+
+<p>
+Moved Uglify-JS out, it's in Stock Fedora, yay. (but it's even worse
+than YUI? wtf?)
+</p>
+
+<p>
+Also: custom scripts and binaries
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> <code>tools/bin</code> should have all the scripts<br  /></li>
+
+<li><code>tools/bin/smaller</code><br  /><div class="outline-text-6" id="text-5-4-1-5-2">
+<p>
+used to check file sizes and return which one is the smallest
+</p>
+
+<p>
+misnamed, it accepts multiple files not just two
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> <code>tools/bin/parenscript-compile</code><br  /><div class="outline-text-6" id="text-5-4-1-5-3">
+<p>
+once I get around to buildapp:ing this should live here
+</p>
+</div>
+</li>
+<li><code>tools/swf2svg</code><br  /><div class="outline-text-6" id="text-5-4-1-5-4">
+<p>
+this is a Perl program that is a work in progress
+</p>
+
+<p>
+it rips apart SWF files using <code>swfdump</code> and writes out SVG of all the
+artistic components
+</p>
+
+<p>
+I just wrote this as a way to see what assets we get as SWF:s from Res
+&#x2014; so it can be dumped altogether.
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> <code>tools/bin/swf-to-3d</code>&#xa0;&#xa0;&#xa0;<span class="tag"><span class="JUNK">JUNK</span></span><br  /><div class="outline-text-6" id="text-5-4-1-5-5">
+<p>
+Based on <code>swf2svg</code>, can be dumped.
+</p>
+
+<p>
+note that GLGE has an XML format but that's damned verbose
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> fix up the existing Tools like Closure Compiler<br  /><div class="outline-text-6" id="text-5-4-1-5-6">
+<p>
+pull in as submodules or whatever
+</p>
+</div>
+</li></ol>
+</li></ol>
+</div>
+<div id="outline-container-sec-5-4-2" class="outline-4">
+<h4 id="sec-5-4-2"><span class="section-number-4">5.4.2</span> <span class="done DONE">DONE</span> <code>Makefile</code></h4>
+<div class="outline-text-4" id="text-5-4-2">
+<p>
+The Makefile is pretty solid now, at least for the code parts.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-5-4-3" class="outline-4">
+<h4 id="sec-5-4-3"><span class="section-number-4">5.4.3</span> <span class="todo TODO">TODO</span> Parenscript compilation</h4>
+<div class="outline-text-4" id="text-5-4-3">
+<p>
+Parenscript gets routed via a Lisp program to handle some odd cases.
+</p>
+
+<p>
+Basically:
+</p>
+
+<ul class="org-ul">
+<li>First, we load macros out of 00-macros.lisp
+</li>
+
+<li>We compile each file form-by-form
+</li>
+
+<li>we concatenate the results onto 01-preamble.js — where we put any
+other snippets that haven't made it into Parenscript yet
+</li>
+</ul>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> source maps<br  /></li></ol>
+</div>
+<div id="outline-container-sec-5-4-4" class="outline-4">
+<h4 id="sec-5-4-4"><span class="section-number-4">5.4.4</span> <span class="done DONE">DONE</span> Minifiers for JS, CSS, HTML</h4>
+<div class="outline-text-4" id="text-5-4-4">
+<p>
+I have a few minifiers in place, <code>make</code> basically “races” them
+against one another and the smallest output file “wins,” which has a
+downside that the build might be minified differently from day to day
+</p>
+</div>
+
+<ol class="org-ol"><li><span class="todo TODO">TODO</span> maybe just Closure<br  /><div class="outline-text-5" id="text-5-4-4-1">
+<p>
+I'm seeing such a massive difference/improvement using Closure that I
+might want to just use it
+</p>
+</div>
+</li>
+<li><span class="todo TODO">TODO</span> static libs separately?<br  /><div class="outline-text-5" id="text-5-4-4-2">
+<p>
+The various static JS libs might do better being minified their own
+ways or loaded from a CDN
+</p>
+
+<p>
+particularly they might not cope well with the ADVANCED mode of
+Closure Compiler so we might want to minify them with a gentler
+setting and then use ADVANCED for our own code, where it'll be easier
+to fix it when it breaks (e.g. adding JSDoc annotations or being
+careful about using dot-accessors versus string-accessors)
+</p>
+</div>
+</li></ol>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Policies</h2>
+</div>
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Non-Violence Manifesto</h2>
+<div class="outline-text-2" id="text-7">
+</div><div id="outline-container-sec-7-1" class="outline-3">
+<h3 id="sec-7-1"><span class="section-number-3">7.1</span> The original notes from 2009</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+• Darkstar Forces II: Jedi Knight
+</p>
+
+<p>
+• God of War
+</p>
+
+<p>
+• Castlevania: Harmony of Dissonance
+</p>
+
+<p>
+• Avernum
+</p>
+
+<p>
+• The Secret of Monkey Island series
+</p>
+
+<p>
+• Phoenix Wright: Ace Attorney
+</p>
+
+<p>
+• The Seventh Guest, The Eleventh Hour
+</p>
+
+<p>
+• Blue Dragon
+</p>
+
+<p>
+• The Journeyman Project
+</p>
+
+<p>
+• American Mc Gee’s Alice
+</p>
+
+<p>
+• The White Chamber
+</p>
+
+<p>
+• Shivers
+</p>
+
+<p>
+• Killer7
+</p>
+
+<p>
+• Silent Hill
+</p>
+
+<p>
+• Hugo’s House of Horrors
+</p>
+
+<p>
+• Myst series
+</p>
+
+<p>
+• Sokoban
+</p>
+
+<p>
+• Kwirk
+</p>
+
+<p>
+• Tomb Raider series
+</p>
+
+<p>
+• Pokemon series
+</p>
+
+<p>
+• Paper Mario
+</p>
+
+<p>
+• Luﬁa II
+</p>
+
+<p>
+• Golden Sun series
+</p>
+
+<p>
+• Little Big Adventure
+</p>
+
+<p>
+• Wild ARMs
+</p>
+
+<p>
+• Rogue Galaxy
+</p>
+
+<p>
+• Broken Sword 3
+</p>
+
+<p>
+• Final Fantasy Mystic Quest
+</p>
+
+<p>
+• Tales of Symphonia
+</p>
+
+<p>
+• StarFox Adventures
+</p>
+
+<p>
+• Perplex City
+</p>
+
+<p>
+• La Mulana
+</p>
+
+<p>
+• Dragon Warrior III
+</p>
+
+<p>
+• Zork series
+</p>
+
+<p>
+• Boxxle
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Bruce-Robert Fenn Pocock</p>
+<p class="date">Created: 2013-11-21 Thu 18:23</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.3c)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
