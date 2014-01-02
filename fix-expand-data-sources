@@ -1,0 +1,11 @@
+#!/bin/sh
+
+( cd src/conceptnet5-csv/assertions
+  for f in *bz2
+    do
+      bzip2 -d < $f > $(basename $f)
+    done
+)
+bzip2 -d < src/WordNet-3.0/dict/data.noun.bz2 > src/WordNet-3.0/dict/data.noun
+
+
