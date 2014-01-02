@@ -1,1 +1,0 @@
-﻿package particle{	public interface Particle	{		function enterFrame():void;	}}
