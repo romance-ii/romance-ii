@@ -1,0 +1,2948 @@
+* Violet Volts: Overview
+** Manifesto
+
+The concept I'm running off of goes a bit like this
+
+*** Axiom: Violence is filler in most games.
+
+EG: Zelda is mostly about solving the puzzles, and while a few of them
+(shoot  the boss  in  the  eye) are  couched  themselves  in terms  of
+violence,  the  majority  of  the   violence  in  the  game  world  is
+filler. Killing Bokoblins to maybe get a Rupee can be kinda fun, sure,
+but it's not moving the plot forward or really providing much “puzzle”
+content, &c &c.
+
+*** Hypothesis: Non-violence can be fun.
+
+OTOH, non-violent games tend to be of a very few sorts;
+
+ + Some, like Pac-Man = Katamari Damacy, are basically aiming to
+   “clear the board” in some way. Alchemy from Pop Cap is another of
+   this sort.
+
++ Others, like Bejeweled or Tetris, are basically “endless.” You just
+   repeat the same task over and over, until you lose.
+
+ + The alternative are games in which the designers have spent a great
+   deal of time creating a puzzle — which you can probably (a) solve
+   faster than they can create new ones; (b) look up the solution on
+   the 'Net in 45 seconds or less.
+
+All of  these put the idea  of a non-violent MMO-RPG  in a persistent,
+shared world at risk.
+
+ + We  can't use violence as  filler.  
+
++ We can't let someone “clear the board,” because the next person
+   will have nothing to do. 
+
+ + We can, but shouldn't, make it an endless toil: that, eventually,
+   isn't fun.  
+
+ + We can't afford the time effort to have more designers than players
+   to create specific puzzles.
+
+So, the sandbox world has these things going for it:
+
+ + User generated content: Building and decorating houses and
+   landscaping your yard, designing and wearing clothes, and so
+   forth. 
+
+ + Crafting and similar rôte tasks; these are like Bejeweled, but you
+   only do it when you want the results
+
+ + AI's who have their own wants/needs/likes. They provide Quest
+   drivers, basically. The AI's can “intentionally” create situations
+   which are puzzles to be solved.
+
+EG:  Some “naughty”  AI character  likes to  build mazes  and has  the
+ability  to  create  a  certain   type  of  item  that  is  reasonably
+valuable. Solving the maze gives a  reward; but the AI re-arranges the
+maze from  time to time,  so you can re-visit  it later, and  it'll be
+different. We  started to build  something like this in  Tootsville 3,
+but the  front-end choked  on the  number of  “furniture” items  to be
+placed on the screen.
+
+
+*** About Animal Crossing
+
+Animal Crossing is  really more about:
+
+ + meeting and interacting with the characters, making friends
+
+ + creating User Generated Content: decorate your house, design your
+   clothes, decorate signs, change the Town Song, …
+
+ +  discovering and collecting artefacts: shells, fruit, fossils, … ;
+    sometimes these can be traded
+
+ + special events [The jazz playing dog on Saturday nights; the Turnip
+   “stock exchange”; holiday events; special visiting characters]
+
+In  MMO  context, you  can 
+
+ +  meet and interact with AI and human controlled characters, make
+    friends
+
+ + create User Generate Content of many of the same kinds
+
+ + explore new regions of the world as they are added
+
+ +  collect different kinds of artefacts and trade them with other
+    characters
+
+ + special events of similar kinds
+
+*** About World Rasslin Federation
+
+Chris Brunner  brought us the  world of WWF Tootsville.  AI characters
+get controlled by staff members to act  out a story for the players to
+watch / join in. This takes it further: we give the AI's programs that
+inherently create “fun” situations when they interact.
+
+*** About in-world minigames
+
+In Tootsville  4, we had  a (working)  soccer park. [I  think actually
+that Meixell  had tried to make  something like this in  Tootsville 2,
+but it didn't work because the  roomVariable system in SFS didn't work
+right.] The  Referee (Stu) was a  robot that kept score  [and reset it
+after a while].  The players “kicked” the ball by  walking into it. If
+it rolled into a  goal, they got a point; if it  rolled out of bounds,
+the Referee would walk over and put it at the bounds. The rules of the
+game were otherwise unenforced. The kids still played the game. We got
+more complaints about  people “cheating” by buying things  in the Mall
+than about the soccer game.
+
+Putting open-ended things like this in  the game world might be enough
+to  amuse some  people. Perhaps  a “mission”  or “greater  purpose” is
+needed  only  to  give you  an  excuse  to  explore  and play  in  the
+world. How often have we ignored Navi so we could play some other game
+and ignore our Great Quest?
+
+*** Miyamoto is my Hero
+
+Miyamoto-san:
+
+How do I want gamers to play Super Mario Sunshine? In each Mario game,
+players sometimes move  around without any specific  purpose, yet they
+may find some secret as a  result. While wandering around, players get
+accustomed to the  gameplay so that Mario moves just  as they want him
+to. Then  gamers feel some  attachment to the  game and don't  want to
+sell  it to  used-software  shops. So,  the more  you  play, the  more
+attachment  you  feel.  This  is  an important  element  we  want  you
+to advertise.
+
+(Will Wright on  Miyamoto) Wright had said, “When you  play his games,
+you feel like you’re a kid and  you’re out in the back yard playing in
+the dirt.”
+
+*** Caillois
+
+Caillois divides  play into four categories:  agon [competition], alea
+[chance], mimicry [simulation], and ilinx [vertigo].
+
+*** The Great Experiment
+
+Altogether it's mostly an experiment: can we use AI characters to help
+the players create their own stories that aren't “a war?”
+
+ + Eve  has shown  that players  can organize  themselves to  create a
+   story  built  around  war;  but  we  can  enforce  a  Shapir-Whorff
+   hypothesis in a game world. You lack the vocabulary in the language
+   of  actions  presented  to  you  as a  player  to  conduct  literal
+   violence.  There  are no  swords.  So,  will players  devolve  into
+   bullies in  some other way, and  end up creating their  own war? Or
+   will  they  find  a  way  to tell  more  interesting  stories  with
+   their play?
+
+ + So  many stories we  do tell  are simple and  non-violent. Romantic
+   comedies.  Sitcoms.  Even  horror  classics  are  not  “about”  the
+   violence;  even   in  action  films,   the  violence  is   often  a
+   filler. Given a vocabulary of  activities that tends to push toward
+   creativity and  forbids violence, will players  use that creativity
+   and keep coming back? or will they feel like “what this game really
+   needs is to let me kill the ogres?”
+
+*** The danger
+
+Nonetheless, there is a certain amount of “danger” necessary.
+
+Having someone trash your garden because you didn't stop him from
+coming into your neighbourhood, or ogres steal your furniture, or
+something making you unable to do things in the world are forms of
+“hurting” you that mean you have consequences of your actions, but you
+can't just “shoot him with a BFG-2000,” you need to find a way to
+“trick” him or convince him to somehow be beneficial.
+
+*** Major Point: Sidekicks
+
+The Sidekick model (bring along a player who hasn't registered
+themself; they share your inventory) might help lure more players in,
+particularly with the low barrier to start playing (Click this link in
+Firefox, and you're in the game now)
+
+With some  luck, that means  we could grow  the player base  better as
+people  use their  existing social  networks [literal  or digital]  to
+expose  the game  to more  people, particularly  kids. Tootsville  4's
+registration took about 4 minutes. This  brings it down to almost zero
+effort to join  in, if you know  an existing player. It  also makes me
+hope that  most new players  will see the  benefits of having  a guide
+with them, so we won't have to worry so much about tutorial needs.
+
+Bonus: marketing: “play the game with your kids” and so forth.
+
+Analogy:  “girlfriend   mode”  was  the  nickname   for  options  like
+http://zeldawiki.org/Tingle_Tuner  which allowed  a  second player  to
+“help” without having to “commit” to playing an 80-hour-long RPG.
+
+*** Major Point: Persistent World
+
+No instanced areas. Very little Adamantium construction.
+
+*** Major Failure: Monetization
+
+I have no solid idea how we could hope to make any money doing this.
+
+ + Selling items? But then, can't people cheat by buying things for
+   USD$ rather than earning them in game?
+
+   - Paying to clone an item that you have earned, e.g. if you have
+     multiple characters? to give to a friend?  
+
+   - Cosmetic items only?  Charge them 50¢ to dye their clothing?
+
+ + Subscription? :-P I doubt that could be a good idea.
+
+   - Hibernation charge?  Protect your  character from entropy. Pay us
+     $1 to freeze time when you're not logged in.  No need to mow your
+     lawn. But: it breaks the  shared, persistent world model. Need an
+     in-game excuse for this to work.
+
+ + Merchandising
+
+There's no profit model
+
+OTOH, the hosting  costs should be pretty light and  it's a fun hobby,
+so  I'm  willing to  dump  a  certain amount  towards  it  for my  own
+amusement &  my friends'; and,  maybe we  can sell enough  manuals and
+coffee mugs on Cafe Press to pay the hosting bill.
+
+There's not  much of a  marketing model,  which is why  Tootsville 1-4
+ultimately failed. “Word of mouth” takes longer than “pay your hosting
+bill” will accept.  The ideas of the Manifesto might  be unique enough
+that we could  luck out and get Slashdotted by  someone like Upworthy,
+but I wouldn't want to count on it.
+
+Without solving these  two, I wouldn't want to  accept any investment,
+meagre or  otherwise, because  it's being  built, realistically,  as a
+money pit.
+
+Perhaps getting someone to pay me (us)  to do this over again for them
+is the real profit model.
+
+Louis        wants         to        build         these        things
+http://resinteractive.com/portfolio.html  but who  would give  him the
+money with that track record?
+
+Maybe we get a better royalty split and a better revenue model (more
+adult players or more affluent players) and create something that's
+more marketable/profitable.
+
+** The Team
+
+*** Me! Bruce-Robert Fenn Pocock
+
+designer and programmer and stuff. whatever is needed 
+
+Res co-owner
+
+*** Gene Cronk
+
+has volunteered to help with some sysop tasks (at least)
+
+*** Erick Feiling
+
+may be interested in some hacking
+
+*** Joseph Williamson
+
+may be interested in some hacking
+
+*** Mark Mc Corkle
+
+may be interested in some hacking & has good industry advice on 
+
+Res co-owner
+
+*** Chris Brunner
+
+moral support
+
+also a Res co-owner
+*** Testers
+
+Kittie,  Sage, Jess,  James,  Carly  + kids,  Meredith  + kids,  Megan
+Griffith, 
+
+** Rough plans
+
+Violet Volts,  of course, is an  anagram for Tootsville V; so that
+name has got to go, because Louis decided to piss himself. Not
+shocking, but sad.
+
+*** No Tootsville?
+
+No Tootsville.
+
+**** Plan B: Tortoises
+
+Conversation with Carly Robb:
+
+BRFP but, like I said, this is my hobby project, so I might as well
+     resurrect the thing.  and if not, maybe we'll use owls.
+     anybody using owls?
+
+CR hehe, you never know.... not that i know of...  owls are good...
+
+BRFP or something else that's easy to draw :-) I like owls.
+     Big hats. Funny glasses.
+
+CR tortoises are nice too....
+
+BRPF Hmm.  true paint their shells difficult to dress as a spaceman?
+     I guess bipedal.
+
+CR and they're semi-elephantish with the stumpy legs...  just give 'em
+     a helmet, they'll do fine....
+
+BRFP no real elbows to speak of.  makes animation easier.
+
+CR hehe
+
+
+*** DONE awaiting answer from Louis Pecci                               :RES:
+
+Louis would “never” consider a free game offer. Oh, well, fuck him.
+
+**** DONE nag Louis a little                                            :RES:
+     DEADLINE: <2013-09-09 Mon>
+
+*** TODO set up fucking Bugzilla and log tickets for all this shit
+instead of having it in a text file
+
+**** Maybe Gene would “like” to do this ?                              :GENE:
+
+** Core Design
+
+Romance II server core. New  message queue based system, replacing the
+packet system from Quaestor; binary compiled Lisp, so much faster than
+Java; lots of nice stuff.
+
+I'm writing up a  rather exhaustive manual for that. I  hope to sell a
+few copies of the book. I'm even  trying to write some of the chapters
+up  like  academic papers;  I  hope  to circulate  them  individually,
+as well.
+
+The  real  reason  for  the  great manual,  though,  is  to  get  more
+contributors.  If  some  companies  start using  this  for  their  own
+MMO-RPG's, then, yay.
+
+** Front-end: HTML5, pseudo-3D.
+
+*** Partial 3D: “Diorama” style
+
+The  world itself  will  be largely  3D polygonal,  but  with lots  of
+"billboard" elements.  The opposite of  how FF-VII did it,  where they
+had painted backgrounds and 3D characters.
+
+If I  have to create new  avatars, they might be  low-poly 3D instead,
+and fuck the 2D part.
+
+The camera is permanently fixed looking  down, and to the "north." So,
+we never see the north-facing side  of anything, ever. This also means
+that the billboarded graphics won't look as silly.
+
+If I  could afford to recreate  everything in "real" 3D,  I'd consider
+it, but this seems like the  best "cheat" for now, and the performance
+should be  good even on  (for example)  cheap Android tablets.  But, I
+might have to  use a native (Java or binary)  client to get reasonable
+3D on them. Not sure yet.
+
+**** TODO Consider buying a tablet 
+
+like Ginny's kids have for testing.
+
+Some kind of 7-10" Android tab
+
+**** TODO 3D library
+
+I don't  give a shit  if it  works in MSIE,  although I guess  MSIE 10
+might be worth looking into someday.
+
+Want something for WebKit + Blink + Gecko though.
+
+WebGL is still kinda shitty. Sad panda.
+
+How good can I get without
+
+ - needing to spend a year in Blender to get shit done;
+ - requiring players to buy a $3,500 PC and reconfigure their video
+   card to get the thing to load
+ - taking advanced math classes to figure out WTF is going on in the
+   engine's API
+
+***** GEGL
+
+So far, this looks like a winner.
+
+Not “married” to it, but it looks pretty good.
+
+***** TODO MSIE WebGL plug-in                                     :MSIE:HELP:
+
+I set up something that might help people install the plug-in, but
+haven't really tested it
+
+***** TODO Android/Chrome enabler help                  :HELP:ANDROID:CHROME:
+
+***** DONE Opera desktop enabler help                            :HELP:OPERA:
+
+*** UI Stuff
+
+The UI is JUST A UI. There's no real game-logic on the UI side, except
+for knowing how to interact with the user.
+
+If  I get  a  chance to  rewrite  it for  other  platforms, then,  all
+the better.
+
+**** Basic Screen layout
+
+The UI  is all one-finger; we  look for taps/clicks, and  drags. Mouse
+buttons 2 & 3 should be ignored for now (this includes trapping button
+3 so it can't throw up a context menu)
+
+
+In the four corners of the screen we have the four main controls:
+
+ * equipped item;  tap to  "use" it;  what that  means depends  on the
+   item; also mapped to the Spacebar
+
+ * a "status"  icon to bring  up various things,  including inventory;
+   also mapped to the Escape key and Tab key.
+
+   Probably  derived from  the equipment  icon but  with some  kind of
+   player-avatar representation in it.
+
+ * a "face/step"  control. Tap  once to  turn to  face a  direction (8
+   ways); tap when already facing that way to take 1 step. Also mapped
+   to  the  cursor   keys  and  the  numeric   keypad  (digits  except
+   5). Basically meant  to look like a gamepad stick  and be easier to
+   “tap”   to  move   in   narrow  spaces   or  turn-to-face   without
+   actually walking.
+
+ * "Action"  control. Depends  on  context. Think  the  (A) button  in
+   Ocarina  of Time.  Also mapped  to  Enter, Return,  or the  numeric
+   keypad 5  key. A small "side"  icon (which jumps up  and takes over
+   when you're near someone) is for "say something" all the time. (See
+   "tap and talk") 
+
+
+For a11y we  may need/want to be  able to cluster these in  one or two
+corners,   also.  I   have  some   ideas  about   giving  pre-arranged
+re-arrangements for  this for  users who  (a) are  using a  tablet and
+holding it from  the bottom corners (thumby controls) and  (b) who are
+using some kind of pointer (say,  a trackball) where it's difficult to
+move  across  the  width  of  the   screen,  so  they  want  them  all
+combined together.
+
+Tap on the ground to move to a position, using pathfinding.
+
+**** Items and stuff
+
+"Usable  items" ---  you can  only  equip one  item to  the button  at
+a time.
+
+Items  can have  continuous (percentage-full)  or discrete  (countable
+number)  quantities associated  with them;  both  have a  "max" and  a
+"current" amount. This was done in Romance 1.1 as well.
+
+Items can be "targeted," "directed," or "directional," or "immediate."
+
+TARGETED:  Click  on   a  specific  entity  to   affect.  Click  item;
+click entity.  Entity should “highlight”  when mouse over  to indicate
+that it's eligible for selection. Gamepad: L-target then “Fire”
+
+DIRECTED: Click on a coördinate; tries  to affect that point in space,
+regardless  of  whether  there  is   any  entity  there.  Click  item;
+click  space.  Cursor  should  be  a “ball”  of  some  kind.  Gamepad:
+R-stick aim? 
+
+DIRECTIONAL:  Click   to  set  a  direction,   relative  to  yourself;
+e.g.  click up  top-left when  standing at  center screen  means, "aim
+north-westerly"  Click  item,  then   position  pointer  “around”  the
+character; should  maybe show a  vector moving parallel to  the ground
+plane in  the chosen direction  toward infinity to indicate  this mode
+of selection. Gamepad: R-stick aim?
+
+IMMEDIATE: Click to use, here, now. No second click.
+
+**** TODO Gamepad support?                                       :W3C:CHROME:
+
+There  looks   to  be  a   Gamepad  support  for   HTML5  supplemental
+recommendation,  but I  don't see  any  signs that  anybody is  really
+supporting it yet?
+
+*** Server communication
+
+streaming, probably WebSockets; server should accept raw TCP too.
+
+Entities get tracks;  maybe we can use the CSS  animation functions in
+some  cases, which  is  nifty. (*no,  we can't,  in  WebGL things  are
+different)
+
+Aggregate  entities  (e.g.   character  +  costumes)  are  manipulated
+hierarchically; so if  I move the aggregate, the  parts move ensemble.
+Normal  behaviour for  OpenGL. Different  than what  I was  sending to
+Persephone, though, where Osiris was handling the subspace summing for
+the most part.
+
+Basically sending  sexp's, probably want  to use the  MongoDB protocol
+for the  wire protocol  this time  around, it's  pretty nice.  BSON, I
+think. It's Binary JSON. Just a little tighter.
+
+** Navigation                                                   :NAV:PHYSICS:
+
+"walkable  spaces" are  totally different  in this  model, plus  we're
+going to have server-side physics, so there.
+
+
+"walkable"  surfaces =  defined  by interaction  of  character type  +
+surface;  always  must be  a  "real"  3D  surface (not  a  billboarded
+object); generally defines as  "navigable" "difficult" or "impassible"
+for the character; the client shouldn't need to know this stuff.
+
+The character will pathfind "navigable" before "difficult" usually.
+
+eg:  "navigable" terrain  = flat  earth. "difficult"  terrain =  loose
+sand, or steep incline uphill. "impassible"  might be a wall. They may
+be able to jump it, but they should usually walk around.
+
+
+*** Adrenaline, Exertion
+
+
+Character "adrenaline" v "exertion" scale similar to Skyward Sword. If
+you  start going  acrobatics (e.g.  navigating difficult  terrain) the
+"adrenaline" scale  goes up,  so you'll accept  the "penalty"  to your
+exertion scale and  use the more difficult route (e.g.  jumping over a
+small wall) rather than walking around.
+
+
+** Equipment, Slots, Valences
+
+
+Some equipment are clothes. All clothes are equipment.
+
+Equipment can:
+
+ * have  a  passive effect;  simply  equipping  it  allows it  to  "do
+   something"
+
+ * have  an active  effect; this  usually  means it  becomes the  item
+   mapped to your "current item" button.
+
+Slots:  are  like  "shirt/chest"  "pants/groin"  "left  hand"  and  so
+forth. Items are only equippable in certain slots.
+
+Valences: Some  things can be stacked  within a slot. Like,  you could
+maybe have a character wearing
+
+ - body paint (pattern layer)
+ - pasties
+ - bra
+ - undershirt
+ - shirt
+ - waistcoast
+ - jacket
+ - overcoat
+ - cape
+
+… all of these taking the "shirt" slot. Some of them block other slots
+at the same valence though. Like, the  cape might have a hoot and thus
+extend into a "hat" slot. The "pattern" might cover the whole body. &c
+
+The avatar "exports" its slots. The item "imports" them.
+
+Basic "DON/DOFF" commands.
+
+Hot-swap icon  for equipment on  a "swipe?"  Hide one icon  behind the
+other and "swipe" to swap them? worth considering.
+
+In real life it takes a second to swap items, so no worries if it does
+in the game, too.
+
+** Server Model
+
+Multiple servers running lightweight containers
+
+Containers  win for  sharing  mmapped regions  of  RO content  between
+themselves  so we  don't lose  anything  if we  run multiple  "logical
+servers"  on  one  "physical"  (possibly   also  a  VM,  e.g.  Amazon)
+server.  And  we  just  design  each one  to  run  in  a  dead-minimal
+environment all by itself, no  worries about other services running on
+the same host.
+
+Game core itself  = monolithic executable that  sniffs its environment
+and command-line  to decide which task  to do on that  instance; thus,
+lots of shared  RO storage, and so  much of a game  server is overhead
+logic stuff that there isn't much of a ballooning either way.
+
+
+Message  Queue  =  leaning  toward ZeroMQ  or  RabbitMQ.  No  opinions
+yet. Need to research. Main question, which  is easier to set up for a
+dynamic  environment where  we  might spin  up  more server  instances
+(containers or hosts)
+
+DB = Postgres. Need to figure out a clustering solution.
+
+** Dev Infrastructure                                                 :DEVEL:
+
+Open source components http://github.com/romance-ii
+
+Private stuff @ Raven:/pub/Software/ for now. Git also.
+
+: git clone username@elysium.star-hope.org:/pub/Software/violet-volts ~/Projects/
+
+*** TODO Separate "assets" git tree. 
+
+*** TODO set up Bugzilla                                               :GENE:
+
+Bugzilla --  I can  set up the  config, but  it's a bit  of a  pain to
+build. Separate  Postgres instance  for hosting  its data,  versus the
+game; or at least its own schema, if it knows how to do that. (They're
+cool with pg these days, right?)
+
+*** TODO set up Koji                                                   :GENE:
+
+Koji --  argh. requires some  other infrastructure  to set it  up, but
+it's really what we need. If I can't get it running, I might fall back
+on Jenkins instead, but ick. Infrastructure like Kerberos.
+
+*** TODO Postfix
+
+Mail server = Postfix.
+
+Eventually we'll want some automated mail handling stuff.
+
+*** TODO static web server?
+
+Web (static) server  = flip a coin, nginx or  Apache? shouldn't matter
+much, the "fun" stuff will all be on the dynamic server anyways
+
+Might just say fuckall and use aserve or Hunchintoot and build it into
+the same executable …
+
+** Tap And Talk                                                    :TAPNTALK:
+
+Madlibs-style interface
+
+limited vocabulary
+
+map directly to logical assertions or queries
+
+separate content from language
+
+big issue = selecting nouns. lots of stuff to choose from, how to make
+it not take forever to bring up a concept?
+
+most-recently-used set will help
+
+but might need to "talk about"  things that are not in your inventory,
+far away, whatever; that will make them ornery to select
+
+if you haven't "heard of it," you can't talk about it.
+
+Shapir-Whorff Hypothesis in action for the AI's too.
+
+
+*** SINGING tortoises                                                 :SOUND:
+
+Pick a voice and we'll run the dialogue through some kind of "note
+generator" so whenever you say the same word, it'll "sound"
+the same.
+
+Not English hashes like we had looked at before. I'll just take the
+conceptual tokens used in the AI and use them as indices to pick a
+starting and ending frequency and duration.
+
+Maybe MOD-style. Pitch-bend, duration, and pick a "sample" to play.
+
+**** TODO What kinds of sounds do tortoises make?
+
+**** TODO sound in the browser
+
+How shitty is it? Is it as bad as I think it is?
+
+Might need to create a "sound rendering" server and stream this to
+the client.
+
+My initial tests at synthesizing music had “crackling” effects that I
+couldn't shake. Need to reconsider/re-evaluate this.
+
+** TODO Sound effects; foley                                          :SOUND:
+** TODO background music                                        :SOUND:MUSIC:
+*** TODO Creative Commons music
+
+Look into pulling Creative Commons music en masse for the “radio”
+
+** Geography                                                            :MAP:
+
+There WILL be one big map. I'll probably run some noise generator over
+a sketched map to create a huge heightmap of the island.
+
+*** TODO re-draw a non-Tootanga map.                                :MAP:BRP:
+
+** Physics                                                          :PHYSICS:
+
+Looks like it's Bullet.
+
+NB: this is handled server-side mostly, but the client will need/want
+to predict things also. Having the same library compiled two ways
+would be the optimal solution, of course.
+
+*** TODO make new Lisp bindings, the old ones are kinda shitty
+*** TODO make a JavaScript binding?
+
+** AI planners                                                        :AGENT:
+
+A-star Djikstra style (give or take)
+
+their "intelligence"  score is kinda  the number of steps  the planner
+evaluates per "turn"
+
+same I/O as players. only distinction P-C v NPC = where the I/O goes.
+
+temporal associative logic
+
+Andi-land style stuff
+
+conceptual trees for memory: when do they forget?
+
+when  do   they  "notice"   something?  ---  interests   trip  passive
+perception; active perception triggered on other events
+
+** Teams                                                              :TEAMS:
+
+loose thing
+
+really just a UI thing?
+
+any net effects? maybe passive items  activate for a whole team. (mass
+buff/debuff)
+
+** Buddy List?                                                    :BUDDYLIST:
+
+eh. I really don't care.
+
+double-accept? (Facebook-style or Google+-style?)
+
+** Sidekick                                                        :SIDEKICK:
+
+Non-registered player-character shows up as "XXXX's friend"
+
+basically treated like a pet
+
+but  they share  the same  inventory, so  you have  to loan  them your
+clothes and tools.
+
+ + Zero barrier to entry to play
+ + Parents can bring their kids on or vice-versa
+
+** Pets                                                                :PETS:
+
+follow you around, and stuff
+
+basically simpler AI's
+
+non-linguistic
+
+same as any other animal, but they "like" you a lot
+
+** Vehicles                                                         :VEHICLE:
+
+definitely want a  *high* speed rail network
+
+also revamp the idea of cars for both transportation and racing — the
+mechanic/inventor will invent them after we're online
+
+“walkable space” concept to keep cars only on the road
+
+“obey the crosswalk” magic gimmicks, like a teaching video; as soon as
+someone enters a crosswalk, they proceed across it without running,
+cars must stop.
+
+** Passports                                                       :PASSPORT:
+
+In Tootsville 2,  once you got invited  to a place, you  could go back
+there by clicking on your passport  icon, but we ditched or broke that
+concept pretty early on.
+
+Now  that you  can walk  across the  whole world,  though, maybe  once
+you've found  a train  station or  fountain in a  village you  can get
+your passport stamped  --- perhaps even have some  minigame type thing
+to get your stamp  --- and once your passport is  stamped, you can buy
+train tickets to go back there any time
+
+How about sidekicks? They must be able to come with you
+
+*** TODO better name than “Passport”
+
+** Compass; Metal Detector; Dowsing Rod                             :COMPASS:
+
+Like in Zelda, give or take. Some kind of Compass, Metal Detector,
+and other item(s) that can be used to find certain types of prizes in
+the world. Dowsing Rod.
+
+*** TODO develop the list of prizes and ways to search  :COLLECTIONS:COMPASS:
+
+Not every collectible item needs to be detectable in the same way
+
+* The Story
+
+“Why is it so dark?”
+
+“In the beginning, it is always dark. … This one grain of sand; it is
+all that is left of my vast empire.”
+
+** The Back Story
+
+A bunch of big tortoises found themselves on top of a magical
+elephant graveyard, which turned out to be a gateway to a special
+alternate dimension
+
+BLAH BLAH
+
+Somehow they mutated. Somehow, in a way that does not involve rats,
+little alien guys with no legs, or bank drive-through tubes full
+of jelly.
+
+Seriously, I want to be *very careful* to avoid any potential for
+comparison with the Teenage Mutant Ninja Turtles.
+
+BLAH BLAH
+
+So now, tortoises can cross through this one-way portal and find
+themselves in TODO WORLD-NAME
+
+Their birdy friends --- finches --- come along for the ride and serve
+as a mail service.
+
+A few other random critters might exist, but they're special-case
+one-off beasties with very specific jobs.
+
+The world is somehow TODO cloaked in some kind of impenetrable fog or
+something so that we have a natural barrier that gradually disappears
+as we (designers) add more terrain to the geography.
+
+*** TODO world name
+
+*** TODO why can't you go everywhere?
+
+fog of war
+
+magic barrier
+
+edge of scroll radius doesn't really work in 3D
+
+** Characters
+
+There are a team of characters who provide the basic story-movement
+capabilities for the game designers. They'll have the most developed
+personalities and are regarded as being particularly “special” by all
+of the other AI's.
+
+They're also the original group that arrived first.
+
+These basic characters also serve as models that players can
+(hopefully) identify-with; and, by virtue of building their
+personality types, other characters will in turn be able to exhibit
+features of them.
+
+They're the archetypes, from which all AI's descend.
+
+They're intentionally based upon the models of how (we wish) players
+will interact with the world, thus by merely existing and
+participating, themselves, we'll see a continuous test of the game
+world's ability to withstand players.
+
+The current working models here have been drawn from the elemental
+system of Chinese astrology as well as various psychological
+documentation with a bit more scientific rigour; the various
+categories will likely be merged into fewer characters as we
+develop them.
+
+http://www.gamasutra.com/view/feature/6474/personality_and_play_styles_a_.php
+
+http://www.yukaichou.com/gamification-study/user-types-gamified-systems/
+
+*** TODO leader
+
+A Leader.
+
+The natural leader, capable of making a binding decision for
+everyone; a monarch, a benevolent-dictator-for-life, and the leader of
+the group; s/he takes everyone's opinions into account, but they
+accept his/her decisions as law.
+
+*** TODO wacky inventor
+
+*** TODO earth person
+
+
+
+Most Earth-type people are trustful, steady, loyal and
+responsible. They are honest, religious, reliable, and keep
+their promises.
+
+The characteristics of Earth are standing still, being slow and
+steady, and stationary. Therefore the Earth people don't like to move
+their body and change their mind too often. They are honest,
+trustworthy, and responsible. They also have good faith. They can sit
+in one position for a long time. They accept religion since they like
+rumination and meditation. They are slow to react. They like to
+collect things, and enjoy their collectables at home, but
+not outdoors.
+
+People lacking Earth are selfish, insincere, and self-indulgent. They
+tend to ignore other people's opinions. They might take immediate
+advantage of others unethically. They don't care about the people
+around them and do not keep their promises.
+
+People with excess Earth are stubborn, inflexible, cheap, lonely,
+plain and simple. They cannot keep their word either. 
+
+*** TODO metal person
+
+
+
+Metal-type people are righteous, faithful, gallant and
+chivalrous. They like to know and help people.
+
+Metal is the substance in which internal particles squeeze and
+condense together. There is a force from the outside to the inside
+that keeps Metal hard. Metal reflects light, so it is shiny. It may
+have a clear sound when it's hit. Therefore, a Metal-type person has
+great strength, discipline and enough courage to aid needy people,
+which may make them famous.
+
+Metal people are brave, disciplined, trained, organized,
+authoritative, determinative, routine, firm, resolute and have an
+urge to win. They have a large sense of honor. They like to spread
+their fame. They are sensitive in grief and sadness.
+
+People that lack Metal are quiet, cautious and nervous. They tend to
+think too much, and cannot make quick decisions. They do not express
+what is on their minds in public, but will complain about
+something afterwards.
+
+People with excess Metal are often unkind and destructive. They are
+brave but may have no resourcefulness and no intelligence. They have
+little grace and no mercy. They do not keep secrets.
+
+*** TODO water person
+
+ Water-type people are smart, wise, frank, and resourceful. They have
+ good memories and think before they leap.
+
+There are two types of Water: Floating Water and Still
+Water. Floating Water makes people active and restless and feel
+like traveling. Still Water makes people clam and peaceful.
+
+People lacking Water are unstable, cowardly, narrow-minded, and have
+no stamina. They lack intellect, good sense, understanding,
+and foresight. They also tend to keep changing their mind.
+
+People with excess Water are smart, sly, tricky and plot
+dark schemes. They like to move or travel around and have a
+sensual life. They are likely to dream too much, and keep changing
+their mind as well. They also are only interested in what concerns
+them and have no interest in outside world affairs.
+
+*** TODO wood person
+
+ Wood-type people are kind, steady, sympathy-sharing, understanding
+ and gentle. They like to help people and make donations.
+
+The essence of Wood is a tree. The force inside the tree is like
+growing upward to the sky. Trees often compete with each other
+aggressively when growing up. Because of the characteristics of
+trees, Wood-type people are steadfast, organized, logical, practical,
+innovative, unique, assertive, fortitudinous, independent,
+challenging and direct. They like to plan things, take action, and go
+on adventures and challenges. They are perfectionists who tend to
+push themselves to the limit and seek out the best, and take first
+place in competition.
+
+When their ambition and optimism is overwhelming, Wood-types can
+become upset, nervous, unstable, impatient, intolerant, and lose
+their humor by the frustration of many obstacles.
+
+People lacking Wood essentially are weak in their opinions. They lack
+the determination to change their options when situations
+change. They are likely to be jealous when they don't have a strong
+viewpoint of their own.
+
+People with excess Wood are often inflexible, prejudiced and
+biased. They tend not to accept or absorb others' opinions.
+
+*** TODO fire person
+
+
+
+A Fire-type person is courteous, eloquent, polite and
+expressive. They are good at compliments in speech.
+
+Fire people are energetic, artistic, passionate, easily excitable,
+and have a tendency to rapidly change emotional states as well as
+become aggressive. They love sensation, drama and sentiment. They
+seek joy, gratification and the attention of others. They like to be
+invited to a party and dislike being alone.
+
+People lacking Fire are aggressive but have no persistence. They are
+inclined to have little confidence and have plenty of worries.
+
+People with excess Fire are often talkative, overstated, overexcited,
+overheated, sweet-talking, smart and restless. They tend to lecture
+and offend others because of their short temper. 
+
+
+*** TODO killer person
+
+
+Killers like to provoke and cause drama and/or impose them over other
+players in the scope provided by the virtual world. Trolls, hackers,
+cheaters, and attention farmers belong in this category, along with
+the most ferocious and skillful PvP (player versus player) opponents.
+
+Artisan/Killer: Finally, there are the Killers (or, as I prefer to
+call them, Manipulators). These can be difficult to understand in a
+gameplay context because most virtual worlds have encoded rules that
+marginalize their play style as "griefing" (i.e., upsetting other
+players) and try to prevent it. As Bartle puts it, "Killers get their
+kicks from imposing themselves on others." He also points out that
+Killers "wish only to demonstrate their superiority over
+fellow humans."
+
+This desire for power over everything in their world is most closely
+echoed in the Keirseian description of Artisans, who (as their
+temperament name suggests) delight in the skillfully artistic
+manipulation of their environment. The Artisan/Killers are the
+tool-users, the adrenaline junkies, the natural politicians, the
+combat pilots, the high-stakes gamblers, and the negotiators
+par excellence. They instinctively find and exploit advantages in any
+tactical situation, and they express this need for dominance of their
+world in order to retain the greatest amount of personal freedom
+possible (External Change).
+
+I believe a very good example of this can be found in Ryan
+Creighton's "social engineering" of the coin-collecting game at the
+Social Game Developers Rant of the 2011 Game Developers Conference. A
+Guardian/Achiever would have played by the rules and raced around the
+room begging others for their coins to try to win the game; an
+Idealist/Socializer would have asked for coins as a way to meet new
+people or help others win; and a Rational/Explorer would have sat
+quietly watching the flow of coin exchanges to try to understand the
+nature of the game. But an Artisan/Killer would instantly see how to
+short-circuit the designed system, and, as a born negotiator, would
+find it easy to persuade the person holding one of the bags of coins
+to hand the whole thing over... which is exactly what happened.
+
+If the attendees needed to hear a rant from anyone, it would be the
+Manipulator who is out there, just waiting to exploit any opportunity
+to bring a little chaos to the carefully designed order of a
+social game. (See Ryan's description of the event for a wonderful
+first-hand account of gameplay from what appears to me to be a
+classic Artisan/Killer perspective.)
+
+A final note on the Keirsey/Bartle linkage: the Keirsey temperaments
+and Bartle Types may appear not to line up directly where attitudes
+toward other people are concerned. This is because the Bartle Types
+were developed within a multi-player environment, which selects for
+more extroverted, sociable gamers, while the temperaments include
+both extroverts and introverts.
+
+So, for example, the "Socializer" term that makes sense within the
+Bartle Types for its emphasis on interacting with other people can
+seem not to apply to an introverted Idealist who prefers to play
+single-player games. These less-social Socializers are more likely to
+prefer individualized entertainment or abstract games, making it
+difficult to distinguish them from Rational/Explorer gamers. Closer
+study is usually required to see whether their primary reason for
+playing is to feel good (an Idealist preference) or to exercise their
+thinking skills (a Rational goal).
+
+*** TODO achiever person
+
+Achievers are competitive and enjoy beating difficult challenges
+whether they are set by the game or by themselves. The more
+challenging the goal, the most rewarded they tend to feel.
+
+Guardian/Achiever: For the Guardian, the world is an insecure place,
+so it's necessary to protect oneself by accumulating material
+possessions... just in case. Thus, Guardians focus on earning money,
+on competing with others for resources perceived as scarce, on buying
+nice things and maintaining them, on forming stable and hierarchical
+group relationships, and generally on working hard to make their
+place in the world secure by locking down their connections to the
+world as possessions (External Structure).
+
+Compare that to Bartle's description of Achievers: "Achievers regard
+points-gathering and rising in levels as their main goal" and
+"Achievers are proud of their formal status in the game's built-in
+level hierarchy, and of how short a time they took to reach it."
+Leveling up, leaderboards, and the accumulation of vast quantities of
+looted items are all behaviors that are driven more by a
+security-seeking motivation than by other motivations such as
+powerful sensations, understanding or self-growth.
+
+This explains why the Guardian/Achiever is willing to persist in long
+stretches of "grind" that other kinds of gamers don't perceive as fun
+at all. To this gamer, rewards should be proportional to the amount of
+effort invested. When a game is designed around simple, well-defined
+tasks that enable the competitive accumulation of status tokens, that
+game is virtually guaranteed to attract security-seeking
+Guardian/Achievers.
+
+*** TODO explorer person
+
+Explorers like to explore the world – not just its geography but also
+the finer details of the game mechanics. These players may end up
+knowing how the game works and behave better than the game
+creators themselves. They know all the mechanics, short-cuts, tricks,
+and glitches that there are to know in the game and thrive on
+discovering more.
+
+Rational/Explorer: Rationals play in the same way that they do
+everything else -- they find pleasure in discovering the organized
+structural patterns behind raw data (Internal Structure). These can
+be patterns in space (as in geography) or patterns in time (as in
+morphology). Or they can be cause-and-effect patterns (entailment) or
+relationship patterns (connections). Ultimately, it's all about
+achieving a strategic understanding of the system as a whole thing.
+
+As Bartle describes Explorers: "The real fun comes only from
+discovery, and making the most complete set of maps in existence." Of
+the core motivations -- sensation-seeking, security-seeking,
+knowledge-seeking, and identity-seeking -- exploration as "discovery"
+is most closely aligned with the Rational's
+knowledge-seeking preference. For the Rational/Explorer, once the
+principle behind the data is revealed, that's enough -- understanding
+is its own reward. These gamers can enjoy imparting knowledge to
+others, but no extrinsic reward for doing so is needed or expected.
+
+*** TODO socializer person
+
+Socializers are often more interested in having relations with the
+other players than playing the game itself. They help to spread
+knowledge and a human feel, and are often involved in the community
+aspect of the game (by means of managing guilds or role-playing, for
+instance).
+
+Idealist/Socializer: Socializers are described by Bartle as
+"... interested in people, and what they have to
+say. ... Inter-player relationships are important ... seeing [people]
+grow as individuals, maturing over time. ... The only ultimately
+fulfilling thing is ... getting to know people, to understand them,
+and to form beautiful, lasting relationships."
+
+This is closely related to the Keirseian description of Idealists,
+who are very aware of other people as part of their lifelong journey
+of self-discovery (Internal Change). In a way, the highly imaginative
+Idealists are always roleplaying; they are constantly creating images
+of themselves (or others) that they feel they should model through
+their own actions in order to produce the emotions in themselves that
+they want to feel.
+
+*** TODO conqueror person
+
+“I’ll beat any challenge”
+
+    Play: Hard Agon
+    Emotions: Anger/Fiero, (Fear?)
+    Skills: Strategic, Tactical & Logistical 
+
+The fiero-seeking Conqueror is the economic mainstay of the upper
+market of videogames, thriving on a diet rich in First
+Person Shooters. Challenge is the draw for this player – when the
+complaint “it was too easy” is heard, it is heard from a
+Conqueror. Fiero, the emotion of “triumph over adversity” requires
+that the player be put through the ringer, pushed to their limits,
+and as a result anger and (possibly) fear are likely to be
+related emotions. It is likely that Conquerors are younger on average
+than other players.
+
+*** TODO manager person
+
+“I have to know how it works”
+
+    Play: Complex Ludus, Agon
+    Emotions: Contentment, Fiero
+    Skills: Strategic 
+
+The strategic-minded manager is a complexity-seeking player. Games
+with many rules, including both strategy games, and certain cRPGs,
+are the mainstay of such a player, although adventure games will also
+be enjoyed by many. Although fiero is likely to be a theme, the
+Manager is less dependent upon this one emotion, and seeks the
+satisfaction of knowledge or mastery, expressed through the feeling
+of contentment. They can rack up serious hours on the games they
+really love.
+
+ 
+
+*** TODO wanderer person
+
+
+“Escape to another world”
+
+    Play: Mimicry, Paidia
+    Emotions: Wonder, Curiosity, (Fear?)
+    Skills: Tactical & Diplomatic?
+
+The escapist Wanderer seeks immersion in the sense of engagement with
+an imaginary world. Such a player enjoys the beauty of fantasy
+worlds, and is driven by a curiosity to see what is out there. Story
+(specifically characters) is a greater drive than challenge, and
+indeed the desire to know how the story ends may drive engagement
+with any game. Fear may be enjoyed for the experience, in the manner
+of a fairground spook house.
+
+*** TODO participant person
+
+
+“Let’s play together”
+
+    Play: Agon? Paidia?
+    Emotions: Belonging, Amusement, Naches
+    Skills: Any?
+
+The archetypal social player, the Participant doesn’t want to
+play alone. Although competition (agon) is enjoyed, it is enjoyed
+principally for the opportunity to be part of something taking place
+between people. The need to belong, to be part of something, is
+likely to be expressed most strongly with such a player.
+
+*** TODO hoarder person
+
+
+“As much as I can get”
+
+    Play: Mimicry, Ludus?
+    Emotions: Greed, Contentment
+    Skills: Logistical
+
+The logistically minded Hoarder cannot resist acquisition of
+game resources. Likely found playing equipment-heavy cRPGs, as well
+as MMORPGs, the Hoarder is a thorough player, gaining satisfaction
+(and hence contentment) from the completion of “stamp collections”
+and the like. When they finish a game, they usually find they have
+accumulated an absurd amount of equipment, ammunition or money.
+
+*** TODO zoner person
+
+
+“Time has lost all meaning”
+
+    Play: Simple Ludus, Alea, Ilinx?
+    Emotions: Excitement, Relief
+    Skills: Tactical 
+
+Puzzle games are the zoner’s remit – lost in the flow of an abstract
+game, they become intent upon the actions of the game they are
+playing to the exclusion of all else. However, as much as they love
+the games they play, they may not play for long period of
+times. Short games played often is the nature of the experience.
+
+
+
+
+*** TODO juggernaut
+
+
+“Knock ‘em down”
+
+    Play: Easy Agon, Mimicry, Paidia
+    Emotions: Amusement, Contentment, Excitement
+    Skills: Tactical?
+
+The Juggernaut seeks a little resistance in the game they are
+playing, but mostly wants to push through everything with comparative
+(and amusing!) ease. A little excitement is desired, but the
+Juggernaut isn’t looking for the degree of challenge that would
+consistently supply fiero. Rather, they just want to play around –
+often completely dominating the game they are playing. For the
+Juggernaut, games aren’t about stress, they’re about unwinding. 
+
+*** TODO monster 
+
+
+“Evil is my middle name”
+
+    Play: Agon, Paidia
+    Emotions: Schadenfreude, Amusement
+    Skills: Strategic? Tactical 
+
+The emotion of schadenfreude – taking delight in the misfortune of
+others – drives the Monster. Mischief is their primary occupation –
+“griefing” of strangers in a MMOG, and playful annoyance when
+among friends. The Monster player is not interested in rules – except
+in so much as they can find new ways to break them.
+
+*** TODO hotshot person
+
+
+“The thrill of the ride”
+
+    Play: Ilinx, Mimicry
+    Emotions: Excitement, Relief, (Fear?)
+    Skills: Tactical
+
+The master of high speeds and nail biting rides, the Hotshot is the
+master of vertigo (ilinx). The ultimate payoff of victory (fiero)
+will be enjoyed, but it is the experience of being at the brink of
+control – the excitement (and perhaps fear) of being right on the
+edge that is the driving force. 
+
+*** TODO agon person
+
+http://onlyagame.typepad.com/only_a_game/2006/03/the_challenge_o.html
+
+*** TODO alea person
+
+http://onlyagame.typepad.com/only_a_game/2005/11/the_rituals_of_.html
+
+*** TODO mimicry person
+
+http://onlyagame.typepad.com/only_a_game/2006/01/the_imagination.html
+
+*** TODO ilinx person
+
+http://onlyagame.typepad.com/only_a_game/2006/05/the_joy_of_ilin.html
+
+*** TODO ludus person
+
+http://onlyagame.typepad.com/only_a_game/2006/04/the_complexity_.html
+
+*** TODO paida person
+
+http://onlyagame.typepad.com/only_a_game/2005/12/the_anarchy_of__1.html
+
+
+** Non-Tortoise Characters
+
+*** The Mockingbird
+
+The Parrot is a “village elder” who gives advice to new players.
+This is the tutorial section also.  New players come in throught the
+portal and have to follow the mockingbird's instructions to
+get through.
+
+**** TODO name him
+
+*** Finches
+
+The Finches travel around spreading whatever news we (admins) want
+them to.  They're the Town Criers and also deliver
+mail/packages.
+
+**** TODO need a list of names
+
+I'm tempted to get themey and use, say, famous literary figures' names
+
+*** TODO The Big Bad
+
+The Big Bad wants  to do something cataclysmic to seek power for
+himself, but is never seen ; 
+
+He gives “gifts” to his minions
+
+Probably the source of the thing that obstructs access to most of the map
+
+Now he's a boogeyman, never seen; like Sauron, he lurks in the (TODO)
+region and marshalls his forces without ever being seen, himself. All
+of the characters fear the day that The Big Bad shows up again; they
+don't know if he's regaining his evil magic as fast as they've been
+building up their skills
+
+*** TODO the polluter
+
+Goal  is to  pollute the world,  he leaves trash  around that
+players need to wash up.
+
+Very much Super Mario Sunshine. Sorry, Nintendo. 
+
+*** TODO the mail thief
+
+tries to steal the mail and such, but if he gets caught, he'll drop
+what he's taken. Otherwise, he'll take the packages and stash them in
+various places throughout the world.
+
+Players “catching” him will “free” up whatever packages he's stolen
+but not yet hidden; the hidden things will be in trapped boxes.
+Recovered, stolen goods should be dropped into any mailbox for
+re-delivery.
+
+** Currency                                                           :MONEY:
+
+Need to come up with something to use for currency.
+
+Scottish Pounds in the underwater area. Manatee money is only for
+manatees. Teach them to deal with currency exchanges.
+
+No money on the space station. Totally socialist.
+
+When you "own" something like a house people know it's yours
+
+if you drop other shit in public you might be littering or it might be
+civic improvement —
+
+*** TODO how do the AI's decide?
+
+if you drop other shit in public you might be littering or it might be
+civic improvement —
+
+* Minigames
+
+Note, none of these are pop-up minigames or whatever. They're just
+things to do in the game with the same interface as any other things.
+
+** Football Core                                                   :FOOTBALL:
+
+Basic  core that  we can  use different  rules variations  easily for:
+soccer,  volleyball, baseball  or  softball  or kickball,  basketball,
+possibly miniature golf or croquet, …
+
+** House and Lot                                                      :HOUSE:
+
+Lots: Miami-style. Each village has a  town square with a main Ave and
+a main St that are analogous to 0 Ave / 0 St
+
+Streets run E-W and have numbers running north or south.
+
+Avenues run N-S and have numbers running east or west
+
+Buy a lot and build a house on it
+
+Build more rooms and decorate the yard
+
+** The Mazes                                                           :MAZE:
+
+Originally planned for Tootsville IV, but we never got decent art and
+then the client-side support blew up. Yay Sam.
+
+Mazes exist as:
+
+ + lilypads across the lake near the treehouses where the finches live
+
+ + lava floes in the caves into the Lost World
+
+ + under The Manor, Venetian theme; Venice, Roman catacombs, or the
+   Temple Of The Gods in Wind Waker.
+
+ + The Manor maybe also a hedge maze
+
+ + something like a maze around the Ranch?
+
+ + going down hamster tubes on the space station
+
+ + traversing a Coral Reef near the Manatee village ...
+
+
+The Maze areas are made up of “tile”-like objects that are either
+“positive” (places one *can* walk) or “negative” (one can only walk
+where they are *not*); e.g. lilypads are a positive-space maze; hedge
+mazes are negative-space; lava floes might be a combination of both,
+with positive-space islands amid negative-space lava amid
+positive-space.
+
+Before a space transitions, there's an obvious transitional state;
+e.g. lily pads partially submerged/arisen.
+
+Some spaces may be “dangerous” and reset the player to something like
+the start of the maze, but will have obvious “hints” to warn the
+player of this.
+
+Over time, the dynamic stepping stones are changed slightly: one
+might appear or disappear randomly.
+
+Stones won't disappear or become dangerous while someone is
+standing upon them?
+
+Keys and locked doors (of whatever kinds) may exist in each maze
+
+:    The Locked Door can only be opened if the player possesses the
+:    Key Pivitz and is standing nearby to it, within a
+:    predefined area. Once unlocked, the Key is "destroyed" [but
+:    therefore can be obtained again], and the door remains unlocked
+:    [and passable] as long as the player remains nearby. Once the
+:    player leaves the area [either by walking away or walking through
+:    the door], the door locks again, requiring someone [same or other
+:    player] find the Key to the door again.
+
+doors can also be teleports
+
+:    The exits from each room re-enter other maze rooms more-or-less
+:    at random: they are not laid out in a grid, and walking back
+:    through the same door may not return you to the same room. Doors
+:    may change where they go over time, perhaps daily or hourly.
+
+Possible alternate Key/Lock mechanism might be to obtain a Key and
+require it to go to a Lock elsewhere in the maze, which then opens a
+door distant from the lock for a given time (say, 5 minutes or
+so).
+
+NPC hinting, per the old Tootsville IV plan it went like
+
+:    A Super Toot Bot will stand just inside the entrance from the
+:    Castle with a short phrasebook explaining the basic rules, e.g.:
+:        The maze is changing all the time.
+:        If you can find the key, there's a prize behind the
+:        locked door.
+:        Watch out for slippery stones or you might be sent to
+:        Shaddow Falls!
+:        If you get lost, use your Compass to escape.
+:        Run away if you see The Big Bad! He'll steal your peanuts!
+: 
+
+Upsides: serves puzzle-solving players; fairly good replayability
+
+Downsides: requires new assets [prizes, rooms] to be added from time
+to time.
+
+** Cleaning up after Smudge
+
+Vacuum (?) up stains left by Smudge
+
+** Tower Defense Picnic
+
+One idea: columns of ants marching in. The "towers" throw
+ant-foodstuffs at them: seeds and such. When the ants have "absorbed"
+enough "hit points" [carbs?] worth of food, they turn around and
+march peacefully away. "Sated" ants change colors and move faster;
+they're not targeted by the weapons.
+
+The player's "base," then, is a picnic basket, with a certain number
+of peanuts in it. As the ants successfully take peanuts, they are
+"sated" and rush off screen. Once the entire picnic has been stolen
+by the ants, the game ends.
+
+Since kids crave closure, we could have the game "end" after a
+certain number of rounds.
+
+This could be done now [Nightmare] as a minigame, or later [Osiris]
+as an in-world game. 
+
+** Digging Game
+
+This was a knock-off of Astro-Pop.
+
+Basically:
+
+Move spaceship left or right across bottom of board.
+
+Use "tractor beam" to pull down blocks which are the same
+color. Collect blocks from one or more columns, then push them back
+into another column by dropping them.
+
+When enough blocks of the same colour collide, they "pop," and trigger
+any adjacent special blocks to drop their prizes as well.
+
+Note that the implementation of the pattern-search for the blocks
+array was something that PopCap? did very badly in their first
+implementation of this game, so we should watch out for "gotchas"
+in that.
+
+We could probably invert the screen vertically and have this as a
+digging game. The blocks would be various chunks of earth; moving them
+together causes little "cave ins." The prizes are carried up out of
+the earth by grateful bugs [earthworms, ladybirds, etc.] to the player
+walking across a scaffold at the top of the screen. The players could
+them collect a certain type of prizes as a goal, once they receive
+enough of these [gems?] they could move on to a higher level.
+
+** Zuma/Luxor concept
+
+Games like "Zuma," include the popular "Luxor" clone, we could easily
+produce one of these.
+
+The only difficulties we had in production of Zuma from PopCap? were:
+asynchronous ball-rolling animations in the axis of forward travel
+tended to cost a lot of CPU power; we went to a synchronous, general
+animation for the seat-back systems; and the tunnels code gave
+me trouble.  
+
+Oh, wait, we're 3D now. Squelch that.
+
+** Insaniquarium-inspired fish pond?
+
+"Feed fish; fight aliens."
+
+The bear kids were stoned or something, but it's an addictive
+format. We should probably rework it into something other than an
+aquarium, of course.
+
+Basically, you drop fish-food into the tank, to feed the fish, who in
+turn both grow, and crap out gold coins. Clicking coins collects them,
+to give you money, to buy more fish [and some other helpful creatures
+that assist in feeding and collecting coins].
+
+From time to time, aliens beam into the tank, and you click on them
+to LASER them until they explode back to their alien universe.
+
+Both aliens and larger fish eat the smaller fish.
+
+The object, naturally, is to have your fish survive for as long
+as possible. 
+
+** Mail                                                                :MAIL:
+
+Leave mail in mailboxes; finches distribute
+
+Write messages, wrap parcels
+
+monsters tries to steal them
+
+** Luigi's Mansion?
+** Platformer areas
+** the spaceship game                                            :SPACESHIPS:
+
+used to be called Zap's spaceship battle or something
+
+Let's make it into “asteroids”
+
+When there aren't human players, some robots will have to jump in, to
+keep the space station from being damaged by the never-ending barrage
+of falling rocks and space junk
+
+** Dangerous areas: The Big Bad
+
+On a pseudorandom schedule, The Big Bad will appear in one of the maze
+rooms and steal peanuts from all players who don't flee fast
+enough, e.g.:
+
+ + The Big Bad appears
+ + Tendrils weather sets in
+ + "Hahaha! I'll steal # peanuts from you all!"
+ + Wait for # seconds
+ + steal peanuts [#givenuts -# @room]
+ + The Big Bad vanishes
+ + Repeat randomly every 2 hours or so
+
+Consideration: Perhaps not The Big Bad himself. I don't want to introduce
+the character too early and end up making him a mere nuisance.
+
+Perhaps having Targ or Welduh or something do this kind of harassment
+makes more sense.
+
+Allowing some use of Wishes to stop them would be good
+
+* Places                                                                :MAP:
+
+**** TODO map
+
+** Downtown
+
+Tortoise St and James Ave
+
+*** Main plaza
+
+**** The shopping area                                                 :SHOP:
+
+From 2009, I wrote:
+
+9.6 Shopping
+
++ Shopping is  now an  in-world action.  If desired,  storekeepers can
+  even be conversant NPC:s.
+
++ Players can walk  through shops and view items on  shelves, and then
+  purchase them by  clicking on the items and choosing  to buy them or
+  not. When clicked upon, store items  will pop up a detail sub-window
+  similar to the previous “web catalog” views.
+
++ This gains  us the  additional psychological advantage  that players
+  will  literally see  “everything” for  sale, rather  than only  ever
+  seeing a few items at a time. This makes the shops look much bigger,
+  even though  from an artwork perspective  we only need to  draw [and
+  then replicate] a couple of “shelves” graphics.
+
++ None  of the  shopping  functions require  special  handling on  the
+  client side, since  the stores are just ordinary 3D  rooms with some
+  special logic  on the server  side to handle purchasing  items [and,
+  possibly, speaking with the clarks at the stores].
+
+We didn't really live up to it at the time, but the examples of
+actually trying to do so in Tootsville (like Capes & Cowls) seemed to
+validate the statement.
+
+**** Restaurants
+
+a few of these.
+
+***** TODO Cooking                                                 :MINIGAME:
+
+Cooking game, like Cooking Mama.
+
+Baking  Mama. 
+
+***** TODO Waiting Tables                                          :MINIGAME:
+Waiting tables game, like Diner Dash
+
+***** TODO Washing Dishes                                          :MINIGAME:
+Washing dishes game
+
+**** Train station                                                   :TRAINS:
+ main station
+
+**** Theater
+
+The Theater …  will need some ideas here, but  Archive.org and <video>
+might   be  a   cool   fit,  if   we   can  overcome   browser-related
+issues. Running old cartoons and such.
+
+Yes, this is the same idea I used for Tootsville when Louis's
+original content didn't come through, so it's kinda “been there, done
+that,” but it *is* an idea.
+
+***** TODO Video "recording"?                                      :MINIGAME:
+
+What if players could act out scenes on a soundstage and record them,
+and then enter a contest of some kind to have their videos
+posted here?
+
+Kinda rehashes something the Tootsville players had "invented" on
+their own.
+
+****** TODO YouTube?
+
+It's even possible we could share out the "best of" to YouTube.
+
+***** TODO Video playback?
+
+Tech issues? <VIDEO> element support, transcoding, bandwidth
+
+**** Inventor's Shop
+
+crazy Rube Goldberg physics engine tests
+
+**** Fairgrounds
+ for events
+
+
+**** Hall Of Heroes
+
+statues for famous players?
+
+**** Spaceport
+
+the launch/landing pads for rockets to the space station are here
+
+***** TODO Launch minigame                                         :MINIGAME:
+
+minigame to help run the countdown from Mission Control; if you fail,
+the rocket launch will abort and you'll have to wait for them to
+refuel; nobody else can go to the space station until the next launch
+window
+
+*** School?
+
+need some actual contents here
+
+walk the halls
+
+get a locker
+
+take a class…
+
+honour roll?
+
+***** TODO design classes                                 :RESEARCH:MINIGAME:
+
+actual minigames based on learning things in classes
+
+ + maths: basic arithmetic, fractions
+
+ + money handling (US currency, coins, arithmetic)
+
+ + basic physics: simple tools and such (lever, plane, pulley)
+
+ + English grammar and vocabulary (?)
+
+ + Spanish vocabulary
+
+ + penmanship? tough sell with a mouse but OK on touchscreens or so
+   forth, but will require deeper level coöperation with the front-end
+
+ + drama class? Acting out simple plays? shadowcasting?
+
+ + very simple real world history/geography. Where is Rome? Where was
+   the Roman Empire? Where was Alexander's Empire? Who were the
+   Ancient Egyptians?
+
+*** Sports Arena
+
+***** TODO Soccer game                                    :FOOTBALL:MINIGAME:
+
+***** TODO Baseball game                                  :FOOTBALL:MINIGAME:
+
+***** TODO Archery?                                                :MINIGAME:
+
+***** TODO Track?                                                  :MINIGAME:
+
+ (tough sell. speed stats?)
+
+***** TODO Relay race?                                             :MINIGAME:
+
+ (maybe better than track)
+
+***** TODO Mini Golf!                                     :FOOTBALL:MINIGAME:
+
+Based on the football model; but knock the ball through various
+obstacles 
+
+***** TODO Kids' Calisthenics                             :RESEARCH:MINIGAME:
+
+teach them useful stuff. I dunno. VAGUE idea.
+
+Tag or Kick the Can or so forth
+
+interval training?
+
+** The Beach
+
+Peninsula to the south, around the bay of TODO, where the Manatees live
+
+Note: tortoises can swim.
+
+*** TODO Volleyball                                                :MINIGAME:
+
+Volleyball game: Character  keeps score, join a team and  play a game,
+same as soccer and baseball basically
+
+*** TODO watercraft
+
+maybe jet-skiing, small boat rental
+
+**** TODO Pirate Ship                                                 :LATER:
+
+Pirate Ship: when it arrives (future), it'll go on tours of the area
+to various small desert islands; the pirates will collect and bury
+treasure, maybe give out treasure maps with X marks the spot
+
+** Manatee Village
+
+Manatee residents?  because  Manatees are huggable
+
+The currency here are different than on land, and only useful in the
+sea, like how Scottish Pounds are (were?) useless in London.
+
+*** Underwater lab
+
+Let's see about  getting some “wonders of the undersea  world” kind of
+educational content in here, too
+
+
+*** TODO Coral Reef Maze                                      :MINIGAME:MAZE:
+
+** Space station
+
+need a launchpad to get here
+
+rockets launch and land periodically
+
+*** TODO asteroid mining                                           :MINIGAME:
+
+The space game should be  reproduced; Buy spaceships, fly them around,
+play asteroids
+
+*** TODO hamster tube maze                                    :MINIGAME:MAZE:
+
+Hamster tubes through the station; like Jeffries tubes, but for
+tortoises. They get re-arranged by space station engineers all the
+time, this is one of the ‘always changing maze’ areas.
+
+*** TODO contact SpaceX about allowing use of Dragon/Falcon in game
+
+permission to use Dragon vehicles to access?
+
+It'd be cool to include actual spacecraft, just need a trademark
+license.  Maybe Musk is feeling excitable about merchandising and will
+feel like manufacturing some spacecraft toys :-)
+
+** jungle, savannah, prarie 
+
+jungle exploration — jungle turns into the forest — this is
+yet another maze area that is always changing
+
+Savannah turns into prarie for ranch
+
+Digging in the savannah you might find different things buried
+
+** Forest
+
+
+Elders' Cottage for healing
+
+Hopping around tree-tops, swinging on vines, platformer-style play
+
+*** Butterflies                                                    :MINIGAME:
+
+gather wild butterflies — chase them around, with a net or a bubble
+wand, catch with a net and they'll give you rewards, or you can do
+something different with them
+
+fairy in bottle?
+
+*** Finch Village
+
+singing frogs?
+
+maze of super-sized lily pads across the lake, always changing
+
+Located near the big lake
+
+
+*** caves lead to Lost World                                  :MINIGAME:MAZE:
+
+avoid lava floes, which shift around from time to time (maze)
+
+navigate them on floating rock islands
+
+*** Lost World
+
+dinosaurs roaming around
+
+maybe some in-world gaming things regarding the dinos?
+
+** Ranch
+
+Homes out here on the prarie
+
+** The Manor
+
+big old French Chateau kind of thing
+
+** Snowy place
+
+ice and snow and stuff
+
+* Time, Weather
+
+** Time
+
+Time flows in an $18 \frac{2}{3}$-hour day. ($\frac{56}{3}$)
+
+Perhaps we should invent a “clock” that treats $18 \frac{2}{3}$ hour
+days normally?  Like, we stretch the hours such that 24:00 = midnight;
+12:00 = noon; 06:00 and 18:00 are sunrise and sunset;
+
+By that scale, an hour = $\frac{140}{3}$ minutes or $46 \frac{2}{3}$
+minutes of real world time.
+
+If  we  call  these  “star  hours”  we  can  even  vary  the  seasonal
+sunrise/sunset tables based on some arbitrary real-world latitude
+
+*** Non\=es
+
+“Weeks” have 9 days (Non\=es like Roman calendar)
+
+Every 9th day is Market Day
+
+The days need renaming based on the basic characters we end up having
+
+
+The days are: (mapped to Eastern TZ)
+
+**** 1 Star Day
+
+(Sat/Sun M - Sun 1846)
+
+The sun is a star
+
+**** 2 Sport Day
+
+(Sun 1846 - Mon 1334)
+
+Aligns with football night
+
+**** 3 Music Day
+
+(Mon 1333 - Tue 0820)
+
+New music releases on Mondays
+
+Special events: ?
+
+**** 4 Electric Day
+
+(Tue 0820 - Wed 0306)
+
+
+
+**** 5 Science Day
+
+(Wed 0306 - Wed 2153)
+
+new comic book day
+
+
+**** 6 Animal Day
+
+(Wed 2153 - Thu 1639)
+
+
+
+**** 7 Friends Day
+
+(Thu 1639 - Fri 1126)
+
+new movie releases Thursday midnights
+
+ok, maybe we'll release *really old* movies instead?
+
+**** 8 Flowers Day
+
+(Fri 1126 - Sat 0613)
+
+Special events: ?
+
+**** 9 Market Day
+
+(Sat 0613 - Sat/Sun M)
+
+the main day for major special events
+
+The Market  Day should align  with Saturday for  the UK through  Au as
+much as possible, so when we  do special things for Market Day they're
+accessible to the most players
+
+** Weather
+
+Weather flows pseudo-randomly. Maybe we just pick random cities in the
+real  world and  follow its  weather. 
+
+Weather conditions: rain; cloudiness; fog; snow
+
+** Other minigame ideas?
+
+*** Pac-Man.
+
+If we're going to do Pac-Man, do it like Katamari Damacy. That was a
+cool Pac-Man clone; and it can be done in-world.
+
+Perhaps a “harvesting” theme.
+
+Problem is resetting the “board”
+
+*** Tic Tac Toe
+
+do I have to explain this one?
+
+Actually, we could give users the ability to play Tic-Tac-Toe
+multi-player by positioning oversized tokens in the game world.
+
+Kinda like Hobo Chess.
+http://i14.photobucket.com/albums/a349/benjistour/P1010228.jpg
+
+
+** Building the code
+
+*** Directory Structure
+
+**** =build=
+
+Everything that gets temporarily constructed during a =make= should
+be in here, and is wiped out by =make clean=
+
+**** =dist=
+
+The actual final distribution files go in here.
+
+There are two bundles, one for code, one for pure assets. Eventually
+these would be on the game server and on a static asset
+server/network/farm potentially.
+
+They're also versioned separately, see the control-cards § at top of
+Makefile
+
+**** =doc= 
+
+documentation sources live here
+
+***** =doc/design=
+
+docs for game designers
+
+how to use editing functions and such
+
+***** =doc/devel=
+
+docs for people working on the game code here. like this mess you're
+reading, it lives there.
+
+****** TODO devel docs into =Makefile=
+
+that includes this big mess you're reading now
+
+
+***** =doc/legal=
+
+contractual stuff and all of that
+
+****** TODO =doc/legal/licenses=
+
+Licenses for all program components and assets need to make their way
+here with some kind of system for concatenating them to generate the
+“full spiel”
+
+***** =doc/user=
+
+user-facing docs
+
+ + marketing
+ + help files
+
+****** TODO user docs into =Makefile=
+
+they need to be distributed with the game assets
+
+=ui-help.lisp= is going to reference them as well so the names need
+to be stable
+
+****** TODO user docs templating system
+
+probably want to write them in LaTeX or something and render via a
+templating system to give consistent and manageable headers, footers,
+CSS, whatever
+
+**** =src= 
+
+All source code should pretty much live here
+
+anything that's getting compiled (or minified), for sure
+
+***** =src/css=
+
+CSS to be minified
+
+****** TODO consider Closure CSS or LESS or something?
+
+***** =src/ps=
+
+Parenscript code: the entire front-end lives here.
+
+Keep it flat, for now, the compiler doesn't descend subdirectories
+
+cross-module dependencies are not resolved in any way; don't share
+variables and things if you can help it
+
+
+****** =src/ps/00-preamble.lisp=
+
+The macros needed by other Parenscript files
+
+****** =src/ps/01-preamble.js=
+
+Common JS code that hasn't been converted to PS yet
+
+gets glued to the front of the concatenated js files before
+minification
+
+****** =src/ps/asset-loader.lisp=
+
+pre-load assets of all kinds as needed
+
+******* TODO show loading indicator
+
+partially done
+
+needs some TLC but it's a viable start
+
+see how it actually works when we start loading shit
+
+****** =src/ps/gl-utils.lisp=
+
+
+all the WebGL-related stuff goes in here
+
+might end up with the 3D sound stuff as well
+
+mostly should be just some glue and helper functions in the end
+
+******* TODO camera movement
+
+camera angle relatively doesn't change, but has to scroll around to
+follow the player
+
+also change the zoom level to bring up panoramas or pull in closer
+
+******* TODO translucency
+
+when player moves behind things, make them translucent
+
+******* TODO indoors rooms
+
+******* TODO billboarded vectors
+
+might not need these so much after all
+
+******* TODO billboarded text labels
+
+mostly for character names and maybe other selected items
+
+try to keep them from getting obstructed, and scale based on browser
+text size perhaps?
+
+******* TODO speech bubbles
+
+basically a special case of billboarded text / billboarded vectors,
+but an important special case
+
+when they fade out, it would be nice to show some kind of affordance
+that they're going away to the chat log area
+
+******* TODO entity picker
+
+needed for various other things, perhaps allow hover highlighting and
+display name if it has one (and isn't already displayed)
+
+****** =src/ps/network.lisp=
+
+******* TODO connect to server WebSockets
+
+******* TODO exchange login credentials
+
+******** TODO log in as sidekick
+
+******** TODO log in using openid?
+
+******** TODO log in using password
+
+
+******* TODO login box
+
+needs to handle all in one easy place:
+
+ + MOTD
+ + QoS indicators
+ + log in with user name + password
+ + log in with openid
+ + log in as a sidekick
+ + register new user
+ + recover forgotten user name / reset password
+ + general link to m+b subsystem
+
+******* TODO invite sidekick
+
+******** TODO sidekick share via social media?
+
+******** TODO sidekick share via other channels?
+
+******* TODO redirect to M&B system for registration
+
+******* TODO redirect to M&B system for forgotten passwords
+
+******* TODO accept entity data and populate simulation
+
+******* TODO send actions to the server
+
+******* TODO check for disconnections
+
+******* TODO auto-reconnect
+
+******* TODO diagnostics for disconnections
+
+******* TODO integrate with offline-detection
+
+******* TODO polyfill for browsers without WebSockets ?
+
+
+******* TODO migration support
+
+gentle migration:
+
+ + First, connect to the new node
+ + Test that connection
+ + Transfer it to being the primary
+ + Then, close the old one
+
+****** TODO =src/ps/mb.lisp=
+
+******* TODO registration
+
+******* TODO change gecos info
+
+******* TODO change password
+
+******* TODO change openid binding
+
+******* TODO view account activity
+
+******* TODO parental controls
+
+******** TODO create child account
+
+******** TODO annex child account
+
+******** TODO edit child account gecos
+
+******** TODO set restrictions on child account
+
+********* TODO time limits
+
+********* TODO sidekick limiter
+
+********* TODO sidekick required / baby-sat mode
+
+******** TODO assign other guardians to child
+
+******** TODO view child account activity
+
+
+******** TODO disable child account
+
+******** TODO delete child account
+
+******* TODO delete account
+
+****** =src/ps/string-utils.lisp=
+
+The big thing here is for the string table accessed via =(msg)= in
+the code.
+
+All user-visible strings should be in that message catalog, and we'll
+later be able to translate it en masse
+
+We use a simple formatting thing for these that is similar to Java's
+String.format as well, so re-ordering words in the message won't
+break on params
+
+******* TODO analogue of ~R
+
+Actually I think I like the idea of having a few variants
+
+ + spell out words or fall back on numerals when they're “too long,”
+   as defined by the language. In English, we usually stop at
+   “nineteen” … “20” boundary.
+ + abbreviate to no more than 2 significant figures, with
+   rounding. “two thousand” for 2,000; “about two thousand” for
+   1,994
+ + the proper pluralization system described below
+
+******* TODO handle pluralizations in a sane way
+
+test cases:
+
+(and (equal "one car" (plural 1 'car))
+     (equal "two cars" (plural 2 'car))
+     (equal "un auto" (with-language :es (plural 1 'car)))
+     (equal "один машина" (with-language :ru (plural 1 'car)))
+     (equal "nine cars" (plural 9 'car))
+     (equal "nineteen cars" (plural 19 'car))
+     (equal "20 cars" (plural 20 'car))
+     (equal "no cars" (plural 0 'car))
+     (equal "four children" (plural 4 'child))
+     (equal "four red houses" (plural 4 '(house red))))
+     
+Note that Russian counting is about the worst-case-scenario because
+it's not going to fit the singular/plural pattern like EN, ES, FR.
+
+Note also that Asian counting requires that the symbol → word
+dictionary provide the counting words type.
+
+******* TODO handle full inflections, including plurals
+
+needed for some languages like DE, RU, GR, LA
+
+not usually needed for EN, ES, FR, JA, CN 
+
+*EXCEPT* in EN, ES, FR needed for pronouns only (I/me, he/him &c in
+EN; tu/te/ti in ES…)
+
+****** TODO =src/ps/ui-help=
+
+user interface helper stuff
+
+dialog box creation and all
+
+should be doing this using nice HTML overlays within the page
+
+possibly also a way to load help screens without opening new
+windows/tabs
+
+******* TODO pop-up message
+
+******* TODO multiple choice buttons yes/no ok/cancel dialog
+
+******* TODO help viewer
+
+******* TODO launch external page gently 
+
+evading pop-up blockers and the like
+
+****** TODO =src/ps/controls=
+
+UI controls
+
+tap-n-talk
+
+******* TODO selected inventory item display
+
+******** TODO engage paperdoll display
+
+******** TODO click-to-use item, no target
+
+******** TODO directional item
+
+******** TODO target-positional item
+
+******** TODO target-entity item
+
+******** TODO discrete counter
+
+******** TODO scalar display
+
+******* TODO tap-n-talk
+
+******** TODO load possible vocabulary from server
+
+******** TODO allow user selections
+
+******** TODO compose sexp and send
+
+******** TODO chat log
+
+****** TODO =src/ps/paperdoll=
+
+inventory/paperdoll system
+
+
+***** =src/romans=
+
+The server components
+
+The software components are named for (in)famous figures of Roman
+history. Note, if you are familiar with the components in Romance 1.x,
+some of these may have changed in their tasks slightly.
+
+****** TODO need to nail down the MQ service type
+
+ZeroMQ and RabbitMQ seem to be my favourites for the moment
+
+Requirements:
+
+ + FAST
+ + FUCKING FAST
+ + Easy to marshall arbitrary stream data OR BSON data
+ + BSON is nicer but I don't much care
+ + Flexible distribution grid
+ + Lossless
+ + In order of preference: Quicklisp sources that work; Lisp sources
+   that work; clear enough docs to write Lisp bindings without crying
+ + Doesn't require PhD to install/configure
+
+****** Appius
+
+Appius Claudius Caecus handles network I/O. All socket connections
+from clients are routed through Appius, and into the message queues
+for the game itself.
+
+Appius Claudius Caecus was notable for building a major road out of
+Rome, the Appian Way, as well as being blind, and twice Consul.
+
+******* TODO socket-activation server
+
+working with SystemD for TCP streams (and WebSockets streams as well?)
+
+******* TODO TCP stream binding
+
+ + return packets the same way regardless of TCP or WS
+
+******* TODO WebSockets binding
+
+how to listen? native listener seems best, is that Kosher with
+same-origin policy?
+
+if not, how do we tie in to the HTTP server enough to make
+same-origin happy? serve the live HTML from the chat servers?
+
+some experimentation will be required for this bit
+
+ + return packets the same way regardless of TCP or WS
+
+******* TODO binding to MQ
+
+******* TODO BSON coding for packets
+
+******** TODO BSON-to-MQ
+
+******** TODO MQ-to-BSON
+
+******* TODO JSON coding for packets
+
+******** TODO JSON-to-MQ
+
+******** TODO MQ-to-JSON
+
+******* TODO QoS indicators
+
+******* TODO connection pool moderation
+
+when one guy's getting too many connections and another one is light,
+alter the usual round-robin selection to balance the load
+
+******* TODO migration support
+
+when bringing up/down Appius nodes, migrate users around to balance
+the load
+        
+****** Asinius
+
+Asinius handles connectivity to the Postgres database server, for
+long-term storage and disaster recovery.
+
+Gaius Asinius Pollio was a consul noted for constructing the first
+public library in Rome, the Atrium Libertatis, as a posthumous
+favor to Caesar.
+
+******* TODO MQ-to-Postmodern
+
+******* TODO Postmodern-to-MQ
+
+******* TODO QoS indicators
+
+******* TODO QoS indicators extracted from Postgres
+
+******* TODO Postmodern schema mapping to entity data
+
+****** Caesar
+
+Caesar oversees the system on which it is running, and ensures that
+sufficient resources are available for uninterrupted
+operations. Caesar may terminate workers when they are no longer
+needed, or requisition additional resources (such as starting a new
+virtual machine or requesting additional storage space)
+when necessary.
+
+Gaius Julius Caesar was known as a famous general.
+
+******* TODO collation of QoS reports
+
+******* TODO heartbeat failure detection
+
+******* TODO start a new program container
+
+******* TODO remote start a program container
+
+******* TODO stop a program over MQ
+
+******* TODO remote stop a program over MQ
+
+******* TODO shut down a program container
+
+******* TODO remote shut down a container
+
+******* TODO kill a program
+
+******* TODO remote kill a program
+
+******* TODO STONITH a container
+
+****** Catullus
+
+Catullus handles the textual interface whereby human-provided strings
+are parsed and tokenized into propositions understandable to the AI
+characters, and rendering the “thoughts" of AI characters into
+string form.
+
+Gaius Valerius Catullus was a noted poet/songwriter.
+
+******* TODO accept sexp from MQ / tap-n-talk
+
+******* TODO parse incoming utterance properly
+
+******* TODO return utterance in English
+
+******** TODO proper handling of edge cases of English
+
+******* TODO adjudicate utterance
+
+******* TODO evaluate utterance
+
+******* TODO answer yes/no questions
+
+******* TODO anaphora resolution
+
+******* TODO unbound anaphora resolution: ask questions
+
+******* TODO unbound anaphora resolution: take a guess
+
+******* TODO adjudication trust levels / lie, joke
+
+******* TODO failed adjudication: decide joke or lie
+
+******* TODO encode utterance for MQ / reply
+
+******* TODO prompted utterances: self-introduction
+
+******* TODO prompted utterances: curiosity
+
+******* TODO prompted utterances: make a request
+
+******* TODO prompted utterances: imperative
+
+******* TODO prompted utterances: statement of interest
+
+******* TODO imperative handling: adjudicate obedience
+
+******* TODO imperative handling: resolve ambiguities
+
+****** Clodia
+
+Clodia handles the processing of the artificially intelligent
+characters.
+
+Clodia Metelli Pulcher (also spelled Claudia) was the
+grand-daughter of Appius Claudius Caecus, and notable for her
+political intrigues, enmity with Cicero, disregard for the
+admiration of Catullus, and allegations of murdering political
+figures by poison.
+
+******* TODO QoS reporting
+
+******* TODO AI core identity, intelligence, control subroutines
+
+******* TODO core memory model
+
+******** TODO forgetfulness
+
+******** TODO common data core
+
+********* TODO knowledge of physics
+
+********* TODO knowledge of game world history
+
+********* TODO knowledge of geography
+
+********* TODO knowledge of inventory
+
+******* TODO observation
+
+******** TODO passive attention
+
+******** TODO active attention
+
+******* TODO like/dislike system
+
+******* TODO virtue evaluation
+
+******* TODO clothing selection
+
+******* TODO self-preservation instincts
+
+******* TODO navigation
+
+******* TODO conversation
+
+******* TODO crafting
+
+******* TODO game-linked behaviours
+
+******** TODO playing sport
+
+********* TODO observing and refereeing
+
+********* TODO playing soccer
+
+********* TODO playing volleyball
+
+********* TODO playing baseball
+
+********* TODO playing basketball
+
+********* TODO playing “asteroids”
+
+******** TODO Smudge: making a mess
+
+******** TODO Targ: breaking shit
+
+******** TODO crafting things
+
+******** TODO generating mazes
+
+******** TODO pirates: burying treasure
+
+******** TODO mail delivery
+
+******** TODO mail theft
+
+******** TODO construction crew
+
+******** TODO singing
+
+******** TODO space launch crew
+
+****** Galen
+
+Galen handles the system whereby superposed states of quiesced
+arrondissements are collapsed into a discrete state. In other
+words: Galen burgeons areas that had been quiesced previously.
+
+Galen was a noted philosopher, logician, and inventor.
+
+This subsystem won't be in place yet for Romance 2.0 
+
+****** Narcissus
+
+Narcissus handles the simulation of physical forces.
+
+Named for the famous wrestler Narcissus, who may have once
+assassinated an emperor, not the mythological character who was
+turned into a flower.
+
+******* TODO Interim basic ground-based non-physics
+
+just enough to get us going, for testing and such, not enough to keep
+us running indefinitely.
+
+******* TODO New CL bindings for Bullet
+
+******* TODO world sub-region divisions
+
+how to load-balance physics between Narcissus / Bullet nodes without
+having weird freakish edges
+
+****** Lutatius
+
+Gaius Lutatius Catulus [Latin: C·LVTATIVS·C·F·CATVLVS] was a Roman
+statesman and naval commander in the First Punic War.
+Temple to Juturna, built by Catulus to celebrate his victory at
+Aegades islands, in Largo di Torre Argentina, Rome.
+
+He was elected as a consul in 242 BC, a novus homo. During his
+consulship he supervised the construction of a new Roman fleet. This
+fleet was funded by donations from wealthy citizens, since the public
+treasury was virtually empty. He then led the fleet into victory over
+Hanno the Great's Carthaginian fleet in the Battle of the
+Aegates Islands. This was the decisive battle of the First Punic
+War. To celebrate his victory, he built a temple to Juturna in Campus
+Martius, in the area currently known as Largo di Torre Argentina.
+
+******* TODO inventory equipping
+
+******* TODO using an item
+
+******* TODO sidekick enablement
+
+****** unnamed module / system needed for …
+
+
+******* TODO player registration
+
+******* TODO player passwd
+
+******* TODO player chfn
+
+******* TODO player authentication
+
+******* TODO child account manipulation / sudo-like
+
+******* TODO enforcing parental controls
+
+******* TODO sidekick enablement
+
+***** =src/static=
+
+JavaScript that we blindly copy into place
+
+****** TODO get upstream libs into the build system
+
+***** =src/tools=
+
+Homebrew tools used *during compilation* go in here, e.g. the
+parenscript compiler utility should be here;
+
+only the ones that get compiled, stuff like Bash or Perl scripts can
+live in =tools= directly
+
+***** =src/violetvolts.html=
+
+the actual “play now” HTML page
+
+all the HTML overlays should be in here, styled display:none; might
+want to break them into separate files/fragments and build the file up
+somehow, but for now that doesn't seem to be much of a problem
+
+**** =tools=
+
+Stuff used to compile that isn't in Stock Fedora. 
+
+Should be Git Submodules where possible or inherited Subversion
+repos possibly. 
+
+Google Closure Compiler
+
+YUI compressor
+
+Moved Uglify-JS out, it's in Stock Fedora, yay. (but it's even worse
+than YUI? wtf?)
+
+Also: custom scripts and binaries
+
+***** TODO =tools/bin= should have all the scripts
+
+***** =tools/bin/smaller=
+
+used to check file sizes and return which one is the smallest
+
+misnamed, it accepts multiple files not just two
+
+***** TODO =tools/bin/parenscript-compile=
+
+once I get around to buildapp:ing this should live here
+
+***** =tools/swf2svg=
+
+this is a Perl program that is a work in progress
+
+it rips apart SWF files using =swfdump= and writes out SVG of all the
+artistic components
+
+I just wrote this as a way to see what assets we get as SWF:s from Res
+--- so it can be dumped altogether.
+
+***** TODO =tools/bin/swf-to-3d=                                       :JUNK:
+
+Based on =swf2svg=, can be dumped.
+
+note that GLGE has an XML format but that's damned verbose
+
+***** TODO fix up the existing Tools like Closure Compiler
+
+pull in as submodules or whatever
+
+*** DONE =Makefile=
+
+The Makefile is pretty solid now, at least for the code parts.
+
+*** TODO Parenscript compilation
+
+Parenscript gets routed via a Lisp program to handle some odd cases.
+
+Basically:
+
+ + First, we load macros out of 00-macros.lisp
+
+ + We compile each file form-by-form
+
+ + we concatenate the results onto 01-preamble.js — where we put any
+   other snippets that haven't made it into Parenscript yet
+
+**** TODO source maps
+
+*** DONE Minifiers for JS, CSS, HTML
+
+I have a few minifiers in place, =make= basically “races” them
+against one another and the smallest output file “wins,” which has a
+downside that the build might be minified differently from day to day
+
+**** TODO maybe just Closure
+
+I'm seeing such a massive difference/improvement using Closure that I
+might want to just use it
+
+**** TODO static libs separately?
+
+The various static JS libs might do better being minified their own
+ways or loaded from a CDN
+
+particularly they might not cope well with the ADVANCED mode of
+Closure Compiler so we might want to minify them with a gentler
+setting and then use ADVANCED for our own code, where it'll be easier
+to fix it when it breaks (e.g. adding JSDoc annotations or being
+careful about using dot-accessors versus string-accessors)
+
+* Policies
+* Non-Violence Manifesto
+
+** The original notes from 2009
+
+• Darkstar Forces II: Jedi Knight
+
+• God of War
+
+• Castlevania: Harmony of Dissonance
+
+• Avernum
+
+• The Secret of Monkey Island series
+
+• Phoenix Wright: Ace Attorney
+
+• The Seventh Guest, The Eleventh Hour
+
+• Blue Dragon
+
+• The Journeyman Project
+
+• American Mc Gee’s Alice
+
+• The White Chamber
+
+• Shivers
+
+• Killer7
+
+• Silent Hill
+
+• Hugo’s House of Horrors
+
+• Myst series
+
+• Sokoban
+
+• Kwirk
+
+• Tomb Raider series
+
+• Pokemon series
+
+• Paper Mario
+
+• Luﬁa II
+
+• Golden Sun series
+
+• Little Big Adventure
+
+• Wild ARMs
+
+• Rogue Galaxy
+
+• Broken Sword 3
+
+• Final Fantasy Mystic Quest
+
+• Tales of Symphonia
+
+• StarFox Adventures
+
+• Perplex City
+
+• La Mulana
+
+• Dragon Warrior III
+
+• Zork series
+
+• Boxxle
+
