@@ -13,10 +13,10 @@ find $SWFDIR -type f -name \*.swf -print0 | \
    while (my $swf = <>)
     { chomp $swf;
       $swf =~ s, ,\\ ,g;
-      my $collada = $swf;
-      $collada =~ s,\Q$ENV{SWFDIR}\E/*,build/art/,g; 
-      $collada =~ s,\.swf$,\.min\.collada,;
-      print "$svg:\t\\\n\t\t$swf\n\n$collada:\t\\\n\t\t$swf\n\n" }'
+      my $svg = $swf;
+      $svg =~ s,\Q$ENV{SWFDIR}\E/*,build/art/,g; 
+      $svg =~ s,\.swf$,\.min\.svg,;
+      print "$svg:\t\\\n\t\t$swf\n\n$svg:\t\\\n\t\t$swf\n\n" }'
 
 #find $SWFDIR -type f -name \*.ttf -o -name \*.mp3 -print0 | \
 #    perl -0 -e 'while (my $src = <>) { chomp $src;
@@ -36,10 +36,10 @@ find $SWFDIR -type f -name \*.swf -print0 | \
    while (my $swf = <>)
     { chomp $swf;
       $swf =~ s, ,\\ ,g;
-      my $collada = $swf;
-      $collada =~ s,\.swf$,\.svg,;
-      $collada =~ s,\Q$ENV{SWFDIR}\E/*,build/\$(PROJECT)-assets/,g; 
-      print "\t $collada \\\n" }'
+      my $svg = $swf;
+      $svg =~ s,\.swf$,\.svg,;
+      $svg =~ s,\Q$ENV{SWFDIR}\E/*,build/\$(PROJECT)-assets/,g; 
+      print "\t $svg \\\n" }'
 
 
 
