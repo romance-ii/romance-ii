@@ -125,7 +125,7 @@
   (cond
     ((string= (subseq transform-string 0 6) "matrix")
      (let ((next-index 6) (mat ([])))
-       (incf next-index (string-skip '(#\Space #\()) (subseq transform-string next-index))
+       (incf next-index (string-skip '(#\Space #\() (subseq transform-string next-index)))
        (dotimes (i 6)
          (let ((got (get-next-number (subseq transform-string next-index))))
            (setf (aref mat i) (first got))
