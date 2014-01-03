@@ -21,7 +21,7 @@ include push-to.mak
 # multi-step process.  Where are the SWF sources kept?  These won't be
 # needed indefinitely, they're just a stepping-stone for 1.0 only…
 # Note that we'll probably parse the FLA files as well/instead ASAP.
-SWFSOURCESDIR=src/glitch/
+SWFSOURCESDIR=src/art/
 
 ########################################################################
 
@@ -153,8 +153,8 @@ $(DISTVDIR)/$(PROJECT).html: \
 	build/$(PROJECT)-$(VERSION)-min.google.html
 	cp $(shell tools/bin/smaller $^) $@
 
-assets.mak:	tools/make-assets
-	tools/make-assets $(SWFSOURCESDIR) > assets.mak
+assets.mak:	tools/bin/make-assets $(SWFSOURCESDIR)
+	tools/bin/make-assets $(SWFSOURCESDIR) > assets.mak
 
 include assets.mak
 
@@ -168,19 +168,19 @@ build/$(PROJECT)-assets/%: build/art/%
 	ln $< $@
 
 %.svg:	%.swf
-	tools/swf2svg $< > $@ 2| tee $@.err
+	tools/bin/swf2svg $< > $@ 2| tee $@.err
 
 %.raw.dae:	%.svg
-	tools/svg2collada $< > $@ 2| tee $@.err
+	tools/bin/svg2collada $< > $@ 2| tee $@.err
 
 build/art/%.svg: $(SWFSOURCESDIR)/%.swf
-	tools/swf2svg $< > $@ 2| tee $@.err
+	tools/bin/swf2svg $< > $@ 2| tee $@.err
 
 build/art/%.svg: $(SWFSOURCESDIR)/%.fla
-	tools/fla2svg $< > $@ 2| tee $@.err
+	tools/bin/fla2svg $< > $@ 2| tee $@.err
 
 %.dae:	%.raw.dae
-	tools/minify-xml $< $@
+	tools/bin/minify-xml $< $@
 
 %.ttf:	%.ttf
 	cp $< $@
@@ -210,7 +210,7 @@ build/art/%.svg: $(SWFSOURCESDIR)/%.fla
 		--funcall org-latex-export-to-latex
 
 %.pdf:	%.tex
-	pdflatex $<
+	( cd \$( dirname $< ) ; pdflatex \$( basename $< ) )
 
 doc:	\
 	doc/devel/Development-Features-Plan.html \
