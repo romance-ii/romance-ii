@@ -106,7 +106,7 @@ build/%.js: src/ps/%.lisp \
 	src/ps/00-macros.lisp \
 	src/ps/01-preamble.js
 # Brute-force: updates all JavaScript files every time
-	sbcl --load tools/parenscript-compile.lisp
+	sbcl --disable-debugger --load tools/parenscript-compile.lisp
 
 build/$(PROJECT)-$(VERSION)-all.js: \
 	$(ALL_JS)
