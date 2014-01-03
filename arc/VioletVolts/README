@@ -1,0 +1,11 @@
+
+This folder is an initial, partially-functional WebGL app using some fairly ugly, non-optimized,
+hand-written JavaScript cobbled together from examples in GLGE and some of my own original stuff.
+
+It's not going to be part of the final game, per se, but I'm using it as a draft to make sure
+that the Parenthetical client stuff gets working
+
+It should be removed shortly, but for now it's going to hang around as a reference.
+
+~BRP
+
