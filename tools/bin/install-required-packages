@@ -1,0 +1,3 @@
+#!/bin/sh
+
+pkcon install $(< $(basename $0)/../required-rpm-packages )
