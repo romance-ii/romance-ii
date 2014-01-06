@@ -1,1 +1,8 @@
 nodejs
+emacs
+gcc
+gcc-c++
+libstdc++-devel
+zeromq-devel
+
+
