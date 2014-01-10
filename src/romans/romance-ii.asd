@@ -25,17 +25,9 @@
   :components
   ((:file "setup")
    (:file "common" :depends-on ("setup"))
-   (:file "Appius-Claudius-Caecus" 
-          :depends-on ("setup" "common"))
-   (:file "Gaius-Valerius-Catullus"
-          :depends-on ("setup" "common"))
    (:file "Aelius-Galenus"
           :depends-on ("setup" "common"))
-   (:file "Gaius-Asinius-Pollio"
-          :depends-on ("setup" "common"))
-   (:file "Gaius-Julius-Caesar"
-          :depends-on ("setup" "common"))
-   (:file "Narcissus"
+   (:file "Appius-Claudius-Caecus"
           :depends-on ("setup" "common"))
    (:module "Clodia-Metelli-Pulcher"
             :components ((:file "package")
@@ -49,5 +41,23 @@
                                 :depends-on ("package"))
                          (:file "server"
                                 :depends-on ("package")))
-            :depends-on ("setup" "common"))))
+            :depends-on ("setup" "common"))
+   (:file "Gaius-Asinius-Pollio"
+          :depends-on ("setup" "common"))
+   (:file "Gaius-Julius-Caesar"
+          :depends-on ("setup" "common"))
+   (:file "Gaius-Lutatius-Catulus"
+          :depends-on ("setup" "common"))
+   (:file "Gaius-Valerius-Catullus"
+          :depends-on ("setup" "common"))
+   (:file "Lucius-Aemilius-Regillus"
+          :depends-on ("setup" "common"))
+   (:file "Marcus-Vitruvius-Pollio"
+          :depends-on ("setup" "common"))
+   (:file "Narcissus"
+          :depends-on ("setup" "common"))
+   (:file "Rabirius"
+          :depends-on ("setup" "common"))
+   (:file "Sextus-Julius-Frontinus"
+          :depends-on ("setup" "common"))))
 
