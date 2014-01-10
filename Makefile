@@ -10,10 +10,10 @@ clean:
 	-find . -name \*~ -exec rm {} \;
 	git submodule foreach git clean -f
 
-include program.mak
-include versions.mak
-include license.mak
-include push-to.mak
+include ../program.mak
+include ../versions.mak
+include ../license.mak
+include ../push-to.mak
 
 ########################################################################
 
@@ -153,13 +153,13 @@ $(DISTVDIR)/$(PROJECT).html: \
 	build/$(PROJECT)-$(VERSION)-min.google.html
 	cp $(shell tools/bin/smaller $^) $@
 
-assets.mak:	tools/bin/make-assets $(SWFSOURCESDIR)
-	tools/bin/make-assets $(SWFSOURCESDIR) > assets.mak
+../assets.mak:	tools/bin/make-assets $(SWFSOURCESDIR)
+	tools/bin/make-assets $(SWFSOURCESDIR) > ../assets.mak
 
-include assets.mak
+include ../assets.mak
 
 dist/$(PROJECT)-assets-$(ASSETSVERSION).tar.xz: \
-	assets.mak \
+	../assets.mak \
 	$(VERSIONEDASSETS)
 	tar jcvf ../$@ -C build/$(PROJECT)-assets *
 
