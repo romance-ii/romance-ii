@@ -23,7 +23,7 @@ ________________________________________________________________________
 
 
 
-(format t "~% Compiling all Lisp sources in #p(\"src\" \"ps\")")
+(format t "~% Compiling all Lisp sources in (:relative \"src\" \"ps\")")
 
 
 (loop for src-file in (directory
@@ -37,6 +37,7 @@ ________________________________________________________________________
    do
      (with-open-file (source src-file :direction :input)
        (format t "~&~% Source file: ~S" src-file)
+       (format t "~&~A:0" (truename src-file))
        (let ((out-file (make-pathname :directory
                                       (list :relative "build")
                                       :name src-file-name
