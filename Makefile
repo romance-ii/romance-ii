@@ -17,48 +17,14 @@ include ../push-to.mak
 
 ########################################################################
 
-# Some of the original assets are auto-built from SWF sources using a
-# multi-step process.  Where are the SWF sources kept?  These won't be
-# needed indefinitely, they're just a stepping-stone for 1.0 only…
-# Note that we'll probably parse the FLA files as well/instead ASAP.
-SWFSOURCESDIR=src/art/
-
-########################################################################
-
 push:	dist/$(PROJECT)-$(VERSION).tar.xz
 	scp $< $(HOST):$(DIR)
 	ssh $(HOST) tar -C $(DIR) -jxvf $(DIR)/$(PROJECT)-$(VERSION).tar.xz
 
-ALL_JS=	build/01-preamble.js	\
-	build/store.js \
-	build/Modernizr.js \
-	build/js-lib/glge.js \
-	build/gl-utils.js	\
-	build/network.js	\
-	build/asset-loader.js	\
-	build/string-utils.js	\
-	build/ui-help.js	\
-
-ALL_CSS= src/css/base.css	\
-	 src/css/text.css	\
-	 src/css/game-ui.css
-
-DISTVDIR=dist/$(PROJECT)-$(VERSION)/
 SERVERDIR=dist/$(PROJECT)-server-$(VERSION)/
-DISTASSETVDIR=dist/$(PROJECT)-assets-$(ASSETSVERSION)
 SERVERFULLNAME=$(PROJECT)-server-$(shell uname -s)-$(shell uname -m)-$(VERSION)
 
-dist: dist/$(PROJECT)-$(VERSION).tar.xz dist/$(PROJECT)-assets-$(ASSETSVERSION).tar.xz \
-	dist/$(SERVERFULLNAME).tar.xz doc
-
-dist/$(PROJECT)-$(VERSION).tar.xz: \
-	$(DISTVDIR)/$(PROJECT).js \
-	$(DISTVDIR)/$(PROJECT).css \
-	$(DISTVDIR)/$(PROJECT).html \
-	$(DISTVDIR)
-	cp -a src/static/v $(DISTVDIR)
-	cp -a src/static/help $(DISTVDIR)
-	cd dist; tar jcvf -C .. $@ $(shell basename $(DISTVDIR))
+dist: dist/$(SERVERFULLNAME).tar.xz doc
 
 dist/$(SERVERFULLNAME).tar.xz: \
 	$(SERVERDIR)/bin/$(SERVERFULLNAME)
@@ -69,128 +35,6 @@ $(SERVERDIR)/bin/$(SERVERFULLNAME):	$(shell find src/romans -type f)
 	mkdir -p $(SERVERDIR)
 	cp build/$(PROJECT)-server-$(VERSION)/$(shell uname -s)-Romance-$(shell uname -m | sed -e 's,_,-,g') \
 		$@
-
-$(DISTVDIR):
-	mkdir -p $@
-
-$(DISTVDIR)/$(PROJECT).css: \
-	$(DISTVDIR) \
-	build/$(PROJECT)-$(VERSION)-min.yahoo.css
-	cp $(shell tools/bin/smaller $^) $@
-
-$(DISTVDIR)/$(PROJECT).js: \
-	build/$(PROJECT)-$(VERSION)-min.yahoo.js \
-	build/$(PROJECT)-$(VERSION)-min.ugly.js \
-	build/$(PROJECT)-$(VERSION)-min.google.js
-	cp $(shell tools/bin/smaller $^) $@
-	cp build/$(PROJECT)-$(VERSION)-all.js $(DISTVDIR)/debug.js
-
-build/01-preamble.js: src/ps/01-preamble.js
-	cp $^ $@
-
-build/%.js:	src/static/%.js
-	cp $^ $@
-
-build/js-lib/glge.js:	src/js-lib/glge/glge-compiled.js build/js-lib/glge-prefix.txt 
-	mkdir -p build/js-lib
-	cat build/js-lib/glge-prefix.txt $^ > $@
-
-build/js-lib/glge-prefix.txt:	Makefile
-	mkdir -p build/js-lib
-	echo -n "/** @COPYRIGHT: " > $@
-
-src/js-lib/glge/glge-compiled.js:	$(shell find src/js-lib/glge/src -type f)
-	$(MAKE) -C src/js-lib/glge
-
-build/%.js: src/ps/%.lisp \
-	src/ps/00-macros.lisp \
-	src/ps/01-preamble.js
-# Brute-force: updates all JavaScript files every time
-	sbcl --disable-debugger --load tools/parenscript-compile.lisp
-
-build/$(PROJECT)-$(VERSION)-all.js: \
-	$(ALL_JS)
-	cat $^ > $@
-
-build/$(PROJECT)-$(VERSION)-all.css: $(ALL_CSS)
-	cat $^ > $@
-
-build/$(PROJECT)-$(VERSION)-min.yahoo.js: \
-		build/$(PROJECT)-$(VERSION)-all.js \
-		tools/yuicompressor/yuicompressor.jar
-	java -jar tools/yuicompressor/yuicompressor.jar \
-		--type js --charset utf-8 -o $@ $<
-
-tools/yuicompressor/yuicompressor.jar: $(shell find src/tools/yuicompressor/src -name \*java)
-	src/tools/yuicompressor/bin/build
-	mkdir -p tools/yuicompressor
-	cp build/yuicompressor/yuicompressor-2.*.jar $@
-
-build/$(PROJECT)-$(VERSION)-min.ugly.js: build/$(PROJECT)-$(VERSION)-all.js
-	uglifyjs $< -o $@ --source-map $@.source-map
-
-build/$(PROJECT)-$(VERSION)-min.google.js: build/$(PROJECT)-$(VERSION)-all.js
-	java -jar tools/closure-compiler/compiler.jar \
-		--compilation_level ADVANCED_OPTIMIZATIONS \
-		--jscomp_off=internetExplorerChecks \
-		--create_source_map $(DISTVDIR)/debug.js.map \
-		--js=$< --js_output_file=$@
-
-build/$(PROJECT)-$(VERSION)-min.yahoo.css: \
-	build/$(PROJECT)-$(VERSION)-all.css
-	java -jar tools/yuicompressor/yuicompressor.jar \
-		--type css --charset utf-8 --verbose -o $@ $<
-
-build/$(PROJECT)-$(VERSION).html: src/$(PROJECT).html
-	sed -s 's,$$VERSION,$(VERSION),' < $< > $@
-
-build/$(PROJECT)-$(VERSION)-min.google.html: \
-	build/$(PROJECT)-$(VERSION).html
-	java -jar tools/htmlcompressor-1.5.3.jar -t html $< -o $@
-
-
-$(DISTVDIR)/$(PROJECT).html: \
-	$(DISTVDIR) \
-	build/$(PROJECT)-$(VERSION)-min.google.html
-	cp $(shell tools/bin/smaller $^) $@
-
-../assets.mak:	tools/bin/make-assets $(SWFSOURCESDIR)
-	tools/bin/make-assets $(SWFSOURCESDIR) > ../assets.mak
-
-include ../assets.mak
-
-dist/$(PROJECT)-assets-$(ASSETSVERSION).tar.xz: \
-	../assets.mak \
-	$(VERSIONEDASSETS)
-	tar jcvf ../$@ -C build/$(PROJECT)-assets *
-
-build/$(PROJECT)-assets/%: build/art/%
-	mkdir -p `dirname $@`
-	ln $< $@
-
-%.svg:	%.swf
-	tools/bin/swf2svg $< > $@ 2| tee $@.err
-
-%.raw.dae:	%.svg
-	tools/bin/svg2collada $< > $@ 2| tee $@.err
-
-build/art/%.svg: $(SWFSOURCESDIR)/%.swf
-	tools/bin/swf2svg $< > $@ 2| tee $@.err
-
-build/art/%.svg: $(SWFSOURCESDIR)/%.fla
-	tools/bin/fla2svg $< > $@ 2| tee $@.err
-
-%.dae:	%.raw.dae
-	tools/bin/minify-xml $< $@
-
-%.ttf:	%.ttf
-	cp $< $@
-
-%.mp3:	%.mp3
-	cp $< $@
-
-%.ogg:	%.mp3
-	FIXME
 
 %.txt:	%.org
 	emacs --batch -q -nw \
@@ -213,8 +57,21 @@ build/art/%.svg: $(SWFSOURCESDIR)/%.fla
 %.pdf:	%.tex
 	( cd $(shell dirname $< ) ; pdflatex $(shell basename $< ) ) < /dev/null
 
-doc:	\
-	doc/devel/Development-Features-Plan.html \
-	doc/devel/Development-Features-Plan.txt \
-	doc/devel/Development-Features-Plan.pdf
+%.info:  %.texi
+	texi2any --info --force $< -o $@
 
+%.html:  %.texi	
+	texi2any --html --split=section --css-ref=romance2.css --force $< -o $@
+
+%.pdf:	%.texi
+	texi2any --pdf --force $< -o $@
+
+%.ps:	%.texi
+	texi2any --ps --force $< -o $@
+
+%.txt:	%.texi
+	texi2any --plaintext --force $< -o $@
+
+doc:	\
+	doc/devel/The-Book-of-Romance.pdf \
+	doc/devel/The-Book-of-Romance.info
