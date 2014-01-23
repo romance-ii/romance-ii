@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Development-Features-Plan</title>
-<!-- 2013-11-21 Thu 18:23 -->
+<!-- 2014-01-04 Sat 05:01 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Bruce-Robert Fenn Pocock" />
@@ -182,247 +182,247 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#sec-1">Violet Volts: Overview</a>
+<li><a href="#sec-1">1. Violet Volts: Overview</a>
 <ul>
-<li><a href="#sec-1-1">Manifesto</a>
+<li><a href="#sec-1-1">1.1. Manifesto</a>
 <ul>
-<li><a href="#sec-1-1-1">Axiom: Violence is filler in most games.</a></li>
-<li><a href="#sec-1-1-2">Hypothesis: Non-violence can be fun.</a></li>
-<li><a href="#sec-1-1-3">About Animal Crossing</a></li>
-<li><a href="#sec-1-1-4">About World Rasslin Federation</a></li>
-<li><a href="#sec-1-1-5">About in-world minigames</a></li>
-<li><a href="#sec-1-1-6">Miyamoto is my Hero</a></li>
-<li><a href="#sec-1-1-7">Caillois</a></li>
-<li><a href="#sec-1-1-8">The Great Experiment</a></li>
-<li><a href="#sec-1-1-9">The danger</a></li>
-<li><a href="#sec-1-1-10">Major Point: Sidekicks</a></li>
-<li><a href="#sec-1-1-11">Major Point: Persistent World</a></li>
-<li><a href="#sec-1-1-12">Major Failure: Monetization</a></li>
+<li><a href="#sec-1-1-1">1.1.1. Axiom: Violence is filler in most games.</a></li>
+<li><a href="#sec-1-1-2">1.1.2. Hypothesis: Non-violence can be fun.</a></li>
+<li><a href="#sec-1-1-3">1.1.3. About Animal Crossing</a></li>
+<li><a href="#sec-1-1-4">1.1.4. About World Rasslin Federation</a></li>
+<li><a href="#sec-1-1-5">1.1.5. About in-world minigames</a></li>
+<li><a href="#sec-1-1-6">1.1.6. Miyamoto is my Hero</a></li>
+<li><a href="#sec-1-1-7">1.1.7. Caillois</a></li>
+<li><a href="#sec-1-1-8">1.1.8. The Great Experiment</a></li>
+<li><a href="#sec-1-1-9">1.1.9. The danger</a></li>
+<li><a href="#sec-1-1-10">1.1.10. Major Point: Sidekicks</a></li>
+<li><a href="#sec-1-1-11">1.1.11. Major Point: Persistent World</a></li>
+<li><a href="#sec-1-1-12">1.1.12. Major Failure: Monetization</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-2">The Team</a>
+<li><a href="#sec-1-2">1.2. The Team</a>
 <ul>
-<li><a href="#sec-1-2-1">Me! Bruce-Robert Fenn Pocock</a></li>
-<li><a href="#sec-1-2-2">Gene Cronk</a></li>
-<li><a href="#sec-1-2-3">Erick Feiling</a></li>
-<li><a href="#sec-1-2-4">Joseph Williamson</a></li>
-<li><a href="#sec-1-2-5">Mark Mc Corkle</a></li>
-<li><a href="#sec-1-2-6">Chris Brunner</a></li>
-<li><a href="#sec-1-2-7">Testers</a></li>
+<li><a href="#sec-1-2-1">1.2.1. Me! Bruce-Robert Fenn Pocock</a></li>
+<li><a href="#sec-1-2-2">1.2.2. Gene Cronk</a></li>
+<li><a href="#sec-1-2-3">1.2.3. Erick Feiling</a></li>
+<li><a href="#sec-1-2-4">1.2.4. Joseph Williamson</a></li>
+<li><a href="#sec-1-2-5">1.2.5. Mark Mc Corkle</a></li>
+<li><a href="#sec-1-2-6">1.2.6. Chris Brunner</a></li>
+<li><a href="#sec-1-2-7">1.2.7. Testers</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-3">Rough plans</a>
+<li><a href="#sec-1-3">1.3. Rough plans</a>
 <ul>
-<li><a href="#sec-1-3-1">No Tootsville?</a></li>
-<li><a href="#sec-1-3-2"><span class="done DONE">DONE</span> awaiting answer from Louis Pecci&#xa0;&#xa0;&#xa0;<span class="tag"><span class="RES">RES</span></span></a></li>
-<li><a href="#sec-1-3-3"><span class="todo TODO">TODO</span> set up fucking Bugzilla and log tickets for all this shit</a></li>
+<li><a href="#sec-1-3-1">1.3.1. No Tootsville?</a></li>
+<li><a href="#sec-1-3-2">1.3.2. <span class="done DONE">DONE</span> awaiting answer from Louis Pecci&#xa0;&#xa0;&#xa0;<span class="tag"><span class="RES">RES</span></span></a></li>
+<li><a href="#sec-1-3-3">1.3.3. <span class="todo TODO">TODO</span> set up fucking Bugzilla and log tickets for all this shit</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-4">Core Design</a></li>
-<li><a href="#sec-1-5">Front-end: HTML5, pseudo-3D.</a>
+<li><a href="#sec-1-4">1.4. Core Design</a></li>
+<li><a href="#sec-1-5">1.5. Front-end: HTML5, pseudo-3D.</a>
 <ul>
-<li><a href="#sec-1-5-1">Partial 3D: “Diorama” style</a></li>
-<li><a href="#sec-1-5-2">UI Stuff</a></li>
-<li><a href="#sec-1-5-3">Server communication</a></li>
+<li><a href="#sec-1-5-1">1.5.1. Partial 3D: “Diorama” style</a></li>
+<li><a href="#sec-1-5-2">1.5.2. UI Stuff</a></li>
+<li><a href="#sec-1-5-3">1.5.3. Server communication</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-6">Navigation&#xa0;&#xa0;&#xa0;<span class="tag"><span class="NAV">NAV</span>&#xa0;<span class="PHYSICS">PHYSICS</span></span></a>
+<li><a href="#sec-1-6">1.6. Navigation&#xa0;&#xa0;&#xa0;<span class="tag"><span class="NAV">NAV</span>&#xa0;<span class="PHYSICS">PHYSICS</span></span></a>
 <ul>
-<li><a href="#sec-1-6-1">Adrenaline, Exertion</a></li>
+<li><a href="#sec-1-6-1">1.6.1. Adrenaline, Exertion</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-7">Equipment, Slots, Valences</a></li>
-<li><a href="#sec-1-8">Server Model</a></li>
-<li><a href="#sec-1-9">Dev Infrastructure&#xa0;&#xa0;&#xa0;<span class="tag"><span class="DEVEL">DEVEL</span></span></a>
+<li><a href="#sec-1-7">1.7. Equipment, Slots, Valences</a></li>
+<li><a href="#sec-1-8">1.8. Server Model</a></li>
+<li><a href="#sec-1-9">1.9. Dev Infrastructure&#xa0;&#xa0;&#xa0;<span class="tag"><span class="DEVEL">DEVEL</span></span></a>
 <ul>
-<li><a href="#sec-1-9-1"><span class="todo TODO">TODO</span> Separate "assets" git tree.</a></li>
-<li><a href="#sec-1-9-2"><span class="todo TODO">TODO</span> set up Bugzilla&#xa0;&#xa0;&#xa0;<span class="tag"><span class="GENE">GENE</span></span></a></li>
-<li><a href="#sec-1-9-3"><span class="todo TODO">TODO</span> set up Koji&#xa0;&#xa0;&#xa0;<span class="tag"><span class="GENE">GENE</span></span></a></li>
-<li><a href="#sec-1-9-4"><span class="todo TODO">TODO</span> Postfix</a></li>
-<li><a href="#sec-1-9-5"><span class="todo TODO">TODO</span> static web server?</a></li>
+<li><a href="#sec-1-9-1">1.9.1. <span class="todo TODO">TODO</span> Separate "assets" git tree.</a></li>
+<li><a href="#sec-1-9-2">1.9.2. <span class="todo TODO">TODO</span> set up Bugzilla&#xa0;&#xa0;&#xa0;<span class="tag"><span class="GENE">GENE</span></span></a></li>
+<li><a href="#sec-1-9-3">1.9.3. <span class="todo TODO">TODO</span> set up Koji&#xa0;&#xa0;&#xa0;<span class="tag"><span class="GENE">GENE</span></span></a></li>
+<li><a href="#sec-1-9-4">1.9.4. <span class="todo TODO">TODO</span> Postfix</a></li>
+<li><a href="#sec-1-9-5">1.9.5. <span class="todo TODO">TODO</span> static web server?</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-10">Tap And Talk&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TAPNTALK">TAPNTALK</span></span></a>
+<li><a href="#sec-1-10">1.10. Tap And Talk&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TAPNTALK">TAPNTALK</span></span></a>
 <ul>
-<li><a href="#sec-1-10-1">SINGING tortoises&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span></span></a></li>
+<li><a href="#sec-1-10-1">1.10.1. SINGING tortoises&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span></span></a></li>
 </ul>
 </li>
-<li><a href="#sec-1-11"><span class="todo TODO">TODO</span> Sound effects; foley&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span></span></a></li>
-<li><a href="#sec-1-12"><span class="todo TODO">TODO</span> background music&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span>&#xa0;<span class="MUSIC">MUSIC</span></span></a>
+<li><a href="#sec-1-11">1.11. <span class="todo TODO">TODO</span> Sound effects; foley&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span></span></a></li>
+<li><a href="#sec-1-12">1.12. <span class="todo TODO">TODO</span> background music&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SOUND">SOUND</span>&#xa0;<span class="MUSIC">MUSIC</span></span></a>
 <ul>
-<li><a href="#sec-1-12-1"><span class="todo TODO">TODO</span> Creative Commons music</a></li>
+<li><a href="#sec-1-12-1">1.12.1. <span class="todo TODO">TODO</span> Creative Commons music</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-13">Geography&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span></span></a>
+<li><a href="#sec-1-13">1.13. Geography&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span></span></a>
 <ul>
-<li><a href="#sec-1-13-1"><span class="todo TODO">TODO</span> re-draw a non-Tootanga map.&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span>&#xa0;<span class="BRP">BRP</span></span></a></li>
+<li><a href="#sec-1-13-1">1.13.1. <span class="todo TODO">TODO</span> re-draw a non-Tootanga map.&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span>&#xa0;<span class="BRP">BRP</span></span></a></li>
 </ul>
 </li>
-<li><a href="#sec-1-14">Physics&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PHYSICS">PHYSICS</span></span></a>
+<li><a href="#sec-1-14">1.14. Physics&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PHYSICS">PHYSICS</span></span></a>
 <ul>
-<li><a href="#sec-1-14-1"><span class="todo TODO">TODO</span> make new Lisp bindings, the old ones are kinda shitty</a></li>
-<li><a href="#sec-1-14-2"><span class="todo TODO">TODO</span> make a JavaScript binding?</a></li>
+<li><a href="#sec-1-14-1">1.14.1. <span class="todo TODO">TODO</span> make new Lisp bindings, the old ones are kinda shitty</a></li>
+<li><a href="#sec-1-14-2">1.14.2. <span class="todo TODO">TODO</span> make a JavaScript binding?</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-15">AI planners&#xa0;&#xa0;&#xa0;<span class="tag"><span class="AGENT">AGENT</span></span></a></li>
-<li><a href="#sec-1-16">Teams&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TEAMS">TEAMS</span></span></a></li>
-<li><a href="#sec-1-17">Buddy List?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="BUDDYLIST">BUDDYLIST</span></span></a></li>
-<li><a href="#sec-1-18">Sidekick&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SIDEKICK">SIDEKICK</span></span></a></li>
-<li><a href="#sec-1-19">Pets&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PETS">PETS</span></span></a></li>
-<li><a href="#sec-1-20">Vehicles&#xa0;&#xa0;&#xa0;<span class="tag"><span class="VEHICLE">VEHICLE</span></span></a></li>
-<li><a href="#sec-1-21">Passports&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PASSPORT">PASSPORT</span></span></a>
+<li><a href="#sec-1-15">1.15. AI planners&#xa0;&#xa0;&#xa0;<span class="tag"><span class="AGENT">AGENT</span></span></a></li>
+<li><a href="#sec-1-16">1.16. Teams&#xa0;&#xa0;&#xa0;<span class="tag"><span class="TEAMS">TEAMS</span></span></a></li>
+<li><a href="#sec-1-17">1.17. Buddy List?&#xa0;&#xa0;&#xa0;<span class="tag"><span class="BUDDYLIST">BUDDYLIST</span></span></a></li>
+<li><a href="#sec-1-18">1.18. Sidekick&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SIDEKICK">SIDEKICK</span></span></a></li>
+<li><a href="#sec-1-19">1.19. Pets&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PETS">PETS</span></span></a></li>
+<li><a href="#sec-1-20">1.20. Vehicles&#xa0;&#xa0;&#xa0;<span class="tag"><span class="VEHICLE">VEHICLE</span></span></a></li>
+<li><a href="#sec-1-21">1.21. Passports&#xa0;&#xa0;&#xa0;<span class="tag"><span class="PASSPORT">PASSPORT</span></span></a>
 <ul>
-<li><a href="#sec-1-21-1"><span class="todo TODO">TODO</span> better name than “Passport”</a></li>
+<li><a href="#sec-1-21-1">1.21.1. <span class="todo TODO">TODO</span> better name than “Passport”</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-22">Compass; Metal Detector; Dowsing Rod&#xa0;&#xa0;&#xa0;<span class="tag"><span class="COMPASS">COMPASS</span></span></a>
+<li><a href="#sec-1-22">1.22. Compass; Metal Detector; Dowsing Rod&#xa0;&#xa0;&#xa0;<span class="tag"><span class="COMPASS">COMPASS</span></span></a>
 <ul>
-<li><a href="#sec-1-22-1"><span class="todo TODO">TODO</span> develop the list of prizes and ways to search&#xa0;&#xa0;&#xa0;<span class="tag"><span class="COLLECTIONS">COLLECTIONS</span>&#xa0;<span class="COMPASS">COMPASS</span></span></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#sec-2">The Story</a>
-<ul>
-<li><a href="#sec-2-1">The Back Story</a>
-<ul>
-<li><a href="#sec-2-1-1"><span class="todo TODO">TODO</span> world name</a></li>
-<li><a href="#sec-2-1-2"><span class="todo TODO">TODO</span> why can't you go everywhere?</a></li>
-</ul>
-</li>
-<li><a href="#sec-2-2">Characters</a>
-<ul>
-<li><a href="#sec-2-2-1"><span class="todo TODO">TODO</span> leader</a></li>
-<li><a href="#sec-2-2-2"><span class="todo TODO">TODO</span> wacky inventor</a></li>
-<li><a href="#sec-2-2-3"><span class="todo TODO">TODO</span> earth person</a></li>
-<li><a href="#sec-2-2-4"><span class="todo TODO">TODO</span> metal person</a></li>
-<li><a href="#sec-2-2-5"><span class="todo TODO">TODO</span> water person</a></li>
-<li><a href="#sec-2-2-6"><span class="todo TODO">TODO</span> wood person</a></li>
-<li><a href="#sec-2-2-7"><span class="todo TODO">TODO</span> fire person</a></li>
-<li><a href="#sec-2-2-8"><span class="todo TODO">TODO</span> killer person</a></li>
-<li><a href="#sec-2-2-9"><span class="todo TODO">TODO</span> achiever person</a></li>
-<li><a href="#sec-2-2-10"><span class="todo TODO">TODO</span> explorer person</a></li>
-<li><a href="#sec-2-2-11"><span class="todo TODO">TODO</span> socializer person</a></li>
-<li><a href="#sec-2-2-12"><span class="todo TODO">TODO</span> conqueror person</a></li>
-<li><a href="#sec-2-2-13"><span class="todo TODO">TODO</span> manager person</a></li>
-<li><a href="#sec-2-2-14"><span class="todo TODO">TODO</span> wanderer person</a></li>
-<li><a href="#sec-2-2-15"><span class="todo TODO">TODO</span> participant person</a></li>
-<li><a href="#sec-2-2-16"><span class="todo TODO">TODO</span> hoarder person</a></li>
-<li><a href="#sec-2-2-17"><span class="todo TODO">TODO</span> zoner person</a></li>
-<li><a href="#sec-2-2-18"><span class="todo TODO">TODO</span> juggernaut</a></li>
-<li><a href="#sec-2-2-19"><span class="todo TODO">TODO</span> monster</a></li>
-<li><a href="#sec-2-2-20"><span class="todo TODO">TODO</span> hotshot person</a></li>
-<li><a href="#sec-2-2-21"><span class="todo TODO">TODO</span> agon person</a></li>
-<li><a href="#sec-2-2-22"><span class="todo TODO">TODO</span> alea person</a></li>
-<li><a href="#sec-2-2-23"><span class="todo TODO">TODO</span> mimicry person</a></li>
-<li><a href="#sec-2-2-24"><span class="todo TODO">TODO</span> ilinx person</a></li>
-<li><a href="#sec-2-2-25"><span class="todo TODO">TODO</span> ludus person</a></li>
-<li><a href="#sec-2-2-26"><span class="todo TODO">TODO</span> paida person</a></li>
-</ul>
-</li>
-<li><a href="#sec-2-3">Non-Tortoise Characters</a>
-<ul>
-<li><a href="#sec-2-3-1">The Mockingbird</a></li>
-<li><a href="#sec-2-3-2">Finches</a></li>
-<li><a href="#sec-2-3-3"><span class="todo TODO">TODO</span> The Big Bad</a></li>
-<li><a href="#sec-2-3-4"><span class="todo TODO">TODO</span> the polluter</a></li>
-<li><a href="#sec-2-3-5"><span class="todo TODO">TODO</span> the mail thief</a></li>
-</ul>
-</li>
-<li><a href="#sec-2-4">Currency&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MONEY">MONEY</span></span></a>
-<ul>
-<li><a href="#sec-2-4-1"><span class="todo TODO">TODO</span> how do the AI's decide?</a></li>
+<li><a href="#sec-1-22-1">1.22.1. <span class="todo TODO">TODO</span> develop the list of prizes and ways to search&#xa0;&#xa0;&#xa0;<span class="tag"><span class="COLLECTIONS">COLLECTIONS</span>&#xa0;<span class="COMPASS">COMPASS</span></span></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#sec-3">Minigames</a>
+<li><a href="#sec-2">2. The Story</a>
 <ul>
-<li><a href="#sec-3-1">Football Core&#xa0;&#xa0;&#xa0;<span class="tag"><span class="FOOTBALL">FOOTBALL</span></span></a></li>
-<li><a href="#sec-3-2">House and Lot&#xa0;&#xa0;&#xa0;<span class="tag"><span class="HOUSE">HOUSE</span></span></a></li>
-<li><a href="#sec-3-3">The Mazes&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAZE">MAZE</span></span></a></li>
-<li><a href="#sec-3-4">Cleaning up after Smudge</a></li>
-<li><a href="#sec-3-5">Tower Defense Picnic</a></li>
-<li><a href="#sec-3-6">Digging Game</a></li>
-<li><a href="#sec-3-7">Zuma/Luxor concept</a></li>
-<li><a href="#sec-3-8">Insaniquarium-inspired fish pond?</a></li>
-<li><a href="#sec-3-9">Mail&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAIL">MAIL</span></span></a></li>
-<li><a href="#sec-3-10">Luigi's Mansion?</a></li>
-<li><a href="#sec-3-11">Platformer areas</a></li>
-<li><a href="#sec-3-12">the spaceship game&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SPACESHIPS">SPACESHIPS</span></span></a></li>
-<li><a href="#sec-3-13">Dangerous areas: The Big Bad</a></li>
+<li><a href="#sec-2-1">2.1. The Back Story</a>
+<ul>
+<li><a href="#sec-2-1-1">2.1.1. <span class="todo TODO">TODO</span> world name</a></li>
+<li><a href="#sec-2-1-2">2.1.2. <span class="todo TODO">TODO</span> why can't you go everywhere?</a></li>
 </ul>
 </li>
-<li><a href="#sec-4">Places&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span></span></a>
+<li><a href="#sec-2-2">2.2. Characters</a>
 <ul>
-<li><a href="#sec-4-1">Downtown</a>
-<ul>
-<li><a href="#sec-4-1-1">Main plaza</a></li>
-<li><a href="#sec-4-1-2">School?</a></li>
-<li><a href="#sec-4-1-3">Sports Arena</a></li>
+<li><a href="#sec-2-2-1">2.2.1. <span class="todo TODO">TODO</span> leader</a></li>
+<li><a href="#sec-2-2-2">2.2.2. <span class="todo TODO">TODO</span> wacky inventor</a></li>
+<li><a href="#sec-2-2-3">2.2.3. <span class="todo TODO">TODO</span> earth person</a></li>
+<li><a href="#sec-2-2-4">2.2.4. <span class="todo TODO">TODO</span> metal person</a></li>
+<li><a href="#sec-2-2-5">2.2.5. <span class="todo TODO">TODO</span> water person</a></li>
+<li><a href="#sec-2-2-6">2.2.6. <span class="todo TODO">TODO</span> wood person</a></li>
+<li><a href="#sec-2-2-7">2.2.7. <span class="todo TODO">TODO</span> fire person</a></li>
+<li><a href="#sec-2-2-8">2.2.8. <span class="todo TODO">TODO</span> killer person</a></li>
+<li><a href="#sec-2-2-9">2.2.9. <span class="todo TODO">TODO</span> achiever person</a></li>
+<li><a href="#sec-2-2-10">2.2.10. <span class="todo TODO">TODO</span> explorer person</a></li>
+<li><a href="#sec-2-2-11">2.2.11. <span class="todo TODO">TODO</span> socializer person</a></li>
+<li><a href="#sec-2-2-12">2.2.12. <span class="todo TODO">TODO</span> conqueror person</a></li>
+<li><a href="#sec-2-2-13">2.2.13. <span class="todo TODO">TODO</span> manager person</a></li>
+<li><a href="#sec-2-2-14">2.2.14. <span class="todo TODO">TODO</span> wanderer person</a></li>
+<li><a href="#sec-2-2-15">2.2.15. <span class="todo TODO">TODO</span> participant person</a></li>
+<li><a href="#sec-2-2-16">2.2.16. <span class="todo TODO">TODO</span> hoarder person</a></li>
+<li><a href="#sec-2-2-17">2.2.17. <span class="todo TODO">TODO</span> zoner person</a></li>
+<li><a href="#sec-2-2-18">2.2.18. <span class="todo TODO">TODO</span> juggernaut</a></li>
+<li><a href="#sec-2-2-19">2.2.19. <span class="todo TODO">TODO</span> monster</a></li>
+<li><a href="#sec-2-2-20">2.2.20. <span class="todo TODO">TODO</span> hotshot person</a></li>
+<li><a href="#sec-2-2-21">2.2.21. <span class="todo TODO">TODO</span> agon person</a></li>
+<li><a href="#sec-2-2-22">2.2.22. <span class="todo TODO">TODO</span> alea person</a></li>
+<li><a href="#sec-2-2-23">2.2.23. <span class="todo TODO">TODO</span> mimicry person</a></li>
+<li><a href="#sec-2-2-24">2.2.24. <span class="todo TODO">TODO</span> ilinx person</a></li>
+<li><a href="#sec-2-2-25">2.2.25. <span class="todo TODO">TODO</span> ludus person</a></li>
+<li><a href="#sec-2-2-26">2.2.26. <span class="todo TODO">TODO</span> paida person</a></li>
 </ul>
 </li>
-<li><a href="#sec-4-2">The Beach</a>
+<li><a href="#sec-2-3">2.3. Non-Tortoise Characters</a>
 <ul>
-<li><a href="#sec-4-2-1"><span class="todo TODO">TODO</span> Volleyball&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></a></li>
-<li><a href="#sec-4-2-2"><span class="todo TODO">TODO</span> watercraft</a></li>
+<li><a href="#sec-2-3-1">2.3.1. The Mockingbird</a></li>
+<li><a href="#sec-2-3-2">2.3.2. Finches</a></li>
+<li><a href="#sec-2-3-3">2.3.3. <span class="todo TODO">TODO</span> The Big Bad</a></li>
+<li><a href="#sec-2-3-4">2.3.4. <span class="todo TODO">TODO</span> the polluter</a></li>
+<li><a href="#sec-2-3-5">2.3.5. <span class="todo TODO">TODO</span> the mail thief</a></li>
 </ul>
 </li>
-<li><a href="#sec-4-3">Manatee Village</a>
+<li><a href="#sec-2-4">2.4. Currency&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MONEY">MONEY</span></span></a>
 <ul>
-<li><a href="#sec-4-3-1">Underwater lab</a></li>
-<li><a href="#sec-4-3-2"><span class="todo TODO">TODO</span> Coral Reef Maze&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></a></li>
-</ul>
-</li>
-<li><a href="#sec-4-4">Space station</a>
-<ul>
-<li><a href="#sec-4-4-1"><span class="todo TODO">TODO</span> asteroid mining&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></a></li>
-<li><a href="#sec-4-4-2"><span class="todo TODO">TODO</span> hamster tube maze&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></a></li>
-<li><a href="#sec-4-4-3"><span class="todo TODO">TODO</span> contact SpaceX about allowing use of Dragon/Falcon in game</a></li>
-</ul>
-</li>
-<li><a href="#sec-4-5">jungle, savannah, prarie</a></li>
-<li><a href="#sec-4-6">Forest</a>
-<ul>
-<li><a href="#sec-4-6-1">Butterflies&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></a></li>
-<li><a href="#sec-4-6-2">Finch Village</a></li>
-<li><a href="#sec-4-6-3">caves lead to Lost World&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></a></li>
-<li><a href="#sec-4-6-4">Lost World</a></li>
-</ul>
-</li>
-<li><a href="#sec-4-7">Ranch</a></li>
-<li><a href="#sec-4-8">The Manor</a></li>
-<li><a href="#sec-4-9">Snowy place</a></li>
-</ul>
-</li>
-<li><a href="#sec-5">Time, Weather</a>
-<ul>
-<li><a href="#sec-5-1">Time</a>
-<ul>
-<li><a href="#sec-5-1-1">Non\=es</a></li>
-</ul>
-</li>
-<li><a href="#sec-5-2">Weather</a></li>
-<li><a href="#sec-5-3">Other minigame ideas?</a>
-<ul>
-<li><a href="#sec-5-3-1">Pac-Man.</a></li>
-<li><a href="#sec-5-3-2">Tic Tac Toe</a></li>
-</ul>
-</li>
-<li><a href="#sec-5-4">Building the code</a>
-<ul>
-<li><a href="#sec-5-4-1">Directory Structure</a></li>
-<li><a href="#sec-5-4-2"><span class="done DONE">DONE</span> <code>Makefile</code></a></li>
-<li><a href="#sec-5-4-3"><span class="todo TODO">TODO</span> Parenscript compilation</a></li>
-<li><a href="#sec-5-4-4"><span class="done DONE">DONE</span> Minifiers for JS, CSS, HTML</a></li>
+<li><a href="#sec-2-4-1">2.4.1. <span class="todo TODO">TODO</span> how do the AI's decide?</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#sec-6">Policies</a></li>
-<li><a href="#sec-7">Non-Violence Manifesto</a>
+<li><a href="#sec-3">3. Minigames</a>
 <ul>
-<li><a href="#sec-7-1">The original notes from 2009</a></li>
+<li><a href="#sec-3-1">3.1. Football Core&#xa0;&#xa0;&#xa0;<span class="tag"><span class="FOOTBALL">FOOTBALL</span></span></a></li>
+<li><a href="#sec-3-2">3.2. House and Lot&#xa0;&#xa0;&#xa0;<span class="tag"><span class="HOUSE">HOUSE</span></span></a></li>
+<li><a href="#sec-3-3">3.3. The Mazes&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAZE">MAZE</span></span></a></li>
+<li><a href="#sec-3-4">3.4. Cleaning up after Smudge</a></li>
+<li><a href="#sec-3-5">3.5. Tower Defense Picnic</a></li>
+<li><a href="#sec-3-6">3.6. Digging Game</a></li>
+<li><a href="#sec-3-7">3.7. Zuma/Luxor concept</a></li>
+<li><a href="#sec-3-8">3.8. Insaniquarium-inspired fish pond?</a></li>
+<li><a href="#sec-3-9">3.9. Mail&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAIL">MAIL</span></span></a></li>
+<li><a href="#sec-3-10">3.10. Luigi's Mansion?</a></li>
+<li><a href="#sec-3-11">3.11. Platformer areas</a></li>
+<li><a href="#sec-3-12">3.12. the spaceship game&#xa0;&#xa0;&#xa0;<span class="tag"><span class="SPACESHIPS">SPACESHIPS</span></span></a></li>
+<li><a href="#sec-3-13">3.13. Dangerous areas: The Big Bad</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4. Places&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MAP">MAP</span></span></a>
+<ul>
+<li><a href="#sec-4-1">4.1. Downtown</a>
+<ul>
+<li><a href="#sec-4-1-1">4.1.1. Main plaza</a></li>
+<li><a href="#sec-4-1-2">4.1.2. School?</a></li>
+<li><a href="#sec-4-1-3">4.1.3. Sports Arena</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-2">4.2. The Beach</a>
+<ul>
+<li><a href="#sec-4-2-1">4.2.1. <span class="todo TODO">TODO</span> Volleyball&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></a></li>
+<li><a href="#sec-4-2-2">4.2.2. <span class="todo TODO">TODO</span> watercraft</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-3">4.3. Manatee Village</a>
+<ul>
+<li><a href="#sec-4-3-1">4.3.1. Underwater lab</a></li>
+<li><a href="#sec-4-3-2">4.3.2. <span class="todo TODO">TODO</span> Coral Reef Maze&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></a></li>
+</ul>
+</li>
+<li><a href="#sec-4-4">4.4. Space station</a>
+<ul>
+<li><a href="#sec-4-4-1">4.4.1. <span class="todo TODO">TODO</span> asteroid mining&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></a></li>
+<li><a href="#sec-4-4-2">4.4.2. <span class="todo TODO">TODO</span> hamster tube maze&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></a></li>
+<li><a href="#sec-4-4-3">4.4.3. <span class="todo TODO">TODO</span> contact SpaceX about allowing use of Dragon/Falcon in game</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-5">4.5. jungle, savannah, prarie</a></li>
+<li><a href="#sec-4-6">4.6. Forest</a>
+<ul>
+<li><a href="#sec-4-6-1">4.6.1. Butterflies&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span></span></a></li>
+<li><a href="#sec-4-6-2">4.6.2. Finch Village</a></li>
+<li><a href="#sec-4-6-3">4.6.3. caves lead to Lost World&#xa0;&#xa0;&#xa0;<span class="tag"><span class="MINIGAME">MINIGAME</span>&#xa0;<span class="MAZE">MAZE</span></span></a></li>
+<li><a href="#sec-4-6-4">4.6.4. Lost World</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-7">4.7. Ranch</a></li>
+<li><a href="#sec-4-8">4.8. The Manor</a></li>
+<li><a href="#sec-4-9">4.9. Snowy place</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">5. Time, Weather</a>
+<ul>
+<li><a href="#sec-5-1">5.1. Time</a>
+<ul>
+<li><a href="#sec-5-1-1">5.1.1. Non\=es</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-2">5.2. Weather</a></li>
+<li><a href="#sec-5-3">5.3. Other minigame ideas?</a>
+<ul>
+<li><a href="#sec-5-3-1">5.3.1. Pac-Man.</a></li>
+<li><a href="#sec-5-3-2">5.3.2. Tic Tac Toe</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-4">5.4. Building the code</a>
+<ul>
+<li><a href="#sec-5-4-1">5.4.1. Directory Structure</a></li>
+<li><a href="#sec-5-4-2">5.4.2. <span class="done DONE">DONE</span> <code>Makefile</code></a></li>
+<li><a href="#sec-5-4-3">5.4.3. <span class="todo TODO">TODO</span> Parenscript compilation</a></li>
+<li><a href="#sec-5-4-4">5.4.4. <span class="done DONE">DONE</span> Minifiers for JS, CSS, HTML</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-6">6. Policies</a></li>
+<li><a href="#sec-7">7. Non-Violence Manifesto</a>
+<ul>
+<li><a href="#sec-7-1">7.1. The original notes from 2009</a></li>
 </ul>
 </li>
 </ul>
@@ -5011,8 +5011,8 @@ careful about using dot-accessors versus string-accessors)
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Bruce-Robert Fenn Pocock</p>
-<p class="date">Created: 2013-11-21 Thu 18:23</p>
-<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.3c)</p>
+<p class="date">Created: 2014-01-04 Sat 05:01</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.4)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
