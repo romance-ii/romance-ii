@@ -1,0 +1,368 @@
+
+Fedora Live Desktop
+
+Test Driving SBCL+Emacs for Violet Volts
+
+START UP
+
+To start up: depends on your hardware. Usually it'll be printed on the
+"logo"  screen as  the  machine  powers on;  in  approximate order  of
+popularity, the key  to pick a boot device is  usually one of: Escape,
+F12,  F10,   F1,  or   DEL  (small,   right-delete;  not   the  large,
+left-delete/backspace).
+
+The USB stick might show up as "volume LIVE", "Sandisc Cruzer device",
+"USB hard disc" or even "USB floppy disc" depending on your system.
+
+
+SET UP YOUR OWN ACCOUNT
+
+Once it boots,  you don't need to install it  (and probably don't want
+to  at this  point) to  try  out the  system.  Hit  "try" rather  than
+"install" on the enourmous splash screen.
+
+Click the "personal" menu at the top-right corner of the screen (where
+the volume, WiFi, &c icons are)
+
+You might  need/want to  connect to your  local WiFi.  (Wired networks
+will auto-configure themselves.)
+
+Click  the Settings  icon —  it's the  screwdriver+hammer icon  in the
+bottom of the personal menu.
+
+In Settings: click Users. Click Unlock  up top-right. Click the + icon
+in bottom-left. Add  an account, type "Local"  (not Enterprise Login);
+Account Type: Administrator, full name:  Jane Doe, user name: jdoe (or
+similar, for  ease of use  probably want  ≤8 chars and  all lower-case
+letters).
+
+You can also set the login icon and password here.
+
+Then, on the personal menu (top-right corner again), pick Log out, and
+log in as "yourself."
+
+You'll have the opportunity to link your "online accounts" if you want
+to access chat + eMail … you  can add multiple Google accounts, if you
+want, and  yes, the MCNA  Google Apps  account works fine  here. It'll
+sync mail, calendar, contacts, and (text only) chat. (but not the full
+Hangouts video chat feature)
+
+It'll also give you a brief overview of how to use the basic functions
+of the GNOME desktop.
+
+   (Short version:  top-right corner = settings  and logout/power off;
+   top center = calendar and clock;  top left = switch between Desktop
+   and       Activities       Overview;      bottom       edge       =
+   notifications/alerts. Activities Overview:  left side = favourites;
+   middle = either open windows  or applications installed icon lists;
+   near  top =  search  for apps/contacts/&c;  right  side =  multiple
+   Desktop spaces. HELP/F1 key works almost anywhere.)
+
+Once you are logged in and the "Live User" is not, you should again go
+Settings → Users → Unlock and click on the "Live User," and change its
+account  to   Standard  (from  Administrator)  and   slide  "off"  the
+"automatic login"  feature. This will make  sure that you can  sign in
+yourself without signing out the Live User.
+
+
+INSTALLING Emacs, SBCL, and Quicklisp
+
+The  Activities Overview  is accessed  by  any of:  Clicking the  word
+"Activities"  in the  top-left corner  of the  screen; or  pushing the
+mouse pointer  "off" the top-left  of the  screen; or the  "Super" key
+that probably has a "windows logo" on it.
+
+In Activities  Overview, the "Applications" button  is the bottom-left
+one (looks like nine dots)
+
+Either browse  through the "Applications"  list or just type  into the
+search box to start the program "Software"
+
+In the "Software"  program, key into the search box  "Emacs" and click
+through to install it (the Install button  is up in the title bar when
+you're viewing the app's details)
+
+To make life easier, though, let's  use Terminal for this bit. (Easier
+to explain in text)
+
+(BTW, you  will probably want  to right-click and "Add  to Favourites"
+both Terminal and Emacs; you might want to remove from Favourites some
+of the  default apps also,  like the  photo sorter, that  you probably
+wouldn't ever need  to use; right-click on them on  the Favourites bar
+to remove them)
+
+Open Terminal through the Applications Overview.
+
+At the prompt, key in:
+
+   sudo yum -y install emacs sbcl zeromq-devel curl git
+
+It'll ask if you're sure, download, install, &c.
+
+When you get your prompt back, key in:
+
+   curl -O http://beta.quicklisp.org/quicklisp.lisp
+
+(note, that's a big O not a zero 0)
+
+It'll show some download stats, probably takes about 1 whole
+second. Then:
+
+    sbcl --load quicklisp.lisp
+
+This will spiel some things about SBCL and then should say,
+
+     "To continue, evaluate: (quicklisp-quickstart:install)"
+
+This  is a  good  moment  to point  out  the  quick copy-and-paste  in
+Gnome.  Highlight the  form (quicklisp-quickstart:install)  with mouse
+button 1  (left button, unless  you've a left-handed mouse)  and then,
+with it highlighted, point at the space to the right of the "*" prompt
+and push the middle button (which for most people means "click down on
+the mouse wheel;" if you're using a track-pad with two buttons beneath
+it, it means "click both buttons at exactly the same time")
+
+Either by  quick copy-and-pasting or  just plain typing, you  have the
+line copied down after the "*"  prompt; hit Return. (NOTE: Even if the
+keys are labeled the same on your keyboard, we refer to the key on the
+typewriter section as  "RETURN" and the key on  the calculator section
+as "ENTER" for clarification.  Although they're often interchangeable,
+they aren't always.)
+
+The full output should look something (approximately) like this:
+
+
+————————————————————————————————————————————————————————————————————————
+
+
+$ curl -O http://beta.quicklisp.org/quicklisp.lisp
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 49843  100 49843    0     0  33639      0  0:00:01  0:00:01 --:--:-- 50397
+$ sbcl --load quicklisp.lisp
+This is SBCL 1.0.42.52, an implementation of ANSI Common Lisp.
+More information about SBCL is available at <http://www.sbcl.org/>.
+
+SBCL is free software, provided as is, with absolutely no warranty.
+It is mostly in the public domain; some portions are provided under
+BSD-style licenses.  See the CREDITS and COPYING files in the
+distribution for more information.
+
+  ==== quicklisp quickstart loaded ====
+
+    To continue, evaluate: (quicklisp-quickstart:install)
+
+* (quicklisp-quickstart:install)
+
+; Fetching #<URL "http://beta.quicklisp.org/quickstart/asdf.lisp">
+; 144.48KB
+==================================================
+147,949 bytes in 0.64 seconds (226.11KB/sec)
+; Fetching #<URL "http://beta.quicklisp.org/quickstart/quicklisp.tar">
+; 160.00KB
+==================================================
+163,840 bytes in 0.76 seconds (211.36KB/sec)
+; Fetching #<URL "http://beta.quicklisp.org/quickstart/setup.lisp">
+; 2.78KB
+==================================================
+2,846 bytes in 0.001 seconds (2779.30KB/sec)
+Upgrading ASDF package from version 2.004 to version 2.009
+; Fetching #<URL "http://beta.quicklisp.org/dist/quicklisp.txt">
+; 0.40KB
+==================================================
+408 bytes in 0.003 seconds (132.81KB/sec)
+
+  ==== quicklisp installed ====
+
+    To load a system, use: (ql:quickload "system-name")
+
+    To find systems, use: (ql:system-apropos "term")
+
+    To load Quicklisp every time you start Lisp, use: (ql:add-to-init-file)
+
+    For more information, see http://www.quicklisp.org/beta/
+
+NIL
+
+*
+
+————————————————————————————————————————————————————————————————————————
+
+So,  following its  suggestion,  use (ql:add-to-init-file)  to set  up
+Quicklisp in your SBCL configuration.
+
+Then, we'll ask Quicklisp to install  the last major piece of the Lisp
+puzzle for now, which is Slime.
+
+————————————————————————————————————————————————————————————————————————
+
+* (ql:add-to-init-file)
+I will append the following lines to #P"/home/jdoe/.sbclrc":
+
+  ;;; The following lines added by ql:add-to-init-file:
+  #-quicklisp
+  (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
+                                         (user-homedir-pathname))))
+    (when (probe-file quicklisp-init)
+      (load quicklisp-init)))
+
+Press Enter to continue.
+
+
+#P"/home/jdoe/.sbclrc"
+*
+
+————————————————————————————————————————————————————————————————————————
+
+Key in:
+
+    (ql:quickload :swank)
+
+and then, after it's finished
+
+    (ql:quickload :quicklisp-slime-helper)
+
+and finally
+
+    (quit)
+
+You'll have seen this warning:
+
+————————————————————————————————————————————————————————————————————————
+
+To use, add this to your ~/.emacs:
+
+  (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  ;; Replace "sbcl" with the path to your implementation
+  (setq inferior-lisp-program "sbcl")
+
+————————————————————————————————————————————————————————————————————————
+
+Which is correct, we want to do that. Since you haven't learned how to
+use Emacs yet, we'll cheat a little bit. Still in Terminal, type
+
+   gedit ~/.emacs
+
+…and then copy-and-paste (or key in) the  two forms at the very end of
+the file, save  it, and quit the editor. (The  comment line, beginning
+with semicolons, is optional.)
+
+————————————————————————————————————————————————————————————————————————
+
+    (load (expand-file-name "~/quicklisp/slime-helper.el"))
+   (setq inferior-lisp-program "sbcl")
+
+————————————————————————————————————————————————————————————————————————
+
+
+
+CLONE THE VIOLET VOLTS PROJECT FROM SOURCEFORGE
+
+One last thing in the Terminal (for now)
+
+    mkdir ~/Projects
+    cd ~/Projects
+
+This makes a  new folder in your Home named  Projects (note: those are
+tildes ~  not hyphens -  before the solidus),  and then makes  it your
+current working folder (directory file)
+
+This process will take *a while*.
+
+You can  get coffee.  Catch a  movie. Or, better  yet, take  the Emacs
+tutorial in the next section while you wait.
+
+Each of the following steps needs to be run, in this order.
+
+    git clone git://git.code.sf.net/p/romance/code Tartaruchorum
+    cd Tartaruchorum
+    git fetch -p
+    git checkout Romance-2
+    git submodule init
+    git submodule update
+
+Once the Submodule updates are completed, you can go ahead to "running
+Slime in Emacs” and set up your VV environment.
+
+You can also do a full build of the system right now by typing
+
+    make
+
+⁂  Note,  to  get  back  to  this  folder  you  can  refer  to  it  as
+   "/home/jdoe/Projects/Tartaruchorum"  or  "~/Projects/Tartaruchorum"
+
+⁂  Note, the  command  shell (both  in the  Terminal  and Emacs)  will
+   usually do auto-completion of filenames  when you press TAB, so you
+   can probably type something like this:
+
+    cd ~/Projects/Tartaruchorum
+
+   by just typing
+
+    c d (spc) ~ / P r (tab) T a (tab)
+
+   Just type enough of the name to  be unique before you press Tab; if
+   it doesn't seem to have worked, press Tab again to see if there are
+   multiple matches.  (e.g. if you  have a folder  named Tartaruchorum
+   next to one  named Tangent, you'd need to type  at least "Tar(tab)"
+   for it to disambiguate.
+
+
+
+THE EMACS TUTORIAL
+
+⁂ First thing to know: the PANIC BUTTON in Emacs is CONTROL+G.
+
+In other words, if  you don't know what it's asking you  to do, or you
+get a  weird prompt, hitting  CONTROL+G will abandon any  process that
+you haven't "really started" yet.
+
+⁂ UNDO is CONTROL+UNDERSCORE
+
+The  UNDO   function  is   accessible  multiple   ways,  but   one  is
+"Control-Underscore,"   which   on   a    typical   US   keyboard   is
+CONTROL+SHIFT+(HYPHEN). Hold  CONTROL+SHIFT and hit  HYPHEN repeatedly
+to do multiple undoes.
+
+When  you  first start  Emacs,  you'll  get  a “helpful”  screen  that
+suggests how  to start the  Tutorial. Hit the  key sequence "C-h  t" —
+which is hold CONTROL and press H, then release both, and type T.
+
+The tutorial  is long, dry,  boring, and immensely useful.  Please, do
+yourself a favour, and suffer through it.
+
+
+GIGAMONKEYS!
+
+New  to  Lisp? OK.  Well,  before  you dive  into  the  deep end  with
+massively parallel virtual worlds written in Lisp, Parenscript, C, and
+JavaScript  with 3D  physics and  cutting-edge Artificial  Intelligent
+Agent software, let's start with that, shall we?
+
+Open  up  Firefox  and  Emacs  side-by-side  (hint:  drag  a  window's
+title-bar off the  left or right edge  of the screen to  make it "snap
+to" half the screen) and in Firefox open:
+
+    http://www.gigamonkeys.com/book/
+
+————————————————————————————————————————————————————————————————————————
+
+This page, and the pages it links to, contain text of the Common Lisp
+book Practical Common Lisp published by Apress These pages now contain
+the final text as it appears in the book. … These pages will
+remain online in perpetuity—I hope they will serve as a useful
+introduction to Common Lisp for folks who are curious about Lisp but
+maybe not yet curious enough to shell out big bucks for a dead-tree
+book and a good Common Lisp tutorial for folks who want to get down to
+real coding right away. However, don't let that stop you from buying
+the printed version …
+
+————————————————————————————————————————————————————————————————————————
+
+You can  ignore his Lisp  In a Box stuff.  We're doing our  own thing,
+there (2003 was a long time  ago, sorta), but everything else is going
+to be really similar.
+
+You don't need to go through the  entire book, but it's a good idea to
+at least get through the first half and skim-read the rest a bit.
+
