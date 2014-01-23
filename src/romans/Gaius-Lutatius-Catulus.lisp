@@ -17,9 +17,6 @@ in the area currently known as Largo di Torre Argentina.")
 
 (in-package :lutatius)
 
-(defclass equipping-person-shape ()
-  ((equipment-slots :initarg :slots :reader person-equipment-slots)))
-
 (define-condition redefined-equipment-slot (error)
   ((previously :reader previous-slot-parent :initarg :previously :type (or symbol nil))
    (now :reader new-slot-parent :initarg :now :type (or symbol nil))
@@ -45,6 +42,8 @@ defined as a level of a different slot than it was previously
 defined (e.g. putting bracelets on your head)"))
 
 (eval-when (:compile-toplevel :load-toplevel)
+  (defclass equipping-person-shape ()
+    ((equipment-slots :initarg :slots :reader person-equipment-slots)))
   (defvar *all-equipment-slots* (make-hash-table :test 'eql))
   (defun %define-valence (effective-slot valence)
     (let ((prior (gethash valence *all-equipment-slots*)))
@@ -66,10 +65,8 @@ defined (e.g. putting bracelets on your head)"))
                  :slot effective))
         (setf (gethash effective *all-equipment-slots*) t)
         (mapcar (lambda (valence) (%define-valence effective valence)) valences)
-        (mapcar #'make-keyword
-                (append (list slot (list equivalent flags)) valences)))))
+        (append (list slot (list equivalent flags)) valences))))
 
-  
 ;;; FIXME: just poke these into a plist or hash?
   (defun person-shape-symbol (shape-name)
     (intern (concatenate 'string "*PERSON-SHAPE-"
@@ -86,32 +83,32 @@ defined (e.g. putting bracelets on your head)"))
                                            (mapcar #'person-shape-symbol inherit)))))))))
 
 (define-person-shape-for-equipment creature ()
-  ((status-effects (nil &list) status-effects)))
+  ((creature-effects (nil &list) status-effects)))
 
 (define-person-shape-for-equipment humanoid (creature)
-    ((head () helmet hat hair)
-     (face () glasses mask goggles faceplate)
-     (neck () necklace collar)
-     (torso () bra undershirt shirt waistcoast jacket coat overcoat sash backpack)
-     (left-arm (arm) undershirt-sleeve shirt-sleeve
-               jacket-sleeve coat-sleeve overcoat-sleeve arm-band)
-     (right-arm (arm) undershirt-sleeve shirt-sleeve
-                jacket-sleeve coat-sleeve overcoat-sleeve arm-band)
-     (left-hand (hand) glove wrist handheld)
-     (right-hand (hand) glove write handheld)
-     (waist () belt gunbelt)
-     (groin () briefs cup boxers pants overpants)
-     (left-leg (leg) boxers-leg pants-leg overpants-leg leg-band)
-     (right-leg (leg) boxers-leg pants-leg overpants-leg leg-band)
-     (left-foot (foot) socks shoes galoshes)
-     (right-foot (foot) socks shoes galoshes)))
+  ((head () helmet hat hair)
+   (face () glasses mask goggles faceplate)
+   (neck () necklace collar)
+   (torso () bra undershirt shirt waistcoast jacket coat overcoat sash backpack)
+   (left-arm (arm) undershirt-sleeve shirt-sleeve
+             jacket-sleeve coat-sleeve overcoat-sleeve arm-band)
+   (right-arm (arm) undershirt-sleeve shirt-sleeve
+              jacket-sleeve coat-sleeve overcoat-sleeve arm-band)
+   (left-hand (hand) glove wrist handheld)
+   (right-hand (hand) glove write handheld)
+   (waist () belt gunbelt)
+   (groin () briefs cup boxers pants overpants)
+   (left-leg (leg) boxers-leg pants-leg overpants-leg leg-band)
+   (right-leg (leg) boxers-leg pants-leg overpants-leg leg-band)
+   (left-foot (foot) socks shoes galoshes)
+   (right-foot (foot) socks shoes galoshes)))
 
 (defclass item () ())
 (defclass equippable-item (item)
   ((mounts :accessor equipment-mount-points)))
 (defclass item+discrete-count (equippable-item)
   ((count :accessor equipment-discrete-count)))
-(defclass item+continuous-gauge (equippable-item) 
+(defclass item+continuous-gauge (equippable-item)
   ((gauge :accessor equipment-continuous-gauge)))
 (defclass usable-item (item) ())
 (defclass usable-item/targeted (usable-item) ())
@@ -121,9 +118,9 @@ defined (e.g. putting bracelets on your head)"))
 
 (defgeneric equipment-usability (item))
 
-(defmethod equipment-usability ((item item)) 
+(defmethod equipment-usability ((item item))
   nil)
-(defmethod equipment-usability ((item usable-item/targeted)) 
+(defmethod equipment-usability ((item usable-item/targeted))
   :targeted)
 (defmethod equipment-usability ((item usable-item/directed))
   :directed)
