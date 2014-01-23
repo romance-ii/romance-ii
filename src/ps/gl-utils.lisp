@@ -67,41 +67,43 @@
                              :start (get-unix-time)))
 
 (defun render-frame ()
-  (let ((now (parse-int (chain (new *date) get-time))))
-    (when (zerop ((@ *math round) (% (- now (@ *frame-time* last)) 10)))
-      (setf (@ *frame-time* :accum)
-            ((@ *math round) (+ (/ 1000 (- now (@ *frame-time* last)) 10)
-                                (* 9 (@ *frame-time* :accum)))))))
+  (let ((now ((@ (new *date) get-time)))
+        (last-frame (@ *frame-time* last)))
+    (when (zerop (round (mod (- now last-frame) 10)))
+      (setf (@ *frame-time* accum)
+            ((@ *math round) (/ (+ (/ 1000 (- now last-frame))
+                                   (* 9 (@ *frame-time* accum))) 10)))))
   ;; Don't slow down the worst-case by overwriting these
   ;; values. Let the faster ones get slowed down a
   ;; bit, instead.
 
-  (let ((rate "<big>😦</big> Poor")
+  (let ((rate "<big>☹☹☹</big> Poor")
         (rate-colour "#f88")
         (slow t))
     (cond
-      ((<= 60 (@ *frame-time* :accum))
-       (setf rate "<big>😎</big> Great!"
+      ((<= 60 (@ *frame-time* accum))
+       (setf rate "<big>☺☺☺</big> Great!"
              rate-colour "#88f"
              slow f))
 
-      ((<= 24 (@ *frame-time* :accum))
-       (setf rate "<big>😃</big> Good"
+      ((<= 24 (@ *frame-time* accum))
+       (setf rate "<big>☺</big> Good"
              rate-colour "#8f8"
              slow f))
 
-      ((<= 12 (@ *frame-time* :accum))
-       (setf rate "<big>😶</big> Fair"
-             rate-colour  "#ff8"
-             slow f))))
+      ((<= 12 (@ *frame-time* accum))
+       (setf rate "<big>☹</big> Fair"
+             rate-colour "#ff8"
+             slow t))))
 
   (let ((el (by-id "framerate")))
     (if (< (@ *frame-time* count) 50)
         (progn (incf (@ *frame-time* count))
                (setf (@ el inner-h-t-m-l) "Warming up…"
-                     slow f))           ; Probably just warming up the
-                                        ; accumulator
-        (setf (@ el inner-h-t-m-l) (concat "Graphics: " rate)))
+                     slow f))          
+        ;; Probably just warming up the accumulator
+        (setf (@ el inner-h-t-m-l)
+              (concat "Graphics: " rate " <BR>@ " (@ *frame-time* accum) " Hz")))
     (setf (@ el style color) rate-colour))
   (setf (@ (by-id "webgl_slow") style visibility) (if slow :visible :hidden))
   (setf (@ *frame-time* last) now)
@@ -111,7 +113,7 @@
   (report "If you would eMail this report, we would appreciate it.") ;
   (let ((p ((@ document create-element) :p))
         (gl (get-web-g-l))
-        (dur (- (new *date) (@ *frame-time* :start)))
+        (dur (- (new *date) (@ *frame-time* start)))
         (results (concat "Results of frametest.
 
   (Feel free to leave me a note above this line!)
@@ -143,7 +145,7 @@ WebGLSL version=" ((@ gl get-parameter) (@ gl
 
 WebGL renderer=" ((@ gl get-parameter) (@ gl -r-e-n-d-e-r-e-r)) "
 
-frameRate=" (@ *frame-time* :accum)  " f/s
+frameRate=" (@ *frame-time* accum)  " f/s
 
 user agent string=(" (@ navigator user-agent) ")")))
     (setf (@ p inner-h-t-m-l)
@@ -215,7 +217,7 @@ user agent string=(" (@ navigator user-agent) ")")))
                    (chain (by-id :container)
                           (append-child button)))
                  60000))
-
+  
   (start-loading :xml)
   ((@ xml parse-script) "glge_document"))
 

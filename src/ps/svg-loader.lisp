@@ -146,7 +146,7 @@
 (defun parse-s-v-g (node dynamic)
   (ecase (@ node local-name)
     ('svg      (parse-s-v-g-document-node node dynamic))
-    ('title    (setf (@ dynamic title) ((@ node node-value))) nil)
+    ('title    (setf (@ dynamic title) ((@ node node-value))) nil) 
     ('desc     (setf (@ dynamic desc) ((@ node node-value))) nil)
     ('defs     (parse-s-v-g-children node dynamic))
     ('symbol   (parse-s-v-g-symbol node dynamic))
@@ -159,8 +159,7 @@
     ((= 'string (typeof resource))
      (destructuring-bind (url asset) (split-chunk-from-u-r-l url)
        (load-s-v-g url (lambda (loaded)
-                         (import-s-v-g loaded x y z scalar)) asset)
-       (return)))
+                         (import-s-v-g loaded x y z scalar)) asset)))
     (t (position-billboard 
         (scale-object
          (parse-s-v-g resource (create))
@@ -172,24 +171,24 @@
 
 (defun load-s-v-g (url on-load &optional (asset ""))
   (if-let ((cached (getprop *svg-cache* (concat url "#" asset))))
-          (return cached))
-  (unless (@ window *x-m-l-http-request)
-    (error 'xml-http-request-needed))
-  (let ((request (new *x-m-l-http-request)))
-    ((@ request open) "GET" url t)
-    (setf (@ request onreadystatechange)
-          (lambda (event)
-            (cond 
-              ((= +response-ready+ (@ request ready-state))
-               (let ((status (@ request status)))
-                 (cond
-                   ((and (<= +http-ok+ status)
-                         (<= status (+ +http-ok+ 99)))
-                    (if (= "" asset)
-                        (on-load (@ request response))
-                        (on-load (find-s-v-g-asset (@ request response) asset))))
-                   (t (error 'xml-http-request-failed status url request)))))
-              ;; otherwise, ignore
-              (t nil))))
-    ((@ request send))
-    )) 
+    cached
+    (unless (@ window *x-m-l-http-request)
+      (error 'xml-http-request-needed))
+    (let ((request (new *x-m-l-http-request)))
+      ((@ request open) "GET" url t)
+      (setf (@ request onreadystatechange)
+            (lambda (event)
+              (cond 
+                ((= +response-ready+ (@ request ready-state))
+                 (let ((status (@ request status)))
+                   (cond
+                     ((and (<= +http-ok+ status)
+                           (<= status (+ +http-ok+ 99)))
+                      (if (= "" asset)
+                          (on-load (@ request response))
+                          (on-load (find-s-v-g-asset (@ request response) asset))))
+                     (t (error 'xml-http-request-failed status url request)))))
+                ;; otherwise, ignore
+                (t nil))))
+      ((@ request send)))))
+

@@ -1,4 +1,4 @@
-;; -*- lisp -*-
+;; -*-  mode: lisp; compile-command: make;  -*-
 
 (console-log (concat "
 
@@ -9,7 +9,7 @@
 
 Starting Violet Volts: Version " (@ document 'version)))
 
-(defvar *rate-test* (= -1 ((@ window location hash index-of) "nogoat")))
+(defvar *rate-test* (= -1 ((@ window location hash index-of) 'nogoat)))
 
 (defvar *start-time* (+ (new *date)))
 
@@ -45,10 +45,9 @@ Starting Violet Volts: Version " (@ document 'version)))
 (defun log-out ()
   (if (@ *game-state* 'logged-in)
       (progn (setf (@ *game-state* 'logged-in) false)
-             (setf (@ by-id 'log-in 'style 'visibility) 'visible)
-                   
-             (setf (@ by-id 'add-sidekick 'style 'visibility) 'hidden)
-             (setf (@ by-id 'log-out 'style 'visibility) 'hidden)
+             (setf (@ (by-id 'log-in) 'style 'visibility) 'visible)
+             (setf (@ (by-id 'add-sidekick) 'style 'visibility) 'hidden)
+             (setf (@ (by-id 'log-out) 'style 'visibility) 'hidden)
              (report :bye-bye)
              ((@ window location reload) t)
              t)
