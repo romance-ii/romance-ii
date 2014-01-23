@@ -79,7 +79,6 @@ $(DISTVDIR)/$(PROJECT).css: \
 	cp $(shell tools/bin/smaller $^) $@
 
 $(DISTVDIR)/$(PROJECT).js: \
-	$(DISTVDIR) \
 	build/$(PROJECT)-$(VERSION)-min.yahoo.js \
 	build/$(PROJECT)-$(VERSION)-min.ugly.js \
 	build/$(PROJECT)-$(VERSION)-min.google.js
@@ -97,6 +96,7 @@ build/js-lib/glge.js:	src/js-lib/glge/glge-compiled.js build/js-lib/glge-prefix.
 	cat build/js-lib/glge-prefix.txt $^ > $@
 
 build/js-lib/glge-prefix.txt:	Makefile
+	mkdir -p build/js-lib
 	echo -n "/** @COPYRIGHT: " > $@
 
 src/js-lib/glge/glge-compiled.js:	$(shell find src/js-lib/glge/src -type f)
@@ -124,7 +124,7 @@ build/$(PROJECT)-$(VERSION)-min.yahoo.js: \
 tools/yuicompressor/yuicompressor.jar: $(shell find src/tools/yuicompressor/src -name \*java)
 	src/tools/yuicompressor/bin/build
 	mkdir -p tools/yuicompressor
-	cp $^ $@
+	cp build/yuicompressor/yuicompressor-2.*.jar $@
 
 build/$(PROJECT)-$(VERSION)-min.ugly.js: build/$(PROJECT)-$(VERSION)-all.js
 	uglifyjs $< -o $@ --source-map $@.source-map
@@ -132,12 +132,13 @@ build/$(PROJECT)-$(VERSION)-min.ugly.js: build/$(PROJECT)-$(VERSION)-all.js
 build/$(PROJECT)-$(VERSION)-min.google.js: build/$(PROJECT)-$(VERSION)-all.js
 	java -jar tools/closure-compiler/compiler.jar \
 		--compilation_level ADVANCED_OPTIMIZATIONS \
+		--jscomp_off=internetExplorerChecks \
 		--create_source_map $(DISTVDIR)/debug.js.map \
 		--js=$< --js_output_file=$@
 
 build/$(PROJECT)-$(VERSION)-min.yahoo.css: \
 	build/$(PROJECT)-$(VERSION)-all.css
-	java -jar tools/yuicompressor/build/yuicompressor-2.4.8.jar \
+	java -jar tools/yuicompressor/yuicompressor.jar \
 		--type css --charset utf-8 --verbose -o $@ $<
 
 build/$(PROJECT)-$(VERSION).html: src/$(PROJECT).html
@@ -210,7 +211,7 @@ build/art/%.svg: $(SWFSOURCESDIR)/%.fla
 		--funcall org-latex-export-to-latex
 
 %.pdf:	%.tex
-	( cd \$( dirname $< ) ; pdflatex \$( basename $< ) )
+	( cd $(shell dirname $< ) ; pdflatex $(shell basename $< ) ) < /dev/null
 
 doc:	\
 	doc/devel/Development-Features-Plan.html \
