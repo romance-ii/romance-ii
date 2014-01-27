@@ -11,7 +11,9 @@ for my $file (@ARGV) {
     $dump .= '.dump';
     $dump =~ s,\Q$swfdir\E,build/svg/,g;
     system sh => -c => "mkdir -p \$(dirname $dump)";
+    if ($?) { warn "mkdir (dirname $dump) → $?" }
     system sh => -c => "swfdump -tsFpBbd '$file' > '$dump'";
+    if ($?) { warn "swfdump $dump → $?" }
   }
 
   my  (%shape)= ();
