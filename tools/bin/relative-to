@@ -16,9 +16,9 @@ chomp $d;
 $rel = $d;
 
 $rel =~ s([^/]+/)(../)g;
-$rel =~ s(/[^/]+$)(/../);
+$rel =~ s(/[^/]+$)(/..);
 
 print STDERR "count=$count\n";
 
-print $d . '/' . $rel . $mod;
+print "$rel/$mod";
 exit 0;

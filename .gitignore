@@ -13,29 +13,50 @@ tmp.*
 *.bak
 *.orig
 
-# Compilation artefacts
+# Compilation artefacts/output files
 *.fasl
 *.fas
 *.dxl
 *.a
+*.o
+*.so
+*.dylib
+*.class
 
+# The entire build directory
 build/*
 
 # Distribution files
 dist/*
 
 # Rendered documentation
-doc/*/*dvi
-doc/*/*ps
-doc/*/*pdf
 
 # Editor crash files
 DEADJOE
 
-# (La)TeX intermediate files
+# (La)TeX(info) intermediate files
 *.aux
 *.log
 *.out
 *.toc
 
+# (La)TeX(info) output files
+doc/*/*.cp
+doc/*/*.fn
+doc/*/*.info
+doc/*/*.ky
+doc/*/*.pdf
+doc/*/*.pg
+doc/*/*.texinfo
+doc/*/*.tp
+doc/*/*.vr
+doc/*/*.dvi
+doc/*/*.ps
+doc/*/*.pdf
+doc/*/*.html
+doc/*/*/*.html
+
+
+# Probably SHOULDN'T be writing here, but we still ARE.
 src/romans/build
+

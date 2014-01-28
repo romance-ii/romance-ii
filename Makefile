@@ -58,21 +58,23 @@ $(SERVERDIR)/bin/$(SERVERFULLNAME):	$(shell find src/romans -type f)
 	( cd $(shell dirname $< ) ; pdflatex $(shell basename $< ) ) < /dev/null
 
 %.info:  %.texi
-	cd $(shell dirname $< ) && texi2any --info --force $< -o $(shell tools/bin/relative-to $< $@)
+	cd $(shell dirname $< ) && texi2any --info --force $(shell basename $<) -o $(shell tools/bin/relative-to $< $@)
 
-%.html:  %.texi	
-	cd $(shell dirname $< ) && texi2any --html --split=section --css-ref=romance2.css --force \
-		$< -o $(shell tools/bin/relative-to $< $@)
+%.html.d:  %.texi	
+	cd $(shell dirname $< ) && texi2any --html --split=section \
+		--css-ref=romance2-doc.css --force \
+		$(shell basename $<) -o $(shell tools/bin/relative-to $< $@)
 
 %.pdf:	%.texi
-	cd $(shell dirname $< ) && texi2any --pdf --force $< -o $(shell tools/bin/relative-to $< $@)
+	cd $(shell dirname $< ) && texi2any --pdf --force $(shell basename $<) -o $(shell tools/bin/relative-to $< $@)
 
 %.ps:	%.texi
-	cd $(shell dirname $< ) && texi2any --ps --force $< -o $(shell tools/bin/relative-to $< $@)
+	cd $(shell dirname $< ) && texi2any --ps --force $(shell basename $<) -o $(shell tools/bin/relative-to $< $@)
 
 %.txt:	%.texi
-	cd $(shell dirname $< ) && texi2any --plaintext --force $< -o $(shell tools/bin/relative-to $< $@) 
+	cd $(shell dirname $< ) && texi2any --plaintext --force $(shell basename $<) -o $(shell tools/bin/relative-to $< $@) 
  
 doc:	\
 	doc/devel/The-Book-of-Romance.pdf \
-	doc/devel/The-Book-of-Romance.info
+	doc/devel/The-Book-of-Romance.info \
+	doc/devel/The-Book-of-Romance.html.d
