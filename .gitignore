@@ -54,7 +54,7 @@ doc/*/*.dvi
 doc/*/*.ps
 doc/*/*.pdf
 doc/*/*.html
-doc/*/*/*.html
+doc/*/*.html.d/*
 
 
 # Probably SHOULDN'T be writing here, but we still ARE.
