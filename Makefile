@@ -58,20 +58,21 @@ $(SERVERDIR)/bin/$(SERVERFULLNAME):	$(shell find src/romans -type f)
 	( cd $(shell dirname $< ) ; pdflatex $(shell basename $< ) ) < /dev/null
 
 %.info:  %.texi
-	texi2any --info --force $< -o $@
+	cd $(shell dirname $< ) && texi2any --info --force $< -o $(shell tools/bin/relative-to $< $@)
 
 %.html:  %.texi	
-	texi2any --html --split=section --css-ref=romance2.css --force $< -o $@
+	cd $(shell dirname $< ) && texi2any --html --split=section --css-ref=romance2.css --force \
+		$< -o $(shell tools/bin/relative-to $< $@)
 
 %.pdf:	%.texi
-	texi2any --pdf --force $< -o $@
+	cd $(shell dirname $< ) && texi2any --pdf --force $< -o $(shell tools/bin/relative-to $< $@)
 
 %.ps:	%.texi
-	texi2any --ps --force $< -o $@
+	cd $(shell dirname $< ) && texi2any --ps --force $< -o $(shell tools/bin/relative-to $< $@)
 
 %.txt:	%.texi
-	texi2any --plaintext --force $< -o $@
-
+	cd $(shell dirname $< ) && texi2any --plaintext --force $< -o $(shell tools/bin/relative-to $< $@) 
+ 
 doc:	\
 	doc/devel/The-Book-of-Romance.pdf \
 	doc/devel/The-Book-of-Romance.info

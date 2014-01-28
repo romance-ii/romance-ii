@@ -1,0 +1,24 @@
+#!/usr/bin/perl
+
+unless ($#ARGV == 1)
+{ print STDERR "Usage: $0 (relative-file) (target-file)\n"; exit }
+
+my ($rel, $mod) = @ARGV;
+
+if ( $mod =~ m[^/] ) { print $mod; exit 0 }
+
+$rel =~ s[//+][/]g; 
+$rel =~ s[/$][]g;
+
+my $d = `dirname $rel`;
+chomp $d;
+
+$rel = $d;
+
+$rel =~ s([^/]+/)(../)g;
+$rel =~ s(/[^/]+$)(/../);
+
+print STDERR "count=$count\n";
+
+print $d . '/' . $rel . $mod;
+exit 0;
