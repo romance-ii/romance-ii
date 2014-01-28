@@ -1,8 +1,14 @@
-nodejs
 emacs
+sbcl
+
+zeromq-devel
+
 gcc
 gcc-c++
 libstdc++-devel
-zeromq-devel
 
+nodejs
+uglify-js
+
+java-1.7.0-openjdk
 
