@@ -29,20 +29,20 @@ clean:
 $(TOOLBIN)/buildapp: $(shell find $(BUILDAPPSRC) -type f)
 	$(MAKE) DESTDIR=$(shell pwd)/$(TOOLBIN)/.. -C $(BUILDAPPSRC) buildapp install
 
-BUILDCONSTS= 	--eval "(defconstant cl-user::+BUILD-OS+ :$(OSNAME))" \
+BUILDCONSTS=--eval "(defconstant cl-user::+BUILD-OS+ :$(OSNAME))" \
 		--eval "(defconstant cl-user::+BUILD-CPU+ :$(CPU))" \
 		--eval "(defconstant cl-user::+BUILD-LIBDIR+ (merge-pathnames \"$(LIBDIR)\"))"
 
 $(BUILDDIR)/Romance.manifest:	\
 		$(shell find . -name '*.lisp' -not -path '**/.*') \
 		$(shell find . -name '*.asd' -not -path '**/.*')
+	mkdir -p $(BUILDDIR)
 	sbcl --no-userinit --no-sysinit --non-interactive \
 		--disable-debugger \
 		--load ~/quicklisp/setup.lisp \
 		$(BUILDCONSTS) \
 		--load setup.lisp \
-		--eval '(ql:quickload :romance-ii)' \
-		--eval "(ql:write-asdf-manifest-file \"$(BUILDDIR)/Romance.manifest\")"
+		--eval '(progn (ql:quickload :romance-ii)(ql:write-asdf-manifest-file "'$(BUILDDIR)/Romance.manifest'"))'
 
 $(BUILDDIR)/$(OSNAME)-Romance-$(CPU):	\
 		$(BUILDDIR)/Romance.manifest $(TOOLBIN)/buildapp
@@ -50,6 +50,7 @@ $(BUILDDIR)/$(OSNAME)-Romance-$(CPU):	\
 #	ASDF_OUTPUT_TRANSLATIONS="(:output-translations :ignore-inherited-configuration \
 #		(T (lambda (pathname dir) (declare (ignored dir)) \
 #		      (merge-pathnames pathname \"$(FASLDIR)\"))))" \
+
 	$(TOOLBIN)/buildapp \
 		--load ~/quicklisp/setup.lisp \
 		--manifest-file $(BUILDDIR)/Romance.manifest \
@@ -70,8 +71,8 @@ $(BUILDDIR)/$(OSNAME)-Romance-$(CPU):	\
 		--asdf-tree . \
 		--dynamic-space-size $(DYNSPACE)
 	cd $(BUILDDIR)/$(OSNAME)-$(CPU)-bin; ( \
-		cp ../$(OSNAME)-Romance-$(CPU) romance ; \
+		ln ../$(OSNAME)-Romance-$(CPU) romance ; \
 		for n in galen appius asinius caesar lutatius narcissus clodia ; do \
-			ln -s romance $n ; done )
+			ln -sv romance $n ; done )
 
 
