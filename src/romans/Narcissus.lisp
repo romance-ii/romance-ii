@@ -7,6 +7,7 @@ assassinated an emperor, not the mythological character who was turned
 into a flower.")
   (:export #:start-server))
 
+(in-package :narcissus)
 
 (defun start-server (argv)
   (romance:server-start-banner "Narcissus" "Narcissus"

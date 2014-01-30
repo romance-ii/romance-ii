@@ -10,6 +10,7 @@ when necessary.
 
 Gaius Julius Caesar was known as a famous general."))
 
+(in-package :caesar)
 
 (defun collate-quality-of-service-reports ())
 

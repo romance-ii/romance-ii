@@ -10,6 +10,7 @@ Galen was a noted philosopher, logician, and inventor.
 This subsystem won't be in place yet for Romance 2.0")
   (:export #:start-server))
 
+(in-package :galen)
 (defun start-server (argv)
   (romance:server-start-banner "Galen"
                                "Ælius Claudius Galenus"
