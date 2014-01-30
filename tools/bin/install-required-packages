@@ -1,3 +1,4 @@
 #!/bin/sh
 
-pkcon install $(< $(basename $0)/../required-rpm-packages )
+pkcon install $(egrep -v '^#' $(dirname $0)/../required-rpm-packages)
+

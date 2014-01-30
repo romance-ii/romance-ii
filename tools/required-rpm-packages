@@ -1,14 +1,36 @@
+# RPM packages required to function
+# Run tools/bin/install-required-packages to load these via PackageKit
+
+# You must be joking?
+coreutils
+binutils
+
+# The core facilities: Emacs, SBCL
 emacs
 sbcl
+### Note, Quicklisp and Slime are “sideloaded” per-user
+### installing the system's Slime package may be detrimental
 
+# Devel libraries needed for accessing libraries
 zeromq-devel
 
+# C/C++ compilation
 gcc
 gcc-c++
 libstdc++-devel
 
+# JavaScript facilities
 nodejs
 uglify-js
 
+# Java
 java-1.7.0-openjdk
+
+# (La)TeX facilities
+texlive-latex-bin-bin
+texlive-pdftex-bin
+texlive-tocloft
+
+# (TeX)Info facilities
+texinfo
 
