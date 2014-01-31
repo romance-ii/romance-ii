@@ -22,19 +22,22 @@ push:	dist/$(PROJECT)-$(VERSION).tar.xz
 	ssh $(HOST) tar -C $(DIR) -jxvf $(DIR)/$(PROJECT)-$(VERSION).tar.xz
 
 SERVERDIR=dist/$(PROJECT)-server-$(VERSION)/
-SERVERFULLNAME=$(PROJECT)-server-$(shell uname -s)-$(shell uname -m)-$(VERSION)
+SERVERFULLNAME=$(PROJECT)-server-$(VERSION).$(shell uname -s)-$(shell uname -m)
 
 dist: dist/$(SERVERFULLNAME).tar.xz doc
 
 dist/$(SERVERFULLNAME).tar.xz: \
 	$(SERVERDIR)/bin/$(SERVERFULLNAME)
-	cd dist; tar jcvf -C .. $@ $(shell basename $(SERVERDIR))
+	tar -Jcvf $@ --transform='s#../dist/##' $(SERVERDIR)
 
 $(SERVERDIR)/bin/$(SERVERFULLNAME):	$(shell find src/romans -type f)
-	$(MAKE) BUILDDIR=build/$(PROJECT)-server-$(VERSION) -C src/romans
-	mkdir -p $(SERVERDIR)
-	cp build/$(PROJECT)-server-$(VERSION)/$(shell uname -s)-Romance-$(shell uname -m | sed -e 's,_,-,g') \
-		$@
+	mkdir -p build/$(SERVERFULLNAME)-$(VERSION)/{bin,lib}
+	BUILDDIR=../../build/$(SERVERFULLNAME)-$(VERSION)/ \
+		$(MAKE) -e -C src/romans
+	mkdir -p $(SERVERDIR)/bin
+	ln build/$(SERVERFULLNAME)-$(VERSION)/bin/romance -f $@
+	for f in build/$(SERVERFULLNAME)-$(VERSION)/bin/* ; do \
+		ln -sf $@ $(SERVERDIR)/bin/$(PROJECT)-$$(basename $$f) ; done
 
 %.txt:	%.org
 	emacs --batch -q -nw \
