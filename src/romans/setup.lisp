@@ -10,13 +10,26 @@
 (warn "Your compiler is not SBCL. Some things may be weird.
 
 Romance II is being developed using SBCL. While we greatly appreciate
-and encourage other compilers to be used, and would like to support
-as many as are practical, please keep in mind that the curator and
+and encourage other compilers to be used, and would like to support as
+many as are practical, please keep in mind that the curator and
 principal developers use SBCL on Linux® (64-bit). Patches for your
-compiler will certainly be accepted, however.")
+compiler will certainly be accepted, however, as long as they don't
+break support for SBCL (e.g. use #+xyzlisp reader macros).
+
+The name of your compiler would be helpful for us to know, as well as
+its feature-test symbol(s) for #± reader macros; your CL:*FEATURES*
+is: ~%~S" *features*)
 
 #-common-lisp
-(warn "*FEATURES* omits COMMON-LISP. What madness is this??")
+(warn "*FEATURES* omits COMMON-LISP. What madness is this??
+
+If you are legitimately trying to compile Romance II using some
+un-Common Lisp, well: good luck, but please don't expect
+any miracles.
+
+If you're on a Common Lisp system that doesn't mention COMMON-LISP in
+its *FEATURES*, please advise us with a copy of CL:*FEATURES*:~%~S"
+      *features*)
 
 #-linux
 (warn "*FEATURES* omits LINUX.
@@ -24,11 +37,12 @@ compiler will certainly be accepted, however.")
 Romance II is being developed on Linux®. While support for some other
 operating systems is certainly possible, keep in mind, that the more
 your operating system differs from Linux, the less likely things are
-to Just Work. Patches for other OS are accepted.
+to Just Work. Patches for other OS are accepted, as long as they don't
+break Linux support.
 
 If your OS *is* a Linux, and your compiler simply does not specify
-the :LINUX keyword in *FEATURES*, please advise us with a copy of your
-CL:*FEATURES*")
+the :LINUX keyword in *FEATURES*, please advise us with this copy of
+your CL:*FEATURES*: ~%~S" *features*)
 
 #-x86-64 
 (warn "*FEATURES* omits X64-64.
@@ -36,15 +50,18 @@ CL:*FEATURES*")
 Your machine type is reported as ~A
  (specifically: ~A)
 
-If this is not an AMD-alike 64-bit architecture, please be forewarned 
+If this is not an AMD-alike* 64-bit architecture, please be forewarned
 that Romance II is being developed primarily for the “AMD 64” (X86-64)
-architecture. While support for other architectures is surely possible,
-and patches are encouraged, neither the curator nor primary
+architecture. While support for other architectures is surely
+possible, and patches are encouraged, neither the curator nor primary
 contributors are currently using them.
+
+   * Intel's non-Itanium 64-bit systems are AMD-alikes; e.g. the Intel
+     Core series.
 
 If your architecture *is* an X86-64 system, and your compiler simply
 does not specify the :X86-64 keyword in *FEATURES*, please advise us
-with a copy of your CL:*FEATURES*")
+with a copy of your CL:*FEATURES*: ~%~S" *features*)
 
 #+sbcl
 (progn
@@ -88,13 +105,12 @@ with a copy of your CL:*FEATURES*")
                                           `(,@(pathname-directory *load-pathname*) ".." "..")))
 
 (let ((r2src (make-pathname :host "r2src" :directory "romans")))
-  (unless (member r2src asdf:*central-registry* :test 'equal)
-    (push r2src asdf:*central-registry*)))
+  (pushnew r2src asdf:*central-registry* :test 'equal))
 
 (let ((wn-src (merge-pathnames "romans/lib/smedict-old/"
                                (translate-logical-pathname (make-pathname :host "r2src")))))
-  (unless (member wn-src asdf:*central-registry* :test 'equal)
-    (push wn-src asdf:*central-registry*)))
+  (pushnew wn-src asdf:*central-registry* :test 'equal))
+
 (defvar *os-name* (or #+android "Android"
                       #+ios "iOS"
                       #+linux "Linux"
@@ -112,6 +128,13 @@ with a copy of your CL:*FEATURES*")
              (defconstant ,(intern "+BUILD-CPU+" :cl-user)
                ,(intern (string-upcase (machine-type)) :keyword))
              (defconstant ,(intern "+BUILD-LIBDIR+" :cl-user) #p".")))))
+
+(set-logical-pathname-host "lib" (or (eval (intern "+BUILD-LIBDIR+" :cl-user))
+                                     (merge-pathnames 
+                                      ;; TODO: other 64-bit systems add to first list
+                                      #+(or X86-64) "/usr/lib64"
+                                      #-(or X86-64) "/usr/lib"
+                                      )))
 
 (format *trace-output* "~&
 *** Romance II set-up script completed.
