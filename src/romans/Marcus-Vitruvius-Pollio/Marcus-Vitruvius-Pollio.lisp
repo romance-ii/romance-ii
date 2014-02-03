@@ -1,9 +1,3 @@
-(defpackage :vitruvius
-  (:use :cl :alexandria)
-  (:nicknames :marcus-vitruvius-pollio)
-  (:documentation "Vitruvius (genotype, morphotype)")
-  (:export #:start-server))
-
 (in-package :lutatius)
 
 (defun server-start (argv)
