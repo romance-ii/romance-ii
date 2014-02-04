@@ -10,6 +10,7 @@
                :bordeaux-threads
                :buildapp
                :cl-unicode
+               :cffi
                :langutils
                :langutils 
                :postmodern
@@ -28,12 +29,12 @@
    (:module "Aelius-Galenus"
           :depends-on ("setup" "common")
           :components ((:file "package")
-                       (:file "Aelius-Galenus"
+   (:file "Aelius-Galenus"
                               :depends-on ("package"))))
    (:module "Appius-Claudius-Caecus"
           :depends-on ("setup" "common")
           :components ((:file "package")
-                       (:file "Appius-Claudius-Caecus"
+   (:file "Appius-Claudius-Caecus"
                               :depends-on ("package"))))
    (:module "Clodia-Metelli-Pulcher"
             :depends-on ("setup" "common")
@@ -52,49 +53,49 @@
    (:module "Gaius-Asinius-Pollio"
           :depends-on ("setup" "common")
           :components ((:file "package")
-                       (:file "Gaius-Asinius-Pollio"
+   (:file "Gaius-Asinius-Pollio"
                               :depends-on ("package"))))
    (:module "Gaius-Julius-Caesar"
           :depends-on ("setup" "common")
           :components ((:file "package")
-                       (:file "Gaius-Julius-Caesar"
+   (:file "Gaius-Julius-Caesar"
                               :depends-on ("package"))))
    (:module "Gaius-Lutatius-Catulus"
           :depends-on ("setup" "common")
           :components ((:file "package")
-                       (:file "Gaius-Lutatius-Catulus"
+   (:file "Gaius-Lutatius-Catulus"
                               :depends-on ("package"))))
    (:module "Gaius-Valerius-Catullus"
           :depends-on ("setup" "common")
           :components ((:file "package")
                        (:file "conceptnet5")
-                       (:file "Gaius-Valerius-Catullus"
+   (:file "Gaius-Valerius-Catullus"
                               :depends-on ("package" "conceptnet5"))))
    (:module "Lucius-Aemilius-Regillus"
           :depends-on ("setup" "common")
           :components ((:file "package")
-                       (:file "Lucius-Aemilius-Regillus"
+   (:file "Lucius-Aemilius-Regillus"
                               :depends-on ("package")))) 
    (:module "Marcus-Vitruvius-Pollio"
           :depends-on ("setup" "common")
           :components ((:file "package")
-                       (:file "Marcus-Vitruvius-Pollio"
+   (:file "Marcus-Vitruvius-Pollio"
                               :depends-on ("package"))))
    (:module "Narcissus"
-            :depends-on ("setup" "common" :cl-bullet2l)
+            :depends-on ("setup" "common")
           :components ((:file "package")
                        (:file "Narcissus-bullet"
                               :depends-on ("package"))
-                       (:file "Narcissus"
+   (:file "Narcissus"
                               :depends-on ("package" "Narcissus-bullet"))))
    (:module "Rabirius"
           :depends-on ("setup" "common")
           :components ((:file "package")
-                       (:file "Rabirius"
+   (:file "Rabirius"
                               :depends-on ("package"))))
    (:module "Sextus-Julius-Frontinus"
           :depends-on ("setup" "common")
           :components ((:file "package")
-                       (:file "Sextus-Julius-Frontinus"
+   (:file "Sextus-Julius-Frontinus"
                               :depends-on ("package"))))))
 
