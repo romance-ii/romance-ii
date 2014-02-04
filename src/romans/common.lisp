@@ -178,9 +178,18 @@ For help, evaluate (ROMANCE:REPL-HELP)~2%"))
   (in-package :romance-user)
   (prepl:repl :nobanner t :inspect t :continuable t))
 
+(defun romanize-print (stream string)
+  (let ((len (length string))
+        (string (substitute #\C #\G 
+                            (substitute #\I #\J
+                                        (substitute #\V #\U
+                                                    string)))))
+    (format stream "~|~3%; ~VT ~V,,,'=A~%~3:*; ~VT ~2* ~:@(~A~)~%~4:*; ~VT ~V,,,'=A~3%"
+            (round (- 34 (/ len 2))) (+ 2 len) "" string)))
+
 (defun server-start-banner (short-name long-name purpose)
-  (format *standard-output* "~|~3%; ~VT ~V,,,'=A~%~3:*; ~VT ~2* ~:@(~A~)~%~4:*; ~VT ~V,,,'=A~3%"
-          (round (- 34 (/ (length short-name) 2))) (+ 2 (length short-name)) "" short-name)
+  (romanize-print *standard-output* short-name)
+
   (format *standard-output* "
 ;
 ; ----------------------------------------------------------------------
@@ -195,6 +204,8 @@ MACHINE-INSTANCE =  ~:(~A~)
 MACHINE-TYPE =      ~A
 
 /COPYRIGHTS~%~A~%\\COPYRIGHTS~%~|"
-          long-name purpose short-name (machine-instance) (machine-type) (copyrights)))
+          long-name purpose short-name (machine-instance) (machine-type) (copyrights))
+
+  (romanize-print *standard-output* long-name))
 
 
