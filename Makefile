@@ -27,7 +27,8 @@ SERVERFULLNAME=$(PROJECT)-server-$(VERSION).$(shell uname -s)-$(shell uname -m)
 dist: dist/$(SERVERFULLNAME).tar.xz doc
 
 dist/$(SERVERFULLNAME).tar.xz: \
-	$(SERVERDIR)/bin/$(SERVERFULLNAME)
+	$(SERVERDIR)/bin/$(SERVERFULLNAME) \
+	$(SERVERDIR)/lib/libcl-bullet2l.so
 	tar -Jcvf $@ --transform='s#../dist/##' $(SERVERDIR)
 
 $(SERVERDIR)/bin/$(SERVERFULLNAME):	$(shell find src/romans -type f)
@@ -38,6 +39,15 @@ $(SERVERDIR)/bin/$(SERVERFULLNAME):	$(shell find src/romans -type f)
 	ln build/$(SERVERFULLNAME)-$(VERSION)/bin/romance -f $@
 	for f in build/$(SERVERFULLNAME)-$(VERSION)/bin/* ; do \
 		ln -sf $@ $(SERVERDIR)/bin/$(PROJECT)-$$(basename $$f) ; done
+
+$(SERVERDIR)/lib/libcl-bullet2l.so:	\
+	$(SERVERDIR)/bin/$(SERVERFULLNAME) \
+	$(shell find src/romans/lib/cl-bullet2l src/romans/lib/bullet2 -type f)
+	mkdir -p $(SERVERDIR)/lib
+	ln build/$(SERVERFULLNAME)-$(VERSION)/lib/*.so -f $(SERVERDIR)/lib/
+
+
+
 
 %.txt:	%.org
 	emacs --batch -q -nw \
