@@ -4160,10 +4160,9 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
     (execute-kbd-macro [?\C-s ?# ?. ?\( ?l ?i ?s ?p ?i ?f ?y ?\C-m ?\C-\M-b ?\C-\M-b ?\C-\M-  ?\C-w ?\C-? ?\C-? f8 ?\C-y ?\C-m ])
     (sleep-for .75)
     (execute-kbd-macro [?\C-\M-b ?\C-\M-b ?\C-\M-  ?\M-w ?\C-x ?o ?\C-y]))
-  
   (defun eval-lispify-all ()
     (interactive)
-    (dotimes (i 1000)
+    (dotimes (i 10000)
       (eval-lispify))))
 
 
@@ -4188,28 +4187,28 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export 'COLLISION-WORLD/CONVEX-SWEEP-TEST)
 
-(declaim (inline #.(lispify "btCollisionWorld_contactTest" 'function)))
+(declaim (inline COLLISION-WORLD/CONTACT-TEST))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_contactTest" #.(lispify "btCollisionWorld_contactTest" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_contactTest" COLLISION-WORLD/CONTACT-TEST) :void
   (self :pointer)
   (colObj :pointer)
   (resultCallback :pointer))
 
-(export '#.(lispify "btCollisionWorld_contactTest" 'function))
+(export 'COLLISION-WORLD/CONTACT-TEST)
 
-(declaim (inline #.(lispify "btCollisionWorld_contactPairTest" 'function)))
+(declaim (inline COLLISION-WORLD/CONTACT-PAIR-TEST))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_contactPairTest" #.(lispify "btCollisionWorld_contactPairTest" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_contactPairTest" COLLISION-WORLD/CONTACT-PAIR-TEST) :void
   (self :pointer)
   (colObjA :pointer)
   (colObjB :pointer)
   (resultCallback :pointer))
 
-(export '#.(lispify "btCollisionWorld_contactPairTest" 'function))
+(export 'COLLISION-WORLD/CONTACT-PAIR-TEST)
 
-(declaim (inline #.(lispify "btCollisionWorld_rayTestSingle" 'function)))
+(declaim (inline COLLISION-WORLD/RAY-TEST-SINGLE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingle" #.(lispify "btCollisionWorld_rayTestSingle" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingle" COLLISION-WORLD/RAY-TEST-SINGLE) :void
   (rayFromTrans :pointer)
   (rayToTrans :pointer)
   (collisionObject :pointer)
@@ -4217,21 +4216,21 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (colObjWorldTransform :pointer)
   (resultCallback :pointer))
 
-(export '#.(lispify "btCollisionWorld_rayTestSingle" 'function))
+(export 'COLLISION-WORLD/RAY-TEST-SINGLE)
 
-(declaim (inline #.(lispify "btCollisionWorld_rayTestSingleInternal" 'function)))
+(declaim (inline COLLISION-WORLD/RAY-TEST-SINGLE-INTERNAL))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingleInternal" #.(lispify "btCollisionWorld_rayTestSingleInternal" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingleInternal" COLLISION-WORLD/RAY-TEST-SINGLE-INTERNAL) :void
   (rayFromTrans :pointer)
   (rayToTrans :pointer)
   (collisionObjectWrap :pointer)
   (resultCallback :pointer))
 
-(export '#.(lispify "btCollisionWorld_rayTestSingleInternal" 'function))
+(export 'COLLISION-WORLD/RAY-TEST-SINGLE-INTERNAL)
 
-(declaim (inline #.(lispify "btCollisionWorld_objectQuerySingle" 'function)))
+(declaim (inline COLLISION-WORLD/OBJECT-QUERY-SINGLE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingle" #.(lispify "btCollisionWorld_objectQuerySingle" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingle" COLLISION-WORLD/OBJECT-QUERY-SINGLE) :void
   (castShape :pointer)
   (rayFromTrans :pointer)
   (rayToTrans :pointer)
@@ -4241,11 +4240,11 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (resultCallback :pointer)
   (allowedPenetration :float))
 
-(export '#.(lispify "btCollisionWorld_objectQuerySingle" 'function))
+(export 'COLLISION-WORLD/OBJECT-QUERY-SINGLE)
 
-(declaim (inline #.(lispify "btCollisionWorld_objectQuerySingleInternal" 'function)))
+(declaim (inline COLLISION-WORLD/OBJECT-QUERY-SINGLE-INTERNAL))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingleInternal" #.(lispify "btCollisionWorld_objectQuerySingleInternal" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingleInternal" COLLISION-WORLD/OBJECT-QUERY-SINGLE-INTERNAL) :void
   (castShape :pointer)
   (convexFromTrans :pointer)
   (convexToTrans :pointer)
@@ -4253,2610 +4252,2610 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (resultCallback :pointer)
   (allowedPenetration :float))
 
-(export '#.(lispify "btCollisionWorld_objectQuerySingleInternal" 'function))
+(export 'COLLISION-WORLD/OBJECT-QUERY-SINGLE-INTERNAL)
 
-(declaim (inline #.(lispify "btCollisionWorld_addCollisionObject" 'function)))
+(declaim (inline COLLISION-WORLD/ADD-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_0" #.(lispify "btCollisionWorld_addCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_0" COLLISION-WORLD/ADD-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer)
   (collisionFilterGroup :short)
   (collisionFilterMask :short))
 
-(export '#.(lispify "btCollisionWorld_addCollisionObject" 'function))
+(export 'COLLISION-WORLD/ADD-COLLISION-OBJECT)
 
-(declaim (inline #.(lispify "btCollisionWorld_addCollisionObject" 'function)))
+(declaim (inline COLLISION-WORLD/ADD-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_1" #.(lispify "btCollisionWorld_addCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_1" COLLISION-WORLD/ADD-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer)
   (collisionFilterGroup :short))
 
-(export '#.(lispify "btCollisionWorld_addCollisionObject" 'function))
+(export 'COLLISION-WORLD/ADD-COLLISION-OBJECT)
 
-(declaim (inline #.(lispify "btCollisionWorld_addCollisionObject" 'function)))
+(declaim (inline COLLISION-WORLD/ADD-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_2" #.(lispify "btCollisionWorld_addCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_2" COLLISION-WORLD/ADD-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer))
 
-(export '#.(lispify "btCollisionWorld_addCollisionObject" 'function))
+(export 'COLLISION-WORLD/ADD-COLLISION-OBJECT)
 
-(declaim (inline #.(lispify "btCollisionWorld_getCollisionObjectArray" 'function)))
+(declaim (inline COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getCollisionObjectArray__SWIG_0" #.(lispify "btCollisionWorld_getCollisionObjectArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getCollisionObjectArray__SWIG_0" COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getCollisionObjectArray" 'function))
+(export 'COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY)
 
-(declaim (inline #.(lispify "btCollisionWorld_getCollisionObjectArray" 'function)))
+(declaim (inline COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getCollisionObjectArray__SWIG_1" #.(lispify "btCollisionWorld_getCollisionObjectArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getCollisionObjectArray__SWIG_1" COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getCollisionObjectArray" 'function))
+(export 'COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY)
 
-(declaim (inline #.(lispify "btCollisionWorld_removeCollisionObject" 'function)))
+(declaim (inline COLLISION-WORLD/REMOVE-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_removeCollisionObject" #.(lispify "btCollisionWorld_removeCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_removeCollisionObject" COLLISION-WORLD/REMOVE-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer))
 
-(export '#.(lispify "btCollisionWorld_removeCollisionObject" 'function))
+(export 'COLLISION-WORLD/REMOVE-COLLISION-OBJECT)
 
-(declaim (inline #.(lispify "btCollisionWorld_performDiscreteCollisionDetection" 'function)))
+(declaim (inline COLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_performDiscreteCollisionDetection" #.(lispify "btCollisionWorld_performDiscreteCollisionDetection" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_performDiscreteCollisionDetection" COLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION) :void
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_performDiscreteCollisionDetection" 'function))
+(export 'COLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION)
 
-(declaim (inline #.(lispify "btCollisionWorld_getDispatchInfo" 'function)))
+(declaim (inline COLLISION-WORLD/GET-DISPATCH-INFO))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_0" #.(lispify "btCollisionWorld_getDispatchInfo" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_0" COLLISION-WORLD/GET-DISPATCH-INFO) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getDispatchInfo" 'function))
+(export 'COLLISION-WORLD/GET-DISPATCH-INFO)
 
-(declaim (inline #.(lispify "btCollisionWorld_getDispatchInfo" 'function)))
+(declaim (inline COLLISION-WORLD/GET-DISPATCH-INFO))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_1" #.(lispify "btCollisionWorld_getDispatchInfo" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_1" COLLISION-WORLD/GET-DISPATCH-INFO) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getDispatchInfo" 'function))
+(export 'COLLISION-WORLD/GET-DISPATCH-INFO)
 
-(declaim (inline #.(lispify "btCollisionWorld_getForceUpdateAllAabbs" 'function)))
+(declaim (inline COLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getForceUpdateAllAabbs" #.(lispify "btCollisionWorld_getForceUpdateAllAabbs" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getForceUpdateAllAabbs" COLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getForceUpdateAllAabbs" 'function))
+(export 'COLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS)
 
-(declaim (inline #.(lispify "btCollisionWorld_setForceUpdateAllAabbs" 'function)))
+(declaim (inline COLLISION-WORLD/SET-FORCE-UPDATE-ALL-AABBS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_setForceUpdateAllAabbs" #.(lispify "btCollisionWorld_setForceUpdateAllAabbs" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_setForceUpdateAllAabbs" COLLISION-WORLD/SET-FORCE-UPDATE-ALL-AABBS) :void
   (self :pointer)
   (forceUpdateAllAabbs :pointer))
 
-(export '#.(lispify "btCollisionWorld_setForceUpdateAllAabbs" 'function))
+(export 'COLLISION-WORLD/SET-FORCE-UPDATE-ALL-AABBS)
 
-(declaim (inline #.(lispify "btCollisionWorld_serialize" 'function)))
+(declaim (inline COLLISION-WORLD/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_serialize" #.(lispify "btCollisionWorld_serialize" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_serialize" COLLISION-WORLD/SERIALIZE) :void
   (self :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btCollisionWorld_serialize" 'function))
+(export 'COLLISION-WORLD/SERIALIZE)
 
-(define-constant #.(lispify "ACTIVE_TAG" 'constant) 1)
+(define-constant +ACTIVE-TAG+ 1)
 
-(export '#.(lispify "ACTIVE_TAG" 'constant))
+(export '+ACTIVE-TAG+)
 
-(define-constant #.(lispify "ISLAND_SLEEPING" 'constant) 2)
+(define-constant +ISLAND-SLEEPING+ 2)
 
-(export '#.(lispify "ISLAND_SLEEPING" 'constant))
+(export '+ISLAND-SLEEPING+)
 
-(define-constant #.(lispify "WANTS_DEACTIVATION" 'constant) 3)
+(define-constant +WANTS-DEACTIVATION+ 3)
 
-(export '#.(lispify "WANTS_DEACTIVATION" 'constant))
+(export '+WANTS-DEACTIVATION+)
 
-(define-constant #.(lispify "DISABLE_DEACTIVATION" 'constant) 4)
+(define-constant +DISABLE-DEACTIVATION+ 4)
 
-(export '#.(lispify "DISABLE_DEACTIVATION" 'constant))
+(export '+DISABLE-DEACTIVATION+)
 
-(define-constant #.(lispify "DISABLE_SIMULATION" 'constant) 5)
+(define-constant +DISABLE-SIMULATION+ 5)
 
-(export '#.(lispify "DISABLE_SIMULATION" 'constant))
+(export '+DISABLE-SIMULATION+)
 
-(define-constant #.(lispify "btCollisionObjectDataName" 'constant) "btCollisionObjectFloatData"  :test 'equal)
+(define-constant +COLLISION-OBJECT-DATA-NAME+ "btCollisionObjectFloatData"  :test 'equal)
 
-(export '#.(lispify "btCollisionObjectDataName" 'constant))
+(export '+COLLISION-OBJECT-DATA-NAME+)
 
-(declaim (inline #.(lispify "btCollisionObject_makeCPlusPlusInstance" 'function)))
+(declaim (inline COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusPlusInstance__SWIG_0" #.(lispify "btCollisionObject_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusPlusInstance__SWIG_0" COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCollisionObject_makeCPlusPlusInstance" 'function))
+(export 'COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCollisionObject_deleteCPlusPlusInstance" 'function)))
+(declaim (inline COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btCollisionObject_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusPlusInstance__SWIG_0" COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCollisionObject_deleteCPlusPlusInstance" 'function))
+(export 'COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCollisionObject_makeCPlusPlusInstance" 'function)))
+(declaim (inline COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusPlusInstance__SWIG_1" #.(lispify "btCollisionObject_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusPlusInstance__SWIG_1" COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCollisionObject_makeCPlusPlusInstance" 'function))
+(export 'COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCollisionObject_deleteCPlusPlusInstance" 'function)))
+(declaim (inline COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btCollisionObject_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusPlusInstance__SWIG_1" COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCollisionObject_deleteCPlusPlusInstance" 'function))
+(export 'COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCollisionObject_makeCPlusArray" 'function)))
+(declaim (inline COLLISION-OBJECT/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusArray__SWIG_0" #.(lispify "btCollisionObject_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusArray__SWIG_0" COLLISION-OBJECT/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCollisionObject_makeCPlusArray" 'function))
+(export 'COLLISION-OBJECT/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCollisionObject_deleteCPlusArray" 'function)))
+(declaim (inline COLLISION-OBJECT/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusArray__SWIG_0" #.(lispify "btCollisionObject_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusArray__SWIG_0" COLLISION-OBJECT/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCollisionObject_deleteCPlusArray" 'function))
+(export 'COLLISION-OBJECT/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCollisionObject_makeCPlusArray" 'function)))
+(declaim (inline COLLISION-OBJECT/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusArray__SWIG_1" #.(lispify "btCollisionObject_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusArray__SWIG_1" COLLISION-OBJECT/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCollisionObject_makeCPlusArray" 'function))
+(export 'COLLISION-OBJECT/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCollisionObject_deleteCPlusArray" 'function)))
+(declaim (inline COLLISION-OBJECT/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusArray__SWIG_1" #.(lispify "btCollisionObject_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusArray__SWIG_1" COLLISION-OBJECT/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCollisionObject_deleteCPlusArray" 'function))
+(export 'COLLISION-OBJECT/DELETE-CPLUS-ARRAY)
 
-(cffi:defcenum #.(lispify "CollisionFlags" 'enumname)
-	(#.(lispify "CF_STATIC_OBJECT" 'enumvalue :keyword) #.1)
-	(#.(lispify "CF_KINEMATIC_OBJECT" 'enumvalue :keyword) #.2)
-	(#.(lispify "CF_NO_CONTACT_RESPONSE" 'enumvalue :keyword) #.4)
-	(#.(lispify "CF_CUSTOM_MATERIAL_CALLBACK" 'enumvalue :keyword) #.8)
-	(#.(lispify "CF_CHARACTER_OBJECT" 'enumvalue :keyword) #.16)
-	(#.(lispify "CF_DISABLE_VISUALIZE_OBJECT" 'enumvalue :keyword) #.32)
-	(#.(lispify "CF_DISABLE_SPU_COLLISION_PROCESSING" 'enumvalue :keyword) #.64))
+(cffi:defcenum COLLISION-FLAGS
+  (:CF-STATIC-OBJECT #.1)
+  (:CF-KINEMATIC-OBJECT #.2)
+  (:CF-NO-CONTACT-RESPONSE #.4)
+  (:CF-CUSTOM-MATERIAL-CALLBACK #.8)
+  (:CF-CHARACTER-OBJECT #.16)
+  (:CF-DISABLE-VISUALIZE-OBJECT #.32)
+  (:CF-DISABLE-SPU-COLLISION-PROCESSING #.64))
 
-(export '#.(lispify "CollisionFlags" 'enumname))
+(export 'COLLISION-FLAGS)
 
-(cffi:defcenum #.(lispify "CollisionObjectTypes" 'enumname)
-	(#.(lispify "CO_COLLISION_OBJECT" 'enumvalue :keyword) #.1)
-	(#.(lispify "CO_RIGID_BODY" 'enumvalue :keyword) #.2)
-	(#.(lispify "CO_GHOST_OBJECT" 'enumvalue :keyword) #.4)
-	(#.(lispify "CO_SOFT_BODY" 'enumvalue :keyword) #.8)
-	(#.(lispify "CO_HF_FLUID" 'enumvalue :keyword) #.16)
-	(#.(lispify "CO_USER_TYPE" 'enumvalue :keyword) #.32)
-	(#.(lispify "CO_FEATHERSTONE_LINK" 'enumvalue :keyword) #.64))
+(cffi:defcenum COLLISION-OBJECT-TYPES
+  (:CO-COLLISION-OBJECT #.1)
+  (:CO-RIGID-BODY #.2)
+  (:CO-GHOST-OBJECT #.4)
+  (:CO-SOFT-BODY #.8)
+  (:CO-HF-FLUID #.16)
+  (:CO-USER-TYPE #.32)
+  (:CO-FEATHERSTONE-LINK #.64))
 
-(export '#.(lispify "CollisionObjectTypes" 'enumname))
+(export 'COLLISION-OBJECT-TYPES)
 
-(cffi:defcenum #.(lispify "AnisotropicFrictionFlags" 'enumname)
-	(#.(lispify "CF_ANISOTROPIC_FRICTION_DISABLED" 'enumvalue :keyword) #.0)
-	(#.(lispify "CF_ANISOTROPIC_FRICTION" 'enumvalue :keyword) #.1)
-	(#.(lispify "CF_ANISOTROPIC_ROLLING_FRICTION" 'enumvalue :keyword) #.2))
+(cffi:defcenum ANISOTROPIC-FRICTION-FLAGS
+  (:CF-ANISOTROPIC-FRICTION-DISABLED #.0)
+  (:CF-ANISOTROPIC-FRICTION #.1)
+  (:CF-ANISOTROPIC-ROLLING-FRICTION #.2))
 
-(export '#.(lispify "AnisotropicFrictionFlags" 'enumname))
+(export 'ANISOTROPIC-FRICTION-FLAGS)
 
-(declaim (inline #.(lispify "btCollisionObject_mergesSimulationIslands" 'function)))
+(declaim (inline COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS))
 
-(cffi:defcfun ("_wrap_btCollisionObject_mergesSimulationIslands" #.(lispify "btCollisionObject_mergesSimulationIslands" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_mergesSimulationIslands" COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_mergesSimulationIslands" 'function))
+(export 'COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS)
 
-(declaim (inline #.(lispify "btCollisionObject_getAnisotropicFriction" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getAnisotropicFriction" #.(lispify "btCollisionObject_getAnisotropicFriction" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getAnisotropicFriction" COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getAnisotropicFriction" 'function))
+(export 'COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION)
 
-(declaim (inline #.(lispify "btCollisionObject_setAnisotropicFriction" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setAnisotropicFriction__SWIG_0" #.(lispify "btCollisionObject_setAnisotropicFriction" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setAnisotropicFriction__SWIG_0" COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION) :void
   (self :pointer)
   (anisotropicFriction :pointer)
   (frictionMode :int))
 
-(export '#.(lispify "btCollisionObject_setAnisotropicFriction" 'function))
+(export 'COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION)
 
-(declaim (inline #.(lispify "btCollisionObject_setAnisotropicFriction" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setAnisotropicFriction__SWIG_1" #.(lispify "btCollisionObject_setAnisotropicFriction" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setAnisotropicFriction__SWIG_1" COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION) :void
   (self :pointer)
   (anisotropicFriction :pointer))
 
-(export '#.(lispify "btCollisionObject_setAnisotropicFriction" 'function))
+(export 'COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION)
 
-(declaim (inline #.(lispify "btCollisionObject_hasAnisotropicFriction" 'function)))
+(declaim (inline COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_hasAnisotropicFriction__SWIG_0" #.(lispify "btCollisionObject_hasAnisotropicFriction" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_hasAnisotropicFriction__SWIG_0" COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION) :pointer
   (self :pointer)
   (frictionMode :int))
 
-(export '#.(lispify "btCollisionObject_hasAnisotropicFriction" 'function))
+(export 'COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION)
 
-(declaim (inline #.(lispify "btCollisionObject_hasAnisotropicFriction" 'function)))
+(declaim (inline COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_hasAnisotropicFriction__SWIG_1" #.(lispify "btCollisionObject_hasAnisotropicFriction" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_hasAnisotropicFriction__SWIG_1" COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_hasAnisotropicFriction" 'function))
+(export 'COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION)
 
-(declaim (inline #.(lispify "btCollisionObject_setContactProcessingThreshold" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setContactProcessingThreshold" #.(lispify "btCollisionObject_setContactProcessingThreshold" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setContactProcessingThreshold" COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD) :void
   (self :pointer)
   (contactProcessingThreshold :float))
 
-(export '#.(lispify "btCollisionObject_setContactProcessingThreshold" 'function))
+(export 'COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD)
 
-(declaim (inline #.(lispify "btCollisionObject_getContactProcessingThreshold" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getContactProcessingThreshold" #.(lispify "btCollisionObject_getContactProcessingThreshold" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getContactProcessingThreshold" COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD) :float
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getContactProcessingThreshold" 'function))
+(export 'COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD)
 
-(declaim (inline #.(lispify "btCollisionObject_isStaticObject" 'function)))
+(declaim (inline COLLISION-OBJECT/IS-STATIC-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionObject_isStaticObject" #.(lispify "btCollisionObject_isStaticObject" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_isStaticObject" COLLISION-OBJECT/IS-STATIC-OBJECT) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_isStaticObject" 'function))
+(export 'COLLISION-OBJECT/IS-STATIC-OBJECT)
 
-(declaim (inline #.(lispify "btCollisionObject_isKinematicObject" 'function)))
+(declaim (inline COLLISION-OBJECT/IS-KINEMATIC-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionObject_isKinematicObject" #.(lispify "btCollisionObject_isKinematicObject" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_isKinematicObject" COLLISION-OBJECT/IS-KINEMATIC-OBJECT) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_isKinematicObject" 'function))
+(export 'COLLISION-OBJECT/IS-KINEMATIC-OBJECT)
 
-(declaim (inline #.(lispify "btCollisionObject_isStaticOrKinematicObject" 'function)))
+(declaim (inline COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionObject_isStaticOrKinematicObject" #.(lispify "btCollisionObject_isStaticOrKinematicObject" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_isStaticOrKinematicObject" COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_isStaticOrKinematicObject" 'function))
+(export 'COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT)
 
-(declaim (inline #.(lispify "btCollisionObject_hasContactResponse" 'function)))
+(declaim (inline COLLISION-OBJECT/HAS-CONTACT-RESPONSE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_hasContactResponse" #.(lispify "btCollisionObject_hasContactResponse" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_hasContactResponse" COLLISION-OBJECT/HAS-CONTACT-RESPONSE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_hasContactResponse" 'function))
+(export 'COLLISION-OBJECT/HAS-CONTACT-RESPONSE)
 
-(declaim (inline #.(lispify "new_btCollisionObject" 'function)))
+(declaim (inline MAKE-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_new_btCollisionObject" #.(lispify "new_btCollisionObject" 'function)) :pointer)
+(cffi:defcfun ("_wrap_new_btCollisionObject" MAKE-COLLISION-OBJECT) :pointer)
 
-(export '#.(lispify "new_btCollisionObject" 'function))
+(export 'MAKE-COLLISION-OBJECT)
 
-(declaim (inline #.(lispify "delete_btCollisionObject" 'function)))
+(declaim (inline DELETE/BT-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_delete_btCollisionObject" #.(lispify "delete_btCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCollisionObject" DELETE/BT-COLLISION-OBJECT) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btCollisionObject" 'function))
+(export 'DELETE/BT-COLLISION-OBJECT)
 
-(declaim (inline #.(lispify "btCollisionObject_setCollisionShape" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-COLLISION-SHAPE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setCollisionShape" #.(lispify "btCollisionObject_setCollisionShape" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCollisionShape" COLLISION-OBJECT/SET-COLLISION-SHAPE) :void
   (self :pointer)
   (collisionShape :pointer))
 
-(export '#.(lispify "btCollisionObject_setCollisionShape" 'function))
+(export 'COLLISION-OBJECT/SET-COLLISION-SHAPE)
 
-(declaim (inline #.(lispify "btCollisionObject_getCollisionShape" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-COLLISION-SHAPE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_0" #.(lispify "btCollisionObject_getCollisionShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_0" COLLISION-OBJECT/GET-COLLISION-SHAPE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getCollisionShape" 'function))
+(export 'COLLISION-OBJECT/GET-COLLISION-SHAPE)
 
-(declaim (inline #.(lispify "btCollisionObject_getCollisionShape" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-COLLISION-SHAPE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_1" #.(lispify "btCollisionObject_getCollisionShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_1" COLLISION-OBJECT/GET-COLLISION-SHAPE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getCollisionShape" 'function))
+(export 'COLLISION-OBJECT/GET-COLLISION-SHAPE)
 
-(declaim (inline #.(lispify "btCollisionObject_internalGetExtensionPointer" 'function)))
+(declaim (inline COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER))
 
-(cffi:defcfun ("_wrap_btCollisionObject_internalGetExtensionPointer" #.(lispify "btCollisionObject_internalGetExtensionPointer" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_internalGetExtensionPointer" COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_internalGetExtensionPointer" 'function))
+(export 'COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER)
 
-(declaim (inline #.(lispify "btCollisionObject_internalSetExtensionPointer" 'function)))
+(declaim (inline COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER))
 
-(cffi:defcfun ("_wrap_btCollisionObject_internalSetExtensionPointer" #.(lispify "btCollisionObject_internalSetExtensionPointer" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_internalSetExtensionPointer" COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER) :void
   (self :pointer)
   (pointer :pointer))
 
-(export '#.(lispify "btCollisionObject_internalSetExtensionPointer" 'function))
+(export 'COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER)
 
-(declaim (inline #.(lispify "btCollisionObject_getActivationState" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-ACTIVATION-STATE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getActivationState" #.(lispify "btCollisionObject_getActivationState" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getActivationState" COLLISION-OBJECT/GET-ACTIVATION-STATE) :int
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getActivationState" 'function))
+(export 'COLLISION-OBJECT/GET-ACTIVATION-STATE)
 
-(declaim (inline #.(lispify "btCollisionObject_setActivationState" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-ACTIVATION-STATE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setActivationState" #.(lispify "btCollisionObject_setActivationState" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setActivationState" COLLISION-OBJECT/SET-ACTIVATION-STATE) :void
   (self :pointer)
   (newState :int))
 
-(export '#.(lispify "btCollisionObject_setActivationState" 'function))
+(export 'COLLISION-OBJECT/SET-ACTIVATION-STATE)
 
-(declaim (inline #.(lispify "btCollisionObject_setDeactivationTime" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-DEACTIVATION-TIME))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setDeactivationTime" #.(lispify "btCollisionObject_setDeactivationTime" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setDeactivationTime" COLLISION-OBJECT/SET-DEACTIVATION-TIME) :void
   (self :pointer)
   (time :float))
 
-(export '#.(lispify "btCollisionObject_setDeactivationTime" 'function))
+(export 'COLLISION-OBJECT/SET-DEACTIVATION-TIME)
 
-(declaim (inline #.(lispify "btCollisionObject_getDeactivationTime" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-DEACTIVATION-TIME))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getDeactivationTime" #.(lispify "btCollisionObject_getDeactivationTime" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getDeactivationTime" COLLISION-OBJECT/GET-DEACTIVATION-TIME) :float
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getDeactivationTime" 'function))
+(export 'COLLISION-OBJECT/GET-DEACTIVATION-TIME)
 
-(declaim (inline #.(lispify "btCollisionObject_forceActivationState" 'function)))
+(declaim (inline COLLISION-OBJECT/FORCE-ACTIVATION-STATE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_forceActivationState" #.(lispify "btCollisionObject_forceActivationState" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_forceActivationState" COLLISION-OBJECT/FORCE-ACTIVATION-STATE) :void
   (self :pointer)
   (newState :int))
 
-(export '#.(lispify "btCollisionObject_forceActivationState" 'function))
+(export 'COLLISION-OBJECT/FORCE-ACTIVATION-STATE)
 
-(declaim (inline #.(lispify "btCollisionObject_activate" 'function)))
+(declaim (inline COLLISION-OBJECT/ACTIVATE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_activate__SWIG_0" #.(lispify "btCollisionObject_activate" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_activate__SWIG_0" COLLISION-OBJECT/ACTIVATE) :void
   (self :pointer)
   (forceActivation :pointer))
 
-(export '#.(lispify "btCollisionObject_activate" 'function))
+(export 'COLLISION-OBJECT/ACTIVATE)
 
-(declaim (inline #.(lispify "btCollisionObject_activate" 'function)))
+(declaim (inline COLLISION-OBJECT/ACTIVATE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_activate__SWIG_1" #.(lispify "btCollisionObject_activate" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_activate__SWIG_1" COLLISION-OBJECT/ACTIVATE) :void
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_activate" 'function))
+(export 'COLLISION-OBJECT/ACTIVATE)
 
-(declaim (inline #.(lispify "btCollisionObject_isActive" 'function)))
+(declaim (inline COLLISION-OBJECT/IS-ACTIVE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_isActive" #.(lispify "btCollisionObject_isActive" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_isActive" COLLISION-OBJECT/IS-ACTIVE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_isActive" 'function))
+(export 'COLLISION-OBJECT/IS-ACTIVE)
 
-(declaim (inline #.(lispify "btCollisionObject_setRestitution" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-RESTITUTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setRestitution" #.(lispify "btCollisionObject_setRestitution" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setRestitution" COLLISION-OBJECT/SET-RESTITUTION) :void
   (self :pointer)
   (rest :float))
 
-(export '#.(lispify "btCollisionObject_setRestitution" 'function))
+(export 'COLLISION-OBJECT/SET-RESTITUTION)
 
-(declaim (inline #.(lispify "btCollisionObject_getRestitution" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-RESTITUTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getRestitution" #.(lispify "btCollisionObject_getRestitution" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getRestitution" COLLISION-OBJECT/GET-RESTITUTION) :float
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getRestitution" 'function))
+(export 'COLLISION-OBJECT/GET-RESTITUTION)
 
-(declaim (inline #.(lispify "btCollisionObject_setFriction" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-FRICTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setFriction" #.(lispify "btCollisionObject_setFriction" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setFriction" COLLISION-OBJECT/SET-FRICTION) :void
   (self :pointer)
   (frict :float))
 
-(export '#.(lispify "btCollisionObject_setFriction" 'function))
+(export 'COLLISION-OBJECT/SET-FRICTION)
 
-(declaim (inline #.(lispify "btCollisionObject_getFriction" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-FRICTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getFriction" #.(lispify "btCollisionObject_getFriction" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getFriction" COLLISION-OBJECT/GET-FRICTION) :float
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getFriction" 'function))
+(export 'COLLISION-OBJECT/GET-FRICTION)
 
-(declaim (inline #.(lispify "btCollisionObject_setRollingFriction" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-ROLLING-FRICTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setRollingFriction" #.(lispify "btCollisionObject_setRollingFriction" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setRollingFriction" COLLISION-OBJECT/SET-ROLLING-FRICTION) :void
   (self :pointer)
   (frict :float))
 
-(export '#.(lispify "btCollisionObject_setRollingFriction" 'function))
+(export 'COLLISION-OBJECT/SET-ROLLING-FRICTION)
 
-(declaim (inline #.(lispify "btCollisionObject_getRollingFriction" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-ROLLING-FRICTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getRollingFriction" #.(lispify "btCollisionObject_getRollingFriction" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getRollingFriction" COLLISION-OBJECT/GET-ROLLING-FRICTION) :float
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getRollingFriction" 'function))
+(export 'COLLISION-OBJECT/GET-ROLLING-FRICTION)
 
-(declaim (inline #.(lispify "btCollisionObject_getInternalType" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-INTERNAL-TYPE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getInternalType" #.(lispify "btCollisionObject_getInternalType" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getInternalType" COLLISION-OBJECT/GET-INTERNAL-TYPE) :int
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getInternalType" 'function))
+(export 'COLLISION-OBJECT/GET-INTERNAL-TYPE)
 
-(declaim (inline #.(lispify "btCollisionObject_getWorldTransform" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_0" #.(lispify "btCollisionObject_getWorldTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_0" COLLISION-OBJECT/GET-WORLD-TRANSFORM) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getWorldTransform" 'function))
+(export 'COLLISION-OBJECT/GET-WORLD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCollisionObject_getWorldTransform" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_1" #.(lispify "btCollisionObject_getWorldTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_1" COLLISION-OBJECT/GET-WORLD-TRANSFORM) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getWorldTransform" 'function))
+(export 'COLLISION-OBJECT/GET-WORLD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCollisionObject_setWorldTransform" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setWorldTransform" #.(lispify "btCollisionObject_setWorldTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setWorldTransform" COLLISION-OBJECT/SET-WORLD-TRANSFORM) :void
   (self :pointer)
   (worldTrans :pointer))
 
-(export '#.(lispify "btCollisionObject_setWorldTransform" 'function))
+(export 'COLLISION-OBJECT/SET-WORLD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCollisionObject_getBroadphaseHandle" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-BROADPHASE-HANDLE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_0" #.(lispify "btCollisionObject_getBroadphaseHandle" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_0" COLLISION-OBJECT/GET-BROADPHASE-HANDLE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getBroadphaseHandle" 'function))
+(export 'COLLISION-OBJECT/GET-BROADPHASE-HANDLE)
 
-(declaim (inline #.(lispify "btCollisionObject_getBroadphaseHandle" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-BROADPHASE-HANDLE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_1" #.(lispify "btCollisionObject_getBroadphaseHandle" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_1" COLLISION-OBJECT/GET-BROADPHASE-HANDLE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getBroadphaseHandle" 'function))
+(export 'COLLISION-OBJECT/GET-BROADPHASE-HANDLE)
 
-(declaim (inline #.(lispify "btCollisionObject_setBroadphaseHandle" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-BROADPHASE-HANDLE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setBroadphaseHandle" #.(lispify "btCollisionObject_setBroadphaseHandle" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setBroadphaseHandle" COLLISION-OBJECT/SET-BROADPHASE-HANDLE) :void
   (self :pointer)
   (handle :pointer))
 
-(export '#.(lispify "btCollisionObject_setBroadphaseHandle" 'function))
+(export 'COLLISION-OBJECT/SET-BROADPHASE-HANDLE)
 
-(declaim (inline #.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_0" #.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_0" COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function))
+(export 'COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_1" #.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_1" COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function))
+(export 'COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCollisionObject_setInterpolationWorldTransform" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationWorldTransform" #.(lispify "btCollisionObject_setInterpolationWorldTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationWorldTransform" COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM) :void
   (self :pointer)
   (trans :pointer))
 
-(export '#.(lispify "btCollisionObject_setInterpolationWorldTransform" 'function))
+(export 'COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCollisionObject_setInterpolationLinearVelocity" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationLinearVelocity" #.(lispify "btCollisionObject_setInterpolationLinearVelocity" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationLinearVelocity" COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY) :void
   (self :pointer)
   (linvel :pointer))
 
-(export '#.(lispify "btCollisionObject_setInterpolationLinearVelocity" 'function))
+(export 'COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY)
 
-(declaim (inline #.(lispify "btCollisionObject_setInterpolationAngularVelocity" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationAngularVelocity" #.(lispify "btCollisionObject_setInterpolationAngularVelocity" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationAngularVelocity" COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY) :void
   (self :pointer)
   (angvel :pointer))
 
-(export '#.(lispify "btCollisionObject_setInterpolationAngularVelocity" 'function))
+(export 'COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY)
 
-(declaim (inline #.(lispify "btCollisionObject_getInterpolationLinearVelocity" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationLinearVelocity" #.(lispify "btCollisionObject_getInterpolationLinearVelocity" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationLinearVelocity" COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getInterpolationLinearVelocity" 'function))
+(export 'COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY)
 
-(declaim (inline #.(lispify "btCollisionObject_getInterpolationAngularVelocity" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationAngularVelocity" #.(lispify "btCollisionObject_getInterpolationAngularVelocity" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationAngularVelocity" COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getInterpolationAngularVelocity" 'function))
+(export 'COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY)
 
-(declaim (inline #.(lispify "btCollisionObject_getIslandTag" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-ISLAND-TAG))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getIslandTag" #.(lispify "btCollisionObject_getIslandTag" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getIslandTag" COLLISION-OBJECT/GET-ISLAND-TAG) :int
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getIslandTag" 'function))
+(export 'COLLISION-OBJECT/GET-ISLAND-TAG)
 
-(declaim (inline #.(lispify "btCollisionObject_setIslandTag" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-ISLAND-TAG))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setIslandTag" #.(lispify "btCollisionObject_setIslandTag" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setIslandTag" COLLISION-OBJECT/SET-ISLAND-TAG) :void
   (self :pointer)
   (tag :int))
 
-(export '#.(lispify "btCollisionObject_setIslandTag" 'function))
+(export 'COLLISION-OBJECT/SET-ISLAND-TAG)
 
-(declaim (inline #.(lispify "btCollisionObject_getCompanionId" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-COMPANION-ID))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getCompanionId" #.(lispify "btCollisionObject_getCompanionId" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getCompanionId" COLLISION-OBJECT/GET-COMPANION-ID) :int
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getCompanionId" 'function))
+(export 'COLLISION-OBJECT/GET-COMPANION-ID)
 
-(declaim (inline #.(lispify "btCollisionObject_setCompanionId" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-COMPANION-ID))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setCompanionId" #.(lispify "btCollisionObject_setCompanionId" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCompanionId" COLLISION-OBJECT/SET-COMPANION-ID) :void
   (self :pointer)
   (id :int))
 
-(export '#.(lispify "btCollisionObject_setCompanionId" 'function))
+(export 'COLLISION-OBJECT/SET-COMPANION-ID)
 
-(declaim (inline #.(lispify "btCollisionObject_getHitFraction" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-HIT-FRACTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getHitFraction" #.(lispify "btCollisionObject_getHitFraction" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getHitFraction" COLLISION-OBJECT/GET-HIT-FRACTION) :float
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getHitFraction" 'function))
+(export 'COLLISION-OBJECT/GET-HIT-FRACTION)
 
-(declaim (inline #.(lispify "btCollisionObject_setHitFraction" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-HIT-FRACTION))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setHitFraction" #.(lispify "btCollisionObject_setHitFraction" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setHitFraction" COLLISION-OBJECT/SET-HIT-FRACTION) :void
   (self :pointer)
   (hitFraction :float))
 
-(export '#.(lispify "btCollisionObject_setHitFraction" 'function))
+(export 'COLLISION-OBJECT/SET-HIT-FRACTION)
 
-(declaim (inline #.(lispify "btCollisionObject_getCollisionFlags" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-COLLISION-FLAGS))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionFlags" #.(lispify "btCollisionObject_getCollisionFlags" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getCollisionFlags" COLLISION-OBJECT/GET-COLLISION-FLAGS) :int
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getCollisionFlags" 'function))
+(export 'COLLISION-OBJECT/GET-COLLISION-FLAGS)
 
-(declaim (inline #.(lispify "btCollisionObject_setCollisionFlags" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-COLLISION-FLAGS))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setCollisionFlags" #.(lispify "btCollisionObject_setCollisionFlags" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCollisionFlags" COLLISION-OBJECT/SET-COLLISION-FLAGS) :void
   (self :pointer)
   (flags :int))
 
-(export '#.(lispify "btCollisionObject_setCollisionFlags" 'function))
+(export 'COLLISION-OBJECT/SET-COLLISION-FLAGS)
 
-(declaim (inline #.(lispify "btCollisionObject_getCcdSweptSphereRadius" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdSweptSphereRadius" #.(lispify "btCollisionObject_getCcdSweptSphereRadius" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getCcdSweptSphereRadius" COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS) :float
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getCcdSweptSphereRadius" 'function))
+(export 'COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS)
 
-(declaim (inline #.(lispify "btCollisionObject_setCcdSweptSphereRadius" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setCcdSweptSphereRadius" #.(lispify "btCollisionObject_setCcdSweptSphereRadius" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCcdSweptSphereRadius" COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS) :void
   (self :pointer)
   (radius :float))
 
-(export '#.(lispify "btCollisionObject_setCcdSweptSphereRadius" 'function))
+(export 'COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS)
 
-(declaim (inline #.(lispify "btCollisionObject_getCcdMotionThreshold" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdMotionThreshold" #.(lispify "btCollisionObject_getCcdMotionThreshold" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getCcdMotionThreshold" COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD) :float
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getCcdMotionThreshold" 'function))
+(export 'COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD)
 
-(declaim (inline #.(lispify "btCollisionObject_getCcdSquareMotionThreshold" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdSquareMotionThreshold" #.(lispify "btCollisionObject_getCcdSquareMotionThreshold" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getCcdSquareMotionThreshold" COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD) :float
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getCcdSquareMotionThreshold" 'function))
+(export 'COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD)
 
-(declaim (inline #.(lispify "btCollisionObject_setCcdMotionThreshold" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setCcdMotionThreshold" #.(lispify "btCollisionObject_setCcdMotionThreshold" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCcdMotionThreshold" COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD) :void
   (self :pointer)
   (ccdMotionThreshold :float))
 
-(export '#.(lispify "btCollisionObject_setCcdMotionThreshold" 'function))
+(export 'COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD)
 
-(declaim (inline #.(lispify "btCollisionObject_getUserPointer" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-USER-POINTER))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getUserPointer" #.(lispify "btCollisionObject_getUserPointer" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getUserPointer" COLLISION-OBJECT/GET-USER-POINTER) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getUserPointer" 'function))
+(export 'COLLISION-OBJECT/GET-USER-POINTER)
 
-(declaim (inline #.(lispify "btCollisionObject_getUserIndex" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-USER-INDEX))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getUserIndex" #.(lispify "btCollisionObject_getUserIndex" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getUserIndex" COLLISION-OBJECT/GET-USER-INDEX) :int
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getUserIndex" 'function))
+(export 'COLLISION-OBJECT/GET-USER-INDEX)
 
-(declaim (inline #.(lispify "btCollisionObject_setUserPointer" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-USER-POINTER))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setUserPointer" #.(lispify "btCollisionObject_setUserPointer" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setUserPointer" COLLISION-OBJECT/SET-USER-POINTER) :void
   (self :pointer)
   (userPointer :pointer))
 
-(export '#.(lispify "btCollisionObject_setUserPointer" 'function))
+(export 'COLLISION-OBJECT/SET-USER-POINTER)
 
-(declaim (inline #.(lispify "btCollisionObject_setUserIndex" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-USER-INDEX))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setUserIndex" #.(lispify "btCollisionObject_setUserIndex" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setUserIndex" COLLISION-OBJECT/SET-USER-INDEX) :void
   (self :pointer)
   (index :int))
 
-(export '#.(lispify "btCollisionObject_setUserIndex" 'function))
+(export 'COLLISION-OBJECT/SET-USER-INDEX)
 
-(declaim (inline #.(lispify "btCollisionObject_getUpdateRevisionInternal" 'function)))
+(declaim (inline COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL))
 
-(cffi:defcfun ("_wrap_btCollisionObject_getUpdateRevisionInternal" #.(lispify "btCollisionObject_getUpdateRevisionInternal" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getUpdateRevisionInternal" COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL) :int
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_getUpdateRevisionInternal" 'function))
+(export 'COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL)
 
-(declaim (inline #.(lispify "btCollisionObject_checkCollideWith" 'function)))
+(declaim (inline COLLISION-OBJECT/CHECK-COLLIDE-WITH))
 
-(cffi:defcfun ("_wrap_btCollisionObject_checkCollideWith" #.(lispify "btCollisionObject_checkCollideWith" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_checkCollideWith" COLLISION-OBJECT/CHECK-COLLIDE-WITH) :pointer
   (self :pointer)
   (co :pointer))
 
-(export '#.(lispify "btCollisionObject_checkCollideWith" 'function))
+(export 'COLLISION-OBJECT/CHECK-COLLIDE-WITH)
 
-(declaim (inline #.(lispify "btCollisionObject_calculateSerializeBufferSize" 'function)))
+(declaim (inline COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_calculateSerializeBufferSize" #.(lispify "btCollisionObject_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_calculateSerializeBufferSize" COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btCollisionObject_calculateSerializeBufferSize" 'function))
+(export 'COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btCollisionObject_serialize" 'function)))
+(declaim (inline COLLISION-OBJECT/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_serialize" #.(lispify "btCollisionObject_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btCollisionObject_serialize" COLLISION-OBJECT/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btCollisionObject_serialize" 'function))
+(export 'COLLISION-OBJECT/SERIALIZE)
 
-(declaim (inline #.(lispify "btCollisionObject_serializeSingleObject" 'function)))
+(declaim (inline COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionObject_serializeSingleObject" #.(lispify "btCollisionObject_serializeSingleObject" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_serializeSingleObject" COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT) :void
   (self :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btCollisionObject_serializeSingleObject" 'function))
+(export 'COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT)
 
-(cffi:defcstruct #.(lispify "btCollisionObjectDoubleData" 'classname)
-	(#.(lispify "m_broadphaseHandle" 'slotname) :pointer)
-	(#.(lispify "m_collisionShape" 'slotname) :pointer)
-	(#.(lispify "m_rootCollisionShape" 'slotname) :pointer)
-	(#.(lispify "m_name" 'slotname) :string)
-	(#.(lispify "m_worldTransform" 'slotname) #.(lispify "btTransformDoubleData" 'classname))
-	(#.(lispify "m_interpolationWorldTransform" 'slotname) #.(lispify "btTransformDoubleData" 'classname))
-	(#.(lispify "m_interpolationLinearVelocity" 'slotname) #.(lispify "btVector3DoubleData" 'classname))
-	(#.(lispify "m_interpolationAngularVelocity" 'slotname) #.(lispify "btVector3DoubleData" 'classname))
-	(#.(lispify "m_anisotropicFriction" 'slotname) #.(lispify "btVector3DoubleData" 'classname))
-	(#.(lispify "m_contactProcessingThreshold" 'slotname) :double)
-	(#.(lispify "m_deactivationTime" 'slotname) :double)
-	(#.(lispify "m_friction" 'slotname) :double)
-	(#.(lispify "m_rollingFriction" 'slotname) :double)
-	(#.(lispify "m_restitution" 'slotname) :double)
-	(#.(lispify "m_hitFraction" 'slotname) :double)
-	(#.(lispify "m_ccdSweptSphereRadius" 'slotname) :double)
-	(#.(lispify "m_ccdMotionThreshold" 'slotname) :double)
-	(#.(lispify "m_hasAnisotropicFriction" 'slotname) :int)
-	(#.(lispify "m_collisionFlags" 'slotname) :int)
-	(#.(lispify "m_islandTag1" 'slotname) :int)
-	(#.(lispify "m_companionId" 'slotname) :int)
-	(#.(lispify "m_activationState1" 'slotname) :int)
-	(#.(lispify "m_internalType" 'slotname) :int)
-	(#.(lispify "m_checkCollideWith" 'slotname) :int)
-	(#.(lispify "m_padding" 'slotname) :pointer))
+(cffi:defcstruct COLLISION-OBJECT-DOUBLE-DATA
+  (BROADPHASE-HANDLE :pointer)
+  (COLLISION-SHAPE :pointer)
+  (ROOT-COLLISION-SHAPE :pointer)
+  (NAME :string)
+  (WORLD-TRANSFORM TRANSFORM-DOUBLE-DATA)
+  (INTERPOLATION-WORLD-TRANSFORM TRANSFORM-DOUBLE-DATA)
+  (INTERPOLATION-LINEAR-VELOCITY VECTOR-3-DOUBLE-DATA)
+  (INTERPOLATION-ANGULAR-VELOCITY VECTOR-3-DOUBLE-DATA)
+  (ANISOTROPIC-FRICTION VECTOR-3-DOUBLE-DATA)
+  (CONTACT-PROCESSING-THRESHOLD :double)
+  (DEACTIVATION-TIME :double)
+  (FRICTION :double)
+  (ROLLING-FRICTION :double)
+  (RESTITUTION :double)
+  (HIT-FRACTION :double)
+  (CCD-SWEPT-SPHERE-RADIUS :double)
+  (CCD-MOTION-THRESHOLD :double)
+  (HAS-ANISOTROPIC-FRICTION :int)
+  (COLLISION-FLAGS :int)
+  (ISLAND-TAG-1 :int)
+  (COMPANION-ID :int)
+  (ACTIVATION-STATE-1 :int)
+  (INTERNAL-TYPE :int)
+  (CHECK-COLLIDE-WITH :int)
+  (PADDING :pointer))
 
-(export '#.(lispify "btCollisionObjectDoubleData" 'classname))
+(export 'COLLISION-OBJECT-DOUBLE-DATA)
 
-(export '#.(lispify "m_broadphaseHandle" 'slotname))
+(export 'BROADPHASE-HANDLE)
 
-(export '#.(lispify "m_collisionShape" 'slotname))
+(export 'COLLISION-SHAPE)
 
-(export '#.(lispify "m_rootCollisionShape" 'slotname))
+(export 'ROOT-COLLISION-SHAPE)
 
-(export '#.(lispify "m_name" 'slotname))
+(export 'NAME)
 
-(export '#.(lispify "m_worldTransform" 'slotname))
+(export 'WORLD-TRANSFORM)
 
-(export '#.(lispify "m_interpolationWorldTransform" 'slotname))
+(export 'INTERPOLATION-WORLD-TRANSFORM)
 
-(export '#.(lispify "m_interpolationLinearVelocity" 'slotname))
+(export 'INTERPOLATION-LINEAR-VELOCITY)
 
-(export '#.(lispify "m_interpolationAngularVelocity" 'slotname))
+(export 'INTERPOLATION-ANGULAR-VELOCITY)
 
-(export '#.(lispify "m_anisotropicFriction" 'slotname))
+(export 'ANISOTROPIC-FRICTION)
 
-(export '#.(lispify "m_contactProcessingThreshold" 'slotname))
+(export 'CONTACT-PROCESSING-THRESHOLD)
 
-(export '#.(lispify "m_deactivationTime" 'slotname))
+(export 'DEACTIVATION-TIME)
 
-(export '#.(lispify "m_friction" 'slotname))
+(export 'FRICTION)
 
-(export '#.(lispify "m_rollingFriction" 'slotname))
+(export 'ROLLING-FRICTION)
 
-(export '#.(lispify "m_restitution" 'slotname))
+(export 'RESTITUTION)
 
-(export '#.(lispify "m_hitFraction" 'slotname))
+(export 'HIT-FRACTION)
 
-(export '#.(lispify "m_ccdSweptSphereRadius" 'slotname))
+(export 'CCD-SWEPT-SPHERE-RADIUS)
 
-(export '#.(lispify "m_ccdMotionThreshold" 'slotname))
+(export 'CCD-MOTION-THRESHOLD)
 
-(export '#.(lispify "m_hasAnisotropicFriction" 'slotname))
+(export 'HAS-ANISOTROPIC-FRICTION)
 
-(export '#.(lispify "m_collisionFlags" 'slotname))
+(export 'COLLISION-FLAGS)
 
-(export '#.(lispify "m_islandTag1" 'slotname))
+(export 'ISLAND-TAG-1)
 
-(export '#.(lispify "m_companionId" 'slotname))
+(export 'COMPANION-ID)
 
-(export '#.(lispify "m_activationState1" 'slotname))
+(export 'ACTIVATION-STATE-1)
 
-(export '#.(lispify "m_internalType" 'slotname))
+(export 'INTERNAL-TYPE)
 
-(export '#.(lispify "m_checkCollideWith" 'slotname))
+(export 'CHECK-COLLIDE-WITH)
 
-(export '#.(lispify "m_padding" 'slotname))
+(export 'PADDING)
 
-(cffi:defcstruct #.(lispify "btCollisionObjectFloatData" 'classname)
-	(#.(lispify "m_broadphaseHandle" 'slotname) :pointer)
-	(#.(lispify "m_collisionShape" 'slotname) :pointer)
-	(#.(lispify "m_rootCollisionShape" 'slotname) :pointer)
-	(#.(lispify "m_name" 'slotname) :string)
-	(#.(lispify "m_worldTransform" 'slotname) #.(lispify "btTransformFloatData" 'classname))
-	(#.(lispify "m_interpolationWorldTransform" 'slotname) #.(lispify "btTransformFloatData" 'classname))
-	(#.(lispify "m_interpolationLinearVelocity" 'slotname) #.(lispify "btVector3FloatData" 'classname))
-	(#.(lispify "m_interpolationAngularVelocity" 'slotname) #.(lispify "btVector3FloatData" 'classname))
-	(#.(lispify "m_anisotropicFriction" 'slotname) #.(lispify "btVector3FloatData" 'classname))
-	(#.(lispify "m_contactProcessingThreshold" 'slotname) :float)
-	(#.(lispify "m_deactivationTime" 'slotname) :float)
-	(#.(lispify "m_friction" 'slotname) :float)
-	(#.(lispify "m_rollingFriction" 'slotname) :float)
-	(#.(lispify "m_restitution" 'slotname) :float)
-	(#.(lispify "m_hitFraction" 'slotname) :float)
-	(#.(lispify "m_ccdSweptSphereRadius" 'slotname) :float)
-	(#.(lispify "m_ccdMotionThreshold" 'slotname) :float)
-	(#.(lispify "m_hasAnisotropicFriction" 'slotname) :int)
-	(#.(lispify "m_collisionFlags" 'slotname) :int)
-	(#.(lispify "m_islandTag1" 'slotname) :int)
-	(#.(lispify "m_companionId" 'slotname) :int)
-	(#.(lispify "m_activationState1" 'slotname) :int)
-	(#.(lispify "m_internalType" 'slotname) :int)
-	(#.(lispify "m_checkCollideWith" 'slotname) :int)
-	(#.(lispify "m_padding" 'slotname) :pointer))
+(cffi:defcstruct COLLISION-OBJECT-FLOAT-DATA
+  (BROADPHASE-HANDLE :pointer)
+  (COLLISION-SHAPE :pointer)
+  (ROOT-COLLISION-SHAPE :pointer)
+  (NAME :string)
+  (WORLD-TRANSFORM TRANSFORM-FLOAT-DATA)
+  (INTERPOLATION-WORLD-TRANSFORM TRANSFORM-FLOAT-DATA)
+  (INTERPOLATION-LINEAR-VELOCITY VECTOR-3-FLOAT-DATA)
+  (INTERPOLATION-ANGULAR-VELOCITY VECTOR-3-FLOAT-DATA)
+  (ANISOTROPIC-FRICTION VECTOR-3-FLOAT-DATA)
+  (CONTACT-PROCESSING-THRESHOLD :float)
+  (DEACTIVATION-TIME :float)
+  (FRICTION :float)
+  (ROLLING-FRICTION :float)
+  (RESTITUTION :float)
+  (HIT-FRACTION :float)
+  (CCD-SWEPT-SPHERE-RADIUS :float)
+  (CCD-MOTION-THRESHOLD :float)
+  (HAS-ANISOTROPIC-FRICTION :int)
+  (COLLISION-FLAGS :int)
+  (ISLAND-TAG-1 :int)
+  (COMPANION-ID :int)
+  (ACTIVATION-STATE-1 :int)
+  (INTERNAL-TYPE :int)
+  (CHECK-COLLIDE-WITH :int)
+  (PADDING :pointer))
 
-(export '#.(lispify "btCollisionObjectFloatData" 'classname))
+(export 'COLLISION-OBJECT-FLOAT-DATA)
 
-(export '#.(lispify "m_broadphaseHandle" 'slotname))
+(export 'BROADPHASE-HANDLE)
 
-(export '#.(lispify "m_collisionShape" 'slotname))
+(export 'COLLISION-SHAPE)
 
-(export '#.(lispify "m_rootCollisionShape" 'slotname))
+(export 'ROOT-COLLISION-SHAPE)
 
-(export '#.(lispify "m_name" 'slotname))
+(export 'NAME)
 
-(export '#.(lispify "m_worldTransform" 'slotname))
+(export 'WORLD-TRANSFORM)
 
-(export '#.(lispify "m_interpolationWorldTransform" 'slotname))
+(export 'INTERPOLATION-WORLD-TRANSFORM)
 
-(export '#.(lispify "m_interpolationLinearVelocity" 'slotname))
+(export 'INTERPOLATION-LINEAR-VELOCITY)
 
-(export '#.(lispify "m_interpolationAngularVelocity" 'slotname))
+(export 'INTERPOLATION-ANGULAR-VELOCITY)
 
-(export '#.(lispify "m_anisotropicFriction" 'slotname))
+(export 'ANISOTROPIC-FRICTION)
 
-(export '#.(lispify "m_contactProcessingThreshold" 'slotname))
+(export 'CONTACT-PROCESSING-THRESHOLD)
 
-(export '#.(lispify "m_deactivationTime" 'slotname))
+(export 'DEACTIVATION-TIME)
 
-(export '#.(lispify "m_friction" 'slotname))
+(export 'FRICTION)
 
-(export '#.(lispify "m_rollingFriction" 'slotname))
+(export 'ROLLING-FRICTION)
 
-(export '#.(lispify "m_restitution" 'slotname))
+(export 'RESTITUTION)
 
-(export '#.(lispify "m_hitFraction" 'slotname))
+(export 'HIT-FRACTION)
 
-(export '#.(lispify "m_ccdSweptSphereRadius" 'slotname))
+(export 'CCD-SWEPT-SPHERE-RADIUS)
 
-(export '#.(lispify "m_ccdMotionThreshold" 'slotname))
+(export 'CCD-MOTION-THRESHOLD)
 
-(export '#.(lispify "m_hasAnisotropicFriction" 'slotname))
+(export 'HAS-ANISOTROPIC-FRICTION)
 
-(export '#.(lispify "m_collisionFlags" 'slotname))
+(export 'COLLISION-FLAGS)
 
-(export '#.(lispify "m_islandTag1" 'slotname))
+(export 'ISLAND-TAG-1)
 
-(export '#.(lispify "m_companionId" 'slotname))
+(export 'COMPANION-ID)
 
-(export '#.(lispify "m_activationState1" 'slotname))
+(export 'ACTIVATION-STATE-1)
 
-(export '#.(lispify "m_internalType" 'slotname))
+(export 'INTERNAL-TYPE)
 
-(export '#.(lispify "m_checkCollideWith" 'slotname))
+(export 'CHECK-COLLIDE-WITH)
 
-(export '#.(lispify "m_padding" 'slotname))
+(export 'PADDING)
 
-(declaim (inline #.(lispify "btBoxShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline BOX-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBoxShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btBoxShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBoxShape_makeCPlusPlusInstance__SWIG_0" BOX-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btBoxShape_makeCPlusPlusInstance" 'function))
+(export 'BOX-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBoxShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline BOX-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBoxShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btBoxShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_deleteCPlusPlusInstance__SWIG_0" BOX-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBoxShape_deleteCPlusPlusInstance" 'function))
+(export 'BOX-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBoxShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline BOX-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBoxShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btBoxShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBoxShape_makeCPlusPlusInstance__SWIG_1" BOX-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBoxShape_makeCPlusPlusInstance" 'function))
+(export 'BOX-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBoxShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline BOX-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBoxShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btBoxShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_deleteCPlusPlusInstance__SWIG_1" BOX-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btBoxShape_deleteCPlusPlusInstance" 'function))
+(export 'BOX-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBoxShape_makeCPlusArray" 'function)))
+(declaim (inline BOX-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBoxShape_makeCPlusArray__SWIG_0" #.(lispify "btBoxShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBoxShape_makeCPlusArray__SWIG_0" BOX-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btBoxShape_makeCPlusArray" 'function))
+(export 'BOX-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBoxShape_deleteCPlusArray" 'function)))
+(declaim (inline BOX-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBoxShape_deleteCPlusArray__SWIG_0" #.(lispify "btBoxShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_deleteCPlusArray__SWIG_0" BOX-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBoxShape_deleteCPlusArray" 'function))
+(export 'BOX-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBoxShape_makeCPlusArray" 'function)))
+(declaim (inline BOX-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBoxShape_makeCPlusArray__SWIG_1" #.(lispify "btBoxShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBoxShape_makeCPlusArray__SWIG_1" BOX-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBoxShape_makeCPlusArray" 'function))
+(export 'BOX-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBoxShape_deleteCPlusArray" 'function)))
+(declaim (inline BOX-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBoxShape_deleteCPlusArray__SWIG_1" #.(lispify "btBoxShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_deleteCPlusArray__SWIG_1" BOX-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btBoxShape_deleteCPlusArray" 'function))
+(export 'BOX-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBoxShape_getHalfExtentsWithMargin" 'function)))
+(declaim (inline BOX-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN))
 
-(cffi:defcfun ("_wrap_btBoxShape_getHalfExtentsWithMargin" #.(lispify "btBoxShape_getHalfExtentsWithMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBoxShape_getHalfExtentsWithMargin" BOX-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN) :pointer
   (self :pointer))
 
-(export '#.(lispify "btBoxShape_getHalfExtentsWithMargin" 'function))
+(export 'BOX-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN)
 
-(declaim (inline #.(lispify "btBoxShape_getHalfExtentsWithoutMargin" 'function)))
+(declaim (inline BOX-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btBoxShape_getHalfExtentsWithoutMargin" #.(lispify "btBoxShape_getHalfExtentsWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBoxShape_getHalfExtentsWithoutMargin" BOX-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN) :pointer
   (self :pointer))
 
-(export '#.(lispify "btBoxShape_getHalfExtentsWithoutMargin" 'function))
+(export 'BOX-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btBoxShape_localGetSupportingVertex" 'function)))
+(declaim (inline BOX-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btBoxShape_localGetSupportingVertex" #.(lispify "btBoxShape_localGetSupportingVertex" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBoxShape_localGetSupportingVertex" BOX-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btBoxShape_localGetSupportingVertex" 'function))
+(export 'BOX-SHAPE/LOCAL-GET-SUPPORTING-VERTEX)
 
-(declaim (inline #.(lispify "btBoxShape_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline BOX-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btBoxShape_localGetSupportingVertexWithoutMargin" #.(lispify "btBoxShape_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBoxShape_localGetSupportingVertexWithoutMargin" BOX-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btBoxShape_localGetSupportingVertexWithoutMargin" 'function))
+(export 'BOX-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btBoxShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline BOX-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btBoxShape_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btBoxShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_batchedUnitVectorGetSupportingVertexWithoutMargin" BOX-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btBoxShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'BOX-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "new_btBoxShape" 'function)))
+(declaim (inline MAKE-BOX-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btBoxShape" #.(lispify "new_btBoxShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btBoxShape" MAKE-BOX-SHAPE) :pointer
   (boxHalfExtents :pointer))
 
-(export '#.(lispify "new_btBoxShape" 'function))
+(export 'MAKE-BOX-SHAPE)
 
-(declaim (inline #.(lispify "btBoxShape_setMargin" 'function)))
+(declaim (inline BOX-SHAPE/SET-MARGIN))
 
-(cffi:defcfun ("_wrap_btBoxShape_setMargin" #.(lispify "btBoxShape_setMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_setMargin" BOX-SHAPE/SET-MARGIN) :void
   (self :pointer)
   (collisionMargin :float))
 
-(export '#.(lispify "btBoxShape_setMargin" 'function))
+(export 'BOX-SHAPE/SET-MARGIN)
 
-(declaim (inline #.(lispify "btBoxShape_setLocalScaling" 'function)))
+(declaim (inline BOX-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btBoxShape_setLocalScaling" #.(lispify "btBoxShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_setLocalScaling" BOX-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btBoxShape_setLocalScaling" 'function))
+(export 'BOX-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btBoxShape_getAabb" 'function)))
+(declaim (inline BOX-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btBoxShape_getAabb" #.(lispify "btBoxShape_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_getAabb" BOX-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btBoxShape_getAabb" 'function))
+(export 'BOX-SHAPE/GET-AABB)
 
-(declaim (inline #.(lispify "btBoxShape_calculateLocalInertia" 'function)))
+(declaim (inline BOX-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btBoxShape_calculateLocalInertia" #.(lispify "btBoxShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_calculateLocalInertia" BOX-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btBoxShape_calculateLocalInertia" 'function))
+(export 'BOX-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btBoxShape_getPlane" 'function)))
+(declaim (inline BOX-SHAPE/GET-PLANE))
 
-(cffi:defcfun ("_wrap_btBoxShape_getPlane" #.(lispify "btBoxShape_getPlane" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_getPlane" BOX-SHAPE/GET-PLANE) :void
   (self :pointer)
   (planeNormal :pointer)
   (planeSupport :pointer)
   (i :int))
 
-(export '#.(lispify "btBoxShape_getPlane" 'function))
+(export 'BOX-SHAPE/GET-PLANE)
 
-(declaim (inline #.(lispify "btBoxShape_getNumPlanes" 'function)))
+(declaim (inline BOX-SHAPE/GET-NUM-PLANES))
 
-(cffi:defcfun ("_wrap_btBoxShape_getNumPlanes" #.(lispify "btBoxShape_getNumPlanes" 'function)) :int
+(cffi:defcfun ("_wrap_btBoxShape_getNumPlanes" BOX-SHAPE/GET-NUM-PLANES) :int
   (self :pointer))
 
-(export '#.(lispify "btBoxShape_getNumPlanes" 'function))
+(export 'BOX-SHAPE/GET-NUM-PLANES)
 
-(declaim (inline #.(lispify "btBoxShape_getNumVertices" 'function)))
+(declaim (inline BOX-SHAPE/GET-NUM-VERTICES))
 
-(cffi:defcfun ("_wrap_btBoxShape_getNumVertices" #.(lispify "btBoxShape_getNumVertices" 'function)) :int
+(cffi:defcfun ("_wrap_btBoxShape_getNumVertices" BOX-SHAPE/GET-NUM-VERTICES) :int
   (self :pointer))
 
-(export '#.(lispify "btBoxShape_getNumVertices" 'function))
+(export 'BOX-SHAPE/GET-NUM-VERTICES)
 
-(declaim (inline #.(lispify "btBoxShape_getNumEdges" 'function)))
+(declaim (inline BOX-SHAPE/GET-NUM-EDGES))
 
-(cffi:defcfun ("_wrap_btBoxShape_getNumEdges" #.(lispify "btBoxShape_getNumEdges" 'function)) :int
+(cffi:defcfun ("_wrap_btBoxShape_getNumEdges" BOX-SHAPE/GET-NUM-EDGES) :int
   (self :pointer))
 
-(export '#.(lispify "btBoxShape_getNumEdges" 'function))
+(export 'BOX-SHAPE/GET-NUM-EDGES)
 
-(declaim (inline #.(lispify "btBoxShape_getVertex" 'function)))
+(declaim (inline BOX-SHAPE/GET-VERTEX))
 
-(cffi:defcfun ("_wrap_btBoxShape_getVertex" #.(lispify "btBoxShape_getVertex" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_getVertex" BOX-SHAPE/GET-VERTEX) :void
   (self :pointer)
   (i :int)
   (vtx :pointer))
 
-(export '#.(lispify "btBoxShape_getVertex" 'function))
+(export 'BOX-SHAPE/GET-VERTEX)
 
-(declaim (inline #.(lispify "btBoxShape_getPlaneEquation" 'function)))
+(declaim (inline BOX-SHAPE/GET-PLANE-EQUATION))
 
-(cffi:defcfun ("_wrap_btBoxShape_getPlaneEquation" #.(lispify "btBoxShape_getPlaneEquation" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_getPlaneEquation" BOX-SHAPE/GET-PLANE-EQUATION) :void
   (self :pointer)
   (plane :pointer)
   (i :int))
 
-(export '#.(lispify "btBoxShape_getPlaneEquation" 'function))
+(export 'BOX-SHAPE/GET-PLANE-EQUATION)
 
-(declaim (inline #.(lispify "btBoxShape_getEdge" 'function)))
+(declaim (inline BOX-SHAPE/GET-EDGE))
 
-(cffi:defcfun ("_wrap_btBoxShape_getEdge" #.(lispify "btBoxShape_getEdge" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_getEdge" BOX-SHAPE/GET-EDGE) :void
   (self :pointer)
   (i :int)
   (pa :pointer)
   (pb :pointer))
 
-(export '#.(lispify "btBoxShape_getEdge" 'function))
+(export 'BOX-SHAPE/GET-EDGE)
 
-(declaim (inline #.(lispify "btBoxShape_isInside" 'function)))
+(declaim (inline BOX-SHAPE/IS-INSIDE))
 
-(cffi:defcfun ("_wrap_btBoxShape_isInside" #.(lispify "btBoxShape_isInside" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBoxShape_isInside" BOX-SHAPE/IS-INSIDE) :pointer
   (self :pointer)
   (pt :pointer)
   (tolerance :float))
 
-(export '#.(lispify "btBoxShape_isInside" 'function))
+(export 'BOX-SHAPE/IS-INSIDE)
 
-(declaim (inline #.(lispify "btBoxShape_getName" 'function)))
+(declaim (inline BOX-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btBoxShape_getName" #.(lispify "btBoxShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btBoxShape_getName" BOX-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btBoxShape_getName" 'function))
+(export 'BOX-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btBoxShape_getNumPreferredPenetrationDirections" 'function)))
+(declaim (inline BOX-SHAPE/GET-NUM-PREFERRED-PENETRATION-DIRECTIONS))
 
-(cffi:defcfun ("_wrap_btBoxShape_getNumPreferredPenetrationDirections" #.(lispify "btBoxShape_getNumPreferredPenetrationDirections" 'function)) :int
+(cffi:defcfun ("_wrap_btBoxShape_getNumPreferredPenetrationDirections" BOX-SHAPE/GET-NUM-PREFERRED-PENETRATION-DIRECTIONS) :int
   (self :pointer))
 
-(export '#.(lispify "btBoxShape_getNumPreferredPenetrationDirections" 'function))
+(export 'BOX-SHAPE/GET-NUM-PREFERRED-PENETRATION-DIRECTIONS)
 
-(declaim (inline #.(lispify "btBoxShape_getPreferredPenetrationDirection" 'function)))
+(declaim (inline BOX-SHAPE/GET-PREFERRED-PENETRATION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btBoxShape_getPreferredPenetrationDirection" #.(lispify "btBoxShape_getPreferredPenetrationDirection" 'function)) :void
+(cffi:defcfun ("_wrap_btBoxShape_getPreferredPenetrationDirection" BOX-SHAPE/GET-PREFERRED-PENETRATION-DIRECTION) :void
   (self :pointer)
   (index :int)
   (penetrationVector :pointer))
 
-(export '#.(lispify "btBoxShape_getPreferredPenetrationDirection" 'function))
+(export 'BOX-SHAPE/GET-PREFERRED-PENETRATION-DIRECTION)
 
-(declaim (inline #.(lispify "delete_btBoxShape" 'function)))
+(declaim (inline DELETE/BT-BOX-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btBoxShape" #.(lispify "delete_btBoxShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btBoxShape" DELETE/BT-BOX-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btBoxShape" 'function))
+(export 'DELETE/BT-BOX-SHAPE)
 
-(declaim (inline #.(lispify "btSphereShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btSphereShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btSphereShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btSphereShape_makeCPlusPlusInstance__SWIG_0" SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btSphereShape_makeCPlusPlusInstance" 'function))
+(export 'SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btSphereShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btSphereShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btSphereShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btSphereShape_deleteCPlusPlusInstance__SWIG_0" SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btSphereShape_deleteCPlusPlusInstance" 'function))
+(export 'SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btSphereShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btSphereShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btSphereShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btSphereShape_makeCPlusPlusInstance__SWIG_1" SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btSphereShape_makeCPlusPlusInstance" 'function))
+(export 'SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btSphereShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btSphereShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btSphereShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btSphereShape_deleteCPlusPlusInstance__SWIG_1" SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btSphereShape_deleteCPlusPlusInstance" 'function))
+(export 'SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btSphereShape_makeCPlusArray" 'function)))
+(declaim (inline SPHERE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btSphereShape_makeCPlusArray__SWIG_0" #.(lispify "btSphereShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btSphereShape_makeCPlusArray__SWIG_0" SPHERE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btSphereShape_makeCPlusArray" 'function))
+(export 'SPHERE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btSphereShape_deleteCPlusArray" 'function)))
+(declaim (inline SPHERE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btSphereShape_deleteCPlusArray__SWIG_0" #.(lispify "btSphereShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btSphereShape_deleteCPlusArray__SWIG_0" SPHERE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btSphereShape_deleteCPlusArray" 'function))
+(export 'SPHERE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btSphereShape_makeCPlusArray" 'function)))
+(declaim (inline SPHERE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btSphereShape_makeCPlusArray__SWIG_1" #.(lispify "btSphereShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btSphereShape_makeCPlusArray__SWIG_1" SPHERE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btSphereShape_makeCPlusArray" 'function))
+(export 'SPHERE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btSphereShape_deleteCPlusArray" 'function)))
+(declaim (inline SPHERE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btSphereShape_deleteCPlusArray__SWIG_1" #.(lispify "btSphereShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btSphereShape_deleteCPlusArray__SWIG_1" SPHERE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btSphereShape_deleteCPlusArray" 'function))
+(export 'SPHERE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btSphereShape" 'function)))
+(declaim (inline MAKE-SPHERE-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btSphereShape" #.(lispify "new_btSphereShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btSphereShape" MAKE-SPHERE-SHAPE) :pointer
   (radius :float))
 
-(export '#.(lispify "new_btSphereShape" 'function))
+(export 'MAKE-SPHERE-SHAPE)
 
-(declaim (inline #.(lispify "btSphereShape_localGetSupportingVertex" 'function)))
+(declaim (inline SPHERE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btSphereShape_localGetSupportingVertex" #.(lispify "btSphereShape_localGetSupportingVertex" 'function)) :pointer
+(cffi:defcfun ("_wrap_btSphereShape_localGetSupportingVertex" SPHERE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btSphereShape_localGetSupportingVertex" 'function))
+(export 'SPHERE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX)
 
-(declaim (inline #.(lispify "btSphereShape_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline SPHERE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btSphereShape_localGetSupportingVertexWithoutMargin" #.(lispify "btSphereShape_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btSphereShape_localGetSupportingVertexWithoutMargin" SPHERE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btSphereShape_localGetSupportingVertexWithoutMargin" 'function))
+(export 'SPHERE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline SPHERE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" SPHERE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'SPHERE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btSphereShape_calculateLocalInertia" 'function)))
+(declaim (inline SPHERE-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btSphereShape_calculateLocalInertia" #.(lispify "btSphereShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btSphereShape_calculateLocalInertia" SPHERE-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btSphereShape_calculateLocalInertia" 'function))
+(export 'SPHERE-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btSphereShape_getAabb" 'function)))
+(declaim (inline SPHERE-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btSphereShape_getAabb" #.(lispify "btSphereShape_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btSphereShape_getAabb" SPHERE-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btSphereShape_getAabb" 'function))
+(export 'SPHERE-SHAPE/GET-AABB)
 
-(declaim (inline #.(lispify "btSphereShape_getRadius" 'function)))
+(declaim (inline SPHERE-SHAPE/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btSphereShape_getRadius" #.(lispify "btSphereShape_getRadius" 'function)) :float
+(cffi:defcfun ("_wrap_btSphereShape_getRadius" SPHERE-SHAPE/GET-RADIUS) :float
   (self :pointer))
 
-(export '#.(lispify "btSphereShape_getRadius" 'function))
+(export 'SPHERE-SHAPE/GET-RADIUS)
 
-(declaim (inline #.(lispify "btSphereShape_setUnscaledRadius" 'function)))
+(declaim (inline SPHERE-SHAPE/SET-UNSCALED-RADIUS))
 
-(cffi:defcfun ("_wrap_btSphereShape_setUnscaledRadius" #.(lispify "btSphereShape_setUnscaledRadius" 'function)) :void
+(cffi:defcfun ("_wrap_btSphereShape_setUnscaledRadius" SPHERE-SHAPE/SET-UNSCALED-RADIUS) :void
   (self :pointer)
   (radius :float))
 
-(export '#.(lispify "btSphereShape_setUnscaledRadius" 'function))
+(export 'SPHERE-SHAPE/SET-UNSCALED-RADIUS)
 
-(declaim (inline #.(lispify "btSphereShape_getName" 'function)))
+(declaim (inline SPHERE-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btSphereShape_getName" #.(lispify "btSphereShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btSphereShape_getName" SPHERE-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btSphereShape_getName" 'function))
+(export 'SPHERE-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btSphereShape_setMargin" 'function)))
+(declaim (inline SPHERE-SHAPE/SET-MARGIN))
 
-(cffi:defcfun ("_wrap_btSphereShape_setMargin" #.(lispify "btSphereShape_setMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btSphereShape_setMargin" SPHERE-SHAPE/SET-MARGIN) :void
   (self :pointer)
   (margin :float))
 
-(export '#.(lispify "btSphereShape_setMargin" 'function))
+(export 'SPHERE-SHAPE/SET-MARGIN)
 
-(declaim (inline #.(lispify "btSphereShape_getMargin" 'function)))
+(declaim (inline SPHERE-SHAPE/GET-MARGIN))
 
-(cffi:defcfun ("_wrap_btSphereShape_getMargin" #.(lispify "btSphereShape_getMargin" 'function)) :float
+(cffi:defcfun ("_wrap_btSphereShape_getMargin" SPHERE-SHAPE/GET-MARGIN) :float
   (self :pointer))
 
-(export '#.(lispify "btSphereShape_getMargin" 'function))
+(export 'SPHERE-SHAPE/GET-MARGIN)
 
-(declaim (inline #.(lispify "delete_btSphereShape" 'function)))
+(declaim (inline DELETE/BT-SPHERE-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btSphereShape" #.(lispify "delete_btSphereShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btSphereShape" DELETE/BT-SPHERE-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btSphereShape" 'function))
+(export 'DELETE/BT-SPHERE-SHAPE)
 
-(declaim (inline #.(lispify "btCapsuleShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btCapsuleShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusPlusInstance__SWIG_0" CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCapsuleShape_makeCPlusPlusInstance" 'function))
+(export 'CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCapsuleShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btCapsuleShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusPlusInstance__SWIG_0" CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCapsuleShape_deleteCPlusPlusInstance" 'function))
+(export 'CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCapsuleShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btCapsuleShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusPlusInstance__SWIG_1" CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCapsuleShape_makeCPlusPlusInstance" 'function))
+(export 'CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCapsuleShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btCapsuleShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusPlusInstance__SWIG_1" CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCapsuleShape_deleteCPlusPlusInstance" 'function))
+(export 'CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCapsuleShape_makeCPlusArray" 'function)))
+(declaim (inline CAPSULE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusArray__SWIG_0" #.(lispify "btCapsuleShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusArray__SWIG_0" CAPSULE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCapsuleShape_makeCPlusArray" 'function))
+(export 'CAPSULE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCapsuleShape_deleteCPlusArray" 'function)))
+(declaim (inline CAPSULE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusArray__SWIG_0" #.(lispify "btCapsuleShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusArray__SWIG_0" CAPSULE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCapsuleShape_deleteCPlusArray" 'function))
+(export 'CAPSULE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCapsuleShape_makeCPlusArray" 'function)))
+(declaim (inline CAPSULE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusArray__SWIG_1" #.(lispify "btCapsuleShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusArray__SWIG_1" CAPSULE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCapsuleShape_makeCPlusArray" 'function))
+(export 'CAPSULE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCapsuleShape_deleteCPlusArray" 'function)))
+(declaim (inline CAPSULE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusArray__SWIG_1" #.(lispify "btCapsuleShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusArray__SWIG_1" CAPSULE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCapsuleShape_deleteCPlusArray" 'function))
+(export 'CAPSULE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btCapsuleShape" 'function)))
+(declaim (inline MAKE-CAPSULE-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btCapsuleShape__SWIG_1" #.(lispify "new_btCapsuleShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btCapsuleShape__SWIG_1" MAKE-CAPSULE-SHAPE) :pointer
   (radius :float)
   (height :float))
 
-(export '#.(lispify "new_btCapsuleShape" 'function))
+(export 'MAKE-CAPSULE-SHAPE)
 
-(declaim (inline #.(lispify "btCapsuleShape_calculateLocalInertia" 'function)))
+(declaim (inline CAPSULE-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_calculateLocalInertia" #.(lispify "btCapsuleShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_calculateLocalInertia" CAPSULE-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btCapsuleShape_calculateLocalInertia" 'function))
+(export 'CAPSULE-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btCapsuleShape_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CAPSULE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_localGetSupportingVertexWithoutMargin" #.(lispify "btCapsuleShape_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_localGetSupportingVertexWithoutMargin" CAPSULE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btCapsuleShape_localGetSupportingVertexWithoutMargin" 'function))
+(export 'CAPSULE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btCapsuleShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CAPSULE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btCapsuleShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CAPSULE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btCapsuleShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'CAPSULE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btCapsuleShape_setMargin" 'function)))
+(declaim (inline CAPSULE-SHAPE/SET-MARGIN))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_setMargin" #.(lispify "btCapsuleShape_setMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_setMargin" CAPSULE-SHAPE/SET-MARGIN) :void
   (self :pointer)
   (collisionMargin :float))
 
-(export '#.(lispify "btCapsuleShape_setMargin" 'function))
+(export 'CAPSULE-SHAPE/SET-MARGIN)
 
-(declaim (inline #.(lispify "btCapsuleShape_getAabb" 'function)))
+(declaim (inline CAPSULE-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getAabb" #.(lispify "btCapsuleShape_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_getAabb" CAPSULE-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btCapsuleShape_getAabb" 'function))
+(export 'CAPSULE-SHAPE/GET-AABB)
 
-(declaim (inline #.(lispify "btCapsuleShape_getName" 'function)))
+(declaim (inline CAPSULE-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getName" #.(lispify "btCapsuleShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btCapsuleShape_getName" CAPSULE-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btCapsuleShape_getName" 'function))
+(export 'CAPSULE-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btCapsuleShape_getUpAxis" 'function)))
+(declaim (inline CAPSULE-SHAPE/GET-UP-AXIS))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getUpAxis" #.(lispify "btCapsuleShape_getUpAxis" 'function)) :int
+(cffi:defcfun ("_wrap_btCapsuleShape_getUpAxis" CAPSULE-SHAPE/GET-UP-AXIS) :int
   (self :pointer))
 
-(export '#.(lispify "btCapsuleShape_getUpAxis" 'function))
+(export 'CAPSULE-SHAPE/GET-UP-AXIS)
 
-(declaim (inline #.(lispify "btCapsuleShape_getRadius" 'function)))
+(declaim (inline CAPSULE-SHAPE/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getRadius" #.(lispify "btCapsuleShape_getRadius" 'function)) :float
+(cffi:defcfun ("_wrap_btCapsuleShape_getRadius" CAPSULE-SHAPE/GET-RADIUS) :float
   (self :pointer))
 
-(export '#.(lispify "btCapsuleShape_getRadius" 'function))
+(export 'CAPSULE-SHAPE/GET-RADIUS)
 
-(declaim (inline #.(lispify "btCapsuleShape_getHalfHeight" 'function)))
+(declaim (inline CAPSULE-SHAPE/GET-HALF-HEIGHT))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getHalfHeight" #.(lispify "btCapsuleShape_getHalfHeight" 'function)) :float
+(cffi:defcfun ("_wrap_btCapsuleShape_getHalfHeight" CAPSULE-SHAPE/GET-HALF-HEIGHT) :float
   (self :pointer))
 
-(export '#.(lispify "btCapsuleShape_getHalfHeight" 'function))
+(export 'CAPSULE-SHAPE/GET-HALF-HEIGHT)
 
-(declaim (inline #.(lispify "btCapsuleShape_setLocalScaling" 'function)))
+(declaim (inline CAPSULE-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_setLocalScaling" #.(lispify "btCapsuleShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_setLocalScaling" CAPSULE-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btCapsuleShape_setLocalScaling" 'function))
+(export 'CAPSULE-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btCapsuleShape_getAnisotropicRollingFrictionDirection" 'function)))
+(declaim (inline CAPSULE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getAnisotropicRollingFrictionDirection" #.(lispify "btCapsuleShape_getAnisotropicRollingFrictionDirection" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_getAnisotropicRollingFrictionDirection" CAPSULE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCapsuleShape_getAnisotropicRollingFrictionDirection" 'function))
+(export 'CAPSULE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
-(declaim (inline #.(lispify "btCapsuleShape_calculateSerializeBufferSize" 'function)))
+(declaim (inline CAPSULE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_calculateSerializeBufferSize" #.(lispify "btCapsuleShape_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btCapsuleShape_calculateSerializeBufferSize" CAPSULE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btCapsuleShape_calculateSerializeBufferSize" 'function))
+(export 'CAPSULE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btCapsuleShape_serialize" 'function)))
+(declaim (inline CAPSULE-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_serialize" #.(lispify "btCapsuleShape_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btCapsuleShape_serialize" CAPSULE-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btCapsuleShape_serialize" 'function))
+(export 'CAPSULE-SHAPE/SERIALIZE)
 
-(declaim (inline #.(lispify "delete_btCapsuleShape" 'function)))
+(declaim (inline DELETE/BT-CAPSULE-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btCapsuleShape" #.(lispify "delete_btCapsuleShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCapsuleShape" DELETE/BT-CAPSULE-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btCapsuleShape" 'function))
+(export 'DELETE/BT-CAPSULE-SHAPE)
 
-(declaim (inline #.(lispify "new_btCapsuleShapeX" 'function)))
+(declaim (inline MAKE-CAPSULE-SHAPE-X))
 
-(cffi:defcfun ("_wrap_new_btCapsuleShapeX" #.(lispify "new_btCapsuleShapeX" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btCapsuleShapeX" MAKE-CAPSULE-SHAPE-X) :pointer
   (radius :float)
   (height :float))
 
-(export '#.(lispify "new_btCapsuleShapeX" 'function))
+(export 'MAKE-CAPSULE-SHAPE-X)
 
-(declaim (inline #.(lispify "btCapsuleShapeX_getName" 'function)))
+(declaim (inline CAPSULE-SHAPE-X/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCapsuleShapeX_getName" #.(lispify "btCapsuleShapeX_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btCapsuleShapeX_getName" CAPSULE-SHAPE-X/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btCapsuleShapeX_getName" 'function))
+(export 'CAPSULE-SHAPE-X/GET-NAME)
 
-(declaim (inline #.(lispify "delete_btCapsuleShapeX" 'function)))
+(declaim (inline DELETE/BT-CAPSULE-SHAPE-X))
 
-(cffi:defcfun ("_wrap_delete_btCapsuleShapeX" #.(lispify "delete_btCapsuleShapeX" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCapsuleShapeX" DELETE/BT-CAPSULE-SHAPE-X) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btCapsuleShapeX" 'function))
+(export 'DELETE/BT-CAPSULE-SHAPE-X)
 
-(declaim (inline #.(lispify "new_btCapsuleShapeZ" 'function)))
+(declaim (inline MAKE-CAPSULE-SHAPE-Z))
 
-(cffi:defcfun ("_wrap_new_btCapsuleShapeZ" #.(lispify "new_btCapsuleShapeZ" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btCapsuleShapeZ" MAKE-CAPSULE-SHAPE-Z) :pointer
   (radius :float)
   (height :float))
 
-(export '#.(lispify "new_btCapsuleShapeZ" 'function))
+(export 'MAKE-CAPSULE-SHAPE-Z)
 
-(declaim (inline #.(lispify "btCapsuleShapeZ_getName" 'function)))
+(declaim (inline CAPSULE-SHAPE-Z/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCapsuleShapeZ_getName" #.(lispify "btCapsuleShapeZ_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btCapsuleShapeZ_getName" CAPSULE-SHAPE-Z/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btCapsuleShapeZ_getName" 'function))
+(export 'CAPSULE-SHAPE-Z/GET-NAME)
 
-(declaim (inline #.(lispify "delete_btCapsuleShapeZ" 'function)))
+(declaim (inline DELETE/BT-CAPSULE-SHAPE-Z))
 
-(cffi:defcfun ("_wrap_delete_btCapsuleShapeZ" #.(lispify "delete_btCapsuleShapeZ" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCapsuleShapeZ" DELETE/BT-CAPSULE-SHAPE-Z) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btCapsuleShapeZ" 'function))
+(export 'DELETE/BT-CAPSULE-SHAPE-Z)
 
-(cffi:defcstruct #.(lispify "btCapsuleShapeData" 'classname)
-	(#.(lispify "m_convexInternalShapeData" 'slotname) :pointer)
-	(#.(lispify "m_upAxis" 'slotname) :int)
-	(#.(lispify "m_padding" 'slotname) :pointer))
+(cffi:defcstruct CAPSULE-SHAPE-DATA
+  (CONVEX-INTERNAL-SHAPE-DATA :pointer)
+  (UP-AXIS :int)
+  (PADDING :pointer))
 
-(export '#.(lispify "btCapsuleShapeData" 'classname))
+(export 'CAPSULE-SHAPE-DATA)
 
-(export '#.(lispify "m_convexInternalShapeData" 'slotname))
+(export 'CONVEX-INTERNAL-SHAPE-DATA)
 
-(export '#.(lispify "m_upAxis" 'slotname))
+(export 'UP-AXIS)
 
-(export '#.(lispify "m_padding" 'slotname))
+(export 'PADDING)
 
-(declaim (inline #.(lispify "btCylinderShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btCylinderShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCylinderShape_makeCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btCylinderShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShape_deleteCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btCylinderShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShape_makeCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btCylinderShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCylinderShape_deleteCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShape_makeCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusArray__SWIG_0" #.(lispify "btCylinderShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusArray__SWIG_0" CYLINDER-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCylinderShape_makeCPlusArray" 'function))
+(export 'CYLINDER-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShape_deleteCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusArray__SWIG_0" #.(lispify "btCylinderShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusArray__SWIG_0" CYLINDER-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShape_deleteCPlusArray" 'function))
+(export 'CYLINDER-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShape_makeCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusArray__SWIG_1" #.(lispify "btCylinderShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusArray__SWIG_1" CYLINDER-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShape_makeCPlusArray" 'function))
+(export 'CYLINDER-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShape_deleteCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusArray__SWIG_1" #.(lispify "btCylinderShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusArray__SWIG_1" CYLINDER-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCylinderShape_deleteCPlusArray" 'function))
+(export 'CYLINDER-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShape_getHalfExtentsWithMargin" 'function)))
+(declaim (inline CYLINDER-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getHalfExtentsWithMargin" #.(lispify "btCylinderShape_getHalfExtentsWithMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_getHalfExtentsWithMargin" CYLINDER-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCylinderShape_getHalfExtentsWithMargin" 'function))
+(export 'CYLINDER-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN)
 
-(declaim (inline #.(lispify "btCylinderShape_getHalfExtentsWithoutMargin" 'function)))
+(declaim (inline CYLINDER-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getHalfExtentsWithoutMargin" #.(lispify "btCylinderShape_getHalfExtentsWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_getHalfExtentsWithoutMargin" CYLINDER-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCylinderShape_getHalfExtentsWithoutMargin" 'function))
+(export 'CYLINDER-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "new_btCylinderShape" 'function)))
+(declaim (inline MAKE-CYLINDER-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btCylinderShape" #.(lispify "new_btCylinderShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btCylinderShape" MAKE-CYLINDER-SHAPE) :pointer
   (halfExtents :pointer))
 
-(export '#.(lispify "new_btCylinderShape" 'function))
+(export 'MAKE-CYLINDER-SHAPE)
 
-(declaim (inline #.(lispify "btCylinderShape_getAabb" 'function)))
+(declaim (inline CYLINDER-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getAabb" #.(lispify "btCylinderShape_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShape_getAabb" CYLINDER-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btCylinderShape_getAabb" 'function))
+(export 'CYLINDER-SHAPE/GET-AABB)
 
-(declaim (inline #.(lispify "btCylinderShape_calculateLocalInertia" 'function)))
+(declaim (inline CYLINDER-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btCylinderShape_calculateLocalInertia" #.(lispify "btCylinderShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShape_calculateLocalInertia" CYLINDER-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btCylinderShape_calculateLocalInertia" 'function))
+(export 'CYLINDER-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btCylinderShape_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_localGetSupportingVertexWithoutMargin" #.(lispify "btCylinderShape_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_localGetSupportingVertexWithoutMargin" CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btCylinderShape_localGetSupportingVertexWithoutMargin" 'function))
+(export 'CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btCylinderShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CYLINDER-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btCylinderShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CYLINDER-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btCylinderShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'CYLINDER-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btCylinderShape_setMargin" 'function)))
+(declaim (inline CYLINDER-SHAPE/SET-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_setMargin" #.(lispify "btCylinderShape_setMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShape_setMargin" CYLINDER-SHAPE/SET-MARGIN) :void
   (self :pointer)
   (collisionMargin :float))
 
-(export '#.(lispify "btCylinderShape_setMargin" 'function))
+(export 'CYLINDER-SHAPE/SET-MARGIN)
 
-(declaim (inline #.(lispify "btCylinderShape_localGetSupportingVertex" 'function)))
+(declaim (inline CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btCylinderShape_localGetSupportingVertex" #.(lispify "btCylinderShape_localGetSupportingVertex" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_localGetSupportingVertex" CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btCylinderShape_localGetSupportingVertex" 'function))
+(export 'CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX)
 
-(declaim (inline #.(lispify "btCylinderShape_getUpAxis" 'function)))
+(declaim (inline CYLINDER-SHAPE/GET-UP-AXIS))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getUpAxis" #.(lispify "btCylinderShape_getUpAxis" 'function)) :int
+(cffi:defcfun ("_wrap_btCylinderShape_getUpAxis" CYLINDER-SHAPE/GET-UP-AXIS) :int
   (self :pointer))
 
-(export '#.(lispify "btCylinderShape_getUpAxis" 'function))
+(export 'CYLINDER-SHAPE/GET-UP-AXIS)
 
-(declaim (inline #.(lispify "btCylinderShape_getAnisotropicRollingFrictionDirection" 'function)))
+(declaim (inline CYLINDER-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getAnisotropicRollingFrictionDirection" #.(lispify "btCylinderShape_getAnisotropicRollingFrictionDirection" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_getAnisotropicRollingFrictionDirection" CYLINDER-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCylinderShape_getAnisotropicRollingFrictionDirection" 'function))
+(export 'CYLINDER-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
-(declaim (inline #.(lispify "btCylinderShape_getRadius" 'function)))
+(declaim (inline CYLINDER-SHAPE/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getRadius" #.(lispify "btCylinderShape_getRadius" 'function)) :float
+(cffi:defcfun ("_wrap_btCylinderShape_getRadius" CYLINDER-SHAPE/GET-RADIUS) :float
   (self :pointer))
 
-(export '#.(lispify "btCylinderShape_getRadius" 'function))
+(export 'CYLINDER-SHAPE/GET-RADIUS)
 
-(declaim (inline #.(lispify "btCylinderShape_setLocalScaling" 'function)))
+(declaim (inline CYLINDER-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btCylinderShape_setLocalScaling" #.(lispify "btCylinderShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShape_setLocalScaling" CYLINDER-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btCylinderShape_setLocalScaling" 'function))
+(export 'CYLINDER-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btCylinderShape_getName" 'function)))
+(declaim (inline CYLINDER-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getName" #.(lispify "btCylinderShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btCylinderShape_getName" CYLINDER-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btCylinderShape_getName" 'function))
+(export 'CYLINDER-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btCylinderShape_calculateSerializeBufferSize" 'function)))
+(declaim (inline CYLINDER-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_calculateSerializeBufferSize" #.(lispify "btCylinderShape_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btCylinderShape_calculateSerializeBufferSize" CYLINDER-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btCylinderShape_calculateSerializeBufferSize" 'function))
+(export 'CYLINDER-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btCylinderShape_serialize" 'function)))
+(declaim (inline CYLINDER-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_serialize" #.(lispify "btCylinderShape_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btCylinderShape_serialize" CYLINDER-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btCylinderShape_serialize" 'function))
+(export 'CYLINDER-SHAPE/SERIALIZE)
 
-(declaim (inline #.(lispify "delete_btCylinderShape" 'function)))
+(declaim (inline DELETE/BT-CYLINDER-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btCylinderShape" #.(lispify "delete_btCylinderShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCylinderShape" DELETE/BT-CYLINDER-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btCylinderShape" 'function))
+(export 'DELETE/BT-CYLINDER-SHAPE)
 
-(declaim (inline #.(lispify "btCylinderShapeX_makeCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusPlusInstance__SWIG_0" #.(lispify "btCylinderShapeX_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCylinderShapeX_makeCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShapeX_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btCylinderShapeX_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShapeX_deleteCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShapeX_makeCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusPlusInstance__SWIG_1" #.(lispify "btCylinderShapeX_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShapeX_makeCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShapeX_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btCylinderShapeX_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCylinderShapeX_deleteCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShapeX_makeCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusArray__SWIG_0" #.(lispify "btCylinderShapeX_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusArray__SWIG_0" CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCylinderShapeX_makeCPlusArray" 'function))
+(export 'CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShapeX_deleteCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusArray__SWIG_0" #.(lispify "btCylinderShapeX_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusArray__SWIG_0" CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShapeX_deleteCPlusArray" 'function))
+(export 'CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShapeX_makeCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusArray__SWIG_1" #.(lispify "btCylinderShapeX_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusArray__SWIG_1" CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShapeX_makeCPlusArray" 'function))
+(export 'CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShapeX_deleteCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusArray__SWIG_1" #.(lispify "btCylinderShapeX_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusArray__SWIG_1" CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCylinderShapeX_deleteCPlusArray" 'function))
+(export 'CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btCylinderShapeX" 'function)))
+(declaim (inline MAKE-CYLINDER-SHAPE-X))
 
-(cffi:defcfun ("_wrap_new_btCylinderShapeX" #.(lispify "new_btCylinderShapeX" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btCylinderShapeX" MAKE-CYLINDER-SHAPE-X) :pointer
   (halfExtents :pointer))
 
-(export '#.(lispify "new_btCylinderShapeX" 'function))
+(export 'MAKE-CYLINDER-SHAPE-X)
 
-(declaim (inline #.(lispify "btCylinderShapeX_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_localGetSupportingVertexWithoutMargin" #.(lispify "btCylinderShapeX_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_localGetSupportingVertexWithoutMargin" CYLINDER-SHAPE-X/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btCylinderShapeX_localGetSupportingVertexWithoutMargin" 'function))
+(export 'CYLINDER-SHAPE-X/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btCylinderShapeX_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btCylinderShapeX_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_batchedUnitVectorGetSupportingVertexWithoutMargin" CYLINDER-SHAPE-X/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btCylinderShapeX_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'CYLINDER-SHAPE-X/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btCylinderShapeX_getName" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_getName" #.(lispify "btCylinderShapeX_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btCylinderShapeX_getName" CYLINDER-SHAPE-X/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btCylinderShapeX_getName" 'function))
+(export 'CYLINDER-SHAPE-X/GET-NAME)
 
-(declaim (inline #.(lispify "btCylinderShapeX_getRadius" 'function)))
+(declaim (inline CYLINDER-SHAPE-X/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_getRadius" #.(lispify "btCylinderShapeX_getRadius" 'function)) :float
+(cffi:defcfun ("_wrap_btCylinderShapeX_getRadius" CYLINDER-SHAPE-X/GET-RADIUS) :float
   (self :pointer))
 
-(export '#.(lispify "btCylinderShapeX_getRadius" 'function))
+(export 'CYLINDER-SHAPE-X/GET-RADIUS)
 
-(declaim (inline #.(lispify "delete_btCylinderShapeX" 'function)))
+(declaim (inline DELETE/BT-CYLINDER-SHAPE-X))
 
-(cffi:defcfun ("_wrap_delete_btCylinderShapeX" #.(lispify "delete_btCylinderShapeX" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCylinderShapeX" DELETE/BT-CYLINDER-SHAPE-X) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btCylinderShapeX" 'function))
+(export 'DELETE/BT-CYLINDER-SHAPE-X)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_makeCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusPlusInstance__SWIG_0" #.(lispify "btCylinderShapeZ_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_makeCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btCylinderShapeZ_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_deleteCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_makeCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusPlusInstance__SWIG_1" #.(lispify "btCylinderShapeZ_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_makeCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btCylinderShapeZ_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_deleteCPlusPlusInstance" 'function))
+(export 'CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_makeCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusArray__SWIG_0" #.(lispify "btCylinderShapeZ_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusArray__SWIG_0" CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_makeCPlusArray" 'function))
+(export 'CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_deleteCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusArray__SWIG_0" #.(lispify "btCylinderShapeZ_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusArray__SWIG_0" CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_deleteCPlusArray" 'function))
+(export 'CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_makeCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusArray__SWIG_1" #.(lispify "btCylinderShapeZ_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusArray__SWIG_1" CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_makeCPlusArray" 'function))
+(export 'CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_deleteCPlusArray" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusArray__SWIG_1" #.(lispify "btCylinderShapeZ_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusArray__SWIG_1" CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_deleteCPlusArray" 'function))
+(export 'CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btCylinderShapeZ" 'function)))
+(declaim (inline MAKE-CYLINDER-SHAPE-Z))
 
-(cffi:defcfun ("_wrap_new_btCylinderShapeZ" #.(lispify "new_btCylinderShapeZ" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btCylinderShapeZ" MAKE-CYLINDER-SHAPE-Z) :pointer
   (halfExtents :pointer))
 
-(export '#.(lispify "new_btCylinderShapeZ" 'function))
+(export 'MAKE-CYLINDER-SHAPE-Z)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_localGetSupportingVertexWithoutMargin" #.(lispify "btCylinderShapeZ_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_localGetSupportingVertexWithoutMargin" CYLINDER-SHAPE-Z/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_localGetSupportingVertexWithoutMargin" 'function))
+(export 'CYLINDER-SHAPE-Z/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btCylinderShapeZ_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_batchedUnitVectorGetSupportingVertexWithoutMargin" CYLINDER-SHAPE-Z/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btCylinderShapeZ_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'CYLINDER-SHAPE-Z/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_getName" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_getName" #.(lispify "btCylinderShapeZ_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btCylinderShapeZ_getName" CYLINDER-SHAPE-Z/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_getName" 'function))
+(export 'CYLINDER-SHAPE-Z/GET-NAME)
 
-(declaim (inline #.(lispify "btCylinderShapeZ_getRadius" 'function)))
+(declaim (inline CYLINDER-SHAPE-Z/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_getRadius" #.(lispify "btCylinderShapeZ_getRadius" 'function)) :float
+(cffi:defcfun ("_wrap_btCylinderShapeZ_getRadius" CYLINDER-SHAPE-Z/GET-RADIUS) :float
   (self :pointer))
 
-(export '#.(lispify "btCylinderShapeZ_getRadius" 'function))
+(export 'CYLINDER-SHAPE-Z/GET-RADIUS)
 
-(declaim (inline #.(lispify "delete_btCylinderShapeZ" 'function)))
+(declaim (inline DELETE/BT-CYLINDER-SHAPE-Z))
 
-(cffi:defcfun ("_wrap_delete_btCylinderShapeZ" #.(lispify "delete_btCylinderShapeZ" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCylinderShapeZ" DELETE/BT-CYLINDER-SHAPE-Z) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btCylinderShapeZ" 'function))
+(export 'DELETE/BT-CYLINDER-SHAPE-Z)
 
-(cffi:defcstruct #.(lispify "btCylinderShapeData" 'classname)
-	(#.(lispify "m_convexInternalShapeData" 'slotname) :pointer)
-	(#.(lispify "m_upAxis" 'slotname) :int)
-	(#.(lispify "m_padding" 'slotname) :pointer))
+(cffi:defcstruct CYLINDER-SHAPE-DATA
+  (CONVEX-INTERNAL-SHAPE-DATA :pointer)
+  (UP-AXIS :int)
+  (PADDING :pointer))
 
-(export '#.(lispify "btCylinderShapeData" 'classname))
+(export 'CYLINDER-SHAPE-DATA)
 
-(export '#.(lispify "m_convexInternalShapeData" 'slotname))
+(export 'CONVEX-INTERNAL-SHAPE-DATA)
 
-(export '#.(lispify "m_upAxis" 'slotname))
+(export 'UP-AXIS)
 
-(export '#.(lispify "m_padding" 'slotname))
+(export 'PADDING)
 
-(declaim (inline #.(lispify "btConeShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btConeShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConeShape_makeCPlusPlusInstance__SWIG_0" CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btConeShape_makeCPlusPlusInstance" 'function))
+(export 'CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConeShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btConeShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btConeShape_deleteCPlusPlusInstance__SWIG_0" CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConeShape_deleteCPlusPlusInstance" 'function))
+(export 'CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConeShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btConeShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConeShape_makeCPlusPlusInstance__SWIG_1" CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConeShape_makeCPlusPlusInstance" 'function))
+(export 'CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConeShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btConeShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btConeShape_deleteCPlusPlusInstance__SWIG_1" CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btConeShape_deleteCPlusPlusInstance" 'function))
+(export 'CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConeShape_makeCPlusArray" 'function)))
+(declaim (inline CONE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeShape_makeCPlusArray__SWIG_0" #.(lispify "btConeShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConeShape_makeCPlusArray__SWIG_0" CONE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btConeShape_makeCPlusArray" 'function))
+(export 'CONE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btConeShape_deleteCPlusArray" 'function)))
+(declaim (inline CONE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeShape_deleteCPlusArray__SWIG_0" #.(lispify "btConeShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btConeShape_deleteCPlusArray__SWIG_0" CONE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConeShape_deleteCPlusArray" 'function))
+(export 'CONE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btConeShape_makeCPlusArray" 'function)))
+(declaim (inline CONE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeShape_makeCPlusArray__SWIG_1" #.(lispify "btConeShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConeShape_makeCPlusArray__SWIG_1" CONE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConeShape_makeCPlusArray" 'function))
+(export 'CONE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btConeShape_deleteCPlusArray" 'function)))
+(declaim (inline CONE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeShape_deleteCPlusArray__SWIG_1" #.(lispify "btConeShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btConeShape_deleteCPlusArray__SWIG_1" CONE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btConeShape_deleteCPlusArray" 'function))
+(export 'CONE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btConeShape" 'function)))
+(declaim (inline MAKE-CONE-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btConeShape" #.(lispify "new_btConeShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btConeShape" MAKE-CONE-SHAPE) :pointer
   (radius :float)
   (height :float))
 
-(export '#.(lispify "new_btConeShape" 'function))
+(export 'MAKE-CONE-SHAPE)
 
-(declaim (inline #.(lispify "btConeShape_localGetSupportingVertex" 'function)))
+(declaim (inline CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btConeShape_localGetSupportingVertex" #.(lispify "btConeShape_localGetSupportingVertex" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConeShape_localGetSupportingVertex" CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btConeShape_localGetSupportingVertex" 'function))
+(export 'CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX)
 
-(declaim (inline #.(lispify "btConeShape_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConeShape_localGetSupportingVertexWithoutMargin" #.(lispify "btConeShape_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConeShape_localGetSupportingVertexWithoutMargin" CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btConeShape_localGetSupportingVertexWithoutMargin" 'function))
+(export 'CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btConeShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CONE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConeShape_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btConeShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btConeShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CONE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btConeShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'CONE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btConeShape_getRadius" 'function)))
+(declaim (inline CONE-SHAPE/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btConeShape_getRadius" #.(lispify "btConeShape_getRadius" 'function)) :float
+(cffi:defcfun ("_wrap_btConeShape_getRadius" CONE-SHAPE/GET-RADIUS) :float
   (self :pointer))
 
-(export '#.(lispify "btConeShape_getRadius" 'function))
+(export 'CONE-SHAPE/GET-RADIUS)
 
-(declaim (inline #.(lispify "btConeShape_getHeight" 'function)))
+(declaim (inline CONE-SHAPE/GET-HEIGHT))
 
-(cffi:defcfun ("_wrap_btConeShape_getHeight" #.(lispify "btConeShape_getHeight" 'function)) :float
+(cffi:defcfun ("_wrap_btConeShape_getHeight" CONE-SHAPE/GET-HEIGHT) :float
   (self :pointer))
 
-(export '#.(lispify "btConeShape_getHeight" 'function))
+(export 'CONE-SHAPE/GET-HEIGHT)
 
-(declaim (inline #.(lispify "btConeShape_calculateLocalInertia" 'function)))
+(declaim (inline CONE-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btConeShape_calculateLocalInertia" #.(lispify "btConeShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btConeShape_calculateLocalInertia" CONE-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btConeShape_calculateLocalInertia" 'function))
+(export 'CONE-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btConeShape_getName" 'function)))
+(declaim (inline CONE-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConeShape_getName" #.(lispify "btConeShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btConeShape_getName" CONE-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btConeShape_getName" 'function))
+(export 'CONE-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btConeShape_setConeUpIndex" 'function)))
+(declaim (inline CONE-SHAPE/SET-CONE-UP-INDEX))
 
-(cffi:defcfun ("_wrap_btConeShape_setConeUpIndex" #.(lispify "btConeShape_setConeUpIndex" 'function)) :void
+(cffi:defcfun ("_wrap_btConeShape_setConeUpIndex" CONE-SHAPE/SET-CONE-UP-INDEX) :void
   (self :pointer)
   (upIndex :int))
 
-(export '#.(lispify "btConeShape_setConeUpIndex" 'function))
+(export 'CONE-SHAPE/SET-CONE-UP-INDEX)
 
-(declaim (inline #.(lispify "btConeShape_getConeUpIndex" 'function)))
+(declaim (inline CONE-SHAPE/GET-CONE-UP-INDEX))
 
-(cffi:defcfun ("_wrap_btConeShape_getConeUpIndex" #.(lispify "btConeShape_getConeUpIndex" 'function)) :int
+(cffi:defcfun ("_wrap_btConeShape_getConeUpIndex" CONE-SHAPE/GET-CONE-UP-INDEX) :int
   (self :pointer))
 
-(export '#.(lispify "btConeShape_getConeUpIndex" 'function))
+(export 'CONE-SHAPE/GET-CONE-UP-INDEX)
 
-(declaim (inline #.(lispify "btConeShape_getAnisotropicRollingFrictionDirection" 'function)))
+(declaim (inline CONE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btConeShape_getAnisotropicRollingFrictionDirection" #.(lispify "btConeShape_getAnisotropicRollingFrictionDirection" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConeShape_getAnisotropicRollingFrictionDirection" CONE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
-(export '#.(lispify "btConeShape_getAnisotropicRollingFrictionDirection" 'function))
+(export 'CONE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
-(declaim (inline #.(lispify "btConeShape_setLocalScaling" 'function)))
+(declaim (inline CONE-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btConeShape_setLocalScaling" #.(lispify "btConeShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btConeShape_setLocalScaling" CONE-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btConeShape_setLocalScaling" 'function))
+(export 'CONE-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btConeShape_calculateSerializeBufferSize" 'function)))
+(declaim (inline CONE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btConeShape_calculateSerializeBufferSize" #.(lispify "btConeShape_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btConeShape_calculateSerializeBufferSize" CONE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btConeShape_calculateSerializeBufferSize" 'function))
+(export 'CONE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btConeShape_serialize" 'function)))
+(declaim (inline CONE-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btConeShape_serialize" #.(lispify "btConeShape_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btConeShape_serialize" CONE-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btConeShape_serialize" 'function))
+(export 'CONE-SHAPE/SERIALIZE)
 
-(declaim (inline #.(lispify "delete_btConeShape" 'function)))
+(declaim (inline DELETE/BT-CONE-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btConeShape" #.(lispify "delete_btConeShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btConeShape" DELETE/BT-CONE-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btConeShape" 'function))
+(export 'DELETE/BT-CONE-SHAPE)
 
-(declaim (inline #.(lispify "new_btConeShapeX" 'function)))
+(declaim (inline MAKE-CONE-SHAPE-X))
 
-(cffi:defcfun ("_wrap_new_btConeShapeX" #.(lispify "new_btConeShapeX" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btConeShapeX" MAKE-CONE-SHAPE-X) :pointer
   (radius :float)
   (height :float))
 
-(export '#.(lispify "new_btConeShapeX" 'function))
+(export 'MAKE-CONE-SHAPE-X)
 
-(declaim (inline #.(lispify "btConeShapeX_getAnisotropicRollingFrictionDirection" 'function)))
+(declaim (inline CONE-SHAPE-X/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btConeShapeX_getAnisotropicRollingFrictionDirection" #.(lispify "btConeShapeX_getAnisotropicRollingFrictionDirection" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConeShapeX_getAnisotropicRollingFrictionDirection" CONE-SHAPE-X/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
-(export '#.(lispify "btConeShapeX_getAnisotropicRollingFrictionDirection" 'function))
+(export 'CONE-SHAPE-X/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
-(declaim (inline #.(lispify "btConeShapeX_getName" 'function)))
+(declaim (inline CONE-SHAPE-X/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConeShapeX_getName" #.(lispify "btConeShapeX_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btConeShapeX_getName" CONE-SHAPE-X/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btConeShapeX_getName" 'function))
+(export 'CONE-SHAPE-X/GET-NAME)
 
-(declaim (inline #.(lispify "delete_btConeShapeX" 'function)))
+(declaim (inline DELETE/BT-CONE-SHAPE-X))
 
-(cffi:defcfun ("_wrap_delete_btConeShapeX" #.(lispify "delete_btConeShapeX" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btConeShapeX" DELETE/BT-CONE-SHAPE-X) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btConeShapeX" 'function))
+(export 'DELETE/BT-CONE-SHAPE-X)
 
-(declaim (inline #.(lispify "new_btConeShapeZ" 'function)))
+(declaim (inline MAKE-CONE-SHAPE-Z))
 
-(cffi:defcfun ("_wrap_new_btConeShapeZ" #.(lispify "new_btConeShapeZ" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btConeShapeZ" MAKE-CONE-SHAPE-Z) :pointer
   (radius :float)
   (height :float))
 
-(export '#.(lispify "new_btConeShapeZ" 'function))
+(export 'MAKE-CONE-SHAPE-Z)
 
-(declaim (inline #.(lispify "btConeShapeZ_getAnisotropicRollingFrictionDirection" 'function)))
+(declaim (inline CONE-SHAPE-Z/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btConeShapeZ_getAnisotropicRollingFrictionDirection" #.(lispify "btConeShapeZ_getAnisotropicRollingFrictionDirection" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConeShapeZ_getAnisotropicRollingFrictionDirection" CONE-SHAPE-Z/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
-(export '#.(lispify "btConeShapeZ_getAnisotropicRollingFrictionDirection" 'function))
+(export 'CONE-SHAPE-Z/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
-(declaim (inline #.(lispify "btConeShapeZ_getName" 'function)))
+(declaim (inline CONE-SHAPE-Z/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConeShapeZ_getName" #.(lispify "btConeShapeZ_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btConeShapeZ_getName" CONE-SHAPE-Z/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btConeShapeZ_getName" 'function))
+(export 'CONE-SHAPE-Z/GET-NAME)
 
-(declaim (inline #.(lispify "delete_btConeShapeZ" 'function)))
+(declaim (inline DELETE/BT-CONE-SHAPE-Z))
 
-(cffi:defcfun ("_wrap_delete_btConeShapeZ" #.(lispify "delete_btConeShapeZ" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btConeShapeZ" DELETE/BT-CONE-SHAPE-Z) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btConeShapeZ" 'function))
+(export 'DELETE/BT-CONE-SHAPE-Z)
 
-(cffi:defcstruct #.(lispify "btConeShapeData" 'classname)
-	(#.(lispify "m_convexInternalShapeData" 'slotname) :pointer)
-	(#.(lispify "m_upIndex" 'slotname) :int)
-	(#.(lispify "m_padding" 'slotname) :pointer))
+(cffi:defcstruct CONE-SHAPE-DATA
+  (CONVEX-INTERNAL-SHAPE-DATA :pointer)
+  (UP-INDEX :int)
+  (PADDING :pointer))
 
-(export '#.(lispify "btConeShapeData" 'classname))
+(export 'CONE-SHAPE-DATA)
 
-(export '#.(lispify "m_convexInternalShapeData" 'slotname))
+(export 'CONVEX-INTERNAL-SHAPE-DATA)
 
-(export '#.(lispify "m_upIndex" 'slotname))
+(export 'UP-INDEX)
 
-(export '#.(lispify "m_padding" 'slotname))
+(export 'PADDING)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btStaticPlaneShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btStaticPlaneShape_makeCPlusPlusInstance__SWIG_0" STATIC-PLANE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_makeCPlusPlusInstance" 'function))
+(export 'STATIC-PLANE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btStaticPlaneShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btStaticPlaneShape_deleteCPlusPlusInstance__SWIG_0" STATIC-PLANE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_deleteCPlusPlusInstance" 'function))
+(export 'STATIC-PLANE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btStaticPlaneShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btStaticPlaneShape_makeCPlusPlusInstance__SWIG_1" STATIC-PLANE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_makeCPlusPlusInstance" 'function))
+(export 'STATIC-PLANE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btStaticPlaneShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btStaticPlaneShape_deleteCPlusPlusInstance__SWIG_1" STATIC-PLANE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_deleteCPlusPlusInstance" 'function))
+(export 'STATIC-PLANE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_makeCPlusArray" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_makeCPlusArray__SWIG_0" #.(lispify "btStaticPlaneShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btStaticPlaneShape_makeCPlusArray__SWIG_0" STATIC-PLANE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_makeCPlusArray" 'function))
+(export 'STATIC-PLANE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_deleteCPlusArray" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_deleteCPlusArray__SWIG_0" #.(lispify "btStaticPlaneShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btStaticPlaneShape_deleteCPlusArray__SWIG_0" STATIC-PLANE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_deleteCPlusArray" 'function))
+(export 'STATIC-PLANE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_makeCPlusArray" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_makeCPlusArray__SWIG_1" #.(lispify "btStaticPlaneShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btStaticPlaneShape_makeCPlusArray__SWIG_1" STATIC-PLANE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_makeCPlusArray" 'function))
+(export 'STATIC-PLANE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_deleteCPlusArray" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_deleteCPlusArray__SWIG_1" #.(lispify "btStaticPlaneShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btStaticPlaneShape_deleteCPlusArray__SWIG_1" STATIC-PLANE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_deleteCPlusArray" 'function))
+(export 'STATIC-PLANE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btStaticPlaneShape" 'function)))
+(declaim (inline MAKE-STATIC-PLANE-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btStaticPlaneShape" #.(lispify "new_btStaticPlaneShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btStaticPlaneShape" MAKE-STATIC-PLANE-SHAPE) :pointer
   (planeNormal :pointer)
   (planeConstant :float))
 
-(export '#.(lispify "new_btStaticPlaneShape" 'function))
+(export 'MAKE-STATIC-PLANE-SHAPE)
 
-(declaim (inline #.(lispify "delete_btStaticPlaneShape" 'function)))
+(declaim (inline DELETE/BT-STATIC-PLANE-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btStaticPlaneShape" #.(lispify "delete_btStaticPlaneShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btStaticPlaneShape" DELETE/BT-STATIC-PLANE-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btStaticPlaneShape" 'function))
+(export 'DELETE/BT-STATIC-PLANE-SHAPE)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_getAabb" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_getAabb" #.(lispify "btStaticPlaneShape_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btStaticPlaneShape_getAabb" STATIC-PLANE-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_getAabb" 'function))
+(export 'STATIC-PLANE-SHAPE/GET-AABB)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_processAllTriangles" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/PROCESS-ALL-TRIANGLES))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_processAllTriangles" #.(lispify "btStaticPlaneShape_processAllTriangles" 'function)) :void
+(cffi:defcfun ("_wrap_btStaticPlaneShape_processAllTriangles" STATIC-PLANE-SHAPE/PROCESS-ALL-TRIANGLES) :void
   (self :pointer)
   (callback :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_processAllTriangles" 'function))
+(export 'STATIC-PLANE-SHAPE/PROCESS-ALL-TRIANGLES)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_calculateLocalInertia" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_calculateLocalInertia" #.(lispify "btStaticPlaneShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btStaticPlaneShape_calculateLocalInertia" STATIC-PLANE-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_calculateLocalInertia" 'function))
+(export 'STATIC-PLANE-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_setLocalScaling" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_setLocalScaling" #.(lispify "btStaticPlaneShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btStaticPlaneShape_setLocalScaling" STATIC-PLANE-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_setLocalScaling" 'function))
+(export 'STATIC-PLANE-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_getLocalScaling" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/GET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_getLocalScaling" #.(lispify "btStaticPlaneShape_getLocalScaling" 'function)) :pointer
+(cffi:defcfun ("_wrap_btStaticPlaneShape_getLocalScaling" STATIC-PLANE-SHAPE/GET-LOCAL-SCALING) :pointer
   (self :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_getLocalScaling" 'function))
+(export 'STATIC-PLANE-SHAPE/GET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_getPlaneNormal" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/GET-PLANE-NORMAL))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_getPlaneNormal" #.(lispify "btStaticPlaneShape_getPlaneNormal" 'function)) :pointer
+(cffi:defcfun ("_wrap_btStaticPlaneShape_getPlaneNormal" STATIC-PLANE-SHAPE/GET-PLANE-NORMAL) :pointer
   (self :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_getPlaneNormal" 'function))
+(export 'STATIC-PLANE-SHAPE/GET-PLANE-NORMAL)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_getPlaneConstant" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/GET-PLANE-CONSTANT))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_getPlaneConstant" #.(lispify "btStaticPlaneShape_getPlaneConstant" 'function)) :pointer
+(cffi:defcfun ("_wrap_btStaticPlaneShape_getPlaneConstant" STATIC-PLANE-SHAPE/GET-PLANE-CONSTANT) :pointer
   (self :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_getPlaneConstant" 'function))
+(export 'STATIC-PLANE-SHAPE/GET-PLANE-CONSTANT)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_getName" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_getName" #.(lispify "btStaticPlaneShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btStaticPlaneShape_getName" STATIC-PLANE-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_getName" 'function))
+(export 'STATIC-PLANE-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_calculateSerializeBufferSize" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_calculateSerializeBufferSize" #.(lispify "btStaticPlaneShape_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btStaticPlaneShape_calculateSerializeBufferSize" STATIC-PLANE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_calculateSerializeBufferSize" 'function))
+(export 'STATIC-PLANE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btStaticPlaneShape_serialize" 'function)))
+(declaim (inline STATIC-PLANE-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btStaticPlaneShape_serialize" #.(lispify "btStaticPlaneShape_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btStaticPlaneShape_serialize" STATIC-PLANE-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btStaticPlaneShape_serialize" 'function))
+(export 'STATIC-PLANE-SHAPE/SERIALIZE)
 
-(cffi:defcstruct #.(lispify "btStaticPlaneShapeData" 'classname)
-	(#.(lispify "m_collisionShapeData" 'slotname) :pointer)
-	(#.(lispify "m_localScaling" 'slotname) #.(lispify "btVector3FloatData" 'classname))
-	(#.(lispify "m_planeNormal" 'slotname) #.(lispify "btVector3FloatData" 'classname))
-	(#.(lispify "m_planeConstant" 'slotname) :float)
-	(#.(lispify "m_pad" 'slotname) :pointer))
+(cffi:defcstruct STATIC-PLANE-SHAPE-DATA
+  (COLLISION-SHAPE-DATA :pointer)
+  (LOCAL-SCALING VECTOR-3-FLOAT-DATA)
+  (PLANE-NORMAL VECTOR-3-FLOAT-DATA)
+  (PLANE-CONSTANT :float)
+  (PAD :pointer))
 
-(export '#.(lispify "btStaticPlaneShapeData" 'classname))
+(export 'STATIC-PLANE-SHAPE-DATA)
 
-(export '#.(lispify "m_collisionShapeData" 'slotname))
+(export 'COLLISION-SHAPE-DATA)
 
-(export '#.(lispify "m_localScaling" 'slotname))
+(export 'LOCAL-SCALING)
 
-(export '#.(lispify "m_planeNormal" 'slotname))
+(export 'PLANE-NORMAL)
 
-(export '#.(lispify "m_planeConstant" 'slotname))
+(export 'PLANE-CONSTANT)
 
-(export '#.(lispify "m_pad" 'slotname))
+(export 'PAD)
 
-(declaim (inline #.(lispify "btConvexHullShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btConvexHullShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusPlusInstance__SWIG_0" CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btConvexHullShape_makeCPlusPlusInstance" 'function))
+(export 'CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConvexHullShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btConvexHullShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusPlusInstance__SWIG_0" CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConvexHullShape_deleteCPlusPlusInstance" 'function))
+(export 'CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConvexHullShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btConvexHullShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusPlusInstance__SWIG_1" CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConvexHullShape_makeCPlusPlusInstance" 'function))
+(export 'CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConvexHullShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btConvexHullShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusPlusInstance__SWIG_1" CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btConvexHullShape_deleteCPlusPlusInstance" 'function))
+(export 'CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConvexHullShape_makeCPlusArray" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusArray__SWIG_0" #.(lispify "btConvexHullShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusArray__SWIG_0" CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btConvexHullShape_makeCPlusArray" 'function))
+(export 'CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btConvexHullShape_deleteCPlusArray" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusArray__SWIG_0" #.(lispify "btConvexHullShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusArray__SWIG_0" CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConvexHullShape_deleteCPlusArray" 'function))
+(export 'CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btConvexHullShape_makeCPlusArray" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusArray__SWIG_1" #.(lispify "btConvexHullShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusArray__SWIG_1" CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConvexHullShape_makeCPlusArray" 'function))
+(export 'CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btConvexHullShape_deleteCPlusArray" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusArray__SWIG_1" #.(lispify "btConvexHullShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusArray__SWIG_1" CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btConvexHullShape_deleteCPlusArray" 'function))
+(export 'CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btConvexHullShape" 'function)))
+(declaim (inline MAKE-CONVEX-HULL-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btConvexHullShape__SWIG_0" #.(lispify "new_btConvexHullShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btConvexHullShape__SWIG_0" MAKE-CONVEX-HULL-SHAPE) :pointer
   (points :pointer)
   (numPoints :int)
   (stride :int))
 
-(export '#.(lispify "new_btConvexHullShape" 'function))
+(export 'MAKE-CONVEX-HULL-SHAPE)
 
-(declaim (inline #.(lispify "new_btConvexHullShape" 'function)))
+(declaim (inline MAKE-CONVEX-HULL-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btConvexHullShape__SWIG_1" #.(lispify "new_btConvexHullShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btConvexHullShape__SWIG_1" MAKE-CONVEX-HULL-SHAPE) :pointer
   (points :pointer)
   (numPoints :int))
 
-(export '#.(lispify "new_btConvexHullShape" 'function))
+(export 'MAKE-CONVEX-HULL-SHAPE)
 
-(declaim (inline #.(lispify "new_btConvexHullShape" 'function)))
+(declaim (inline MAKE-CONVEX-HULL-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btConvexHullShape__SWIG_2" #.(lispify "new_btConvexHullShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btConvexHullShape__SWIG_2" MAKE-CONVEX-HULL-SHAPE) :pointer
   (points :pointer))
 
-(export '#.(lispify "new_btConvexHullShape" 'function))
+(export 'MAKE-CONVEX-HULL-SHAPE)
 
-(declaim (inline #.(lispify "new_btConvexHullShape" 'function)))
+(declaim (inline MAKE-CONVEX-HULL-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btConvexHullShape__SWIG_3" #.(lispify "new_btConvexHullShape" 'function)) :pointer)
+(cffi:defcfun ("_wrap_new_btConvexHullShape__SWIG_3" MAKE-CONVEX-HULL-SHAPE) :pointer)
 
-(export '#.(lispify "new_btConvexHullShape" 'function))
+(export 'MAKE-CONVEX-HULL-SHAPE)
 
-(declaim (inline #.(lispify "btConvexHullShape_addPoint" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/ADD-POINT))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_addPoint__SWIG_0" #.(lispify "btConvexHullShape_addPoint" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_addPoint__SWIG_0" CONVEX-HULL-SHAPE/ADD-POINT) :void
   (self :pointer)
   (point :pointer)
   (recalculateLocalAabb :pointer))
 
-(export '#.(lispify "btConvexHullShape_addPoint" 'function))
+(export 'CONVEX-HULL-SHAPE/ADD-POINT)
 
-(declaim (inline #.(lispify "btConvexHullShape_addPoint" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/ADD-POINT))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_addPoint__SWIG_1" #.(lispify "btConvexHullShape_addPoint" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_addPoint__SWIG_1" CONVEX-HULL-SHAPE/ADD-POINT) :void
   (self :pointer)
   (point :pointer))
 
-(export '#.(lispify "btConvexHullShape_addPoint" 'function))
+(export 'CONVEX-HULL-SHAPE/ADD-POINT)
 
-(declaim (inline #.(lispify "btConvexHullShape_getUnscaledPoints" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getUnscaledPoints__SWIG_0" #.(lispify "btConvexHullShape_getUnscaledPoints" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_getUnscaledPoints__SWIG_0" CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS) :pointer
   (self :pointer))
 
-(export '#.(lispify "btConvexHullShape_getUnscaledPoints" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS)
 
-(declaim (inline #.(lispify "btConvexHullShape_getUnscaledPoints" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getUnscaledPoints__SWIG_1" #.(lispify "btConvexHullShape_getUnscaledPoints" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_getUnscaledPoints__SWIG_1" CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS) :pointer
   (self :pointer))
 
-(export '#.(lispify "btConvexHullShape_getUnscaledPoints" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS)
 
-(declaim (inline #.(lispify "btConvexHullShape_getPoints" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-POINTS))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getPoints" #.(lispify "btConvexHullShape_getPoints" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_getPoints" CONVEX-HULL-SHAPE/GET-POINTS) :pointer
   (self :pointer))
 
-(export '#.(lispify "btConvexHullShape_getPoints" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-POINTS)
 
-(declaim (inline #.(lispify "btConvexHullShape_getScaledPoint" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-SCALED-POINT))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getScaledPoint" #.(lispify "btConvexHullShape_getScaledPoint" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_getScaledPoint" CONVEX-HULL-SHAPE/GET-SCALED-POINT) :pointer
   (self :pointer)
   (i :int))
 
-(export '#.(lispify "btConvexHullShape_getScaledPoint" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-SCALED-POINT)
 
-(declaim (inline #.(lispify "btConvexHullShape_getNumPoints" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-NUM-POINTS))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getNumPoints" #.(lispify "btConvexHullShape_getNumPoints" 'function)) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_getNumPoints" CONVEX-HULL-SHAPE/GET-NUM-POINTS) :int
   (self :pointer))
 
-(export '#.(lispify "btConvexHullShape_getNumPoints" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-NUM-POINTS)
 
-(declaim (inline #.(lispify "btConvexHullShape_localGetSupportingVertex" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_localGetSupportingVertex" #.(lispify "btConvexHullShape_localGetSupportingVertex" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_localGetSupportingVertex" CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btConvexHullShape_localGetSupportingVertex" 'function))
+(export 'CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX)
 
-(declaim (inline #.(lispify "btConvexHullShape_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_localGetSupportingVertexWithoutMargin" #.(lispify "btConvexHullShape_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_localGetSupportingVertexWithoutMargin" CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btConvexHullShape_localGetSupportingVertexWithoutMargin" 'function))
+(export 'CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btConvexHullShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btConvexHullShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CONVEX-HULL-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btConvexHullShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'CONVEX-HULL-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btConvexHullShape_project" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/PROJECT))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_project" #.(lispify "btConvexHullShape_project" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_project" CONVEX-HULL-SHAPE/PROJECT) :void
   (self :pointer)
   (trans :pointer)
   (dir :pointer)
@@ -6865,596 +6864,596 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (witnesPtMin :pointer)
   (witnesPtMax :pointer))
 
-(export '#.(lispify "btConvexHullShape_project" 'function))
+(export 'CONVEX-HULL-SHAPE/PROJECT)
 
-(declaim (inline #.(lispify "btConvexHullShape_getName" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getName" #.(lispify "btConvexHullShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btConvexHullShape_getName" CONVEX-HULL-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btConvexHullShape_getName" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btConvexHullShape_getNumVertices" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-NUM-VERTICES))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getNumVertices" #.(lispify "btConvexHullShape_getNumVertices" 'function)) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_getNumVertices" CONVEX-HULL-SHAPE/GET-NUM-VERTICES) :int
   (self :pointer))
 
-(export '#.(lispify "btConvexHullShape_getNumVertices" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-NUM-VERTICES)
 
-(declaim (inline #.(lispify "btConvexHullShape_getNumEdges" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-NUM-EDGES))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getNumEdges" #.(lispify "btConvexHullShape_getNumEdges" 'function)) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_getNumEdges" CONVEX-HULL-SHAPE/GET-NUM-EDGES) :int
   (self :pointer))
 
-(export '#.(lispify "btConvexHullShape_getNumEdges" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-NUM-EDGES)
 
-(declaim (inline #.(lispify "btConvexHullShape_getEdge" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-EDGE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getEdge" #.(lispify "btConvexHullShape_getEdge" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_getEdge" CONVEX-HULL-SHAPE/GET-EDGE) :void
   (self :pointer)
   (i :int)
   (pa :pointer)
   (pb :pointer))
 
-(export '#.(lispify "btConvexHullShape_getEdge" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-EDGE)
 
-(declaim (inline #.(lispify "btConvexHullShape_getVertex" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-VERTEX))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getVertex" #.(lispify "btConvexHullShape_getVertex" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_getVertex" CONVEX-HULL-SHAPE/GET-VERTEX) :void
   (self :pointer)
   (i :int)
   (vtx :pointer))
 
-(export '#.(lispify "btConvexHullShape_getVertex" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-VERTEX)
 
-(declaim (inline #.(lispify "btConvexHullShape_getNumPlanes" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-NUM-PLANES))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getNumPlanes" #.(lispify "btConvexHullShape_getNumPlanes" 'function)) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_getNumPlanes" CONVEX-HULL-SHAPE/GET-NUM-PLANES) :int
   (self :pointer))
 
-(export '#.(lispify "btConvexHullShape_getNumPlanes" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-NUM-PLANES)
 
-(declaim (inline #.(lispify "btConvexHullShape_getPlane" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/GET-PLANE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getPlane" #.(lispify "btConvexHullShape_getPlane" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_getPlane" CONVEX-HULL-SHAPE/GET-PLANE) :void
   (self :pointer)
   (planeNormal :pointer)
   (planeSupport :pointer)
   (i :int))
 
-(export '#.(lispify "btConvexHullShape_getPlane" 'function))
+(export 'CONVEX-HULL-SHAPE/GET-PLANE)
 
-(declaim (inline #.(lispify "btConvexHullShape_isInside" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/IS-INSIDE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_isInside" #.(lispify "btConvexHullShape_isInside" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_isInside" CONVEX-HULL-SHAPE/IS-INSIDE) :pointer
   (self :pointer)
   (pt :pointer)
   (tolerance :float))
 
-(export '#.(lispify "btConvexHullShape_isInside" 'function))
+(export 'CONVEX-HULL-SHAPE/IS-INSIDE)
 
-(declaim (inline #.(lispify "btConvexHullShape_setLocalScaling" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_setLocalScaling" #.(lispify "btConvexHullShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_setLocalScaling" CONVEX-HULL-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btConvexHullShape_setLocalScaling" 'function))
+(export 'CONVEX-HULL-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btConvexHullShape_calculateSerializeBufferSize" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_calculateSerializeBufferSize" #.(lispify "btConvexHullShape_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_calculateSerializeBufferSize" CONVEX-HULL-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btConvexHullShape_calculateSerializeBufferSize" 'function))
+(export 'CONVEX-HULL-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btConvexHullShape_serialize" 'function)))
+(declaim (inline CONVEX-HULL-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_serialize" #.(lispify "btConvexHullShape_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btConvexHullShape_serialize" CONVEX-HULL-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btConvexHullShape_serialize" 'function))
+(export 'CONVEX-HULL-SHAPE/SERIALIZE)
 
-(declaim (inline #.(lispify "delete_btConvexHullShape" 'function)))
+(declaim (inline DELETE/BT-CONVEX-HULL-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btConvexHullShape" #.(lispify "delete_btConvexHullShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btConvexHullShape" DELETE/BT-CONVEX-HULL-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btConvexHullShape" 'function))
+(export 'DELETE/BT-CONVEX-HULL-SHAPE)
 
-(cffi:defcstruct #.(lispify "btConvexHullShapeData" 'classname)
-	(#.(lispify "m_convexInternalShapeData" 'slotname) :pointer)
-	(#.(lispify "m_unscaledPointsFloatPtr" 'slotname) :pointer)
-	(#.(lispify "m_unscaledPointsDoublePtr" 'slotname) :pointer)
-	(#.(lispify "m_numUnscaledPoints" 'slotname) :int)
-	(#.(lispify "m_padding3" 'slotname) :pointer))
+(cffi:defcstruct CONVEX-HULL-SHAPE-DATA
+  (CONVEX-INTERNAL-SHAPE-DATA :pointer)
+  (UNSCALED-POINTS-FLOAT-PTR :pointer)
+  (UNSCALED-POINTS-DOUBLE-PTR :pointer)
+  (NUM-UNSCALED-POINTS :int)
+  (PADDING-3 :pointer))
 
-(export '#.(lispify "btConvexHullShapeData" 'classname))
+(export 'CONVEX-HULL-SHAPE-DATA)
 
-(export '#.(lispify "m_convexInternalShapeData" 'slotname))
+(export 'CONVEX-INTERNAL-SHAPE-DATA)
 
-(export '#.(lispify "m_unscaledPointsFloatPtr" 'slotname))
+(export 'UNSCALED-POINTS-FLOAT-PTR)
 
-(export '#.(lispify "m_unscaledPointsDoublePtr" 'slotname))
+(export 'UNSCALED-POINTS-DOUBLE-PTR)
 
-(export '#.(lispify "m_numUnscaledPoints" 'slotname))
+(export 'NUM-UNSCALED-POINTS)
 
-(export '#.(lispify "m_padding3" 'slotname))
+(export 'PADDING-3)
 
-(declaim (inline #.(lispify "btTriangleMesh_m_weldingThreshold_set" 'function)))
+(declaim (inline TRIANGLE-MESH/M/WELDING-THRESHOLD/SET))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_m_weldingThreshold_set" #.(lispify "btTriangleMesh_m_weldingThreshold_set" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMesh_m_weldingThreshold_set" TRIANGLE-MESH/M/WELDING-THRESHOLD/SET) :void
   (self :pointer)
   (m_weldingThreshold :float))
 
-(export '#.(lispify "btTriangleMesh_m_weldingThreshold_set" 'function))
+(export 'TRIANGLE-MESH/M/WELDING-THRESHOLD/SET)
 
-(declaim (inline #.(lispify "btTriangleMesh_m_weldingThreshold_get" 'function)))
+(declaim (inline TRIANGLE-MESH/M/WELDING-THRESHOLD/GET))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_m_weldingThreshold_get" #.(lispify "btTriangleMesh_m_weldingThreshold_get" 'function)) :float
+(cffi:defcfun ("_wrap_btTriangleMesh_m_weldingThreshold_get" TRIANGLE-MESH/M/WELDING-THRESHOLD/GET) :float
   (self :pointer))
 
-(export '#.(lispify "btTriangleMesh_m_weldingThreshold_get" 'function))
+(export 'TRIANGLE-MESH/M/WELDING-THRESHOLD/GET)
 
-(declaim (inline #.(lispify "new_btTriangleMesh" 'function)))
+(declaim (inline MAKE-TRIANGLE-MESH))
 
-(cffi:defcfun ("_wrap_new_btTriangleMesh__SWIG_0" #.(lispify "new_btTriangleMesh" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btTriangleMesh__SWIG_0" MAKE-TRIANGLE-MESH) :pointer
   (use32bitIndices :pointer)
   (use4componentVertices :pointer))
 
-(export '#.(lispify "new_btTriangleMesh" 'function))
+(export 'MAKE-TRIANGLE-MESH)
 
-(declaim (inline #.(lispify "new_btTriangleMesh" 'function)))
+(declaim (inline MAKE-TRIANGLE-MESH))
 
-(cffi:defcfun ("_wrap_new_btTriangleMesh__SWIG_1" #.(lispify "new_btTriangleMesh" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btTriangleMesh__SWIG_1" MAKE-TRIANGLE-MESH) :pointer
   (use32bitIndices :pointer))
 
-(export '#.(lispify "new_btTriangleMesh" 'function))
+(export 'MAKE-TRIANGLE-MESH)
 
-(declaim (inline #.(lispify "new_btTriangleMesh" 'function)))
+(declaim (inline MAKE-TRIANGLE-MESH))
 
-(cffi:defcfun ("_wrap_new_btTriangleMesh__SWIG_2" #.(lispify "new_btTriangleMesh" 'function)) :pointer)
+(cffi:defcfun ("_wrap_new_btTriangleMesh__SWIG_2" MAKE-TRIANGLE-MESH) :pointer)
 
-(export '#.(lispify "new_btTriangleMesh" 'function))
+(export 'MAKE-TRIANGLE-MESH)
 
-(declaim (inline #.(lispify "btTriangleMesh_getUse32bitIndices" 'function)))
+(declaim (inline TRIANGLE-MESH/GET-USE-32BIT-INDICES))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_getUse32bitIndices" #.(lispify "btTriangleMesh_getUse32bitIndices" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMesh_getUse32bitIndices" TRIANGLE-MESH/GET-USE-32BIT-INDICES) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleMesh_getUse32bitIndices" 'function))
+(export 'TRIANGLE-MESH/GET-USE-32BIT-INDICES)
 
-(declaim (inline #.(lispify "btTriangleMesh_getUse4componentVertices" 'function)))
+(declaim (inline TRIANGLE-MESH/GET-USE-4COMPONENT-VERTICES))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_getUse4componentVertices" #.(lispify "btTriangleMesh_getUse4componentVertices" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMesh_getUse4componentVertices" TRIANGLE-MESH/GET-USE-4COMPONENT-VERTICES) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleMesh_getUse4componentVertices" 'function))
+(export 'TRIANGLE-MESH/GET-USE-4COMPONENT-VERTICES)
 
-(declaim (inline #.(lispify "btTriangleMesh_addTriangle" 'function)))
+(declaim (inline TRIANGLE-MESH/ADD-TRIANGLE))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_addTriangle__SWIG_0" #.(lispify "btTriangleMesh_addTriangle" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMesh_addTriangle__SWIG_0" TRIANGLE-MESH/ADD-TRIANGLE) :void
   (self :pointer)
   (vertex0 :pointer)
   (vertex1 :pointer)
   (vertex2 :pointer)
   (removeDuplicateVertices :pointer))
 
-(export '#.(lispify "btTriangleMesh_addTriangle" 'function))
+(export 'TRIANGLE-MESH/ADD-TRIANGLE)
 
-(declaim (inline #.(lispify "btTriangleMesh_addTriangle" 'function)))
+(declaim (inline TRIANGLE-MESH/ADD-TRIANGLE))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_addTriangle__SWIG_1" #.(lispify "btTriangleMesh_addTriangle" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMesh_addTriangle__SWIG_1" TRIANGLE-MESH/ADD-TRIANGLE) :void
   (self :pointer)
   (vertex0 :pointer)
   (vertex1 :pointer)
   (vertex2 :pointer))
 
-(export '#.(lispify "btTriangleMesh_addTriangle" 'function))
+(export 'TRIANGLE-MESH/ADD-TRIANGLE)
 
-(declaim (inline #.(lispify "btTriangleMesh_getNumTriangles" 'function)))
+(declaim (inline TRIANGLE-MESH/GET-NUM-TRIANGLES))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_getNumTriangles" #.(lispify "btTriangleMesh_getNumTriangles" 'function)) :int
+(cffi:defcfun ("_wrap_btTriangleMesh_getNumTriangles" TRIANGLE-MESH/GET-NUM-TRIANGLES) :int
   (self :pointer))
 
-(export '#.(lispify "btTriangleMesh_getNumTriangles" 'function))
+(export 'TRIANGLE-MESH/GET-NUM-TRIANGLES)
 
-(declaim (inline #.(lispify "btTriangleMesh_preallocateVertices" 'function)))
+(declaim (inline TRIANGLE-MESH/PREALLOCATE-VERTICES))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_preallocateVertices" #.(lispify "btTriangleMesh_preallocateVertices" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMesh_preallocateVertices" TRIANGLE-MESH/PREALLOCATE-VERTICES) :void
   (self :pointer)
   (numverts :int))
 
-(export '#.(lispify "btTriangleMesh_preallocateVertices" 'function))
+(export 'TRIANGLE-MESH/PREALLOCATE-VERTICES)
 
-(declaim (inline #.(lispify "btTriangleMesh_preallocateIndices" 'function)))
+(declaim (inline TRIANGLE-MESH/PREALLOCATE-INDICES))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_preallocateIndices" #.(lispify "btTriangleMesh_preallocateIndices" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMesh_preallocateIndices" TRIANGLE-MESH/PREALLOCATE-INDICES) :void
   (self :pointer)
   (numindices :int))
 
-(export '#.(lispify "btTriangleMesh_preallocateIndices" 'function))
+(export 'TRIANGLE-MESH/PREALLOCATE-INDICES)
 
-(declaim (inline #.(lispify "btTriangleMesh_findOrAddVertex" 'function)))
+(declaim (inline TRIANGLE-MESH/FIND-OR-ADD-VERTEX))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_findOrAddVertex" #.(lispify "btTriangleMesh_findOrAddVertex" 'function)) :int
+(cffi:defcfun ("_wrap_btTriangleMesh_findOrAddVertex" TRIANGLE-MESH/FIND-OR-ADD-VERTEX) :int
   (self :pointer)
   (vertex :pointer)
   (removeDuplicateVertices :pointer))
 
-(export '#.(lispify "btTriangleMesh_findOrAddVertex" 'function))
+(export 'TRIANGLE-MESH/FIND-OR-ADD-VERTEX)
 
-(declaim (inline #.(lispify "btTriangleMesh_addIndex" 'function)))
+(declaim (inline TRIANGLE-MESH/ADD-INDEX))
 
-(cffi:defcfun ("_wrap_btTriangleMesh_addIndex" #.(lispify "btTriangleMesh_addIndex" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMesh_addIndex" TRIANGLE-MESH/ADD-INDEX) :void
   (self :pointer)
   (index :int))
 
-(export '#.(lispify "btTriangleMesh_addIndex" 'function))
+(export 'TRIANGLE-MESH/ADD-INDEX)
 
-(declaim (inline #.(lispify "delete_btTriangleMesh" 'function)))
+(declaim (inline DELETE/BT-TRIANGLE-MESH))
 
-(cffi:defcfun ("_wrap_delete_btTriangleMesh" #.(lispify "delete_btTriangleMesh" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btTriangleMesh" DELETE/BT-TRIANGLE-MESH) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btTriangleMesh" 'function))
+(export 'DELETE/BT-TRIANGLE-MESH)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btConvexTriangleMeshShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusPlusInstance__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_makeCPlusPlusInstance" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btConvexTriangleMeshShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_deleteCPlusPlusInstance" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btConvexTriangleMeshShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusPlusInstance__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_makeCPlusPlusInstance" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btConvexTriangleMeshShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_deleteCPlusPlusInstance" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_makeCPlusArray" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusArray__SWIG_0" #.(lispify "btConvexTriangleMeshShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusArray__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_makeCPlusArray" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_deleteCPlusArray" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusArray__SWIG_0" #.(lispify "btConvexTriangleMeshShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusArray__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_deleteCPlusArray" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_makeCPlusArray" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusArray__SWIG_1" #.(lispify "btConvexTriangleMeshShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusArray__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_makeCPlusArray" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_deleteCPlusArray" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusArray__SWIG_1" #.(lispify "btConvexTriangleMeshShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusArray__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_deleteCPlusArray" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btConvexTriangleMeshShape" 'function)))
+(declaim (inline MAKE-CONVEX-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btConvexTriangleMeshShape__SWIG_0" #.(lispify "new_btConvexTriangleMeshShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btConvexTriangleMeshShape__SWIG_0" MAKE-CONVEX-TRIANGLE-MESH-SHAPE) :pointer
   (meshInterface :pointer)
   (calcAabb :pointer))
 
-(export '#.(lispify "new_btConvexTriangleMeshShape" 'function))
+(export 'MAKE-CONVEX-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "new_btConvexTriangleMeshShape" 'function)))
+(declaim (inline MAKE-CONVEX-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btConvexTriangleMeshShape__SWIG_1" #.(lispify "new_btConvexTriangleMeshShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btConvexTriangleMeshShape__SWIG_1" MAKE-CONVEX-TRIANGLE-MESH-SHAPE) :pointer
   (meshInterface :pointer))
 
-(export '#.(lispify "new_btConvexTriangleMeshShape" 'function))
+(export 'MAKE-CONVEX-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getMeshInterface" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getMeshInterface__SWIG_0" #.(lispify "btConvexTriangleMeshShape_getMeshInterface" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getMeshInterface__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getMeshInterface" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getMeshInterface" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getMeshInterface__SWIG_1" #.(lispify "btConvexTriangleMeshShape_getMeshInterface" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getMeshInterface__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getMeshInterface" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_localGetSupportingVertex" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_localGetSupportingVertex" #.(lispify "btConvexTriangleMeshShape_localGetSupportingVertex" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_localGetSupportingVertex" CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_localGetSupportingVertex" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_localGetSupportingVertexWithoutMargin" #.(lispify "btConvexTriangleMeshShape_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_localGetSupportingVertexWithoutMargin" CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_localGetSupportingVertexWithoutMargin" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btConvexTriangleMeshShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CONVEX-TRIANGLE-MESH-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btConvexTriangleMeshShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getName" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getName" #.(lispify "btConvexTriangleMeshShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getName" CONVEX-TRIANGLE-MESH-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getName" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getNumVertices" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-VERTICES))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumVertices" #.(lispify "btConvexTriangleMeshShape_getNumVertices" 'function)) :int
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumVertices" CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-VERTICES) :int
   (self :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getNumVertices" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-VERTICES)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getNumEdges" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-EDGES))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumEdges" #.(lispify "btConvexTriangleMeshShape_getNumEdges" 'function)) :int
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumEdges" CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-EDGES) :int
   (self :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getNumEdges" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-EDGES)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getEdge" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-EDGE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getEdge" #.(lispify "btConvexTriangleMeshShape_getEdge" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getEdge" CONVEX-TRIANGLE-MESH-SHAPE/GET-EDGE) :void
   (self :pointer)
   (i :int)
   (pa :pointer)
   (pb :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getEdge" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-EDGE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getVertex" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-VERTEX))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getVertex" #.(lispify "btConvexTriangleMeshShape_getVertex" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getVertex" CONVEX-TRIANGLE-MESH-SHAPE/GET-VERTEX) :void
   (self :pointer)
   (i :int)
   (vtx :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getVertex" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-VERTEX)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getNumPlanes" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-PLANES))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumPlanes" #.(lispify "btConvexTriangleMeshShape_getNumPlanes" 'function)) :int
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumPlanes" CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-PLANES) :int
   (self :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getNumPlanes" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-PLANES)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getPlane" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-PLANE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getPlane" #.(lispify "btConvexTriangleMeshShape_getPlane" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getPlane" CONVEX-TRIANGLE-MESH-SHAPE/GET-PLANE) :void
   (self :pointer)
   (planeNormal :pointer)
   (planeSupport :pointer)
   (i :int))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getPlane" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-PLANE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_isInside" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/IS-INSIDE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_isInside" #.(lispify "btConvexTriangleMeshShape_isInside" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_isInside" CONVEX-TRIANGLE-MESH-SHAPE/IS-INSIDE) :pointer
   (self :pointer)
   (pt :pointer)
   (tolerance :float))
 
-(export '#.(lispify "btConvexTriangleMeshShape_isInside" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/IS-INSIDE)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_setLocalScaling" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_setLocalScaling" #.(lispify "btConvexTriangleMeshShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_setLocalScaling" CONVEX-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_setLocalScaling" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_getLocalScaling" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getLocalScaling" #.(lispify "btConvexTriangleMeshShape_getLocalScaling" 'function)) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getLocalScaling" CONVEX-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING) :pointer
   (self :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_getLocalScaling" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btConvexTriangleMeshShape_calculatePrincipalAxisTransform" 'function)))
+(declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_calculatePrincipalAxisTransform" #.(lispify "btConvexTriangleMeshShape_calculatePrincipalAxisTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_calculatePrincipalAxisTransform" CONVEX-TRIANGLE-MESH-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM) :void
   (self :pointer)
   (principal :pointer)
   (inertia :pointer)
   (volume :pointer))
 
-(export '#.(lispify "btConvexTriangleMeshShape_calculatePrincipalAxisTransform" 'function))
+(export 'CONVEX-TRIANGLE-MESH-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM)
 
-(declaim (inline #.(lispify "delete_btConvexTriangleMeshShape" 'function)))
+(declaim (inline DELETE/BT-CONVEX-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btConvexTriangleMeshShape" #.(lispify "delete_btConvexTriangleMeshShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btConvexTriangleMeshShape" DELETE/BT-CONVEX-TRIANGLE-MESH-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btConvexTriangleMeshShape" 'function))
+(export 'DELETE/BT-CONVEX-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btBvhTriangleMeshShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_makeCPlusPlusInstance__SWIG_0" BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_makeCPlusPlusInstance" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0" BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btBvhTriangleMeshShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_makeCPlusPlusInstance__SWIG_1" BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_makeCPlusPlusInstance" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1" BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_makeCPlusArray" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_makeCPlusArray__SWIG_0" #.(lispify "btBvhTriangleMeshShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_makeCPlusArray__SWIG_0" BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_makeCPlusArray" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_deleteCPlusArray" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_deleteCPlusArray__SWIG_0" #.(lispify "btBvhTriangleMeshShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_deleteCPlusArray__SWIG_0" BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_deleteCPlusArray" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_makeCPlusArray" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_makeCPlusArray__SWIG_1" #.(lispify "btBvhTriangleMeshShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_makeCPlusArray__SWIG_1" BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_makeCPlusArray" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_deleteCPlusArray" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_deleteCPlusArray__SWIG_1" #.(lispify "btBvhTriangleMeshShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_deleteCPlusArray__SWIG_1" BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_deleteCPlusArray" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btBvhTriangleMeshShape" 'function)))
+(declaim (inline MAKE-BVH-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btBvhTriangleMeshShape__SWIG_0" #.(lispify "new_btBvhTriangleMeshShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btBvhTriangleMeshShape__SWIG_0" MAKE-BVH-TRIANGLE-MESH-SHAPE) :pointer
   (meshInterface :pointer)
   (useQuantizedAabbCompression :pointer)
   (buildBvh :pointer))
 
-(export '#.(lispify "new_btBvhTriangleMeshShape" 'function))
+(export 'MAKE-BVH-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "new_btBvhTriangleMeshShape" 'function)))
+(declaim (inline MAKE-BVH-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btBvhTriangleMeshShape__SWIG_1" #.(lispify "new_btBvhTriangleMeshShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btBvhTriangleMeshShape__SWIG_1" MAKE-BVH-TRIANGLE-MESH-SHAPE) :pointer
   (meshInterface :pointer)
   (useQuantizedAabbCompression :pointer))
 
-(export '#.(lispify "new_btBvhTriangleMeshShape" 'function))
+(export 'MAKE-BVH-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "new_btBvhTriangleMeshShape" 'function)))
+(declaim (inline MAKE-BVH-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btBvhTriangleMeshShape__SWIG_2" #.(lispify "new_btBvhTriangleMeshShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btBvhTriangleMeshShape__SWIG_2" MAKE-BVH-TRIANGLE-MESH-SHAPE) :pointer
   (meshInterface :pointer)
   (useQuantizedAabbCompression :pointer)
   (bvhAabbMin :pointer)
   (bvhAabbMax :pointer)
   (buildBvh :pointer))
 
-(export '#.(lispify "new_btBvhTriangleMeshShape" 'function))
+(export 'MAKE-BVH-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "new_btBvhTriangleMeshShape" 'function)))
+(declaim (inline MAKE-BVH-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btBvhTriangleMeshShape__SWIG_3" #.(lispify "new_btBvhTriangleMeshShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btBvhTriangleMeshShape__SWIG_3" MAKE-BVH-TRIANGLE-MESH-SHAPE) :pointer
   (meshInterface :pointer)
   (useQuantizedAabbCompression :pointer)
   (bvhAabbMin :pointer)
   (bvhAabbMax :pointer))
 
-(export '#.(lispify "new_btBvhTriangleMeshShape" 'function))
+(export 'MAKE-BVH-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "delete_btBvhTriangleMeshShape" 'function)))
+(declaim (inline DELETE/BT-BVH-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btBvhTriangleMeshShape" #.(lispify "delete_btBvhTriangleMeshShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btBvhTriangleMeshShape" DELETE/BT-BVH-TRIANGLE-MESH-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btBvhTriangleMeshShape" 'function))
+(export 'DELETE/BT-BVH-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_getOwnsBvh" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/GET-OWNS-BVH))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getOwnsBvh" #.(lispify "btBvhTriangleMeshShape_getOwnsBvh" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getOwnsBvh" BVH-TRIANGLE-MESH-SHAPE/GET-OWNS-BVH) :pointer
   (self :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_getOwnsBvh" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/GET-OWNS-BVH)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_performRaycast" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/PERFORM-RAYCAST))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_performRaycast" #.(lispify "btBvhTriangleMeshShape_performRaycast" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_performRaycast" BVH-TRIANGLE-MESH-SHAPE/PERFORM-RAYCAST) :void
   (self :pointer)
   (callback :pointer)
   (raySource :pointer)
   (rayTarget :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_performRaycast" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/PERFORM-RAYCAST)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_performConvexcast" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/PERFORM-CONVEXCAST))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_performConvexcast" #.(lispify "btBvhTriangleMeshShape_performConvexcast" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_performConvexcast" BVH-TRIANGLE-MESH-SHAPE/PERFORM-CONVEXCAST) :void
   (self :pointer)
   (callback :pointer)
   (boxSource :pointer)
@@ -7462,655 +7461,655 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (boxMin :pointer)
   (boxMax :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_performConvexcast" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/PERFORM-CONVEXCAST)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_processAllTriangles" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/PROCESS-ALL-TRIANGLES))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_processAllTriangles" #.(lispify "btBvhTriangleMeshShape_processAllTriangles" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_processAllTriangles" BVH-TRIANGLE-MESH-SHAPE/PROCESS-ALL-TRIANGLES) :void
   (self :pointer)
   (callback :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_processAllTriangles" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/PROCESS-ALL-TRIANGLES)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_refitTree" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/REFIT-TREE))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_refitTree" #.(lispify "btBvhTriangleMeshShape_refitTree" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_refitTree" BVH-TRIANGLE-MESH-SHAPE/REFIT-TREE) :void
   (self :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_refitTree" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/REFIT-TREE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_partialRefitTree" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/PARTIAL-REFIT-TREE))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_partialRefitTree" #.(lispify "btBvhTriangleMeshShape_partialRefitTree" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_partialRefitTree" BVH-TRIANGLE-MESH-SHAPE/PARTIAL-REFIT-TREE) :void
   (self :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_partialRefitTree" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/PARTIAL-REFIT-TREE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_getName" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getName" #.(lispify "btBvhTriangleMeshShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getName" BVH-TRIANGLE-MESH-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_getName" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_setLocalScaling" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_setLocalScaling" #.(lispify "btBvhTriangleMeshShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_setLocalScaling" BVH-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_setLocalScaling" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_getOptimizedBvh" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/GET-OPTIMIZED-BVH))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getOptimizedBvh" #.(lispify "btBvhTriangleMeshShape_getOptimizedBvh" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getOptimizedBvh" BVH-TRIANGLE-MESH-SHAPE/GET-OPTIMIZED-BVH) :pointer
   (self :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_getOptimizedBvh" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/GET-OPTIMIZED-BVH)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_setOptimizedBvh" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/SET-OPTIMIZED-BVH))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_setOptimizedBvh__SWIG_0" #.(lispify "btBvhTriangleMeshShape_setOptimizedBvh" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_setOptimizedBvh__SWIG_0" BVH-TRIANGLE-MESH-SHAPE/SET-OPTIMIZED-BVH) :void
   (self :pointer)
   (bvh :pointer)
   (localScaling :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_setOptimizedBvh" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/SET-OPTIMIZED-BVH)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_setOptimizedBvh" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/SET-OPTIMIZED-BVH))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_setOptimizedBvh__SWIG_1" #.(lispify "btBvhTriangleMeshShape_setOptimizedBvh" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_setOptimizedBvh__SWIG_1" BVH-TRIANGLE-MESH-SHAPE/SET-OPTIMIZED-BVH) :void
   (self :pointer)
   (bvh :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_setOptimizedBvh" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/SET-OPTIMIZED-BVH)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_buildOptimizedBvh" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/BUILD-OPTIMIZED-BVH))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_buildOptimizedBvh" #.(lispify "btBvhTriangleMeshShape_buildOptimizedBvh" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_buildOptimizedBvh" BVH-TRIANGLE-MESH-SHAPE/BUILD-OPTIMIZED-BVH) :void
   (self :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_buildOptimizedBvh" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/BUILD-OPTIMIZED-BVH)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_usesQuantizedAabbCompression" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/USES-QUANTIZED-AABB-COMPRESSION))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_usesQuantizedAabbCompression" #.(lispify "btBvhTriangleMeshShape_usesQuantizedAabbCompression" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_usesQuantizedAabbCompression" BVH-TRIANGLE-MESH-SHAPE/USES-QUANTIZED-AABB-COMPRESSION) :pointer
   (self :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_usesQuantizedAabbCompression" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/USES-QUANTIZED-AABB-COMPRESSION)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_setTriangleInfoMap" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/SET-TRIANGLE-INFO-MAP))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_setTriangleInfoMap" #.(lispify "btBvhTriangleMeshShape_setTriangleInfoMap" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_setTriangleInfoMap" BVH-TRIANGLE-MESH-SHAPE/SET-TRIANGLE-INFO-MAP) :void
   (self :pointer)
   (triangleInfoMap :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_setTriangleInfoMap" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/SET-TRIANGLE-INFO-MAP)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_getTriangleInfoMap" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/GET-TRIANGLE-INFO-MAP))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getTriangleInfoMap__SWIG_0" #.(lispify "btBvhTriangleMeshShape_getTriangleInfoMap" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getTriangleInfoMap__SWIG_0" BVH-TRIANGLE-MESH-SHAPE/GET-TRIANGLE-INFO-MAP) :pointer
   (self :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_getTriangleInfoMap" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/GET-TRIANGLE-INFO-MAP)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_getTriangleInfoMap" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/GET-TRIANGLE-INFO-MAP))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getTriangleInfoMap__SWIG_1" #.(lispify "btBvhTriangleMeshShape_getTriangleInfoMap" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_getTriangleInfoMap__SWIG_1" BVH-TRIANGLE-MESH-SHAPE/GET-TRIANGLE-INFO-MAP) :pointer
   (self :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_getTriangleInfoMap" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/GET-TRIANGLE-INFO-MAP)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_calculateSerializeBufferSize" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_calculateSerializeBufferSize" #.(lispify "btBvhTriangleMeshShape_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_calculateSerializeBufferSize" BVH-TRIANGLE-MESH-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_calculateSerializeBufferSize" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_serialize" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_serialize" #.(lispify "btBvhTriangleMeshShape_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_serialize" BVH-TRIANGLE-MESH-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_serialize" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/SERIALIZE)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_serializeSingleBvh" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/SERIALIZE-SINGLE-BVH))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_serializeSingleBvh" #.(lispify "btBvhTriangleMeshShape_serializeSingleBvh" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_serializeSingleBvh" BVH-TRIANGLE-MESH-SHAPE/SERIALIZE-SINGLE-BVH) :void
   (self :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_serializeSingleBvh" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/SERIALIZE-SINGLE-BVH)
 
-(declaim (inline #.(lispify "btBvhTriangleMeshShape_serializeSingleTriangleInfoMap" 'function)))
+(declaim (inline BVH-TRIANGLE-MESH-SHAPE/SERIALIZE-SINGLE-TRIANGLE-INFO-MAP))
 
-(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_serializeSingleTriangleInfoMap" #.(lispify "btBvhTriangleMeshShape_serializeSingleTriangleInfoMap" 'function)) :void
+(cffi:defcfun ("_wrap_btBvhTriangleMeshShape_serializeSingleTriangleInfoMap" BVH-TRIANGLE-MESH-SHAPE/SERIALIZE-SINGLE-TRIANGLE-INFO-MAP) :void
   (self :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btBvhTriangleMeshShape_serializeSingleTriangleInfoMap" 'function))
+(export 'BVH-TRIANGLE-MESH-SHAPE/SERIALIZE-SINGLE-TRIANGLE-INFO-MAP)
 
-(cffi:defcstruct #.(lispify "btTriangleMeshShapeData" 'classname)
-	(#.(lispify "m_collisionShapeData" 'slotname) :pointer)
-	(#.(lispify "m_meshInterface" 'slotname) :pointer)
-	(#.(lispify "m_quantizedFloatBvh" 'slotname) :pointer)
-	(#.(lispify "m_quantizedDoubleBvh" 'slotname) :pointer)
-	(#.(lispify "m_triangleInfoMap" 'slotname) :pointer)
-	(#.(lispify "m_collisionMargin" 'slotname) :float)
-	(#.(lispify "m_pad3" 'slotname) :pointer))
+(cffi:defcstruct TRIANGLE-MESH-SHAPE-DATA
+  (COLLISION-SHAPE-DATA :pointer)
+  (MESH-INTERFACE :pointer)
+  (QUANTIZED-FLOAT-BVH :pointer)
+  (QUANTIZED-DOUBLE-BVH :pointer)
+  (TRIANGLE-INFO-MAP :pointer)
+  (COLLISION-MARGIN :float)
+  (PAD-3 :pointer))
 
-(export '#.(lispify "btTriangleMeshShapeData" 'classname))
+(export 'TRIANGLE-MESH-SHAPE-DATA)
 
-(export '#.(lispify "m_collisionShapeData" 'slotname))
+(export 'COLLISION-SHAPE-DATA)
 
-(export '#.(lispify "m_meshInterface" 'slotname))
+(export 'MESH-INTERFACE)
 
-(export '#.(lispify "m_quantizedFloatBvh" 'slotname))
+(export 'QUANTIZED-FLOAT-BVH)
 
-(export '#.(lispify "m_quantizedDoubleBvh" 'slotname))
+(export 'QUANTIZED-DOUBLE-BVH)
 
-(export '#.(lispify "m_triangleInfoMap" 'slotname))
+(export 'TRIANGLE-INFO-MAP)
 
-(export '#.(lispify "m_collisionMargin" 'slotname))
+(export 'COLLISION-MARGIN)
 
-(export '#.(lispify "m_pad3" 'slotname))
+(export 'PAD-3)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btScaledBvhTriangleMeshShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_makeCPlusPlusInstance__SWIG_0" SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_makeCPlusPlusInstance" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0" SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btScaledBvhTriangleMeshShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_makeCPlusPlusInstance__SWIG_1" SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_makeCPlusPlusInstance" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1" SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_makeCPlusArray" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_makeCPlusArray__SWIG_0" #.(lispify "btScaledBvhTriangleMeshShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_makeCPlusArray__SWIG_0" SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_makeCPlusArray" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusArray" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_deleteCPlusArray__SWIG_0" #.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_deleteCPlusArray__SWIG_0" SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusArray" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_makeCPlusArray" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_makeCPlusArray__SWIG_1" #.(lispify "btScaledBvhTriangleMeshShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_makeCPlusArray__SWIG_1" SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_makeCPlusArray" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusArray" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_deleteCPlusArray__SWIG_1" #.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_deleteCPlusArray__SWIG_1" SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusArray" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btScaledBvhTriangleMeshShape" 'function)))
+(declaim (inline MAKE-SCALED-BVH-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btScaledBvhTriangleMeshShape" #.(lispify "new_btScaledBvhTriangleMeshShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btScaledBvhTriangleMeshShape" MAKE-SCALED-BVH-TRIANGLE-MESH-SHAPE) :pointer
   (childShape :pointer)
   (localScaling :pointer))
 
-(export '#.(lispify "new_btScaledBvhTriangleMeshShape" 'function))
+(export 'MAKE-SCALED-BVH-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "delete_btScaledBvhTriangleMeshShape" 'function)))
+(declaim (inline DELETE/BT-SCALED-BVH-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btScaledBvhTriangleMeshShape" #.(lispify "delete_btScaledBvhTriangleMeshShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btScaledBvhTriangleMeshShape" DELETE/BT-SCALED-BVH-TRIANGLE-MESH-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btScaledBvhTriangleMeshShape" 'function))
+(export 'DELETE/BT-SCALED-BVH-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_getAabb" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getAabb" #.(lispify "btScaledBvhTriangleMeshShape_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getAabb" SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_getAabb" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-AABB)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_setLocalScaling" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_setLocalScaling" #.(lispify "btScaledBvhTriangleMeshShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_setLocalScaling" SCALED-BVH-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_setLocalScaling" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_getLocalScaling" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getLocalScaling" #.(lispify "btScaledBvhTriangleMeshShape_getLocalScaling" 'function)) :pointer
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getLocalScaling" SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING) :pointer
   (self :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_getLocalScaling" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_calculateLocalInertia" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_calculateLocalInertia" #.(lispify "btScaledBvhTriangleMeshShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_calculateLocalInertia" SCALED-BVH-TRIANGLE-MESH-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_calculateLocalInertia" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_processAllTriangles" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/PROCESS-ALL-TRIANGLES))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_processAllTriangles" #.(lispify "btScaledBvhTriangleMeshShape_processAllTriangles" 'function)) :void
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_processAllTriangles" SCALED-BVH-TRIANGLE-MESH-SHAPE/PROCESS-ALL-TRIANGLES) :void
   (self :pointer)
   (callback :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_processAllTriangles" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/PROCESS-ALL-TRIANGLES)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_getChildShape" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getChildShape__SWIG_0" #.(lispify "btScaledBvhTriangleMeshShape_getChildShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getChildShape__SWIG_0" SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-CHILD-SHAPE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_getChildShape" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-CHILD-SHAPE)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_getChildShape" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getChildShape__SWIG_1" #.(lispify "btScaledBvhTriangleMeshShape_getChildShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getChildShape__SWIG_1" SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-CHILD-SHAPE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_getChildShape" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-CHILD-SHAPE)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_getName" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getName" #.(lispify "btScaledBvhTriangleMeshShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_getName" SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_getName" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_calculateSerializeBufferSize" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_calculateSerializeBufferSize" #.(lispify "btScaledBvhTriangleMeshShape_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_calculateSerializeBufferSize" SCALED-BVH-TRIANGLE-MESH-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_calculateSerializeBufferSize" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btScaledBvhTriangleMeshShape_serialize" 'function)))
+(declaim (inline SCALED-BVH-TRIANGLE-MESH-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_serialize" #.(lispify "btScaledBvhTriangleMeshShape_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btScaledBvhTriangleMeshShape_serialize" SCALED-BVH-TRIANGLE-MESH-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btScaledBvhTriangleMeshShape_serialize" 'function))
+(export 'SCALED-BVH-TRIANGLE-MESH-SHAPE/SERIALIZE)
 
-(cffi:defcstruct #.(lispify "btScaledTriangleMeshShapeData" 'classname)
-	(#.(lispify "m_trimeshShapeData" 'slotname) #.(lispify "btTriangleMeshShapeData" 'classname))
-	(#.(lispify "m_localScaling" 'slotname) #.(lispify "btVector3FloatData" 'classname)))
+(cffi:defcstruct SCALED-TRIANGLE-MESH-SHAPE-DATA
+  (TRIMESH-SHAPE-DATA TRIANGLE-MESH-SHAPE-DATA)
+  (LOCAL-SCALING VECTOR-3-FLOAT-DATA))
 
-(export '#.(lispify "btScaledTriangleMeshShapeData" 'classname))
+(export 'SCALED-TRIANGLE-MESH-SHAPE-DATA)
 
-(export '#.(lispify "m_trimeshShapeData" 'slotname))
+(export 'TRIMESH-SHAPE-DATA)
 
-(export '#.(lispify "m_localScaling" 'slotname))
+(export 'LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btTriangleMeshShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_makeCPlusPlusInstance__SWIG_0" TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_makeCPlusPlusInstance" 'function))
+(export 'TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btTriangleMeshShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0" TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_deleteCPlusPlusInstance" 'function))
+(export 'TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btTriangleMeshShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_makeCPlusPlusInstance__SWIG_1" TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_makeCPlusPlusInstance" 'function))
+(export 'TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btTriangleMeshShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1" TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_deleteCPlusPlusInstance" 'function))
+(export 'TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_makeCPlusArray" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_makeCPlusArray__SWIG_0" #.(lispify "btTriangleMeshShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_makeCPlusArray__SWIG_0" TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_makeCPlusArray" 'function))
+(export 'TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_deleteCPlusArray" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_deleteCPlusArray__SWIG_0" #.(lispify "btTriangleMeshShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMeshShape_deleteCPlusArray__SWIG_0" TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_deleteCPlusArray" 'function))
+(export 'TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_makeCPlusArray" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_makeCPlusArray__SWIG_1" #.(lispify "btTriangleMeshShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_makeCPlusArray__SWIG_1" TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_makeCPlusArray" 'function))
+(export 'TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_deleteCPlusArray" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_deleteCPlusArray__SWIG_1" #.(lispify "btTriangleMeshShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMeshShape_deleteCPlusArray__SWIG_1" TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_deleteCPlusArray" 'function))
+(export 'TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "delete_btTriangleMeshShape" 'function)))
+(declaim (inline DELETE/BT-TRIANGLE-MESH-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btTriangleMeshShape" #.(lispify "delete_btTriangleMeshShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btTriangleMeshShape" DELETE/BT-TRIANGLE-MESH-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btTriangleMeshShape" 'function))
+(export 'DELETE/BT-TRIANGLE-MESH-SHAPE)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_localGetSupportingVertex" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_localGetSupportingVertex" #.(lispify "btTriangleMeshShape_localGetSupportingVertex" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_localGetSupportingVertex" TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_localGetSupportingVertex" 'function))
+(export 'TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_localGetSupportingVertexWithoutMargin" #.(lispify "btTriangleMeshShape_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_localGetSupportingVertexWithoutMargin" TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_localGetSupportingVertexWithoutMargin" 'function))
+(export 'TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_recalcLocalAabb" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/RECALC-LOCAL-AABB))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_recalcLocalAabb" #.(lispify "btTriangleMeshShape_recalcLocalAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMeshShape_recalcLocalAabb" TRIANGLE-MESH-SHAPE/RECALC-LOCAL-AABB) :void
   (self :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_recalcLocalAabb" 'function))
+(export 'TRIANGLE-MESH-SHAPE/RECALC-LOCAL-AABB)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_getAabb" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_getAabb" #.(lispify "btTriangleMeshShape_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMeshShape_getAabb" TRIANGLE-MESH-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_getAabb" 'function))
+(export 'TRIANGLE-MESH-SHAPE/GET-AABB)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_processAllTriangles" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/PROCESS-ALL-TRIANGLES))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_processAllTriangles" #.(lispify "btTriangleMeshShape_processAllTriangles" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMeshShape_processAllTriangles" TRIANGLE-MESH-SHAPE/PROCESS-ALL-TRIANGLES) :void
   (self :pointer)
   (callback :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_processAllTriangles" 'function))
+(export 'TRIANGLE-MESH-SHAPE/PROCESS-ALL-TRIANGLES)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_calculateLocalInertia" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_calculateLocalInertia" #.(lispify "btTriangleMeshShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMeshShape_calculateLocalInertia" TRIANGLE-MESH-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_calculateLocalInertia" 'function))
+(export 'TRIANGLE-MESH-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_setLocalScaling" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_setLocalScaling" #.(lispify "btTriangleMeshShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleMeshShape_setLocalScaling" TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_setLocalScaling" 'function))
+(export 'TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_getLocalScaling" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_getLocalScaling" #.(lispify "btTriangleMeshShape_getLocalScaling" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_getLocalScaling" TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_getLocalScaling" 'function))
+(export 'TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_getMeshInterface" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_getMeshInterface__SWIG_0" #.(lispify "btTriangleMeshShape_getMeshInterface" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_getMeshInterface__SWIG_0" TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_getMeshInterface" 'function))
+(export 'TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_getMeshInterface" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_getMeshInterface__SWIG_1" #.(lispify "btTriangleMeshShape_getMeshInterface" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_getMeshInterface__SWIG_1" TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_getMeshInterface" 'function))
+(export 'TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_getLocalAabbMin" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/GET-LOCAL-AABB-MIN))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_getLocalAabbMin" #.(lispify "btTriangleMeshShape_getLocalAabbMin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_getLocalAabbMin" TRIANGLE-MESH-SHAPE/GET-LOCAL-AABB-MIN) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_getLocalAabbMin" 'function))
+(export 'TRIANGLE-MESH-SHAPE/GET-LOCAL-AABB-MIN)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_getLocalAabbMax" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/GET-LOCAL-AABB-MAX))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_getLocalAabbMax" #.(lispify "btTriangleMeshShape_getLocalAabbMax" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleMeshShape_getLocalAabbMax" TRIANGLE-MESH-SHAPE/GET-LOCAL-AABB-MAX) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_getLocalAabbMax" 'function))
+(export 'TRIANGLE-MESH-SHAPE/GET-LOCAL-AABB-MAX)
 
-(declaim (inline #.(lispify "btTriangleMeshShape_getName" 'function)))
+(declaim (inline TRIANGLE-MESH-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btTriangleMeshShape_getName" #.(lispify "btTriangleMeshShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btTriangleMeshShape_getName" TRIANGLE-MESH-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btTriangleMeshShape_getName" 'function))
+(export 'TRIANGLE-MESH-SHAPE/GET-NAME)
 
-(cffi:defcstruct #.(lispify "btIndexedMesh" 'classname)
-	(#.(lispify "makeCPlusPlusInstance" 'slotname) :pointer)
-	(#.(lispify "deleteCPlusPlusInstance" 'slotname) :pointer)
-	(#.(lispify "makeCPlusPlusInstance" 'slotname) :pointer)
-	(#.(lispify "deleteCPlusPlusInstance" 'slotname) :pointer)
-	(#.(lispify "makeCPlusArray" 'slotname) :pointer)
-	(#.(lispify "deleteCPlusArray" 'slotname) :pointer)
-	(#.(lispify "makeCPlusArray" 'slotname) :pointer)
-	(#.(lispify "deleteCPlusArray" 'slotname) :pointer)
-	(#.(lispify "m_numTriangles" 'slotname) :int)
-	(#.(lispify "m_triangleIndexBase" 'slotname) :pointer)
-	(#.(lispify "m_triangleIndexStride" 'slotname) :int)
-	(#.(lispify "m_numVertices" 'slotname) :int)
-	(#.(lispify "m_vertexBase" 'slotname) :pointer)
-	(#.(lispify "m_vertexStride" 'slotname) :int)
-	(#.(lispify "m_indexType" 'slotname) :pointer)
-	(#.(lispify "m_vertexType" 'slotname) :pointer))
+(cffi:defcstruct INDEXED-MESH
+  (MAKE-CPLUS-PLUS-INSTANCE :pointer)
+  (DELETE-CPLUS-PLUS-INSTANCE :pointer)
+  (MAKE-CPLUS-PLUS-INSTANCE :pointer)
+  (DELETE-CPLUS-PLUS-INSTANCE :pointer)
+  (MAKE-CPLUS-ARRAY :pointer)
+  (DELETE-CPLUS-ARRAY :pointer)
+  (MAKE-CPLUS-ARRAY :pointer)
+  (DELETE-CPLUS-ARRAY :pointer)
+  (NUM-TRIANGLES :int)
+  (TRIANGLE-INDEX-BASE :pointer)
+  (TRIANGLE-INDEX-STRIDE :int)
+  (NUM-VERTICES :int)
+  (VERTEX-BASE :pointer)
+  (VERTEX-STRIDE :int)
+  (INDEX-TYPE :pointer)
+  (VERTEX-TYPE :pointer))
 
-(export '#.(lispify "btIndexedMesh" 'classname))
+(export 'INDEXED-MESH)
 
-(export '#.(lispify "makeCPlusPlusInstance" 'slotname))
+(export 'MAKE-CPLUS-PLUS-INSTANCE)
 
-(export '#.(lispify "deleteCPlusPlusInstance" 'slotname))
+(export 'DELETE-CPLUS-PLUS-INSTANCE)
 
-(export '#.(lispify "makeCPlusPlusInstance" 'slotname))
+(export 'MAKE-CPLUS-PLUS-INSTANCE)
 
-(export '#.(lispify "deleteCPlusPlusInstance" 'slotname))
+(export 'DELETE-CPLUS-PLUS-INSTANCE)
 
-(export '#.(lispify "makeCPlusArray" 'slotname))
+(export 'MAKE-CPLUS-ARRAY)
 
-(export '#.(lispify "deleteCPlusArray" 'slotname))
+(export 'DELETE-CPLUS-ARRAY)
 
-(export '#.(lispify "makeCPlusArray" 'slotname))
+(export 'MAKE-CPLUS-ARRAY)
 
-(export '#.(lispify "deleteCPlusArray" 'slotname))
+(export 'DELETE-CPLUS-ARRAY)
 
-(export '#.(lispify "m_numTriangles" 'slotname))
+(export 'NUM-TRIANGLES)
 
-(export '#.(lispify "m_triangleIndexBase" 'slotname))
+(export 'TRIANGLE-INDEX-BASE)
 
-(export '#.(lispify "m_triangleIndexStride" 'slotname))
+(export 'TRIANGLE-INDEX-STRIDE)
 
-(export '#.(lispify "m_numVertices" 'slotname))
+(export 'NUM-VERTICES)
 
-(export '#.(lispify "m_vertexBase" 'slotname))
+(export 'VERTEX-BASE)
 
-(export '#.(lispify "m_vertexStride" 'slotname))
+(export 'VERTEX-STRIDE)
 
-(export '#.(lispify "m_indexType" 'slotname))
+(export 'INDEX-TYPE)
 
-(export '#.(lispify "m_vertexType" 'slotname))
+(export 'VERTEX-TYPE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_makeCPlusPlusInstance" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_makeCPlusPlusInstance__SWIG_0" #.(lispify "btTriangleIndexVertexArray_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_makeCPlusPlusInstance__SWIG_0" TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_makeCPlusPlusInstance" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_deleteCPlusPlusInstance" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btTriangleIndexVertexArray_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_deleteCPlusPlusInstance__SWIG_0" TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_deleteCPlusPlusInstance" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_makeCPlusPlusInstance" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_makeCPlusPlusInstance__SWIG_1" #.(lispify "btTriangleIndexVertexArray_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_makeCPlusPlusInstance__SWIG_1" TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_makeCPlusPlusInstance" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_deleteCPlusPlusInstance" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btTriangleIndexVertexArray_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_deleteCPlusPlusInstance__SWIG_1" TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_deleteCPlusPlusInstance" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_makeCPlusArray" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_makeCPlusArray__SWIG_0" #.(lispify "btTriangleIndexVertexArray_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_makeCPlusArray__SWIG_0" TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_makeCPlusArray" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_deleteCPlusArray" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_deleteCPlusArray__SWIG_0" #.(lispify "btTriangleIndexVertexArray_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_deleteCPlusArray__SWIG_0" TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_deleteCPlusArray" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_makeCPlusArray" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_makeCPlusArray__SWIG_1" #.(lispify "btTriangleIndexVertexArray_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_makeCPlusArray__SWIG_1" TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_makeCPlusArray" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_deleteCPlusArray" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_deleteCPlusArray__SWIG_1" #.(lispify "btTriangleIndexVertexArray_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_deleteCPlusArray__SWIG_1" TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_deleteCPlusArray" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btTriangleIndexVertexArray" 'function)))
+(declaim (inline MAKE-TRIANGLE-INDEX-VERTEX-ARRAY))
 
-(cffi:defcfun ("_wrap_new_btTriangleIndexVertexArray__SWIG_0" #.(lispify "new_btTriangleIndexVertexArray" 'function)) :pointer)
+(cffi:defcfun ("_wrap_new_btTriangleIndexVertexArray__SWIG_0" MAKE-TRIANGLE-INDEX-VERTEX-ARRAY) :pointer)
 
-(export '#.(lispify "new_btTriangleIndexVertexArray" 'function))
+(export 'MAKE-TRIANGLE-INDEX-VERTEX-ARRAY)
 
-(declaim (inline #.(lispify "delete_btTriangleIndexVertexArray" 'function)))
+(declaim (inline DELETE/BT-TRIANGLE-INDEX-VERTEX-ARRAY))
 
-(cffi:defcfun ("_wrap_delete_btTriangleIndexVertexArray" #.(lispify "delete_btTriangleIndexVertexArray" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btTriangleIndexVertexArray" DELETE/BT-TRIANGLE-INDEX-VERTEX-ARRAY) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btTriangleIndexVertexArray" 'function))
+(export 'DELETE/BT-TRIANGLE-INDEX-VERTEX-ARRAY)
 
-(declaim (inline #.(lispify "new_btTriangleIndexVertexArray" 'function)))
+(declaim (inline MAKE-TRIANGLE-INDEX-VERTEX-ARRAY))
 
-(cffi:defcfun ("_wrap_new_btTriangleIndexVertexArray__SWIG_1" #.(lispify "new_btTriangleIndexVertexArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btTriangleIndexVertexArray__SWIG_1" MAKE-TRIANGLE-INDEX-VERTEX-ARRAY) :pointer
   (numTriangles :int)
   (triangleIndexBase :pointer)
   (triangleIndexStride :int)
@@ -8118,28 +8117,28 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (vertexBase :pointer)
   (vertexStride :int))
 
-(export '#.(lispify "new_btTriangleIndexVertexArray" 'function))
+(export 'MAKE-TRIANGLE-INDEX-VERTEX-ARRAY)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_addIndexedMesh" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/ADD-INDEXED-MESH))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_addIndexedMesh__SWIG_0" #.(lispify "btTriangleIndexVertexArray_addIndexedMesh" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_addIndexedMesh__SWIG_0" TRIANGLE-INDEX-VERTEX-ARRAY/ADD-INDEXED-MESH) :void
   (self :pointer)
   (mesh :pointer)
   (indexType :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_addIndexedMesh" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/ADD-INDEXED-MESH)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_addIndexedMesh" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/ADD-INDEXED-MESH))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_addIndexedMesh__SWIG_1" #.(lispify "btTriangleIndexVertexArray_addIndexedMesh" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_addIndexedMesh__SWIG_1" TRIANGLE-INDEX-VERTEX-ARRAY/ADD-INDEXED-MESH) :void
   (self :pointer)
   (mesh :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_addIndexedMesh" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/ADD-INDEXED-MESH)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_getLockedVertexIndexBase" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-VERTEX-INDEX-BASE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getLockedVertexIndexBase__SWIG_0" #.(lispify "btTriangleIndexVertexArray_getLockedVertexIndexBase" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getLockedVertexIndexBase__SWIG_0" TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-VERTEX-INDEX-BASE) :void
   (self :pointer)
   (vertexbase :pointer)
   (numverts :pointer)
@@ -8151,11 +8150,11 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (indicestype :pointer)
   (subpart :int))
 
-(export '#.(lispify "btTriangleIndexVertexArray_getLockedVertexIndexBase" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-VERTEX-INDEX-BASE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_getLockedVertexIndexBase" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-VERTEX-INDEX-BASE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getLockedVertexIndexBase__SWIG_1" #.(lispify "btTriangleIndexVertexArray_getLockedVertexIndexBase" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getLockedVertexIndexBase__SWIG_1" TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-VERTEX-INDEX-BASE) :void
   (self :pointer)
   (vertexbase :pointer)
   (numverts :pointer)
@@ -8166,11 +8165,11 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (numfaces :pointer)
   (indicestype :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_getLockedVertexIndexBase" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-VERTEX-INDEX-BASE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-READ-ONLY-VERTEX-INDEX-BASE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase__SWIG_0" #.(lispify "btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase__SWIG_0" TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-READ-ONLY-VERTEX-INDEX-BASE) :void
   (self :pointer)
   (vertexbase :pointer)
   (numverts :pointer)
@@ -8182,11 +8181,11 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (indicestype :pointer)
   (subpart :int))
 
-(export '#.(lispify "btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-READ-ONLY-VERTEX-INDEX-BASE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-READ-ONLY-VERTEX-INDEX-BASE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase__SWIG_1" #.(lispify "btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase__SWIG_1" TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-READ-ONLY-VERTEX-INDEX-BASE) :void
   (self :pointer)
   (vertexbase :pointer)
   (numverts :pointer)
@@ -8197,1018 +8196,1018 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (numfaces :pointer)
   (indicestype :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_getLockedReadOnlyVertexIndexBase" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/GET-LOCKED-READ-ONLY-VERTEX-INDEX-BASE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_unLockVertexBase" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/UN-LOCK-VERTEX-BASE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_unLockVertexBase" #.(lispify "btTriangleIndexVertexArray_unLockVertexBase" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_unLockVertexBase" TRIANGLE-INDEX-VERTEX-ARRAY/UN-LOCK-VERTEX-BASE) :void
   (self :pointer)
   (subpart :int))
 
-(export '#.(lispify "btTriangleIndexVertexArray_unLockVertexBase" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/UN-LOCK-VERTEX-BASE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_unLockReadOnlyVertexBase" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/UN-LOCK-READ-ONLY-VERTEX-BASE))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_unLockReadOnlyVertexBase" #.(lispify "btTriangleIndexVertexArray_unLockReadOnlyVertexBase" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_unLockReadOnlyVertexBase" TRIANGLE-INDEX-VERTEX-ARRAY/UN-LOCK-READ-ONLY-VERTEX-BASE) :void
   (self :pointer)
   (subpart :int))
 
-(export '#.(lispify "btTriangleIndexVertexArray_unLockReadOnlyVertexBase" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/UN-LOCK-READ-ONLY-VERTEX-BASE)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_getNumSubParts" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/GET-NUM-SUB-PARTS))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getNumSubParts" #.(lispify "btTriangleIndexVertexArray_getNumSubParts" 'function)) :int
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getNumSubParts" TRIANGLE-INDEX-VERTEX-ARRAY/GET-NUM-SUB-PARTS) :int
   (self :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_getNumSubParts" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/GET-NUM-SUB-PARTS)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_getIndexedMeshArray" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/GET-INDEXED-MESH-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getIndexedMeshArray__SWIG_0" #.(lispify "btTriangleIndexVertexArray_getIndexedMeshArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getIndexedMeshArray__SWIG_0" TRIANGLE-INDEX-VERTEX-ARRAY/GET-INDEXED-MESH-ARRAY) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_getIndexedMeshArray" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/GET-INDEXED-MESH-ARRAY)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_getIndexedMeshArray" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/GET-INDEXED-MESH-ARRAY))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getIndexedMeshArray__SWIG_1" #.(lispify "btTriangleIndexVertexArray_getIndexedMeshArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getIndexedMeshArray__SWIG_1" TRIANGLE-INDEX-VERTEX-ARRAY/GET-INDEXED-MESH-ARRAY) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_getIndexedMeshArray" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/GET-INDEXED-MESH-ARRAY)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_preallocateVertices" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/PREALLOCATE-VERTICES))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_preallocateVertices" #.(lispify "btTriangleIndexVertexArray_preallocateVertices" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_preallocateVertices" TRIANGLE-INDEX-VERTEX-ARRAY/PREALLOCATE-VERTICES) :void
   (self :pointer)
   (numverts :int))
 
-(export '#.(lispify "btTriangleIndexVertexArray_preallocateVertices" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/PREALLOCATE-VERTICES)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_preallocateIndices" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/PREALLOCATE-INDICES))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_preallocateIndices" #.(lispify "btTriangleIndexVertexArray_preallocateIndices" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_preallocateIndices" TRIANGLE-INDEX-VERTEX-ARRAY/PREALLOCATE-INDICES) :void
   (self :pointer)
   (numindices :int))
 
-(export '#.(lispify "btTriangleIndexVertexArray_preallocateIndices" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/PREALLOCATE-INDICES)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_hasPremadeAabb" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/HAS-PREMADE-AABB))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_hasPremadeAabb" #.(lispify "btTriangleIndexVertexArray_hasPremadeAabb" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_hasPremadeAabb" TRIANGLE-INDEX-VERTEX-ARRAY/HAS-PREMADE-AABB) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_hasPremadeAabb" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/HAS-PREMADE-AABB)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_setPremadeAabb" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/SET-PREMADE-AABB))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_setPremadeAabb" #.(lispify "btTriangleIndexVertexArray_setPremadeAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_setPremadeAabb" TRIANGLE-INDEX-VERTEX-ARRAY/SET-PREMADE-AABB) :void
   (self :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_setPremadeAabb" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/SET-PREMADE-AABB)
 
-(declaim (inline #.(lispify "btTriangleIndexVertexArray_getPremadeAabb" 'function)))
+(declaim (inline TRIANGLE-INDEX-VERTEX-ARRAY/GET-PREMADE-AABB))
 
-(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getPremadeAabb" #.(lispify "btTriangleIndexVertexArray_getPremadeAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btTriangleIndexVertexArray_getPremadeAabb" TRIANGLE-INDEX-VERTEX-ARRAY/GET-PREMADE-AABB) :void
   (self :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btTriangleIndexVertexArray_getPremadeAabb" 'function))
+(export 'TRIANGLE-INDEX-VERTEX-ARRAY/GET-PREMADE-AABB)
 
-(cffi:defcstruct #.(lispify "btCompoundShapeChild" 'classname)
-	(#.(lispify "makeCPlusPlusInstance" 'slotname) :pointer)
-	(#.(lispify "deleteCPlusPlusInstance" 'slotname) :pointer)
-	(#.(lispify "makeCPlusPlusInstance" 'slotname) :pointer)
-	(#.(lispify "deleteCPlusPlusInstance" 'slotname) :pointer)
-	(#.(lispify "makeCPlusArray" 'slotname) :pointer)
-	(#.(lispify "deleteCPlusArray" 'slotname) :pointer)
-	(#.(lispify "makeCPlusArray" 'slotname) :pointer)
-	(#.(lispify "deleteCPlusArray" 'slotname) :pointer)
-	(#.(lispify "m_transform" 'slotname) :pointer)
-	(#.(lispify "m_childShape" 'slotname) :pointer)
-	(#.(lispify "m_childShapeType" 'slotname) :int)
-	(#.(lispify "m_childMargin" 'slotname) :float)
-	(#.(lispify "m_node" 'slotname) :pointer))
+(cffi:defcstruct COMPOUND-SHAPE-CHILD
+  (MAKE-CPLUS-PLUS-INSTANCE :pointer)
+  (DELETE-CPLUS-PLUS-INSTANCE :pointer)
+  (MAKE-CPLUS-PLUS-INSTANCE :pointer)
+  (DELETE-CPLUS-PLUS-INSTANCE :pointer)
+  (MAKE-CPLUS-ARRAY :pointer)
+  (DELETE-CPLUS-ARRAY :pointer)
+  (MAKE-CPLUS-ARRAY :pointer)
+  (DELETE-CPLUS-ARRAY :pointer)
+  (TRANSFORM :pointer)
+  (CHILD-SHAPE :pointer)
+  (CHILD-SHAPE-TYPE :int)
+  (CHILD-MARGIN :float)
+  (NODE :pointer))
 
-(export '#.(lispify "btCompoundShapeChild" 'classname))
+(export 'COMPOUND-SHAPE-CHILD)
 
-(export '#.(lispify "makeCPlusPlusInstance" 'slotname))
+(export 'MAKE-CPLUS-PLUS-INSTANCE)
 
-(export '#.(lispify "deleteCPlusPlusInstance" 'slotname))
+(export 'DELETE-CPLUS-PLUS-INSTANCE)
 
-(export '#.(lispify "makeCPlusPlusInstance" 'slotname))
+(export 'MAKE-CPLUS-PLUS-INSTANCE)
 
-(export '#.(lispify "deleteCPlusPlusInstance" 'slotname))
+(export 'DELETE-CPLUS-PLUS-INSTANCE)
 
-(export '#.(lispify "makeCPlusArray" 'slotname))
+(export 'MAKE-CPLUS-ARRAY)
 
-(export '#.(lispify "deleteCPlusArray" 'slotname))
+(export 'DELETE-CPLUS-ARRAY)
 
-(export '#.(lispify "makeCPlusArray" 'slotname))
+(export 'MAKE-CPLUS-ARRAY)
 
-(export '#.(lispify "deleteCPlusArray" 'slotname))
+(export 'DELETE-CPLUS-ARRAY)
 
-(export '#.(lispify "m_transform" 'slotname))
+(export 'TRANSFORM)
 
-(export '#.(lispify "m_childShape" 'slotname))
+(export 'CHILD-SHAPE)
 
-(export '#.(lispify "m_childShapeType" 'slotname))
+(export 'CHILD-SHAPE-TYPE)
 
-(export '#.(lispify "m_childMargin" 'slotname))
+(export 'CHILD-MARGIN)
 
-(export '#.(lispify "m_node" 'slotname))
+(export 'NODE)
 
-(declaim (inline #.(lispify "btCompoundShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btCompoundShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusPlusInstance__SWIG_0" COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCompoundShape_makeCPlusPlusInstance" 'function))
+(export 'COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCompoundShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btCompoundShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusPlusInstance__SWIG_0" COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCompoundShape_deleteCPlusPlusInstance" 'function))
+(export 'COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCompoundShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btCompoundShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusPlusInstance__SWIG_1" COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCompoundShape_makeCPlusPlusInstance" 'function))
+(export 'COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCompoundShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btCompoundShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusPlusInstance__SWIG_1" COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCompoundShape_deleteCPlusPlusInstance" 'function))
+(export 'COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btCompoundShape_makeCPlusArray" 'function)))
+(declaim (inline COMPOUND-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusArray__SWIG_0" #.(lispify "btCompoundShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusArray__SWIG_0" COMPOUND-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btCompoundShape_makeCPlusArray" 'function))
+(export 'COMPOUND-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCompoundShape_deleteCPlusArray" 'function)))
+(declaim (inline COMPOUND-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusArray__SWIG_0" #.(lispify "btCompoundShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusArray__SWIG_0" COMPOUND-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCompoundShape_deleteCPlusArray" 'function))
+(export 'COMPOUND-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCompoundShape_makeCPlusArray" 'function)))
+(declaim (inline COMPOUND-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusArray__SWIG_1" #.(lispify "btCompoundShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusArray__SWIG_1" COMPOUND-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btCompoundShape_makeCPlusArray" 'function))
+(export 'COMPOUND-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btCompoundShape_deleteCPlusArray" 'function)))
+(declaim (inline COMPOUND-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusArray__SWIG_1" #.(lispify "btCompoundShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusArray__SWIG_1" COMPOUND-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btCompoundShape_deleteCPlusArray" 'function))
+(export 'COMPOUND-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btCompoundShape" 'function)))
+(declaim (inline MAKE-COMPOUND-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btCompoundShape__SWIG_0" #.(lispify "new_btCompoundShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btCompoundShape__SWIG_0" MAKE-COMPOUND-SHAPE) :pointer
   (enableDynamicAabbTree :pointer))
 
-(export '#.(lispify "new_btCompoundShape" 'function))
+(export 'MAKE-COMPOUND-SHAPE)
 
-(declaim (inline #.(lispify "new_btCompoundShape" 'function)))
+(declaim (inline MAKE-COMPOUND-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btCompoundShape__SWIG_1" #.(lispify "new_btCompoundShape" 'function)) :pointer)
+(cffi:defcfun ("_wrap_new_btCompoundShape__SWIG_1" MAKE-COMPOUND-SHAPE) :pointer)
 
-(export '#.(lispify "new_btCompoundShape" 'function))
+(export 'MAKE-COMPOUND-SHAPE)
 
-(declaim (inline #.(lispify "delete_btCompoundShape" 'function)))
+(declaim (inline DELETE/BT-COMPOUND-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btCompoundShape" #.(lispify "delete_btCompoundShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCompoundShape" DELETE/BT-COMPOUND-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btCompoundShape" 'function))
+(export 'DELETE/BT-COMPOUND-SHAPE)
 
-(declaim (inline #.(lispify "btCompoundShape_addChildShape" 'function)))
+(declaim (inline COMPOUND-SHAPE/ADD-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_addChildShape" #.(lispify "btCompoundShape_addChildShape" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_addChildShape" COMPOUND-SHAPE/ADD-CHILD-SHAPE) :void
   (self :pointer)
   (localTransform :pointer)
   (shape :pointer))
 
-(export '#.(lispify "btCompoundShape_addChildShape" 'function))
+(export 'COMPOUND-SHAPE/ADD-CHILD-SHAPE)
 
-(declaim (inline #.(lispify "btCompoundShape_removeChildShape" 'function)))
+(declaim (inline COMPOUND-SHAPE/REMOVE-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_removeChildShape" #.(lispify "btCompoundShape_removeChildShape" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_removeChildShape" COMPOUND-SHAPE/REMOVE-CHILD-SHAPE) :void
   (self :pointer)
   (shape :pointer))
 
-(export '#.(lispify "btCompoundShape_removeChildShape" 'function))
+(export 'COMPOUND-SHAPE/REMOVE-CHILD-SHAPE)
 
-(declaim (inline #.(lispify "btCompoundShape_removeChildShapeByIndex" 'function)))
+(declaim (inline COMPOUND-SHAPE/REMOVE-CHILD-SHAPE-BY-INDEX))
 
-(cffi:defcfun ("_wrap_btCompoundShape_removeChildShapeByIndex" #.(lispify "btCompoundShape_removeChildShapeByIndex" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_removeChildShapeByIndex" COMPOUND-SHAPE/REMOVE-CHILD-SHAPE-BY-INDEX) :void
   (self :pointer)
   (childShapeindex :int))
 
-(export '#.(lispify "btCompoundShape_removeChildShapeByIndex" 'function))
+(export 'COMPOUND-SHAPE/REMOVE-CHILD-SHAPE-BY-INDEX)
 
-(declaim (inline #.(lispify "btCompoundShape_getNumChildShapes" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-NUM-CHILD-SHAPES))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getNumChildShapes" #.(lispify "btCompoundShape_getNumChildShapes" 'function)) :int
+(cffi:defcfun ("_wrap_btCompoundShape_getNumChildShapes" COMPOUND-SHAPE/GET-NUM-CHILD-SHAPES) :int
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_getNumChildShapes" 'function))
+(export 'COMPOUND-SHAPE/GET-NUM-CHILD-SHAPES)
 
-(declaim (inline #.(lispify "btCompoundShape_getChildShape" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildShape__SWIG_0" #.(lispify "btCompoundShape_getChildShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildShape__SWIG_0" COMPOUND-SHAPE/GET-CHILD-SHAPE) :pointer
   (self :pointer)
   (index :int))
 
-(export '#.(lispify "btCompoundShape_getChildShape" 'function))
+(export 'COMPOUND-SHAPE/GET-CHILD-SHAPE)
 
-(declaim (inline #.(lispify "btCompoundShape_getChildShape" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildShape__SWIG_1" #.(lispify "btCompoundShape_getChildShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildShape__SWIG_1" COMPOUND-SHAPE/GET-CHILD-SHAPE) :pointer
   (self :pointer)
   (index :int))
 
-(export '#.(lispify "btCompoundShape_getChildShape" 'function))
+(export 'COMPOUND-SHAPE/GET-CHILD-SHAPE)
 
-(declaim (inline #.(lispify "btCompoundShape_getChildTransform" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-CHILD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildTransform__SWIG_0" #.(lispify "btCompoundShape_getChildTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildTransform__SWIG_0" COMPOUND-SHAPE/GET-CHILD-TRANSFORM) :pointer
   (self :pointer)
   (index :int))
 
-(export '#.(lispify "btCompoundShape_getChildTransform" 'function))
+(export 'COMPOUND-SHAPE/GET-CHILD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCompoundShape_getChildTransform" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-CHILD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildTransform__SWIG_1" #.(lispify "btCompoundShape_getChildTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildTransform__SWIG_1" COMPOUND-SHAPE/GET-CHILD-TRANSFORM) :pointer
   (self :pointer)
   (index :int))
 
-(export '#.(lispify "btCompoundShape_getChildTransform" 'function))
+(export 'COMPOUND-SHAPE/GET-CHILD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCompoundShape_updateChildTransform" 'function)))
+(declaim (inline COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_updateChildTransform__SWIG_0" #.(lispify "btCompoundShape_updateChildTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_updateChildTransform__SWIG_0" COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM) :void
   (self :pointer)
   (childIndex :int)
   (newChildTransform :pointer)
   (shouldRecalculateLocalAabb :pointer))
 
-(export '#.(lispify "btCompoundShape_updateChildTransform" 'function))
+(export 'COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCompoundShape_updateChildTransform" 'function)))
+(declaim (inline COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_updateChildTransform__SWIG_1" #.(lispify "btCompoundShape_updateChildTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_updateChildTransform__SWIG_1" COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM) :void
   (self :pointer)
   (childIndex :int)
   (newChildTransform :pointer))
 
-(export '#.(lispify "btCompoundShape_updateChildTransform" 'function))
+(export 'COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM)
 
-(declaim (inline #.(lispify "btCompoundShape_getChildList" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-CHILD-LIST))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildList" #.(lispify "btCompoundShape_getChildList" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildList" COMPOUND-SHAPE/GET-CHILD-LIST) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_getChildList" 'function))
+(export 'COMPOUND-SHAPE/GET-CHILD-LIST)
 
-(declaim (inline #.(lispify "btCompoundShape_getAabb" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getAabb" #.(lispify "btCompoundShape_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_getAabb" COMPOUND-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btCompoundShape_getAabb" 'function))
+(export 'COMPOUND-SHAPE/GET-AABB)
 
-(declaim (inline #.(lispify "btCompoundShape_recalculateLocalAabb" 'function)))
+(declaim (inline COMPOUND-SHAPE/RECALCULATE-LOCAL-AABB))
 
-(cffi:defcfun ("_wrap_btCompoundShape_recalculateLocalAabb" #.(lispify "btCompoundShape_recalculateLocalAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_recalculateLocalAabb" COMPOUND-SHAPE/RECALCULATE-LOCAL-AABB) :void
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_recalculateLocalAabb" 'function))
+(export 'COMPOUND-SHAPE/RECALCULATE-LOCAL-AABB)
 
-(declaim (inline #.(lispify "btCompoundShape_setLocalScaling" 'function)))
+(declaim (inline COMPOUND-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btCompoundShape_setLocalScaling" #.(lispify "btCompoundShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_setLocalScaling" COMPOUND-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btCompoundShape_setLocalScaling" 'function))
+(export 'COMPOUND-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btCompoundShape_getLocalScaling" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getLocalScaling" #.(lispify "btCompoundShape_getLocalScaling" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getLocalScaling" COMPOUND-SHAPE/GET-LOCAL-SCALING) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_getLocalScaling" 'function))
+(export 'COMPOUND-SHAPE/GET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btCompoundShape_calculateLocalInertia" 'function)))
+(declaim (inline COMPOUND-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btCompoundShape_calculateLocalInertia" #.(lispify "btCompoundShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_calculateLocalInertia" COMPOUND-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btCompoundShape_calculateLocalInertia" 'function))
+(export 'COMPOUND-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btCompoundShape_setMargin" 'function)))
+(declaim (inline COMPOUND-SHAPE/SET-MARGIN))
 
-(cffi:defcfun ("_wrap_btCompoundShape_setMargin" #.(lispify "btCompoundShape_setMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_setMargin" COMPOUND-SHAPE/SET-MARGIN) :void
   (self :pointer)
   (margin :float))
 
-(export '#.(lispify "btCompoundShape_setMargin" 'function))
+(export 'COMPOUND-SHAPE/SET-MARGIN)
 
-(declaim (inline #.(lispify "btCompoundShape_getMargin" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-MARGIN))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getMargin" #.(lispify "btCompoundShape_getMargin" 'function)) :float
+(cffi:defcfun ("_wrap_btCompoundShape_getMargin" COMPOUND-SHAPE/GET-MARGIN) :float
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_getMargin" 'function))
+(export 'COMPOUND-SHAPE/GET-MARGIN)
 
-(declaim (inline #.(lispify "btCompoundShape_getName" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getName" #.(lispify "btCompoundShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btCompoundShape_getName" COMPOUND-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_getName" 'function))
+(export 'COMPOUND-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btCompoundShape_getDynamicAabbTree" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getDynamicAabbTree__SWIG_0" #.(lispify "btCompoundShape_getDynamicAabbTree" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getDynamicAabbTree__SWIG_0" COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_getDynamicAabbTree" 'function))
+(export 'COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE)
 
-(declaim (inline #.(lispify "btCompoundShape_getDynamicAabbTree" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getDynamicAabbTree__SWIG_1" #.(lispify "btCompoundShape_getDynamicAabbTree" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getDynamicAabbTree__SWIG_1" COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_getDynamicAabbTree" 'function))
+(export 'COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE)
 
-(declaim (inline #.(lispify "btCompoundShape_createAabbTreeFromChildren" 'function)))
+(declaim (inline COMPOUND-SHAPE/CREATE-AABB-TREE-FROM-CHILDREN))
 
-(cffi:defcfun ("_wrap_btCompoundShape_createAabbTreeFromChildren" #.(lispify "btCompoundShape_createAabbTreeFromChildren" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_createAabbTreeFromChildren" COMPOUND-SHAPE/CREATE-AABB-TREE-FROM-CHILDREN) :void
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_createAabbTreeFromChildren" 'function))
+(export 'COMPOUND-SHAPE/CREATE-AABB-TREE-FROM-CHILDREN)
 
-(declaim (inline #.(lispify "btCompoundShape_calculatePrincipalAxisTransform" 'function)))
+(declaim (inline COMPOUND-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_calculatePrincipalAxisTransform" #.(lispify "btCompoundShape_calculatePrincipalAxisTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btCompoundShape_calculatePrincipalAxisTransform" COMPOUND-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM) :void
   (self :pointer)
   (masses :pointer)
   (principal :pointer)
   (inertia :pointer))
 
-(export '#.(lispify "btCompoundShape_calculatePrincipalAxisTransform" 'function))
+(export 'COMPOUND-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM)
 
-(declaim (inline #.(lispify "btCompoundShape_getUpdateRevision" 'function)))
+(declaim (inline COMPOUND-SHAPE/GET-UPDATE-REVISION))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getUpdateRevision" #.(lispify "btCompoundShape_getUpdateRevision" 'function)) :int
+(cffi:defcfun ("_wrap_btCompoundShape_getUpdateRevision" COMPOUND-SHAPE/GET-UPDATE-REVISION) :int
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_getUpdateRevision" 'function))
+(export 'COMPOUND-SHAPE/GET-UPDATE-REVISION)
 
-(declaim (inline #.(lispify "btCompoundShape_calculateSerializeBufferSize" 'function)))
+(declaim (inline COMPOUND-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_calculateSerializeBufferSize" #.(lispify "btCompoundShape_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btCompoundShape_calculateSerializeBufferSize" COMPOUND-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btCompoundShape_calculateSerializeBufferSize" 'function))
+(export 'COMPOUND-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btCompoundShape_serialize" 'function)))
+(declaim (inline COMPOUND-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_serialize" #.(lispify "btCompoundShape_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btCompoundShape_serialize" COMPOUND-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btCompoundShape_serialize" 'function))
+(export 'COMPOUND-SHAPE/SERIALIZE)
 
-(cffi:defcstruct #.(lispify "btCompoundShapeChildData" 'classname)
-	(#.(lispify "m_transform" 'slotname) #.(lispify "btTransformFloatData" 'classname))
-	(#.(lispify "m_childShape" 'slotname) :pointer)
-	(#.(lispify "m_childShapeType" 'slotname) :int)
-	(#.(lispify "m_childMargin" 'slotname) :float))
+(cffi:defcstruct COMPOUND-SHAPE-CHILD-DATA
+  (TRANSFORM TRANSFORM-FLOAT-DATA)
+  (CHILD-SHAPE :pointer)
+  (CHILD-SHAPE-TYPE :int)
+  (CHILD-MARGIN :float))
 
-(export '#.(lispify "btCompoundShapeChildData" 'classname))
+(export 'COMPOUND-SHAPE-CHILD-DATA)
 
-(export '#.(lispify "m_transform" 'slotname))
+(export 'TRANSFORM)
 
-(export '#.(lispify "m_childShape" 'slotname))
+(export 'CHILD-SHAPE)
 
-(export '#.(lispify "m_childShapeType" 'slotname))
+(export 'CHILD-SHAPE-TYPE)
 
-(export '#.(lispify "m_childMargin" 'slotname))
+(export 'CHILD-MARGIN)
 
-(cffi:defcstruct #.(lispify "btCompoundShapeData" 'classname)
-	(#.(lispify "m_collisionShapeData" 'slotname) :pointer)
-	(#.(lispify "m_childShapePtr" 'slotname) :pointer)
-	(#.(lispify "m_numChildShapes" 'slotname) :int)
-	(#.(lispify "m_collisionMargin" 'slotname) :float))
+(cffi:defcstruct COMPOUND-SHAPE-DATA
+  (COLLISION-SHAPE-DATA :pointer)
+  (CHILD-SHAPE-PTR :pointer)
+  (NUM-CHILD-SHAPES :int)
+  (COLLISION-MARGIN :float))
 
-(export '#.(lispify "btCompoundShapeData" 'classname))
+(export 'COMPOUND-SHAPE-DATA)
 
-(export '#.(lispify "m_collisionShapeData" 'slotname))
+(export 'COLLISION-SHAPE-DATA)
 
-(export '#.(lispify "m_childShapePtr" 'slotname))
+(export 'CHILD-SHAPE-PTR)
 
-(export '#.(lispify "m_numChildShapes" 'slotname))
+(export 'NUM-CHILD-SHAPES)
 
-(export '#.(lispify "m_collisionMargin" 'slotname))
+(export 'COLLISION-MARGIN)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_makeCPlusPlusInstance" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_makeCPlusPlusInstance__SWIG_0" #.(lispify "btBU_Simplex1to4_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_makeCPlusPlusInstance__SWIG_0" BU/SIMPLEX-1TO-4/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_makeCPlusPlusInstance" 'function))
+(export 'BU/SIMPLEX-1TO-4/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_deleteCPlusPlusInstance" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btBU_Simplex1to4_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_deleteCPlusPlusInstance__SWIG_0" BU/SIMPLEX-1TO-4/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_deleteCPlusPlusInstance" 'function))
+(export 'BU/SIMPLEX-1TO-4/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_makeCPlusPlusInstance" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_makeCPlusPlusInstance__SWIG_1" #.(lispify "btBU_Simplex1to4_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_makeCPlusPlusInstance__SWIG_1" BU/SIMPLEX-1TO-4/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_makeCPlusPlusInstance" 'function))
+(export 'BU/SIMPLEX-1TO-4/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_deleteCPlusPlusInstance" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btBU_Simplex1to4_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_deleteCPlusPlusInstance__SWIG_1" BU/SIMPLEX-1TO-4/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_deleteCPlusPlusInstance" 'function))
+(export 'BU/SIMPLEX-1TO-4/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_makeCPlusArray" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_makeCPlusArray__SWIG_0" #.(lispify "btBU_Simplex1to4_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_makeCPlusArray__SWIG_0" BU/SIMPLEX-1TO-4/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_makeCPlusArray" 'function))
+(export 'BU/SIMPLEX-1TO-4/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_deleteCPlusArray" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_deleteCPlusArray__SWIG_0" #.(lispify "btBU_Simplex1to4_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_deleteCPlusArray__SWIG_0" BU/SIMPLEX-1TO-4/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_deleteCPlusArray" 'function))
+(export 'BU/SIMPLEX-1TO-4/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_makeCPlusArray" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_makeCPlusArray__SWIG_1" #.(lispify "btBU_Simplex1to4_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_makeCPlusArray__SWIG_1" BU/SIMPLEX-1TO-4/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_makeCPlusArray" 'function))
+(export 'BU/SIMPLEX-1TO-4/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_deleteCPlusArray" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_deleteCPlusArray__SWIG_1" #.(lispify "btBU_Simplex1to4_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_deleteCPlusArray__SWIG_1" BU/SIMPLEX-1TO-4/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_deleteCPlusArray" 'function))
+(export 'BU/SIMPLEX-1TO-4/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btBU_Simplex1to4" 'function)))
+(declaim (inline MAKE-BU/SIMPLEX-1TO-4))
 
-(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_0" #.(lispify "new_btBU_Simplex1to4" 'function)) :pointer)
+(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_0" MAKE-BU/SIMPLEX-1TO-4) :pointer)
 
-(export '#.(lispify "new_btBU_Simplex1to4" 'function))
+(export 'MAKE-BU/SIMPLEX-1TO-4)
 
-(declaim (inline #.(lispify "new_btBU_Simplex1to4" 'function)))
+(declaim (inline MAKE-BU/SIMPLEX-1TO-4))
 
-(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_1" #.(lispify "new_btBU_Simplex1to4" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_1" MAKE-BU/SIMPLEX-1TO-4) :pointer
   (pt0 :pointer))
 
-(export '#.(lispify "new_btBU_Simplex1to4" 'function))
+(export 'MAKE-BU/SIMPLEX-1TO-4)
 
-(declaim (inline #.(lispify "new_btBU_Simplex1to4" 'function)))
+(declaim (inline MAKE-BU/SIMPLEX-1TO-4))
 
-(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_2" #.(lispify "new_btBU_Simplex1to4" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_2" MAKE-BU/SIMPLEX-1TO-4) :pointer
   (pt0 :pointer)
   (pt1 :pointer))
 
-(export '#.(lispify "new_btBU_Simplex1to4" 'function))
+(export 'MAKE-BU/SIMPLEX-1TO-4)
 
-(declaim (inline #.(lispify "new_btBU_Simplex1to4" 'function)))
+(declaim (inline MAKE-BU/SIMPLEX-1TO-4))
 
-(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_3" #.(lispify "new_btBU_Simplex1to4" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_3" MAKE-BU/SIMPLEX-1TO-4) :pointer
   (pt0 :pointer)
   (pt1 :pointer)
   (pt2 :pointer))
 
-(export '#.(lispify "new_btBU_Simplex1to4" 'function))
+(export 'MAKE-BU/SIMPLEX-1TO-4)
 
-(declaim (inline #.(lispify "new_btBU_Simplex1to4" 'function)))
+(declaim (inline MAKE-BU/SIMPLEX-1TO-4))
 
-(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_4" #.(lispify "new_btBU_Simplex1to4" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btBU_Simplex1to4__SWIG_4" MAKE-BU/SIMPLEX-1TO-4) :pointer
   (pt0 :pointer)
   (pt1 :pointer)
   (pt2 :pointer)
   (pt3 :pointer))
 
-(export '#.(lispify "new_btBU_Simplex1to4" 'function))
+(export 'MAKE-BU/SIMPLEX-1TO-4)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_reset" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/RESET))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_reset" #.(lispify "btBU_Simplex1to4_reset" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_reset" BU/SIMPLEX-1TO-4/RESET) :void
   (self :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_reset" 'function))
+(export 'BU/SIMPLEX-1TO-4/RESET)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_getAabb" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/GET-AABB))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_getAabb" #.(lispify "btBU_Simplex1to4_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_getAabb" BU/SIMPLEX-1TO-4/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_getAabb" 'function))
+(export 'BU/SIMPLEX-1TO-4/GET-AABB)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_addVertex" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/ADD-VERTEX))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_addVertex" #.(lispify "btBU_Simplex1to4_addVertex" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_addVertex" BU/SIMPLEX-1TO-4/ADD-VERTEX) :void
   (self :pointer)
   (pt :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_addVertex" 'function))
+(export 'BU/SIMPLEX-1TO-4/ADD-VERTEX)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_getNumVertices" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/GET-NUM-VERTICES))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_getNumVertices" #.(lispify "btBU_Simplex1to4_getNumVertices" 'function)) :int
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_getNumVertices" BU/SIMPLEX-1TO-4/GET-NUM-VERTICES) :int
   (self :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_getNumVertices" 'function))
+(export 'BU/SIMPLEX-1TO-4/GET-NUM-VERTICES)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_getNumEdges" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/GET-NUM-EDGES))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_getNumEdges" #.(lispify "btBU_Simplex1to4_getNumEdges" 'function)) :int
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_getNumEdges" BU/SIMPLEX-1TO-4/GET-NUM-EDGES) :int
   (self :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_getNumEdges" 'function))
+(export 'BU/SIMPLEX-1TO-4/GET-NUM-EDGES)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_getEdge" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/GET-EDGE))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_getEdge" #.(lispify "btBU_Simplex1to4_getEdge" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_getEdge" BU/SIMPLEX-1TO-4/GET-EDGE) :void
   (self :pointer)
   (i :int)
   (pa :pointer)
   (pb :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_getEdge" 'function))
+(export 'BU/SIMPLEX-1TO-4/GET-EDGE)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_getVertex" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/GET-VERTEX))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_getVertex" #.(lispify "btBU_Simplex1to4_getVertex" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_getVertex" BU/SIMPLEX-1TO-4/GET-VERTEX) :void
   (self :pointer)
   (i :int)
   (vtx :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_getVertex" 'function))
+(export 'BU/SIMPLEX-1TO-4/GET-VERTEX)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_getNumPlanes" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/GET-NUM-PLANES))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_getNumPlanes" #.(lispify "btBU_Simplex1to4_getNumPlanes" 'function)) :int
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_getNumPlanes" BU/SIMPLEX-1TO-4/GET-NUM-PLANES) :int
   (self :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_getNumPlanes" 'function))
+(export 'BU/SIMPLEX-1TO-4/GET-NUM-PLANES)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_getPlane" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/GET-PLANE))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_getPlane" #.(lispify "btBU_Simplex1to4_getPlane" 'function)) :void
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_getPlane" BU/SIMPLEX-1TO-4/GET-PLANE) :void
   (self :pointer)
   (planeNormal :pointer)
   (planeSupport :pointer)
   (i :int))
 
-(export '#.(lispify "btBU_Simplex1to4_getPlane" 'function))
+(export 'BU/SIMPLEX-1TO-4/GET-PLANE)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_getIndex" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/GET-INDEX))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_getIndex" #.(lispify "btBU_Simplex1to4_getIndex" 'function)) :int
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_getIndex" BU/SIMPLEX-1TO-4/GET-INDEX) :int
   (self :pointer)
   (i :int))
 
-(export '#.(lispify "btBU_Simplex1to4_getIndex" 'function))
+(export 'BU/SIMPLEX-1TO-4/GET-INDEX)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_isInside" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/IS-INSIDE))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_isInside" #.(lispify "btBU_Simplex1to4_isInside" 'function)) :pointer
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_isInside" BU/SIMPLEX-1TO-4/IS-INSIDE) :pointer
   (self :pointer)
   (pt :pointer)
   (tolerance :float))
 
-(export '#.(lispify "btBU_Simplex1to4_isInside" 'function))
+(export 'BU/SIMPLEX-1TO-4/IS-INSIDE)
 
-(declaim (inline #.(lispify "btBU_Simplex1to4_getName" 'function)))
+(declaim (inline BU/SIMPLEX-1TO-4/GET-NAME))
 
-(cffi:defcfun ("_wrap_btBU_Simplex1to4_getName" #.(lispify "btBU_Simplex1to4_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btBU_Simplex1to4_getName" BU/SIMPLEX-1TO-4/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btBU_Simplex1to4_getName" 'function))
+(export 'BU/SIMPLEX-1TO-4/GET-NAME)
 
-(declaim (inline #.(lispify "delete_btBU_Simplex1to4" 'function)))
+(declaim (inline DELETE/BT-BU/SIMPLEX-1TO-4))
 
-(cffi:defcfun ("_wrap_delete_btBU_Simplex1to4" #.(lispify "delete_btBU_Simplex1to4" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btBU_Simplex1to4" DELETE/BT-BU/SIMPLEX-1TO-4) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btBU_Simplex1to4" 'function))
+(export 'DELETE/BT-BU/SIMPLEX-1TO-4)
 
-(declaim (inline #.(lispify "btEmptyShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline EMPTY-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btEmptyShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btEmptyShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btEmptyShape_makeCPlusPlusInstance__SWIG_0" EMPTY-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btEmptyShape_makeCPlusPlusInstance" 'function))
+(export 'EMPTY-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btEmptyShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline EMPTY-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btEmptyShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btEmptyShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btEmptyShape_deleteCPlusPlusInstance__SWIG_0" EMPTY-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btEmptyShape_deleteCPlusPlusInstance" 'function))
+(export 'EMPTY-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btEmptyShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline EMPTY-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btEmptyShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btEmptyShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btEmptyShape_makeCPlusPlusInstance__SWIG_1" EMPTY-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btEmptyShape_makeCPlusPlusInstance" 'function))
+(export 'EMPTY-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btEmptyShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline EMPTY-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btEmptyShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btEmptyShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btEmptyShape_deleteCPlusPlusInstance__SWIG_1" EMPTY-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btEmptyShape_deleteCPlusPlusInstance" 'function))
+(export 'EMPTY-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btEmptyShape_makeCPlusArray" 'function)))
+(declaim (inline EMPTY-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btEmptyShape_makeCPlusArray__SWIG_0" #.(lispify "btEmptyShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btEmptyShape_makeCPlusArray__SWIG_0" EMPTY-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btEmptyShape_makeCPlusArray" 'function))
+(export 'EMPTY-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btEmptyShape_deleteCPlusArray" 'function)))
+(declaim (inline EMPTY-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btEmptyShape_deleteCPlusArray__SWIG_0" #.(lispify "btEmptyShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btEmptyShape_deleteCPlusArray__SWIG_0" EMPTY-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btEmptyShape_deleteCPlusArray" 'function))
+(export 'EMPTY-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btEmptyShape_makeCPlusArray" 'function)))
+(declaim (inline EMPTY-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btEmptyShape_makeCPlusArray__SWIG_1" #.(lispify "btEmptyShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btEmptyShape_makeCPlusArray__SWIG_1" EMPTY-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btEmptyShape_makeCPlusArray" 'function))
+(export 'EMPTY-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btEmptyShape_deleteCPlusArray" 'function)))
+(declaim (inline EMPTY-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btEmptyShape_deleteCPlusArray__SWIG_1" #.(lispify "btEmptyShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btEmptyShape_deleteCPlusArray__SWIG_1" EMPTY-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btEmptyShape_deleteCPlusArray" 'function))
+(export 'EMPTY-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btEmptyShape" 'function)))
+(declaim (inline MAKE-EMPTY-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btEmptyShape" #.(lispify "new_btEmptyShape" 'function)) :pointer)
+(cffi:defcfun ("_wrap_new_btEmptyShape" MAKE-EMPTY-SHAPE) :pointer)
 
-(export '#.(lispify "new_btEmptyShape" 'function))
+(export 'MAKE-EMPTY-SHAPE)
 
-(declaim (inline #.(lispify "delete_btEmptyShape" 'function)))
+(declaim (inline DELETE/BT-EMPTY-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btEmptyShape" #.(lispify "delete_btEmptyShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btEmptyShape" DELETE/BT-EMPTY-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btEmptyShape" 'function))
+(export 'DELETE/BT-EMPTY-SHAPE)
 
-(declaim (inline #.(lispify "btEmptyShape_getAabb" 'function)))
+(declaim (inline EMPTY-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btEmptyShape_getAabb" #.(lispify "btEmptyShape_getAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btEmptyShape_getAabb" EMPTY-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
   (aabbMax :pointer))
 
-(export '#.(lispify "btEmptyShape_getAabb" 'function))
+(export 'EMPTY-SHAPE/GET-AABB)
 
-(declaim (inline #.(lispify "btEmptyShape_setLocalScaling" 'function)))
+(declaim (inline EMPTY-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btEmptyShape_setLocalScaling" #.(lispify "btEmptyShape_setLocalScaling" 'function)) :void
+(cffi:defcfun ("_wrap_btEmptyShape_setLocalScaling" EMPTY-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
-(export '#.(lispify "btEmptyShape_setLocalScaling" 'function))
+(export 'EMPTY-SHAPE/SET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btEmptyShape_getLocalScaling" 'function)))
+(declaim (inline EMPTY-SHAPE/GET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btEmptyShape_getLocalScaling" #.(lispify "btEmptyShape_getLocalScaling" 'function)) :pointer
+(cffi:defcfun ("_wrap_btEmptyShape_getLocalScaling" EMPTY-SHAPE/GET-LOCAL-SCALING) :pointer
   (self :pointer))
 
-(export '#.(lispify "btEmptyShape_getLocalScaling" 'function))
+(export 'EMPTY-SHAPE/GET-LOCAL-SCALING)
 
-(declaim (inline #.(lispify "btEmptyShape_calculateLocalInertia" 'function)))
+(declaim (inline EMPTY-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btEmptyShape_calculateLocalInertia" #.(lispify "btEmptyShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btEmptyShape_calculateLocalInertia" EMPTY-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btEmptyShape_calculateLocalInertia" 'function))
+(export 'EMPTY-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btEmptyShape_getName" 'function)))
+(declaim (inline EMPTY-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btEmptyShape_getName" #.(lispify "btEmptyShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btEmptyShape_getName" EMPTY-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btEmptyShape_getName" 'function))
+(export 'EMPTY-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btEmptyShape_processAllTriangles" 'function)))
+(declaim (inline EMPTY-SHAPE/PROCESS-ALL-TRIANGLES))
 
-(cffi:defcfun ("_wrap_btEmptyShape_processAllTriangles" #.(lispify "btEmptyShape_processAllTriangles" 'function)) :void
+(cffi:defcfun ("_wrap_btEmptyShape_processAllTriangles" EMPTY-SHAPE/PROCESS-ALL-TRIANGLES) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer)
   (arg3 :pointer))
 
-(export '#.(lispify "btEmptyShape_processAllTriangles" 'function))
+(export 'EMPTY-SHAPE/PROCESS-ALL-TRIANGLES)
 
-(declaim (inline #.(lispify "btMultiSphereShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btMultiSphereShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMultiSphereShape_makeCPlusPlusInstance__SWIG_0" MULTI-SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btMultiSphereShape_makeCPlusPlusInstance" 'function))
+(export 'MULTI-SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btMultiSphereShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btMultiSphereShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btMultiSphereShape_deleteCPlusPlusInstance__SWIG_0" MULTI-SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btMultiSphereShape_deleteCPlusPlusInstance" 'function))
+(export 'MULTI-SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btMultiSphereShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btMultiSphereShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMultiSphereShape_makeCPlusPlusInstance__SWIG_1" MULTI-SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btMultiSphereShape_makeCPlusPlusInstance" 'function))
+(export 'MULTI-SPHERE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btMultiSphereShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btMultiSphereShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btMultiSphereShape_deleteCPlusPlusInstance__SWIG_1" MULTI-SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btMultiSphereShape_deleteCPlusPlusInstance" 'function))
+(export 'MULTI-SPHERE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btMultiSphereShape_makeCPlusArray" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_makeCPlusArray__SWIG_0" #.(lispify "btMultiSphereShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMultiSphereShape_makeCPlusArray__SWIG_0" MULTI-SPHERE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btMultiSphereShape_makeCPlusArray" 'function))
+(export 'MULTI-SPHERE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btMultiSphereShape_deleteCPlusArray" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_deleteCPlusArray__SWIG_0" #.(lispify "btMultiSphereShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btMultiSphereShape_deleteCPlusArray__SWIG_0" MULTI-SPHERE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btMultiSphereShape_deleteCPlusArray" 'function))
+(export 'MULTI-SPHERE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btMultiSphereShape_makeCPlusArray" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_makeCPlusArray__SWIG_1" #.(lispify "btMultiSphereShape_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMultiSphereShape_makeCPlusArray__SWIG_1" MULTI-SPHERE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btMultiSphereShape_makeCPlusArray" 'function))
+(export 'MULTI-SPHERE-SHAPE/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btMultiSphereShape_deleteCPlusArray" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_deleteCPlusArray__SWIG_1" #.(lispify "btMultiSphereShape_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btMultiSphereShape_deleteCPlusArray__SWIG_1" MULTI-SPHERE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btMultiSphereShape_deleteCPlusArray" 'function))
+(export 'MULTI-SPHERE-SHAPE/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "new_btMultiSphereShape" 'function)))
+(declaim (inline MAKE-MULTI-SPHERE-SHAPE))
 
-(cffi:defcfun ("_wrap_new_btMultiSphereShape" #.(lispify "new_btMultiSphereShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btMultiSphereShape" MAKE-MULTI-SPHERE-SHAPE) :pointer
   (positions :pointer)
   (radi :pointer)
   (numSpheres :int))
 
-(export '#.(lispify "new_btMultiSphereShape" 'function))
+(export 'MAKE-MULTI-SPHERE-SHAPE)
 
-(declaim (inline #.(lispify "btMultiSphereShape_calculateLocalInertia" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_calculateLocalInertia" #.(lispify "btMultiSphereShape_calculateLocalInertia" 'function)) :void
+(cffi:defcfun ("_wrap_btMultiSphereShape_calculateLocalInertia" MULTI-SPHERE-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
 
-(export '#.(lispify "btMultiSphereShape_calculateLocalInertia" 'function))
+(export 'MULTI-SPHERE-SHAPE/CALCULATE-LOCAL-INERTIA)
 
-(declaim (inline #.(lispify "btMultiSphereShape_localGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_localGetSupportingVertexWithoutMargin" #.(lispify "btMultiSphereShape_localGetSupportingVertexWithoutMargin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMultiSphereShape_localGetSupportingVertexWithoutMargin" MULTI-SPHERE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
-(export '#.(lispify "btMultiSphereShape_localGetSupportingVertexWithoutMargin" 'function))
+(export 'MULTI-SPHERE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btMultiSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" #.(lispify "btMultiSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function)) :void
+(cffi:defcfun ("_wrap_btMultiSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" MULTI-SPHERE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
   (numVectors :int))
 
-(export '#.(lispify "btMultiSphereShape_batchedUnitVectorGetSupportingVertexWithoutMargin" 'function))
+(export 'MULTI-SPHERE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN)
 
-(declaim (inline #.(lispify "btMultiSphereShape_getSphereCount" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/GET-SPHERE-COUNT))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_getSphereCount" #.(lispify "btMultiSphereShape_getSphereCount" 'function)) :int
+(cffi:defcfun ("_wrap_btMultiSphereShape_getSphereCount" MULTI-SPHERE-SHAPE/GET-SPHERE-COUNT) :int
   (self :pointer))
 
-(export '#.(lispify "btMultiSphereShape_getSphereCount" 'function))
+(export 'MULTI-SPHERE-SHAPE/GET-SPHERE-COUNT)
 
-(declaim (inline #.(lispify "btMultiSphereShape_getSpherePosition" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/GET-SPHERE-POSITION))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_getSpherePosition" #.(lispify "btMultiSphereShape_getSpherePosition" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMultiSphereShape_getSpherePosition" MULTI-SPHERE-SHAPE/GET-SPHERE-POSITION) :pointer
   (self :pointer)
   (index :int))
 
-(export '#.(lispify "btMultiSphereShape_getSpherePosition" 'function))
+(export 'MULTI-SPHERE-SHAPE/GET-SPHERE-POSITION)
 
-(declaim (inline #.(lispify "btMultiSphereShape_getSphereRadius" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/GET-SPHERE-RADIUS))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_getSphereRadius" #.(lispify "btMultiSphereShape_getSphereRadius" 'function)) :float
+(cffi:defcfun ("_wrap_btMultiSphereShape_getSphereRadius" MULTI-SPHERE-SHAPE/GET-SPHERE-RADIUS) :float
   (self :pointer)
   (index :int))
 
-(export '#.(lispify "btMultiSphereShape_getSphereRadius" 'function))
+(export 'MULTI-SPHERE-SHAPE/GET-SPHERE-RADIUS)
 
-(declaim (inline #.(lispify "btMultiSphereShape_getName" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_getName" #.(lispify "btMultiSphereShape_getName" 'function)) :string
+(cffi:defcfun ("_wrap_btMultiSphereShape_getName" MULTI-SPHERE-SHAPE/GET-NAME) :string
   (self :pointer))
 
-(export '#.(lispify "btMultiSphereShape_getName" 'function))
+(export 'MULTI-SPHERE-SHAPE/GET-NAME)
 
-(declaim (inline #.(lispify "btMultiSphereShape_calculateSerializeBufferSize" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_calculateSerializeBufferSize" #.(lispify "btMultiSphereShape_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btMultiSphereShape_calculateSerializeBufferSize" MULTI-SPHERE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-(export '#.(lispify "btMultiSphereShape_calculateSerializeBufferSize" 'function))
+(export 'MULTI-SPHERE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
-(declaim (inline #.(lispify "btMultiSphereShape_serialize" 'function)))
+(declaim (inline MULTI-SPHERE-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btMultiSphereShape_serialize" #.(lispify "btMultiSphereShape_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btMultiSphereShape_serialize" MULTI-SPHERE-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-(export '#.(lispify "btMultiSphereShape_serialize" 'function))
+(export 'MULTI-SPHERE-SHAPE/SERIALIZE)
 
-(declaim (inline #.(lispify "delete_btMultiSphereShape" 'function)))
+(declaim (inline DELETE/BT-MULTI-SPHERE-SHAPE))
 
-(cffi:defcfun ("_wrap_delete_btMultiSphereShape" #.(lispify "delete_btMultiSphereShape" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btMultiSphereShape" DELETE/BT-MULTI-SPHERE-SHAPE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btMultiSphereShape" 'function))
+(export 'DELETE/BT-MULTI-SPHERE-SHAPE)
 
-(cffi:defcstruct #.(lispify "btPositionAndRadius" 'classname)
-	(#.(lispify "m_pos" 'slotname) #.(lispify "btVector3FloatData" 'classname))
-	(#.(lispify "m_radius" 'slotname) :float))
+(cffi:defcstruct POSITION-AND-RADIUS
+  (POS VECTOR-3-FLOAT-DATA)
+  (RADIUS :float))
 
-(export '#.(lispify "btPositionAndRadius" 'classname))
+(export 'POSITION-AND-RADIUS)
 
-(export '#.(lispify "m_pos" 'slotname))
+(export 'POS)
 
-(export '#.(lispify "m_radius" 'slotname))
+(export 'RADIUS)
 
-(cffi:defcstruct #.(lispify "btMultiSphereShapeData" 'classname)
-	(#.(lispify "m_convexInternalShapeData" 'slotname) :pointer)
-	(#.(lispify "m_localPositionArrayPtr" 'slotname) :pointer)
-	(#.(lispify "m_localPositionArraySize" 'slotname) :int)
-	(#.(lispify "m_padding" 'slotname) :pointer))
+(cffi:defcstruct MULTI-SPHERE-SHAPE-DATA
+  (CONVEX-INTERNAL-SHAPE-DATA :pointer)
+  (LOCAL-POSITION-ARRAY-PTR :pointer)
+  (LOCAL-POSITION-ARRAY-SIZE :int)
+  (PADDING :pointer))
 
-(export '#.(lispify "btMultiSphereShapeData" 'classname))
+(export 'MULTI-SPHERE-SHAPE-DATA)
 
-(export '#.(lispify "m_convexInternalShapeData" 'slotname))
+(export 'CONVEX-INTERNAL-SHAPE-DATA)
 
-(export '#.(lispify "m_localPositionArrayPtr" 'slotname))
+(export 'LOCAL-POSITION-ARRAY-PTR)
 
-(export '#.(lispify "m_localPositionArraySize" 'slotname))
+(export 'LOCAL-POSITION-ARRAY-SIZE)
 
-(export '#.(lispify "m_padding" 'slotname))
+(export 'PADDING)
 
-(declaim (inline #.(lispify "btUniformScalingShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline UNIFORM-SCALING-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btUniformScalingShape_makeCPlusPlusInstance__SWIG_0" #.(lispify "btUniformScalingShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btUniformScalingShape_makeCPlusPlusInstance__SWIG_0" UNIFORM-SCALING-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btUniformScalingShape_makeCPlusPlusInstance" 'function))
+(export 'UNIFORM-SCALING-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btUniformScalingShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline UNIFORM-SCALING-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btUniformScalingShape_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btUniformScalingShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btUniformScalingShape_deleteCPlusPlusInstance__SWIG_0" UNIFORM-SCALING-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btUniformScalingShape_deleteCPlusPlusInstance" 'function))
+(export 'UNIFORM-SCALING-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btUniformScalingShape_makeCPlusPlusInstance" 'function)))
+(declaim (inline UNIFORM-SCALING-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btUniformScalingShape_makeCPlusPlusInstance__SWIG_1" #.(lispify "btUniformScalingShape_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btUniformScalingShape_makeCPlusPlusInstance__SWIG_1" UNIFORM-SCALING-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btUniformScalingShape_makeCPlusPlusInstance" 'function))
+(export 'UNIFORM-SCALING-SHAPE/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btUniformScalingShape_deleteCPlusPlusInstance" 'function)))
+(declaim (inline UNIFORM-SCALING-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btUniformScalingShape_deleteCPlusPlusInstance__SWIG_1" #.(lispify "btUniformScalingShape_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btUniformScalingShape_deleteCPlusPlusInstance__SWIG_1" UNIFORM-SCALING-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btUniformScalingShape_deleteCPlusPlusInstance" 'function))
+(export 'UNIFORM-SCALING-SHAPE/DELETE-CPLUS-PLUS-INSTANCE)
 
 (declaim (inline #.(lispify "btUniformScalingShape_makeCPlusArray" 'function)))
 
