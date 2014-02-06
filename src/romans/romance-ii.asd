@@ -2,7 +2,7 @@
   :description "Romance II Game Core"
   :author "Bruce-Robert Fenn Pocock"
   :licence "AGPLv3"
-  
+
   :depends-on (
 
                :alexandria
@@ -12,30 +12,30 @@
                :cl-unicode
                :cffi
                :langutils
-               :langutils 
+               :langutils
                :postmodern
                :prepl
                :sqlite
                :usocket
                :wordnet
-               
+
                )
-  
+
   :encoding :utf-8
-  
+
   :components
   ((:file "setup")
    (:file "common" :depends-on ("setup"))
    (:module "Aelius-Galenus"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-   (:file "Aelius-Galenus"
-                              :depends-on ("package"))))
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "Aelius-Galenus"
+                                :depends-on ("package"))))
    (:module "Appius-Claudius-Caecus"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-   (:file "Appius-Claudius-Caecus"
-                              :depends-on ("package"))))
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "Appius-Claudius-Caecus"
+                                :depends-on ("package"))))
    (:module "Clodia-Metelli-Pulcher"
             :depends-on ("setup" "common")
             :components ((:file "package")
@@ -51,51 +51,58 @@
                                 :depends-on ("package")))
             :depends-on ("setup" "common"))
    (:module "Gaius-Asinius-Pollio"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-   (:file "Gaius-Asinius-Pollio"
-                              :depends-on ("package"))))
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "Gaius-Asinius-Pollio"
+                                :depends-on ("package"))))
    (:module "Gaius-Julius-Caesar"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-   (:file "Gaius-Julius-Caesar"
-                              :depends-on ("package"))))
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "Gaius-Julius-Caesar"
+                                :depends-on ("package"))))
    (:module "Gaius-Lutatius-Catulus"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-   (:file "Gaius-Lutatius-Catulus"
-                              :depends-on ("package"))))
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "Gaius-Lutatius-Catulus"
+                                :depends-on ("package"))))
    (:module "Gaius-Valerius-Catullus"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-                       (:file "conceptnet5")
-   (:file "Gaius-Valerius-Catullus"
-                              :depends-on ("package" "conceptnet5"))))
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "conceptnet5")
+                         (:file "Gaius-Valerius-Catullus"
+                                :depends-on ("package" "conceptnet5"))))
    (:module "Lucius-Aemilius-Regillus"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-   (:file "Lucius-Aemilius-Regillus"
-                              :depends-on ("package")))) 
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "Lucius-Aemilius-Regillus"
+                                :depends-on ("package"))))
    (:module "Marcus-Vitruvius-Pollio"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-   (:file "Marcus-Vitruvius-Pollio"
-                              :depends-on ("package"))))
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "Marcus-Vitruvius-Pollio"
+                                :depends-on ("package"))))
    (:module "Narcissus"
             :depends-on ("setup" "common")
-          :components ((:file "package")
-                       (:file "Narcissus-bullet"
-                              :depends-on ("package"))
-   (:file "Narcissus"
-                              :depends-on ("package" "Narcissus-bullet"))))
+            :components ((:file "package")
+                         (:file "bullet-package")
+                         (:file "bt-classes"
+                                :depends-on ("bullet-package"))
+                         (:file "bt-param"
+                                :depends-on ("bullet-package"
+                                             "bt-classes" "Narcissus-bullet"))
+                         (:file "Narcissus-bullet"
+                                :depends-on ("bullet-package"))
+                         (:file "Narcissus"
+                                :depends-on ("package" "Narcissus-bullet"
+                                                       "bt-param"))))
    (:module "Rabirius"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-   (:file "Rabirius"
-                              :depends-on ("package"))))
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "Rabirius"
+                                :depends-on ("package"))))
    (:module "Sextus-Julius-Frontinus"
-          :depends-on ("setup" "common")
-          :components ((:file "package")
-   (:file "Sextus-Julius-Frontinus"
-                              :depends-on ("package"))))))
+            :depends-on ("setup" "common")
+            :components ((:file "package")
+                         (:file "Sextus-Julius-Frontinus"
+                                :depends-on ("package"))))))
 

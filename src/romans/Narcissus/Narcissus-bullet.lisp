@@ -1,624 +1,179 @@
-(defpackage bullet-physics
-  (:use :cl :alexandria)
-  (:nicknames bullet)
-  (:documentation 
-   
-   "Bullet is a Collision Detection and Rigid Body Dynamics Library.
- The Library is Open Source and free for commercial use, under the
- zlib.  The C++ documentation is at bulletphysics.org; this is a
- simple wrapper to make Bullet available to Common Lisp programs.
-
-This package was hand-edited to save time over learning
-Swig properly.")
-  (:export #:+active-tag+
-           #:+collision-object-data-name+
-           #:+disable-deactivation+
-           #:+disable-simulation+
-           #:+dynamic-set+
-           #:+fixed-set+
-           #:+island-sleeping+
-           #:+stagecount+
-           #:+wants-deactivation+
-           #:6-dof-flags
-           #:activate
-           #:activation-state
-           #:activation-state-1
-           #:activep
-           #:add-action
-           #:add-character
-           #:add-collision-object
-           #:add-constraint
-           #:add-rigid-body
-           #:add-single-result
-           #:add-vehicle
-           #:all-hits-ray-result-callback
-           #:anisotropic-friction
-           #:anisotropic-friction-flags
-           #:apply-gravity
-           #:apply-speculative-contact-restitution
-           #:broadphase
-           #:broadphase-handle
-           #:calculate-serialize-buffer-size
-           #:ccd-motion-threshold
-           #:ccd-square-motion-threshold
-           #:ccd-swept-sphere-radius
-           #:check-collide-with
-           #:clear-forces
-           #:closest-convex-result-callback
-           #:closest-hit-fraction
-           #:closest-ray-result-callback
-           #:collision-filter-group
-           #:collision-filter-mask
-           #:collision-flags
-           #:collision-object
-           #:collision-object-array
-           #:collision-object-double-data
-           #:collision-object-float-data
-           #:collision-object-types
-           #:collision-objects
-           #:collision-shape
-           #:collision-world
-           #:companion-id
-           #:compute-overlapping-pairs
-           #:cone-twist-flags
-           #:constraint
-           #:constraint-solver
-           #:contact-pair-test
-           #:contact-processing-threshold
-           #:contact-result-callback
-           #:contact-test
-           #:convex-from-world
-           #:convex-result-callback
-           #:convex-sweep-test
-           #:convex-to-world
-           #:deactivation-time
-           #:debug-draw-constraint
-           #:debug-draw-modes
-           #:debug-draw-object
-           #:debug-draw-world
-           #:debug-drawer
-           #:dispatch-info
-           #:dispatcher
-           #:dispatcher-flags
-           #:flags
-           #:force-activation-state
-           #:force-update-all-aabbs
-           #:friction
-           #:get-broadphase-handle
-           #:gravity
-           #:has-anisotropic-friction
-           #:has-anisotropic-friction-p
-           #:has-contact-response-p
-           #:has-hit
-           #:hinge-flags
-           #:hit-collision-object
-           #:hit-fraction
-           #:hit-fractions
-           #:hit-normal-local
-           #:hit-normal-world
-           #:hit-point-local
-           #:hit-point-world
-           #:initialize-instance
-           #:internal-get-extension-pointer
-           #:internal-set-extension-pointer
-           #:internal-type
-           #:interpolation-angular-velocity
-           #:interpolation-linear-velocity
-           #:interpolation-world-transform
-           #:island-tag
-           #:island-tag-1
-           #:kinematic-object-p
-           #:latency-motion-state-interpolation
-           #:local-convex-result
-           #:local-ray-result
-           #:local-shape-info
-           #:make-collision-object
-           #:make-collision-world
-           #:make-discrete-dynamics-world
-           #:make-simple-dynamics-world
-           #:make-vector3
-           #:merges-simulation-islands
-           #:name
-           #:needs-collision
-           #:num-collision-objects
-           #:num-constraints
-           #:num-tasks
-           #:padding
-           #:pair-cache
-           #:perform-discrete-collision-detection
-           #:point-2-point-flags
-           #:ray-from-world
-           #:ray-result-callback
-           #:ray-test
-           #:ray-to-world
-           #:remove-action
-           #:remove-character
-           #:remove-collision-object
-           #:remove-constraint
-           #:remove-rigid-body
-           #:remove-vehicle
-           #:restitution
-           #:rigid-body-flags
-           #:rolling-friction
-           #:root-collision-shape
-           #:serialization-flags
-           #:serialize
-           #:serialize-single-object
-           #:setf
-           #:shape-part
-           #:simple-broadphase
-           #:simulation-island-manager
-           #:slider-flags
-           #:static-object-p
-           #:static-or-kinematic-object-p
-           #:step-simulation
-           #:synchronize-all-motion-states
-           #:synchronize-motion-states
-           #:synchronize-single-motion-state
-           #:triangle-index
-           #:update-aabbs
-           #:update-revision-internal
-           #:update-single-aabb
-           #:update-vehicles
-           #:user-index
-           #:user-pointer
-           #:world-transform
-           #:world-type))
-
 (in-package #:bullet-physics)
 
-(defparameter *compile-trace-output* nil)
-(eval-when (:compile-toplevel)
-  (setf *compile-trace-output* (open "Busset Physics Wrapper mapping.log"
-                                     :direction :output
-                                     :if-exists :supersede)))
 
-(cl:eval-when (:compile-toplevel :load-toplevel :execute)
-  (defun lispify (identifier expression &optional (package cl:*package*)
-                  &aux (setf% nil))
-    (check-type identifier string)
-    (assert (member expression '(function method
-                                 classname class enumname
-                                 constant enumvalue
-                                 variable slotname)))
-    (when *compile-trace-output*
-      (format *compile-trace-output*
-              "~& ~S → ~:(~A~) ⇒ " identifier expression))
-    
-    (when (and (> (length identifier) 4)
-               (or (equal (subseq identifier 0 4) "set-")
-                   (equal (subseq identifier 0 4) "set_"))
-               (eql expression 'method))
-      (setf identifier (subseq identifier 4)
-            setf% t))
-    (when (and (> (length identifier) 4)
-               (or (equal (subseq identifier 0 4) "get-")
-                   (equal (subseq identifier 0 4) "get_")))
-      (setf identifier (subseq identifier 4)))
-    (when (and (> (length identifier) 3)
-               (or (equal (subseq identifier 0 3) "is-")
-                   (equal (subseq identifier 0 3) "is_")))
-      (setf identifier (concatenate
-                        'string (subseq identifier 3) 
-                        (if (or (find #\- (subseq identifier 3))
-                                (find #\_ (subseq identifier 3)))
-                            "-p" "p"))))
-    (when (and (> (length identifier) 4)
-               (or (equal (subseq identifier 0 4) "has-")
-                   (equal (subseq identifier 0 4) "has_")))
-      (setf identifier (concatenate 'string identifier "-p")))
-    (when (and (> (length identifier) 4)
-               (equal (subseq identifier 0 4) "new_")
-               (member expression '(function method)))
-      (setf identifier (concatenate
-                        'string "make-"
-                        (cond ((or (equal (subseq identifier 4 7) "bt_")
-                                   (equal (subseq identifier 4 7) "BT_")
-                                   (equal (subseq identifier 4 7) "bt-"))
-                               (subseq identifier 7))
-                              ((equal (subseq identifier 4 6) "bt")
-                               (subseq identifier 6))
-                              (t (subseq identifier 4))))))
-
-    (when (and (eql expression 'variable)
-               (eql (elt identifier 0) #\g))
-      (setf identifier (subseq identifier 1)))
-    (when (and (> (length identifier) 3)
-               (or (equal (subseq identifier 0 2) "m_")
-                   (equal (subseq identifier 0 2) "m-")))
-      (setf identifier (subseq identifier 2)))
-    (when (and (> (length identifier) 3)
-               (or (equal (subseq identifier 0 3) "bt_")
-                   (equal (subseq identifier 0 3) "BT_")
-                   (equal (subseq identifier 0 3) "bt-")))
-      (setf identifier (subseq identifier 3)))
-    (when (and (> (length identifier) 2)
-               (equal (subseq identifier 0 2) "bt"))
-      (setf identifier (subseq identifier 2)))
-
-    (let ((name identifier)
-          (flag expression))
-      (labels
-          ((helper (list last rest &aux (c (car list)))
-             (cond
-               ((null list) rest)
-               ((upper-case-p c)    (helper (cdr list) 'upper
-                                         (case last
-                                           ((lower
-                                             digit)  (list* c #\- rest))
-                                           (t        (cons c rest)))))
-               ((lower-case-p c)    (helper (cdr list) 'lower
-                                         (cons (char-upcase c) rest)))
-               ((digit-char-p c)    (helper (cdr list) 'digit
-                                         (case last
-                                           ((upper
-                                             lower)  (list* c #\- rest))
-                                           (t        (cons c rest)))))
-
-               ((char-equal c #\_)  (helper (cdr list) '_
-                                           (cons (case expression 
-                                                   ((method 
-                                                     function
-                                                     classname
-                                                     class
-                                                     enumname) #\/)
-                                                   (otherwise #\-)) rest)))
-               (t                   (helper (cdr list) '_
-                          (cons c rest))))))
-        
-        (let ((fix (case flag
-                     (constant "+")
-                     (variable "*")
-                     (otherwise ""))))
-          (let ((sym (intern
-                      (concatenate 'string
-                                   fix
-                                   (nreverse (helper (concatenate 'list name)
-                                                     nil nil))
-                                   fix)
-                      package)))
-            
-            (if setf% 
-                (progn 
-                  (when *compile-trace-output*
-                    (format *compile-trace-output* "(SETF ~S)" sym))
-                  (list 'setf sym))
-                (progn 
-                  (when *compile-trace-output*
-                    (format *compile-trace-output* "~S" sym))
-                  sym))))))))
-
-(defmacro defmeth (name &rest method-stuff)
-  `(progn (defmethod ,name ,@method-stuff)
-          (export ',name)))
-
-(defmacro defklass (name &rest method-stuff)
-  `(progn (defclass ,name ,@method-stuff)
-          (export ',name)))
-
-(defmacro define-anonymous-enum (&body enums)
-  "Converts anonymous enums to defconstants."
-  `(progn ,@(loop for value in enums
-               for index = 0 then (1+ index)
-               when (listp value) do (setf index (second value)
-                                           value (first value))
-               collect `(define-constant ,value ,index))))
-
-(defmethod param (thing num &optional axis))
-(defmethod (setf param) (thing num &optional axis))
-
-(cffi:defcstruct #.(lispify "LocalShapeInfo" 'classname)
-                 (#.(lispify "m_shapePart" 'slotname) :int)
-                 (#.(lispify "m_triangleIndex" 'slotname) :int))
-
-#+exportagain (export '#.(lispify "LocalShapeInfo" 'classname))
-
-#+exportagain (export '#.(lispify "m_shapePart" 'slotname))
-
-#+exportagain (export '#.(lispify "m_triangleIndex" 'slotname))
-
-(cffi:defcstruct #.(lispify "LocalRayResult" 'classname)
-                 (#.(lispify "m_collisionObject" 'slotname) :pointer)
-                 (#.(lispify "m_localShapeInfo" 'slotname) :pointer)
-                 (#.(lispify "m_hitNormalLocal" 'slotname) :pointer)
-                 (#.(lispify "m_hitFraction" 'slotname) :float))
-
-#+exportagain (export '#.(lispify "LocalRayResult" 'classname))
-
-#+exportagain (export '#.(lispify "m_collisionObject" 'slotname))
-
-#+exportagain (export '#.(lispify "m_localShapeInfo" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitNormalLocal" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitFraction" 'slotname))
-
-(cffi:defcstruct #.(lispify "RayResultCallback" 'classname)
-                 (#.(lispify "m_closestHitFraction" 'slotname) :float)
-                 (#.(lispify "m_collisionObject" 'slotname) :pointer)
-                 (#.(lispify "m_collisionFilterGroup" 'slotname) :short)
-                 (#.(lispify "m_collisionFilterMask" 'slotname) :short)
-                 (#.(lispify "m_flags" 'slotname) :unsigned-int)
-                 (#.(lispify "hasHit" 'slotname) :pointer)
-                 (#.(lispify "needsCollision" 'slotname) :pointer)
-                 (#.(lispify "addSingleResult" 'slotname) :pointer))
-
-#+exportagain (export '#.(lispify "RayResultCallback" 'classname))
-
-#+exportagain (export '#.(lispify "m_closestHitFraction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionObject" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionFilterGroup" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionFilterMask" 'slotname))
-
-#+exportagain (export '#.(lispify "m_flags" 'slotname))
-
-#+exportagain (export '#.(lispify "hasHit" 'slotname))
-
-#+exportagain (export '#.(lispify "needsCollision" 'slotname))
-
-#+exportagain (export '#.(lispify "addSingleResult" 'slotname))
-
-(cffi:defcstruct #.(lispify "ClosestRayResultCallback" 'classname)
-                 (#.(lispify "m_rayFromWorld" 'slotname) :pointer)
-                 (#.(lispify "m_rayToWorld" 'slotname) :pointer)
-                 (#.(lispify "m_hitNormalWorld" 'slotname) :pointer)
-                 (#.(lispify "m_hitPointWorld" 'slotname) :pointer)
-                 (#.(lispify "addSingleResult" 'slotname) :pointer))
-
-#+exportagain (export '#.(lispify "ClosestRayResultCallback" 'classname))
-
-#+exportagain (export '#.(lispify "m_rayFromWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_rayToWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitNormalWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitPointWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "addSingleResult" 'slotname))
-
-(cffi:defcstruct #.(lispify "AllHitsRayResultCallback" 'classname)
-                 (#.(lispify "m_collisionObjects" 'slotname) :pointer)
-                 (#.(lispify "m_rayFromWorld" 'slotname) :pointer)
-                 (#.(lispify "m_rayToWorld" 'slotname) :pointer)
-                 (#.(lispify "m_hitNormalWorld" 'slotname) :pointer)
-                 (#.(lispify "m_hitPointWorld" 'slotname) :pointer)
-                 (#.(lispify "m_hitFractions" 'slotname) :pointer)
-                 (#.(lispify "addSingleResult" 'slotname) :pointer))
-
-#+exportagain (export '#.(lispify "AllHitsRayResultCallback" 'classname))
-
-#+exportagain (export '#.(lispify "m_collisionObjects" 'slotname))
-
-#+exportagain (export '#.(lispify "m_rayFromWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_rayToWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitNormalWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitPointWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitFractions" 'slotname))
-
-#+exportagain (export '#.(lispify "addSingleResult" 'slotname))
-
-(cffi:defcstruct #.(lispify "LocalConvexResult" 'classname)
-                 (#.(lispify "m_hitCollisionObject" 'slotname) :pointer)
-                 (#.(lispify "m_localShapeInfo" 'slotname) :pointer)
-                 (#.(lispify "m_hitNormalLocal" 'slotname) :pointer)
-                 (#.(lispify "m_hitPointLocal" 'slotname) :pointer)
-                 (#.(lispify "m_hitFraction" 'slotname) :float))
-
-#+exportagain (export '#.(lispify "LocalConvexResult" 'classname))
-
-#+exportagain (export '#.(lispify "m_hitCollisionObject" 'slotname))
-
-#+exportagain (export '#.(lispify "m_localShapeInfo" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitNormalLocal" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitPointLocal" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitFraction" 'slotname))
-
-(cffi:defcstruct #.(lispify "ConvexResultCallback" 'classname)
-                 (#.(lispify "m_closestHitFraction" 'slotname) :float)
-                 (#.(lispify "m_collisionFilterGroup" 'slotname) :short)
-                 (#.(lispify "m_collisionFilterMask" 'slotname) :short)
-                 (#.(lispify "hasHit" 'slotname) :pointer)
-                 (#.(lispify "needsCollision" 'slotname) :pointer)
-                 (#.(lispify "addSingleResult" 'slotname) :pointer))
-
-#+exportagain (export '#.(lispify "ConvexResultCallback" 'classname))
-
-#+exportagain (export '#.(lispify "m_closestHitFraction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionFilterGroup" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionFilterMask" 'slotname))
-
-#+exportagain (export '#.(lispify "hasHit" 'slotname))
-
-#+exportagain (export '#.(lispify "needsCollision" 'slotname))
-
-#+exportagain (export '#.(lispify "addSingleResult" 'slotname))
-
-(cffi:defcstruct #.(lispify "ClosestConvexResultCallback" 'classname)
-                 (#.(lispify "m_convexFromWorld" 'slotname) :pointer)
-                 (#.(lispify "m_convexToWorld" 'slotname) :pointer)
-                 (#.(lispify "m_hitNormalWorld" 'slotname) :pointer)
-                 (#.(lispify "m_hitPointWorld" 'slotname) :pointer)
-                 (#.(lispify "m_hitCollisionObject" 'slotname) :pointer)
-                 (#.(lispify "addSingleResult" 'slotname) :pointer))
-
-#+exportagain (export '#.(lispify "ClosestConvexResultCallback" 'classname))
-
-#+exportagain (export '#.(lispify "m_convexFromWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_convexToWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitNormalWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitPointWorld" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitCollisionObject" 'slotname))
-
-#+exportagain (export '#.(lispify "addSingleResult" 'slotname))
-
-(cffi:defcstruct #.(lispify "ContactResultCallback" 'classname)
-                 (#.(lispify "m_collisionFilterGroup" 'slotname) :short)
-                 (#.(lispify "m_collisionFilterMask" 'slotname) :short)
-                 (#.(lispify "needsCollision" 'slotname) :pointer)
-                 (#.(lispify "addSingleResult" 'slotname) :pointer))
-
-#+exportagain (export '#.(lispify "ContactResultCallback" 'classname))
-
-#+exportagain (export '#.(lispify "m_collisionFilterGroup" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionFilterMask" 'slotname))
-
-#+exportagain (export '#.(lispify "needsCollision" 'slotname))
-
-#+exportagain (export '#.(lispify "addSingleResult" 'slotname))
-
-(declaim (inline #.(lispify "new_btCollisionWorld" 'function)))
-
-(cffi:defcfun ("_wrap_new_btCollisionWorld" #.(lispify "new_btCollisionWorld" 'function)) :pointer
+(defmethod set-frames ((self CONE-TWIST-CONSTRAINT) (frameA transform) (frameB transform))
+  (CONE-TWIST-CONSTRAINT/SET-FRAMES (ff-pointer self) frameA frameB)))
+
+(cffi:defcstruct LOCAL-SHAPE-INFO
+  (SHAPE-PART :int)
+  (TRIANGLE-INDEX :int))
+
+(cffi:defcstruct LOCAL-RAY-RESULT
+  (COLLISION-OBJECT :pointer)
+  (LOCAL-SHAPE-INFO :pointer)
+  (HIT-NORMAL-LOCAL :pointer)
+  (HIT-FRACTION :float))
+
+(cffi:defcstruct RAY-RESULT-CALLBACK 
+  (CLOSEST-HIT-FRACTION :float)
+  (collision-object :pointer)
+  (COLLISION-FILTER-GROUP :short)
+  (COLLISION-FILTER-MASK :short)
+  (FLAGS :unsigned-int)
+  (has-hit :pointer)
+  (NEEDS-COLLISION :pointer)
+  (add-single-result :pointer))
+
+(cffi:defcstruct CLOSEST-RAY-RESULT-CALLBACK
+  (RAY-FROM-WORLD :pointer)
+  (RAY-TO-WORLD :pointer)
+  (HIT-NORMAL-WORLD :pointer)
+  (HIT-POINT-WORLD :pointer)
+  (ADD-SINGLE-RESULT :pointer))
+
+(cffi:defcstruct ALL-HITS-RAY-RESULT-CALLBACK
+  (COLLISION-OBJECTS :pointer)
+  (RAY-FROM-WORLD :pointer)
+  (RAY-TO-WORLD :pointer)
+  (HIT-NORMAL-WORLD :pointer)
+  (HIT-POINT-WORLD :pointer)
+  (HIT-FRACTIONS :pointer)
+  (ADD-SINGLE-RESULT :pointer))
+
+(cffi:defcstruct LOCAL-CONVEX-RESULT
+  (HIT-COLLISION-OBJECT :pointer)
+  (LOCAL-SHAPE-INFO :pointer)
+  (HIT-NORMAL-LOCAL :pointer)
+  (HIT-POINT-LOCAL :pointer)
+  (HIT-FRACTION :float))
+
+(cffi:defcstruct CONVEX-RESULT-CALLBACK
+  (CLOSEST-HIT-FRACTION :float)
+  (COLLISION-FILTER-GROUP :short)
+  (COLLISION-FILTER-MASK :short)
+  (HAS-HIT :pointer)
+  (NEEDS-COLLISION :pointer)
+  (ADD-SINGLE-RESULT :pointer))
+
+(cffi:defcstruct CLOSEST-CONVEX-RESULT-CALLBACK
+  (CONVEX-FROM-WORLD :pointer)
+  (CONVEX-TO-WORLD :pointer)
+  (HIT-NORMAL-WORLD :pointer)
+  (HIT-POINT-WORLD :pointer)
+  (HIT-COLLISION-OBJECT :pointer)
+  (ADD-SINGLE-RESULT :pointer))
+
+(cffi:defcstruct CONTACT-RESULT-CALLBACK
+  (COLLISION-FILTER-GROUP :short)
+  (COLLISION-FILTER-MASK :short)
+  (NEEDS-COLLISION :pointer)
+  (ADD-SINGLE-RESULT :pointer))
+
+(declaim (inline MAKE-COLLISION-WORLD))
+
+(cffi:defcfun ("_wrap_new_btCollisionWorld" MAKE-COLLISION-WORLD) :pointer
   (dispatcher :pointer)
   (broadphasePairCache :pointer)
   (collisionConfiguration :pointer))
 
-#+exportagain (export '#.(lispify "new_btCollisionWorld" 'function))
+(declaim (inline DELETE/BT-COLLISION-WORLD))
 
-(declaim (inline #.(lispify "delete_btCollisionWorld" 'function)))
-
-(cffi:defcfun ("_wrap_delete_btCollisionWorld" #.(lispify "delete_btCollisionWorld" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCollisionWorld" DELETE/BT-COLLISION-WORLD) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "delete_btCollisionWorld" 'function))
+(declaim (inline COLLISION-WORLD/SET-BROADPHASE))
 
-(declaim (inline #.(lispify "btCollisionWorld_setBroadphase" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_setBroadphase" #.(lispify "btCollisionWorld_setBroadphase" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_setBroadphase" COLLISION-WORLD/SET-BROADPHASE) :void
   (self :pointer)
   (pairCache :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_setBroadphase" 'function))
-
-(declaim (inline #.(lispify "btCollisionWorld_getBroadphase" 'function)))
+(declaim (inline COLLISION-WORLD/GET-BROADPHASE))
 
 (cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_0"
-               #.(lispify "btCollisionWorld_getBroadphase" 'function)) :pointer
+               COLLISION-WORLD/GET-BROADPHASE) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionWorld_getBroadphase" 'function))
 
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btCollisionWorld_getBroadphase" 'function)))
+  (declaim (inline COLLISION-WORLD/GET-BROADPHASE))
 
  (cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_1"
-                #.(lispify "btCollisionWorld_getBroadphase" 'function)) :pointer
+                COLLISION-WORLD/GET-BROADPHASE) :pointer
    (self :pointer))
 
- #+exportagain (export '#.(lispify "btCollisionWorld_getBroadphase" 'function)))
+ )
 
-(declaim (inline #.(lispify "btCollisionWorld_getPairCache" 'function)))
+(declaim (inline COLLISION-WORLD/GET-PAIR-CACHE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getPairCache" #.(lispify "btCollisionWorld_getPairCache" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getPairCache" COLLISION-WORLD/GET-PAIR-CACHE) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_getPairCache" 'function))
+(declaim (inline COLLISION-WORLD/GET-DISPATCHER))
 
-(declaim (inline #.(lispify "btCollisionWorld_getDispatcher" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_0" #.(lispify "btCollisionWorld_getDispatcher" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_0" COLLISION-WORLD/GET-DISPATCHER) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionWorld_getDispatcher" 'function))
 
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btCollisionWorld_getDispatcher" 'function)))
+  (declaim (inline COLLISION-WORLD/GET-DISPATCHER))
 
- (cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_1" #.(lispify "btCollisionWorld_getDispatcher" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_1" COLLISION-WORLD/GET-DISPATCHER) :pointer
    (self :pointer))
 
- #+exportagain (export '#.(lispify "btCollisionWorld_getDispatcher" 'function)))
+ )
 
-(declaim (inline #.(lispify "btCollisionWorld_updateSingleAabb" 'function)))
+(declaim (inline COLLISION-WORLD/UPDATE-SINGLE-AABB))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_updateSingleAabb" #.(lispify "btCollisionWorld_updateSingleAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_updateSingleAabb" COLLISION-WORLD/UPDATE-SINGLE-AABB) :void
   (self :pointer)
   (colObj :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_updateSingleAabb" 'function))
+(declaim (inline COLLISION-WORLD/UPDATE-AABBS))
 
-(declaim (inline #.(lispify "btCollisionWorld_updateAabbs" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_updateAabbs" #.(lispify "btCollisionWorld_updateAabbs" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_updateAabbs" COLLISION-WORLD/UPDATE-AABBS) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_updateAabbs" 'function))
+(declaim (inline COLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS))
 
-(declaim (inline #.(lispify "btCollisionWorld_computeOverlappingPairs" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_computeOverlappingPairs" #.(lispify "btCollisionWorld_computeOverlappingPairs" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_computeOverlappingPairs" COLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_computeOverlappingPairs" 'function))
+(declaim (inline COLLISION-WORLD/SET-DEBUG-DRAWER))
 
-(declaim (inline #.(lispify "btCollisionWorld_setDebugDrawer" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_setDebugDrawer" #.(lispify "btCollisionWorld_setDebugDrawer" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_setDebugDrawer" COLLISION-WORLD/SET-DEBUG-DRAWER) :void
   (self :pointer)
   (debugDrawer :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_setDebugDrawer" 'function))
+(declaim (inline COLLISION-WORLD/GET-DEBUG-DRAWER))
 
-(declaim (inline #.(lispify "btCollisionWorld_getDebugDrawer" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_getDebugDrawer" #.(lispify "btCollisionWorld_getDebugDrawer" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDebugDrawer" COLLISION-WORLD/GET-DEBUG-DRAWER) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_getDebugDrawer" 'function))
+(declaim (inline COLLISION-WORLD/DEBUG-DRAW-WORLD))
 
-(declaim (inline #.(lispify "btCollisionWorld_debugDrawWorld" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawWorld" #.(lispify "btCollisionWorld_debugDrawWorld" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawWorld" COLLISION-WORLD/DEBUG-DRAW-WORLD) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_debugDrawWorld" 'function))
+(declaim (inline COLLISION-WORLD/DEBUG-DRAW-OBJECT))
 
-(declaim (inline #.(lispify "btCollisionWorld_debugDrawObject" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawObject" #.(lispify "btCollisionWorld_debugDrawObject" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawObject" COLLISION-WORLD/DEBUG-DRAW-OBJECT) :void
   (self :pointer)
   (worldTransform :pointer)
   (shape :pointer)
   (color :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_debugDrawObject" 'function))
+(declaim (inline COLLISION-WORLD/GET-NUM-COLLISION-OBJECTS))
 
-(declaim (inline #.(lispify "btCollisionWorld_getNumCollisionObjects" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_getNumCollisionObjects" #.(lispify "btCollisionWorld_getNumCollisionObjects" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionWorld_getNumCollisionObjects" COLLISION-WORLD/GET-NUM-COLLISION-OBJECTS) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_getNumCollisionObjects" 'function))
+(declaim (inline COLLISION-WORLD/RAY-TEST))
 
-(declaim (inline #.(lispify "btCollisionWorld_rayTest" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_rayTest" #.(lispify "btCollisionWorld_rayTest" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_rayTest" COLLISION-WORLD/RAY-TEST) :void
   (self :pointer)
   (rayFromWorld :pointer)
   (rayToWorld :pointer)
   (resultCallback :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionWorld_rayTest" 'function))
 
 (declaim (inline              
           COLLISION-WORLD/CONVEX-SWEEP-TEST/WITH-CCD-PENETRATION))
@@ -652,31 +207,25 @@ Swig properly.")
       (COLLISION-WORLD/CONVEX-SWEEP-TEST/WITHOUT-CCD-PENETRATION
        self cast-shape from to result-callback)))
 
-#+exportagain (export 'COLLISION-WORLD/CONVEX-SWEEP-TEST)
-
-(declaim (inline #.(lispify "btCollisionWorld_contactTest" 'function)))
+(declaim (inline COLLISION-WORLD/CONTACT-TEST))
 
 (cffi:defcfun ("_wrap_btCollisionWorld_contactTest"
-               #.(lispify "btCollisionWorld_contactTest" 'function)) :void
+               COLLISION-WORLD/CONTACT-TEST) :void
   (self :pointer)
   (colObj :pointer)
   (resultCallback :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_contactTest" 'function))
+(declaim (inline COLLISION-WORLD/CONTACT-PAIR-TEST))
 
-(declaim (inline #.(lispify "btCollisionWorld_contactPairTest" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_contactPairTest" #.(lispify "btCollisionWorld_contactPairTest" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_contactPairTest" COLLISION-WORLD/CONTACT-PAIR-TEST) :void
   (self :pointer)
   (colObjA :pointer)
   (colObjB :pointer)
   (resultCallback :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_contactPairTest" 'function))
+(declaim (inline COLLISION-WORLD/RAY-TEST-SINGLE))
 
-(declaim (inline #.(lispify "btCollisionWorld_rayTestSingle" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingle" #.(lispify "btCollisionWorld_rayTestSingle" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingle" COLLISION-WORLD/RAY-TEST-SINGLE) :void
   (rayFromTrans :pointer)
   (rayToTrans :pointer)
   (collisionObject :pointer)
@@ -684,21 +233,17 @@ Swig properly.")
   (colObjWorldTransform :pointer)
   (resultCallback :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_rayTestSingle" 'function))
+(declaim (inline COLLISION-WORLD/RAY-TEST-SINGLE-INTERNAL))
 
-(declaim (inline #.(lispify "btCollisionWorld_rayTestSingleInternal" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingleInternal" #.(lispify "btCollisionWorld_rayTestSingleInternal" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingleInternal" COLLISION-WORLD/RAY-TEST-SINGLE-INTERNAL) :void
   (rayFromTrans :pointer)
   (rayToTrans :pointer)
   (collisionObjectWrap :pointer)
   (resultCallback :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_rayTestSingleInternal" 'function))
+(declaim (inline COLLISION-WORLD/OBJECT-QUERY-SINGLE))
 
-(declaim (inline #.(lispify "btCollisionWorld_objectQuerySingle" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingle" #.(lispify "btCollisionWorld_objectQuerySingle" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingle" COLLISION-WORLD/OBJECT-QUERY-SINGLE) :void
   (castShape :pointer)
   (rayFromTrans :pointer)
   (rayToTrans :pointer)
@@ -708,19 +253,15 @@ Swig properly.")
   (resultCallback :pointer)
   (allowedPenetration :float))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_objectQuerySingle" 'function))
+(declaim (inline COLLISION-WORLD/OBJECT-QUERY-SINGLE-INTERNAL))
 
-(declaim (inline #.(lispify "btCollisionWorld_objectQuerySingleInternal" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingleInternal" #.(lispify "btCollisionWorld_objectQuerySingleInternal" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingleInternal" COLLISION-WORLD/OBJECT-QUERY-SINGLE-INTERNAL) :void
   (castShape :pointer)
   (convexFromTrans :pointer)
   (convexToTrans :pointer)
   (colObjWrap :pointer)
   (resultCallback :pointer)
   (allowedPenetration :float))
-
-#+exportagain (export '#.(lispify "btCollisionWorld_objectQuerySingleInternal" 'function))
 
 (declaim (inline COLLISION-WORLD/ADD-COLLISION-OBJECT/with-filter-group&mask))
 
@@ -760,15 +301,11 @@ Swig properly.")
     (t (COLLISION-WORLD/ADD-COLLISION-OBJECT/simple
         self collision-object))))
 
-#+exportagain (export 'COLLISION-WORLD/ADD-COLLISION-OBJECT)
-
 (declaim (inline COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY))
 
 (cffi:defcfun ("_wrap_btCollisionWorld_getCollisionObjectArray__SWIG_0"
                COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY) :pointer
   (self :pointer))
-
-#+exportagain (export 'COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY)
 
 #+ (or)
 (progn
@@ -778,130 +315,95 @@ Swig properly.")
                 COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY) :pointer
    (self :pointer))
 
- #+exportagain (export 'COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY)
+ 
  )
-(declaim (inline #.(lispify "btCollisionWorld_removeCollisionObject" 'function)))
+(declaim (inline COLLISION-WORLD/REMOVE-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_removeCollisionObject" #.(lispify "btCollisionWorld_removeCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_removeCollisionObject" COLLISION-WORLD/REMOVE-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_removeCollisionObject" 'function))
+(declaim (inline COLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION))
 
-(declaim (inline #.(lispify "btCollisionWorld_performDiscreteCollisionDetection" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_performDiscreteCollisionDetection" #.(lispify "btCollisionWorld_performDiscreteCollisionDetection" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_performDiscreteCollisionDetection" COLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_performDiscreteCollisionDetection" 'function))
+(declaim (inline COLLISION-WORLD/GET-DISPATCH-INFO))
 
-(declaim (inline #.(lispify "btCollisionWorld_getDispatchInfo" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_0" #.(lispify "btCollisionWorld_getDispatchInfo" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_0" COLLISION-WORLD/GET-DISPATCH-INFO) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionWorld_getDispatchInfo" 'function))
 
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btCollisionWorld_getDispatchInfo" 'function)))
+  (declaim (inline COLLISION-WORLD/GET-DISPATCH-INFO))
 
- (cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_1" #.(lispify "btCollisionWorld_getDispatchInfo" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_1" COLLISION-WORLD/GET-DISPATCH-INFO) :pointer
    (self :pointer))
 
- #+exportagain (export '#.(lispify "btCollisionWorld_getDispatchInfo" 'function)))
+ )
 
-(declaim (inline #.(lispify "btCollisionWorld_getForceUpdateAllAabbs" 'function)))
+(declaim (inline COLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getForceUpdateAllAabbs" #.(lispify "btCollisionWorld_getForceUpdateAllAabbs" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getForceUpdateAllAabbs" COLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_getForceUpdateAllAabbs" 'function))
+(declaim (inline COLLISION-WORLD/SET-FORCE-UPDATE-ALL-AABBS))
 
-(declaim (inline #.(lispify "btCollisionWorld_setForceUpdateAllAabbs" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_setForceUpdateAllAabbs" #.(lispify "btCollisionWorld_setForceUpdateAllAabbs" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_setForceUpdateAllAabbs" COLLISION-WORLD/SET-FORCE-UPDATE-ALL-AABBS) :void
   (self :pointer)
   (forceUpdateAllAabbs :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_setForceUpdateAllAabbs" 'function))
+(declaim (inline COLLISION-WORLD/SERIALIZE))
 
-(declaim (inline #.(lispify "btCollisionWorld_serialize" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionWorld_serialize" #.(lispify "btCollisionWorld_serialize" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_serialize" COLLISION-WORLD/SERIALIZE) :void
   (self :pointer)
   (serializer :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionWorld_serialize" 'function))
+(define-constant +ACTIVE-TAG+ 1)
 
-(define-constant #.(lispify "ACTIVE_TAG" 'constant) 1)
+(define-constant +ISLAND-SLEEPING+ 2)
 
-#+exportagain (export '#.(lispify "ACTIVE_TAG" 'constant))
+(define-constant +WANTS-DEACTIVATION+ 3)
 
-(define-constant #.(lispify "ISLAND_SLEEPING" 'constant) 2)
+(define-constant +DISABLE-DEACTIVATION+ 4)
 
-#+exportagain (export '#.(lispify "ISLAND_SLEEPING" 'constant))
+(define-constant +DISABLE-SIMULATION+ 5)
 
-(define-constant #.(lispify "WANTS_DEACTIVATION" 'constant) 3)
-
-#+exportagain (export '#.(lispify "WANTS_DEACTIVATION" 'constant))
-
-(define-constant #.(lispify "DISABLE_DEACTIVATION" 'constant) 4)
-
-#+exportagain (export '#.(lispify "DISABLE_DEACTIVATION" 'constant))
-
-(define-constant #.(lispify "DISABLE_SIMULATION" 'constant) 5)
-
-#+exportagain (export '#.(lispify "DISABLE_SIMULATION" 'constant))
-
-(alexandria:define-constant #.(lispify
-                               "btCollisionObjectDataName" 'constant)
+(alexandria:define-constant +COLLISION-OBJECT-DATA-NAME+
   "btCollisionObjectFloatData" :test 'equal)
 
-#+exportagain (export '#.(lispify "btCollisionObjectDataName" 'constant))
+(cffi:defcenum COLLISION-FLAGS
+  (:CF-STATIC-OBJECT #.1)
+  (:CF-KINEMATIC-OBJECT #.2)
+  (:CF-NO-CONTACT-RESPONSE #.4)
+  (:CF-CUSTOM-MATERIAL-CALLBACK #.8)
+  (:CF-CHARACTER-OBJECT #.16)
+  (:CF-DISABLE-VISUALIZE-OBJECT #.32)
+  (:CF-DISABLE-SPU-COLLISION-PROCESSING #.64))
 
-(cffi:defcenum #.(lispify "CollisionFlags" 'enumname)
-               (#.(lispify "CF_STATIC_OBJECT" 'enumvalue :keyword) #.1)
-               (#.(lispify "CF_KINEMATIC_OBJECT" 'enumvalue :keyword) #.2)
-               (#.(lispify "CF_NO_CONTACT_RESPONSE" 'enumvalue :keyword) #.4)
-               (#.(lispify "CF_CUSTOM_MATERIAL_CALLBACK" 'enumvalue :keyword) #.8)
-               (#.(lispify "CF_CHARACTER_OBJECT" 'enumvalue :keyword) #.16)
-               (#.(lispify "CF_DISABLE_VISUALIZE_OBJECT" 'enumvalue :keyword) #.32)
-               (#.(lispify "CF_DISABLE_SPU_COLLISION_PROCESSING" 'enumvalue :keyword) #.64))
+(cffi:defcenum COLLISION-OBJECT-TYPES
+  (:CO-COLLISION-OBJECT #.1)
+  (:CO-RIGID-BODY #.2)
+  (:CO-GHOST-OBJECT #.4)
+  (:CO-SOFT-BODY #.8)
+  (:CO-HF-FLUID #.16)
+  (:CO-USER-TYPE #.32)
+  (:CO-FEATHERSTONE-LINK #.64))
 
-#+exportagain (export '#.(lispify "CollisionFlags" 'enumname))
+(cffi:defcenum ANISOTROPIC-FRICTION-FLAGS
+  (:CF-ANISOTROPIC-FRICTION-DISABLED #.0)
+  (:CF-ANISOTROPIC-FRICTION #.1)
+  (:CF-ANISOTROPIC-ROLLING-FRICTION #.2))
 
-(cffi:defcenum #.(lispify "CollisionObjectTypes" 'enumname)
-               (#.(lispify "CO_COLLISION_OBJECT" 'enumvalue :keyword) #.1)
-               (#.(lispify "CO_RIGID_BODY" 'enumvalue :keyword) #.2)
-               (#.(lispify "CO_GHOST_OBJECT" 'enumvalue :keyword) #.4)
-               (#.(lispify "CO_SOFT_BODY" 'enumvalue :keyword) #.8)
-               (#.(lispify "CO_HF_FLUID" 'enumvalue :keyword) #.16)
-               (#.(lispify "CO_USER_TYPE" 'enumvalue :keyword) #.32)
-               (#.(lispify "CO_FEATHERSTONE_LINK" 'enumvalue :keyword) #.64))
+(declaim (inline COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS))
 
-#+exportagain (export '#.(lispify "CollisionObjectTypes" 'enumname))
-
-(cffi:defcenum #.(lispify "AnisotropicFrictionFlags" 'enumname)
-               (#.(lispify "CF_ANISOTROPIC_FRICTION_DISABLED" 'enumvalue :keyword) #.0)
-               (#.(lispify "CF_ANISOTROPIC_FRICTION" 'enumvalue :keyword) #.1)
-               (#.(lispify "CF_ANISOTROPIC_ROLLING_FRICTION" 'enumvalue :keyword) #.2))
-
-#+exportagain (export '#.(lispify "AnisotropicFrictionFlags" 'enumname))
-
-(declaim (inline #.(lispify "btCollisionObject_mergesSimulationIslands" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_mergesSimulationIslands" #.(lispify "btCollisionObject_mergesSimulationIslands" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_mergesSimulationIslands" COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_mergesSimulationIslands" 'function))
+(declaim (inline COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION))
 
-(declaim (inline #.(lispify "btCollisionObject_getAnisotropicFriction" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getAnisotropicFriction" #.(lispify "btCollisionObject_getAnisotropicFriction" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getAnisotropicFriction" COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionObject_getAnisotropicFriction" 'function))
 
 (declaim (inline COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/with-mode))
 
@@ -928,8 +430,6 @@ Swig properly.")
       (COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/without-mode
        self anisotropic-friction)))
 
-#+exportagain (export 'COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION)
-
 (declaim (inline COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/with-mode))
 
 (cffi:defcfun ("_wrap_btCollisionObject_hasAnisotropicFriction__SWIG_0" 
@@ -952,140 +452,104 @@ Swig properly.")
        self friction-mode)
       (COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/without-mode self)))
 
-#+exportagain (export 'COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION)
+(declaim (inline COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD))
 
-(declaim (inline #.(lispify "btCollisionObject_setContactProcessingThreshold" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setContactProcessingThreshold" #.(lispify "btCollisionObject_setContactProcessingThreshold" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setContactProcessingThreshold" COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD) :void
   (self :pointer)
   (contactProcessingThreshold :float))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setContactProcessingThreshold" 'function))
+(declaim (inline COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD))
 
-(declaim (inline #.(lispify "btCollisionObject_getContactProcessingThreshold" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getContactProcessingThreshold" #.(lispify "btCollisionObject_getContactProcessingThreshold" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getContactProcessingThreshold" COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD) :float
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getContactProcessingThreshold" 'function))
+(declaim (inline COLLISION-OBJECT/IS-STATIC-OBJECT))
 
-(declaim (inline #.(lispify "btCollisionObject_isStaticObject" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isStaticObject" #.(lispify "btCollisionObject_isStaticObject" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_isStaticObject" COLLISION-OBJECT/IS-STATIC-OBJECT) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_isStaticObject" 'function))
+(declaim (inline COLLISION-OBJECT/IS-KINEMATIC-OBJECT))
 
-(declaim (inline #.(lispify "btCollisionObject_isKinematicObject" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isKinematicObject" #.(lispify "btCollisionObject_isKinematicObject" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_isKinematicObject" COLLISION-OBJECT/IS-KINEMATIC-OBJECT) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_isKinematicObject" 'function))
+(declaim (inline COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT))
 
-(declaim (inline #.(lispify "btCollisionObject_isStaticOrKinematicObject" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isStaticOrKinematicObject" #.(lispify "btCollisionObject_isStaticOrKinematicObject" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_isStaticOrKinematicObject" BULLET> ) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_isStaticOrKinematicObject" 'function))
+(declaim (inline (lispify "btCollisionObject_isStaticOrKinematicObject" 'function)))
 
-(declaim (inline #.(lispify "btCollisionObject_hasContactResponse" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_hasContactResponse" #.(lispify "btCollisionObject_hasContactResponse" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_hasContactResponse" COLLISION-OBJECT/HAS-CONTACT-RESPONSE) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_hasContactResponse" 'function))
+(declaim (inline MAKE-COLLISION-OBJECT))
 
-(declaim (inline #.(lispify "new_btCollisionObject" 'function)))
+(cffi:defcfun ("_wrap_new_btCollisionObject" MAKE-COLLISION-OBJECT) :pointer)
 
-(cffi:defcfun ("_wrap_new_btCollisionObject" #.(lispify "new_btCollisionObject" 'function)) :pointer)
+(declaim (inline DELETE/BT-COLLISION-OBJECT))
 
-#+exportagain (export '#.(lispify "new_btCollisionObject" 'function))
-
-(declaim (inline #.(lispify "delete_btCollisionObject" 'function)))
-
-(cffi:defcfun ("_wrap_delete_btCollisionObject" #.(lispify "delete_btCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCollisionObject" DELETE/BT-COLLISION-OBJECT) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "delete_btCollisionObject" 'function))
+(declaim (inline COLLISION-OBJECT/SET-COLLISION-SHAPE))
 
-(declaim (inline #.(lispify "btCollisionObject_setCollisionShape" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCollisionShape" #.(lispify "btCollisionObject_setCollisionShape" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCollisionShape" COLLISION-OBJECT/SET-COLLISION-SHAPE) :void
   (self :pointer)
   (collisionShape :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setCollisionShape" 'function))
+(declaim (inline COLLISION-OBJECT/GET-COLLISION-SHAPE))
 
-(declaim (inline #.(lispify "btCollisionObject_getCollisionShape" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_0" #.(lispify "btCollisionObject_getCollisionShape" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_0" COLLISION-OBJECT/GET-COLLISION-SHAPE) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionObject_getCollisionShape" 'function))
 
 #+ (or)
 (progn 
-  (declaim (inline #.(lispify "btCollisionObject_getCollisionShape" 'function)))
+  (declaim (inline COLLISION-OBJECT/GET-COLLISION-SHAPE))
 
- (cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_1" #.(lispify "btCollisionObject_getCollisionShape" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_1" COLLISION-OBJECT/GET-COLLISION-SHAPE) :pointer
    (self :pointer))
 
- #+exportagain (export '#.(lispify "btCollisionObject_getCollisionShape" 'function)))
+ )
 
-(declaim (inline #.(lispify "btCollisionObject_internalGetExtensionPointer" 'function)))
+(declaim (inline COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER))
 
-(cffi:defcfun ("_wrap_btCollisionObject_internalGetExtensionPointer" #.(lispify "btCollisionObject_internalGetExtensionPointer" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_internalGetExtensionPointer" COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_internalGetExtensionPointer" 'function))
+(declaim (inline COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER))
 
-(declaim (inline #.(lispify "btCollisionObject_internalSetExtensionPointer" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_internalSetExtensionPointer" #.(lispify "btCollisionObject_internalSetExtensionPointer" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_internalSetExtensionPointer" COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER) :void
   (self :pointer)
   (pointer :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_internalSetExtensionPointer" 'function))
+(declaim (inline COLLISION-OBJECT/GET-ACTIVATION-STATE))
 
-(declaim (inline #.(lispify "btCollisionObject_getActivationState" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getActivationState" #.(lispify "btCollisionObject_getActivationState" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getActivationState" COLLISION-OBJECT/GET-ACTIVATION-STATE) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getActivationState" 'function))
+(declaim (inline COLLISION-OBJECT/SET-ACTIVATION-STATE))
 
-(declaim (inline #.(lispify "btCollisionObject_setActivationState" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setActivationState" #.(lispify "btCollisionObject_setActivationState" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setActivationState" COLLISION-OBJECT/SET-ACTIVATION-STATE) :void
   (self :pointer)
   (newState :int))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setActivationState" 'function))
+(declaim (inline COLLISION-OBJECT/SET-DEACTIVATION-TIME))
 
-(declaim (inline #.(lispify "btCollisionObject_setDeactivationTime" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setDeactivationTime" #.(lispify "btCollisionObject_setDeactivationTime" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setDeactivationTime" COLLISION-OBJECT/SET-DEACTIVATION-TIME) :void
   (self :pointer)
   (time :float))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setDeactivationTime" 'function))
+(declaim (inline COLLISION-OBJECT/GET-DEACTIVATION-TIME))
 
-(declaim (inline #.(lispify "btCollisionObject_getDeactivationTime" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getDeactivationTime" #.(lispify "btCollisionObject_getDeactivationTime" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getDeactivationTime" COLLISION-OBJECT/GET-DEACTIVATION-TIME) :float
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getDeactivationTime" 'function))
+(declaim (inline COLLISION-OBJECT/FORCE-ACTIVATION-STATE))
 
-(declaim (inline #.(lispify "btCollisionObject_forceActivationState" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_forceActivationState" #.(lispify "btCollisionObject_forceActivationState" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_forceActivationState" COLLISION-OBJECT/FORCE-ACTIVATION-STATE) :void
   (self :pointer)
   (newState :int))
-
-#+exportagain (export '#.(lispify "btCollisionObject_forceActivationState" 'function))
 
 (declaim (inline COLLISION-OBJECT/ACTIVATE/force))
 
@@ -1094,729 +558,498 @@ Swig properly.")
   (self :pointer)
   (forceActivation :pointer))
 
-#+exportagain (export 'COLLISION-OBJECT/ACTIVATE/force)
-
 (declaim (inline COLLISION-OBJECT/ACTIVATE))
 
 (cffi:defcfun ("_wrap_btCollisionObject_activate__SWIG_1"
                COLLISION-OBJECT/ACTIVATE) :void
   (self :pointer))
 
-#+exportagain (export 'COLLISION-OBJECT/ACTIVATE)
+(declaim (inline COLLISION-OBJECT/IS-ACTIVE))
 
-(declaim (inline #.(lispify "btCollisionObject_isActive" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isActive" #.(lispify "btCollisionObject_isActive" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_isActive" COLLISION-OBJECT/IS-ACTIVE) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_isActive" 'function))
+(declaim (inline COLLISION-OBJECT/SET-RESTITUTION))
 
-(declaim (inline #.(lispify "btCollisionObject_setRestitution" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setRestitution" #.(lispify "btCollisionObject_setRestitution" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setRestitution" COLLISION-OBJECT/SET-RESTITUTION) :void
   (self :pointer)
   (rest :float))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setRestitution" 'function))
+(declaim (inline COLLISION-OBJECT/GET-RESTITUTION))
 
-(declaim (inline #.(lispify "btCollisionObject_getRestitution" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getRestitution" #.(lispify "btCollisionObject_getRestitution" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getRestitution" COLLISION-OBJECT/GET-RESTITUTION) :float
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getRestitution" 'function))
+(declaim (inline COLLISION-OBJECT/SET-FRICTION))
 
-(declaim (inline #.(lispify "btCollisionObject_setFriction" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setFriction" #.(lispify "btCollisionObject_setFriction" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setFriction" COLLISION-OBJECT/SET-FRICTION) :void
   (self :pointer)
   (frict :float))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setFriction" 'function))
+(declaim (inline COLLISION-OBJECT/GET-FRICTION))
 
-(declaim (inline #.(lispify "btCollisionObject_getFriction" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getFriction" #.(lispify "btCollisionObject_getFriction" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getFriction" COLLISION-OBJECT/GET-FRICTION) :float
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getFriction" 'function))
+(declaim (inline COLLISION-OBJECT/SET-ROLLING-FRICTION))
 
-(declaim (inline #.(lispify "btCollisionObject_setRollingFriction" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setRollingFriction" #.(lispify "btCollisionObject_setRollingFriction" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setRollingFriction" COLLISION-OBJECT/SET-ROLLING-FRICTION) :void
   (self :pointer)
   (frict :float))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setRollingFriction" 'function))
+(declaim (inline COLLISION-OBJECT/GET-ROLLING-FRICTION))
 
-(declaim (inline #.(lispify "btCollisionObject_getRollingFriction" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getRollingFriction" #.(lispify "btCollisionObject_getRollingFriction" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getRollingFriction" COLLISION-OBJECT/GET-ROLLING-FRICTION) :float
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getRollingFriction" 'function))
+(declaim (inline COLLISION-OBJECT/GET-INTERNAL-TYPE))
 
-(declaim (inline #.(lispify "btCollisionObject_getInternalType" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInternalType" #.(lispify "btCollisionObject_getInternalType" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getInternalType" COLLISION-OBJECT/GET-INTERNAL-TYPE) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getInternalType" 'function))
+(declaim (inline COLLISION-OBJECT/GET-WORLD-TRANSFORM))
 
-(declaim (inline #.(lispify "btCollisionObject_getWorldTransform" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_0" #.(lispify "btCollisionObject_getWorldTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_0" COLLISION-OBJECT/GET-WORLD-TRANSFORM) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionObject_getWorldTransform" 'function))
 
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btCollisionObject_getWorldTransform" 'function)))
+  (declaim (inline COLLISION-OBJECT/GET-WORLD-TRANSFORM))
 
- (cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_1" #.(lispify "btCollisionObject_getWorldTransform" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_1" COLLISION-OBJECT/GET-WORLD-TRANSFORM) :pointer
    (self :pointer))
 
- #+exportagain (export '#.(lispify "btCollisionObject_getWorldTransform" 'function)))
+ )
 
-(declaim (inline #.(lispify "btCollisionObject_setWorldTransform" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setWorldTransform" #.(lispify "btCollisionObject_setWorldTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setWorldTransform" COLLISION-OBJECT/SET-WORLD-TRANSFORM) :void
   (self :pointer)
   (worldTrans :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setWorldTransform" 'function))
+(declaim (inline COLLISION-OBJECT/GET-BROADPHASE-HANDLE))
 
-(declaim (inline #.(lispify "btCollisionObject_getBroadphaseHandle" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_0" #.(lispify "btCollisionObject_getBroadphaseHandle" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_0" COLLISION-OBJECT/GET-BROADPHASE-HANDLE) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionObject_getBroadphaseHandle" 'function))
 
 #+ (or)
 (progn 
-  (declaim (inline #.(lispify "btCollisionObject_getBroadphaseHandle" 'function)))
+  (declaim (inline COLLISION-OBJECT/GET-BROADPHASE-HANDLE))
 
- (cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_1" #.(lispify "btCollisionObject_getBroadphaseHandle" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_1" COLLISION-OBJECT/GET-BROADPHASE-HANDLE) :pointer
    (self :pointer))
 
- #+exportagain (export '#.(lispify "btCollisionObject_getBroadphaseHandle" 'function)))
+ )
 
-(declaim (inline #.(lispify "btCollisionObject_setBroadphaseHandle" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-BROADPHASE-HANDLE))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setBroadphaseHandle" #.(lispify "btCollisionObject_setBroadphaseHandle" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setBroadphaseHandle" COLLISION-OBJECT/SET-BROADPHASE-HANDLE) :void
   (self :pointer)
   (handle :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setBroadphaseHandle" 'function))
+(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM))
 
-(declaim (inline #.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_0" #.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_0" COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function))
 
 #+ (or)
 (progn 
-  (declaim (inline #.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function)))
+  (declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM))
 
- (cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_1" #.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_1" COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM) :pointer
    (self :pointer))
 
- #+exportagain (export '#.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function)))
+ )
 
-(declaim (inline #.(lispify "btCollisionObject_setInterpolationWorldTransform" 'function)))
+(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationWorldTransform" #.(lispify "btCollisionObject_setInterpolationWorldTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationWorldTransform" COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM) :void
   (self :pointer)
   (trans :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setInterpolationWorldTransform" 'function))
+(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY))
 
-(declaim (inline #.(lispify "btCollisionObject_setInterpolationLinearVelocity" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationLinearVelocity" #.(lispify "btCollisionObject_setInterpolationLinearVelocity" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationLinearVelocity" COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY) :void
   (self :pointer)
   (linvel :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setInterpolationLinearVelocity" 'function))
+(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY))
 
-(declaim (inline #.(lispify "btCollisionObject_setInterpolationAngularVelocity" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationAngularVelocity" #.(lispify "btCollisionObject_setInterpolationAngularVelocity" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationAngularVelocity" COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY) :void
   (self :pointer)
   (angvel :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setInterpolationAngularVelocity" 'function))
+(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY))
 
-(declaim (inline #.(lispify "btCollisionObject_getInterpolationLinearVelocity" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationLinearVelocity" #.(lispify "btCollisionObject_getInterpolationLinearVelocity" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationLinearVelocity" COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getInterpolationLinearVelocity" 'function))
+(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY))
 
-(declaim (inline #.(lispify "btCollisionObject_getInterpolationAngularVelocity" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationAngularVelocity" #.(lispify "btCollisionObject_getInterpolationAngularVelocity" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationAngularVelocity" COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getInterpolationAngularVelocity" 'function))
+(declaim (inline COLLISION-OBJECT/GET-ISLAND-TAG))
 
-(declaim (inline #.(lispify "btCollisionObject_getIslandTag" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getIslandTag" #.(lispify "btCollisionObject_getIslandTag" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getIslandTag" COLLISION-OBJECT/GET-ISLAND-TAG) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getIslandTag" 'function))
+(declaim (inline COLLISION-OBJECT/SET-ISLAND-TAG))
 
-(declaim (inline #.(lispify "btCollisionObject_setIslandTag" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setIslandTag" #.(lispify "btCollisionObject_setIslandTag" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setIslandTag" COLLISION-OBJECT/SET-ISLAND-TAG) :void
   (self :pointer)
   (tag :int))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setIslandTag" 'function))
+(declaim (inline COLLISION-OBJECT/GET-COMPANION-ID))
 
-(declaim (inline #.(lispify "btCollisionObject_getCompanionId" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCompanionId" #.(lispify "btCollisionObject_getCompanionId" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getCompanionId" COLLISION-OBJECT/GET-COMPANION-ID) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getCompanionId" 'function))
+(declaim (inline COLLISION-OBJECT/SET-COMPANION-ID))
 
-(declaim (inline #.(lispify "btCollisionObject_setCompanionId" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCompanionId" #.(lispify "btCollisionObject_setCompanionId" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCompanionId" COLLISION-OBJECT/SET-COMPANION-ID) :void
   (self :pointer)
   (id :int))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setCompanionId" 'function))
+(declaim (inline COLLISION-OBJECT/GET-HIT-FRACTION))
 
-(declaim (inline #.(lispify "btCollisionObject_getHitFraction" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getHitFraction" #.(lispify "btCollisionObject_getHitFraction" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getHitFraction" COLLISION-OBJECT/GET-HIT-FRACTION) :float
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getHitFraction" 'function))
+(declaim (inline COLLISION-OBJECT/SET-HIT-FRACTION))
 
-(declaim (inline #.(lispify "btCollisionObject_setHitFraction" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setHitFraction" #.(lispify "btCollisionObject_setHitFraction" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setHitFraction" COLLISION-OBJECT/SET-HIT-FRACTION) :void
   (self :pointer)
   (hitFraction :float))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setHitFraction" 'function))
+(declaim (inline COLLISION-OBJECT/GET-COLLISION-FLAGS))
 
-(declaim (inline #.(lispify "btCollisionObject_getCollisionFlags" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionFlags" #.(lispify "btCollisionObject_getCollisionFlags" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getCollisionFlags" COLLISION-OBJECT/GET-COLLISION-FLAGS) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getCollisionFlags" 'function))
+(declaim (inline COLLISION-OBJECT/SET-COLLISION-FLAGS))
 
-(declaim (inline #.(lispify "btCollisionObject_setCollisionFlags" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCollisionFlags" #.(lispify "btCollisionObject_setCollisionFlags" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCollisionFlags" COLLISION-OBJECT/SET-COLLISION-FLAGS) :void
   (self :pointer)
   (flags :int))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setCollisionFlags" 'function))
+(declaim (inline COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS))
 
-(declaim (inline #.(lispify "btCollisionObject_getCcdSweptSphereRadius" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdSweptSphereRadius" #.(lispify "btCollisionObject_getCcdSweptSphereRadius" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getCcdSweptSphereRadius" COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS) :float
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getCcdSweptSphereRadius" 'function))
+(declaim (inline COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS))
 
-(declaim (inline #.(lispify "btCollisionObject_setCcdSweptSphereRadius" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCcdSweptSphereRadius" #.(lispify "btCollisionObject_setCcdSweptSphereRadius" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCcdSweptSphereRadius" COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS) :void
   (self :pointer)
   (radius :float))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setCcdSweptSphereRadius" 'function))
+(declaim (inline COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD))
 
-(declaim (inline #.(lispify "btCollisionObject_getCcdMotionThreshold" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdMotionThreshold" #.(lispify "btCollisionObject_getCcdMotionThreshold" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getCcdMotionThreshold" COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD) :float
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getCcdMotionThreshold" 'function))
+(declaim (inline COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD))
 
-(declaim (inline #.(lispify "btCollisionObject_getCcdSquareMotionThreshold" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdSquareMotionThreshold" #.(lispify "btCollisionObject_getCcdSquareMotionThreshold" 'function)) :float
+(cffi:defcfun ("_wrap_btCollisionObject_getCcdSquareMotionThreshold" COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD) :float
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getCcdSquareMotionThreshold" 'function))
+(declaim (inline COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD))
 
-(declaim (inline #.(lispify "btCollisionObject_setCcdMotionThreshold" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCcdMotionThreshold" #.(lispify "btCollisionObject_setCcdMotionThreshold" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setCcdMotionThreshold" COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD) :void
   (self :pointer)
   (ccdMotionThreshold :float))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setCcdMotionThreshold" 'function))
+(declaim (inline COLLISION-OBJECT/GET-USER-POINTER))
 
-(declaim (inline #.(lispify "btCollisionObject_getUserPointer" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getUserPointer" #.(lispify "btCollisionObject_getUserPointer" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_getUserPointer" COLLISION-OBJECT/GET-USER-POINTER) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getUserPointer" 'function))
+(declaim (inline COLLISION-OBJECT/GET-USER-INDEX))
 
-(declaim (inline #.(lispify "btCollisionObject_getUserIndex" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getUserIndex" #.(lispify "btCollisionObject_getUserIndex" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getUserIndex" COLLISION-OBJECT/GET-USER-INDEX) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getUserIndex" 'function))
+(declaim (inline COLLISION-OBJECT/SET-USER-POINTER))
 
-(declaim (inline #.(lispify "btCollisionObject_setUserPointer" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setUserPointer" #.(lispify "btCollisionObject_setUserPointer" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setUserPointer" COLLISION-OBJECT/SET-USER-POINTER) :void
   (self :pointer)
   (userPointer :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setUserPointer" 'function))
+(declaim (inline COLLISION-OBJECT/SET-USER-INDEX))
 
-(declaim (inline #.(lispify "btCollisionObject_setUserIndex" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setUserIndex" #.(lispify "btCollisionObject_setUserIndex" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_setUserIndex" COLLISION-OBJECT/SET-USER-INDEX) :void
   (self :pointer)
   (index :int))
 
-#+exportagain (export '#.(lispify "btCollisionObject_setUserIndex" 'function))
+(declaim (inline COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL))
 
-(declaim (inline #.(lispify "btCollisionObject_getUpdateRevisionInternal" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getUpdateRevisionInternal" #.(lispify "btCollisionObject_getUpdateRevisionInternal" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_getUpdateRevisionInternal" COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_getUpdateRevisionInternal" 'function))
+(declaim (inline COLLISION-OBJECT/CHECK-COLLIDE-WITH))
 
-(declaim (inline #.(lispify "btCollisionObject_checkCollideWith" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_checkCollideWith" #.(lispify "btCollisionObject_checkCollideWith" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionObject_checkCollideWith" COLLISION-OBJECT/CHECK-COLLIDE-WITH) :pointer
   (self :pointer)
   (co :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_checkCollideWith" 'function))
+(declaim (inline COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(declaim (inline #.(lispify "btCollisionObject_calculateSerializeBufferSize" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_calculateSerializeBufferSize" #.(lispify "btCollisionObject_calculateSerializeBufferSize" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionObject_calculateSerializeBufferSize" COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_calculateSerializeBufferSize" 'function))
+(declaim (inline COLLISION-OBJECT/SERIALIZE))
 
-(declaim (inline #.(lispify "btCollisionObject_serialize" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_serialize" #.(lispify "btCollisionObject_serialize" 'function)) :string
+(cffi:defcfun ("_wrap_btCollisionObject_serialize" COLLISION-OBJECT/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_serialize" 'function))
+(declaim (inline COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT))
 
-(declaim (inline #.(lispify "btCollisionObject_serializeSingleObject" 'function)))
-
-(cffi:defcfun ("_wrap_btCollisionObject_serializeSingleObject" #.(lispify "btCollisionObject_serializeSingleObject" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionObject_serializeSingleObject" COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT) :void
   (self :pointer)
   (serializer :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObject_serializeSingleObject" 'function))
+(cffi:defcstruct COLLISION-OBJECT-DOUBLE-DATA
+  (BROADPHASE-HANDLE :pointer)
+  (COLLISION-SHAPE :pointer)
+  (ROOT-COLLISION-SHAPE :pointer)
+  (NAME :string)
+  (WORLD-TRANSFORM :pointer)
+  (INTERPOLATION-WORLD-TRANSFORM :pointer)
+  (INTERPOLATION-LINEAR-VELOCITY :pointer)
+  (INTERPOLATION-ANGULAR-VELOCITY :pointer)
+  (ANISOTROPIC-FRICTION :pointer)
+  (CONTACT-PROCESSING-THRESHOLD :double)
+  (DEACTIVATION-TIME :double)
+  (FRICTION :double)
+  (ROLLING-FRICTION :double)
+  (RESTITUTION :double)
+  (HIT-FRACTION :double)
+  (CCD-SWEPT-SPHERE-RADIUS :double)
+  (CCD-MOTION-THRESHOLD :double)
+  (HAS-ANISOTROPIC-FRICTION :int)
+  (COLLISION-FLAGS :int)
+  (ISLAND-TAG-1 :int)
+  (COMPANION-ID :int)
+  (ACTIVATION-STATE-1 :int)
+  (INTERNAL-TYPE :int)
+  (CHECK-COLLIDE-WITH :int)
+  (PADDING :pointer))
 
-(cffi:defcstruct #.(lispify "btCollisionObjectDoubleData" 'classname)
-                 (#.(lispify "m_broadphaseHandle" 'slotname) :pointer)
-                 (#.(lispify "m_collisionShape" 'slotname) :pointer)
-                 (#.(lispify "m_rootCollisionShape" 'slotname) :pointer)
-                 (#.(lispify "m_name" 'slotname) :string)
-                 (#.(lispify "m_worldTransform" 'slotname) :pointer)
-                 (#.(lispify "m_interpolationWorldTransform" 'slotname) :pointer)
-                 (#.(lispify "m_interpolationLinearVelocity" 'slotname) :pointer)
-                 (#.(lispify "m_interpolationAngularVelocity" 'slotname) :pointer)
-                 (#.(lispify "m_anisotropicFriction" 'slotname) :pointer)
-                 (#.(lispify "m_contactProcessingThreshold" 'slotname) :double)
-                 (#.(lispify "m_deactivationTime" 'slotname) :double)
-                 (#.(lispify "m_friction" 'slotname) :double)
-                 (#.(lispify "m_rollingFriction" 'slotname) :double)
-                 (#.(lispify "m_restitution" 'slotname) :double)
-                 (#.(lispify "m_hitFraction" 'slotname) :double)
-                 (#.(lispify "m_ccdSweptSphereRadius" 'slotname) :double)
-                 (#.(lispify "m_ccdMotionThreshold" 'slotname) :double)
-                 (#.(lispify "m_hasAnisotropicFriction" 'slotname) :int)
-                 (#.(lispify "m_collisionFlags" 'slotname) :int)
-                 (#.(lispify "m_islandTag1" 'slotname) :int)
-                 (#.(lispify "m_companionId" 'slotname) :int)
-                 (#.(lispify "m_activationState1" 'slotname) :int)
-                 (#.(lispify "m_internalType" 'slotname) :int)
-                 (#.(lispify "m_checkCollideWith" 'slotname) :int)
-                 (#.(lispify "m_padding" 'slotname) :pointer))
+(cffi:defcstruct COLLISION-OBJECT-FLOAT-DATA
+  (BROADPHASE-HANDLE :pointer)
+  (COLLISION-SHAPE :pointer)
+  (ROOT-COLLISION-SHAPE :pointer)
+  (NAME :string)
+  (WORLD-TRANSFORM :pointer)
+  (INTERPOLATION-WORLD-TRANSFORM :pointer)
+  (INTERPOLATION-LINEAR-VELOCITY :pointer)
+  (INTERPOLATION-ANGULAR-VELOCITY :pointer)
+  (ANISOTROPIC-FRICTION :pointer)
+  (CONTACT-PROCESSING-THRESHOLD :float)
+  (DEACTIVATION-TIME :float)
+  (FRICTION :float)
+  (ROLLING-FRICTION :float)
+  (RESTITUTION :float)
+  (HIT-FRACTION :float)
+  (CCD-SWEPT-SPHERE-RADIUS :float)
+  (CCD-MOTION-THRESHOLD :float)
+  (HAS-ANISOTROPIC-FRICTION :int)
+  (COLLISION-FLAGS :int)
+  (ISLAND-TAG-1 :int)
+  (COMPANION-ID :int)
+  (ACTIVATION-STATE-1 :int)
+  (INTERNAL-TYPE :int)
+  (CHECK-COLLIDE-WITH :int)
+  (PADDING :pointer))
 
-#+exportagain (export '#.(lispify "btCollisionObjectDoubleData" 'classname))
-
-#+exportagain (export '#.(lispify "m_broadphaseHandle" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionShape" 'slotname))
-
-#+exportagain (export '#.(lispify "m_rootCollisionShape" 'slotname))
-
-#+exportagain (export '#.(lispify "m_name" 'slotname))
-
-#+exportagain (export '#.(lispify "m_worldTransform" 'slotname))
-
-#+exportagain (export '#.(lispify "m_interpolationWorldTransform" 'slotname))
-
-#+exportagain (export '#.(lispify "m_interpolationLinearVelocity" 'slotname))
-
-#+exportagain (export '#.(lispify "m_interpolationAngularVelocity" 'slotname))
-
-#+exportagain (export '#.(lispify "m_anisotropicFriction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_contactProcessingThreshold" 'slotname))
-
-#+exportagain (export '#.(lispify "m_deactivationTime" 'slotname))
-
-#+exportagain (export '#.(lispify "m_friction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_rollingFriction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_restitution" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitFraction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_ccdSweptSphereRadius" 'slotname))
-
-#+exportagain (export '#.(lispify "m_ccdMotionThreshold" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hasAnisotropicFriction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionFlags" 'slotname))
-
-#+exportagain (export '#.(lispify "m_islandTag1" 'slotname))
-
-#+exportagain (export '#.(lispify "m_companionId" 'slotname))
-
-#+exportagain (export '#.(lispify "m_activationState1" 'slotname))
-
-#+exportagain (export '#.(lispify "m_internalType" 'slotname))
-
-#+exportagain (export '#.(lispify "m_checkCollideWith" 'slotname))
-
-#+exportagain (export '#.(lispify "m_padding" 'slotname))
-
-(cffi:defcstruct #.(lispify "btCollisionObjectFloatData" 'classname)
-                 (#.(lispify "m_broadphaseHandle" 'slotname) :pointer)
-                 (#.(lispify "m_collisionShape" 'slotname) :pointer)
-                 (#.(lispify "m_rootCollisionShape" 'slotname) :pointer)
-                 (#.(lispify "m_name" 'slotname) :string)
-                 (#.(lispify "m_worldTransform" 'slotname) :pointer)
-                 (#.(lispify "m_interpolationWorldTransform" 'slotname) :pointer)
-                 (#.(lispify "m_interpolationLinearVelocity" 'slotname) :pointer)
-                 (#.(lispify "m_interpolationAngularVelocity" 'slotname) :pointer)
-                 (#.(lispify "m_anisotropicFriction" 'slotname) :pointer)
-                 (#.(lispify "m_contactProcessingThreshold" 'slotname) :float)
-                 (#.(lispify "m_deactivationTime" 'slotname) :float)
-                 (#.(lispify "m_friction" 'slotname) :float)
-                 (#.(lispify "m_rollingFriction" 'slotname) :float)
-                 (#.(lispify "m_restitution" 'slotname) :float)
-                 (#.(lispify "m_hitFraction" 'slotname) :float)
-                 (#.(lispify "m_ccdSweptSphereRadius" 'slotname) :float)
-                 (#.(lispify "m_ccdMotionThreshold" 'slotname) :float)
-                 (#.(lispify "m_hasAnisotropicFriction" 'slotname) :int)
-                 (#.(lispify "m_collisionFlags" 'slotname) :int)
-                 (#.(lispify "m_islandTag1" 'slotname) :int)
-                 (#.(lispify "m_companionId" 'slotname) :int)
-                 (#.(lispify "m_activationState1" 'slotname) :int)
-                 (#.(lispify "m_internalType" 'slotname) :int)
-                 (#.(lispify "m_checkCollideWith" 'slotname) :int)
-                 (#.(lispify "m_padding" 'slotname) :pointer))
-
-#+exportagain (export '#.(lispify "btCollisionObjectFloatData" 'classname))
-
-#+exportagain (export '#.(lispify "m_broadphaseHandle" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionShape" 'slotname))
-
-#+exportagain (export '#.(lispify "m_rootCollisionShape" 'slotname))
-
-#+exportagain (export '#.(lispify "m_name" 'slotname))
-
-#+exportagain (export '#.(lispify "m_worldTransform" 'slotname))
-
-#+exportagain (export '#.(lispify "m_interpolationWorldTransform" 'slotname))
-
-#+exportagain (export '#.(lispify "m_interpolationLinearVelocity" 'slotname))
-
-#+exportagain (export '#.(lispify "m_interpolationAngularVelocity" 'slotname))
-
-#+exportagain (export '#.(lispify "m_anisotropicFriction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_contactProcessingThreshold" 'slotname))
-
-#+exportagain (export '#.(lispify "m_deactivationTime" 'slotname))
-
-#+exportagain (export '#.(lispify "m_friction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_rollingFriction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_restitution" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hitFraction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_ccdSweptSphereRadius" 'slotname))
-
-#+exportagain (export '#.(lispify "m_ccdMotionThreshold" 'slotname))
-
-#+exportagain (export '#.(lispify "m_hasAnisotropicFriction" 'slotname))
-
-#+exportagain (export '#.(lispify "m_collisionFlags" 'slotname))
-
-#+exportagain (export '#.(lispify "m_islandTag1" 'slotname))
-
-#+exportagain (export '#.(lispify "m_companionId" 'slotname))
-
-#+exportagain (export '#.(lispify "m_activationState1" 'slotname))
-
-#+exportagain (export '#.(lispify "m_internalType" 'slotname))
-
-#+exportagain (export '#.(lispify "m_checkCollideWith" 'slotname))
-
-#+exportagain (export '#.(lispify "m_padding" 'slotname))
-
-(cffi:defcenum #.(lispify "DispatcherFlags" 'enumname)
-               (#.(lispify "CD_STATIC_STATIC_REPORTED" 'enumvalue :keyword) #.1)
-               (#.(lispify "CD_USE_RELATIVE_CONTACT_BREAKING_THRESHOLD" 'enumvalue :keyword) #.2)
-               (#.(lispify "CD_DISABLE_CONTACTPOOL_DYNAMIC_ALLOCATION" 'enumvalue :keyword) #.4))
-
-#+exportagain (export '#.(lispify "DispatcherFlags" 'enumname))
+(cffi:defcenum DISPATCHER-FLAGS
+  (:CD-STATIC-STATIC-REPORTED #.1)
+  (:CD-USE-RELATIVE-CONTACT-BREAKING-THRESHOLD #.2)
+  (:CD-DISABLE-CONTACTPOOL-DYNAMIC-ALLOCATION #.4))
 
 (define-anonymous-enum
-    (#.(lispify "DYNAMIC_SET" 'enumvalue) #.0)
-    (#.(lispify "FIXED_SET" 'enumvalue) #.1)
-  (#.(lispify "STAGECOUNT" 'enumvalue) #.2))
+  (DYNAMIC-SET #.0)
+  (FIXED-SET #.1)
+  (STAGECOUNT #.2))
 
-#+exportagain (export '#.(lispify "DYNAMIC_SET" 'enumvalue))
+(cffi:defcenum DEBUG-DRAW-MODES
+  (:DBG-NO-DEBUG #.0)
+  (:DBG-DRAW-WIREFRAME #.1)
+  (:DBG-DRAW-AABB #.2)
+  (:DBG-DRAW-FEATURES-TEXT #.4)
+  (:DBG-DRAW-CONTACT-POINTS #.8)
+  (:DBG-NO-DEACTIVATION #.16)
+  (:DBG-NO-HELP-TEXT #.32)
+  (:DBG-DRAW-TEXT #.64)
+  (:DBG-PROFILE-TIMINGS #.128)
+  (:DBG-ENABLE-SAT-COMPARISON #.256)
+  (:DBG-DISABLE-BULLET-LCP #.512)
+  (:DBG-ENABLE-CCD #.1024)
+  (:DBG-DRAW-CONSTRAINTS #.(ash 1 11))
+  (:DBG-DRAW-CONSTRAINT-LIMITS #.(ash 1 12))
+  (:DBG-FAST-WIREFRAME #.(ash 1 13))
+  (:DBG-DRAW-NORMALS #.(ash 1 14))
+  :DBG-MAX-DEBUG-DRAW-MODE)
 
-#+exportagain (export '#.(lispify "FIXED_SET" 'enumvalue))
+(cffi:defcenum SERIALIZATION-FLAGS
+  (:SERIALIZE-NO-BVH #.1)
+  (:SERIALIZE-NO-TRIANGLEINFOMAP #.2)
+  (:SERIALIZE-NO-DUPLICATE-ASSERT #.4))
 
-#+exportagain (export '#.(lispify "STAGECOUNT" 'enumvalue))
+(declaim (inline MAKE-DISCRETE-DYNAMICS-WORLD))
 
-(cffi:defcenum #.(lispify "DebugDrawModes" 'enumname)
-               (#.(lispify "DBG_NoDebug" 'enumvalue :keyword) #.0)
-               (#.(lispify "DBG_DrawWireframe" 'enumvalue :keyword) #.1)
-               (#.(lispify "DBG_DrawAabb" 'enumvalue :keyword) #.2)
-               (#.(lispify "DBG_DrawFeaturesText" 'enumvalue :keyword) #.4)
-               (#.(lispify "DBG_DrawContactPoints" 'enumvalue :keyword) #.8)
-               (#.(lispify "DBG_NoDeactivation" 'enumvalue :keyword) #.16)
-               (#.(lispify "DBG_NoHelpText" 'enumvalue :keyword) #.32)
-               (#.(lispify "DBG_DrawText" 'enumvalue :keyword) #.64)
-               (#.(lispify "DBG_ProfileTimings" 'enumvalue :keyword) #.128)
-               (#.(lispify "DBG_EnableSatComparison" 'enumvalue :keyword) #.256)
-               (#.(lispify "DBG_DisableBulletLCP" 'enumvalue :keyword) #.512)
-               (#.(lispify "DBG_EnableCCD" 'enumvalue :keyword) #.1024)
-               (#.(lispify "DBG_DrawConstraints" 'enumvalue :keyword) #.(ash 1 11))
-               (#.(lispify "DBG_DrawConstraintLimits" 'enumvalue :keyword) #.(ash 1 12))
-               (#.(lispify "DBG_FastWireframe" 'enumvalue :keyword) #.(ash 1 13))
-               (#.(lispify "DBG_DrawNormals" 'enumvalue :keyword) #.(ash 1 14))
-               #.(lispify "DBG_MAX_DEBUG_DRAW_MODE" 'enumvalue :keyword))
-
-#+exportagain (export '#.(lispify "DebugDrawModes" 'enumname))
-
-(cffi:defcenum #.(lispify "btSerializationFlags" 'enumname)
-               (#.(lispify "BT_SERIALIZE_NO_BVH" 'enumvalue :keyword) #.1)
-               (#.(lispify "BT_SERIALIZE_NO_TRIANGLEINFOMAP" 'enumvalue :keyword) #.2)
-               (#.(lispify "BT_SERIALIZE_NO_DUPLICATE_ASSERT" 'enumvalue :keyword) #.4))
-
-#+exportagain (export '#.(lispify "btSerializationFlags" 'enumname))
-
-(declaim (inline #.(lispify "new_btDiscreteDynamicsWorld" 'function)))
-
-(cffi:defcfun ("_wrap_new_btDiscreteDynamicsWorld" #.(lispify "new_btDiscreteDynamicsWorld" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btDiscreteDynamicsWorld" MAKE-DISCRETE-DYNAMICS-WORLD) :pointer
   (dispatcher :pointer)
   (pairCache :pointer)
-  (constraintSolver :pointer)
-  (collisionConfiguration :pointer))
+  (constraint-Solver :pointer)
+  (collision-Configuration :pointer))
 
-#+exportagain (export '#.(lispify "new_btDiscreteDynamicsWorld" 'function))
+(declaim (inline DELETE/BT-DISCRETE-DYNAMICS-WORLD))
 
-(declaim (inline #.(lispify "delete_btDiscreteDynamicsWorld" 'function)))
-
-(cffi:defcfun ("_wrap_delete_btDiscreteDynamicsWorld" #.(lispify "delete_btDiscreteDynamicsWorld" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btDiscreteDynamicsWorld" DELETE/BT-DISCRETE-DYNAMICS-WORLD) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "delete_btDiscreteDynamicsWorld" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/STEP-SIMULATION))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_stepSimulation__SWIG_0" #.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function)) :int
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_stepSimulation__SWIG_0" DISCRETE-DYNAMICS-WORLD/STEP-SIMULATION) :int
   (self :pointer)
   (timeStep :float)
   (maxSubSteps :int)
   (fixedTimeStep :float))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function))
-
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function)))
+  (declaim (inline DISCRETE-DYNAMICS-WORLD/STEP-SIMULATION))
 
- (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_stepSimulation__SWIG_1" #.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function)) :int
+  (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_stepSimulation__SWIG_1" DISCRETE-DYNAMICS-WORLD/STEP-SIMULATION) :int
    (self :pointer)
    (timeStep :float)
    (maxSubSteps :int))
 
- #+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function))
+ 
 
- (declaim (inline #.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function)))
+  (declaim (inline DISCRETE-DYNAMICS-WORLD/STEP-SIMULATION))
 
- (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_stepSimulation__SWIG_2" #.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function)) :int
+  (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_stepSimulation__SWIG_2" DISCRETE-DYNAMICS-WORLD/STEP-SIMULATION) :int
    (self :pointer)
    (timeStep :float))
 
- #+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function)))
+ )
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_synchronizeMotionStates" 'function)))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/SYNCHRONIZE-MOTION-STATES))
 
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_synchronizeMotionStates" #.(lispify "btDiscreteDynamicsWorld_synchronizeMotionStates" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_synchronizeMotionStates" DISCRETE-DYNAMICS-WORLD/SYNCHRONIZE-MOTION-STATES) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_synchronizeMotionStates" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/SYNCHRONIZE-SINGLE-MOTION-STATE))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_synchronizeSingleMotionState" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_synchronizeSingleMotionState" #.(lispify "btDiscreteDynamicsWorld_synchronizeSingleMotionState" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_synchronizeSingleMotionState" DISCRETE-DYNAMICS-WORLD/SYNCHRONIZE-SINGLE-MOTION-STATE) :void
   (self :pointer)
   (body :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_synchronizeSingleMotionState" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-CONSTRAINT))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_addConstraint" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addConstraint__SWIG_0" #.(lispify "btDiscreteDynamicsWorld_addConstraint" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addConstraint__SWIG_0" DISCRETE-DYNAMICS-WORLD/ADD-CONSTRAINT) :void
   (self :pointer)
   (constraint :pointer)
   (disableCollisionsBetweenLinkedBodies :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_addConstraint" 'function))
-
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btDiscreteDynamicsWorld_addConstraint" 'function)))
+  (declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-CONSTRAINT))
 
- (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addConstraint__SWIG_1" #.(lispify "btDiscreteDynamicsWorld_addConstraint" 'function)) :void
+  (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addConstraint__SWIG_1" DISCRETE-DYNAMICS-WORLD/ADD-CONSTRAINT) :void
    (self :pointer)
    (constraint :pointer))
 
- #+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_addConstraint" 'function)))
+ )
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_removeConstraint" 'function)))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/REMOVE-CONSTRAINT))
 
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeConstraint" #.(lispify "btDiscreteDynamicsWorld_removeConstraint" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeConstraint" DISCRETE-DYNAMICS-WORLD/REMOVE-CONSTRAINT) :void
   (self :pointer)
   (constraint :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_removeConstraint" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-ACTION))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_addAction" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addAction" #.(lispify "btDiscreteDynamicsWorld_addAction" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addAction" DISCRETE-DYNAMICS-WORLD/ADD-ACTION) :void
   (self :pointer)
   (arg1 :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_addAction" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/REMOVE-ACTION))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_removeAction" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeAction" #.(lispify "btDiscreteDynamicsWorld_removeAction" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeAction" DISCRETE-DYNAMICS-WORLD/REMOVE-ACTION) :void
   (self :pointer)
   (arg1 :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_removeAction" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/GET-SIMULATION-ISLAND-MANAGER))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getSimulationIslandManager" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getSimulationIslandManager__SWIG_0" #.(lispify "btDiscreteDynamicsWorld_getSimulationIslandManager" 'function)) :pointer
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getSimulationIslandManager__SWIG_0" DISCRETE-DYNAMICS-WORLD/GET-SIMULATION-ISLAND-MANAGER) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getSimulationIslandManager" 'function))
 
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btDiscreteDynamicsWorld_getSimulationIslandManager" 'function)))
+  (declaim (inline DISCRETE-DYNAMICS-WORLD/GET-SIMULATION-ISLAND-MANAGER))
 
- (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getSimulationIslandManager__SWIG_1" #.(lispify "btDiscreteDynamicsWorld_getSimulationIslandManager" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getSimulationIslandManager__SWIG_1" DISCRETE-DYNAMICS-WORLD/GET-SIMULATION-ISLAND-MANAGER) :pointer
    (self :pointer))
 
- #+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getSimulationIslandManager" 'function)))
+ )
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getCollisionWorld" 'function)))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/GET-COLLISION-WORLD))
 
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getCollisionWorld" #.(lispify "btDiscreteDynamicsWorld_getCollisionWorld" 'function)) :pointer
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getCollisionWorld" DISCRETE-DYNAMICS-WORLD/GET-COLLISION-WORLD) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getCollisionWorld" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/SET-GRAVITY))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_setGravity" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setGravity" #.(lispify "btDiscreteDynamicsWorld_setGravity" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setGravity" DISCRETE-DYNAMICS-WORLD/SET-GRAVITY) :void
   (self :pointer)
   (gravity :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_setGravity" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/GET-GRAVITY))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getGravity" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getGravity" #.(lispify "btDiscreteDynamicsWorld_getGravity" 'function)) :pointer
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getGravity" DISCRETE-DYNAMICS-WORLD/GET-GRAVITY) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getGravity" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCollisionObject__SWIG_0" #.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCollisionObject__SWIG_0" DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer)
   (collisionFilterGroup :short)
   (collisionFilterMask :short))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function))
-
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function)))
+  (declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT))
 
- (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCollisionObject__SWIG_1" #.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function)) :void
+  (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCollisionObject__SWIG_1" DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT) :void
    (self :pointer)
    (collisionObject :pointer)
    (collisionFilterGroup :short))
 
- #+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function))
+ 
 
- (declaim (inline #.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function)))
+  (declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT))
 
- (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCollisionObject__SWIG_2" #.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function)) :void
+  (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCollisionObject__SWIG_2" DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT) :void
    (self :pointer)
    (collisionObject :pointer))
 
- #+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function)))
+ )
 
-
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_addRigidBody" 'function)))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-RIGID-BODY))
 
 (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addRigidBody__SWIG_0" 
-               #.(lispify "btDiscreteDynamicsWorld_addRigidBody" 'function)) :void
+               DISCRETE-DYNAMICS-WORLD/ADD-RIGID-BODY) :void
   (self :pointer)
   (body :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_addRigidBody" 'function))
-
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_addRigidBody" 'function)))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-RIGID-BODY))
 
 (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addRigidBody__SWIG_1"
                DISCRETE-DYNAMICS-WORLD/ADD-RIGID-BODY/WITH-GROUP&MASK) :void
@@ -1827,624 +1060,525 @@ Swig properly.")
 
 (export 'DISCRETE-DYNAMICS-WORLD/ADD-RIGID-BODY/WITH-GROUP&MASK)
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_removeRigidBody" 'function)))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/REMOVE-RIGID-BODY))
 
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeRigidBody" #.(lispify "btDiscreteDynamicsWorld_removeRigidBody" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeRigidBody" DISCRETE-DYNAMICS-WORLD/REMOVE-RIGID-BODY) :void
   (self :pointer)
   (body :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_removeRigidBody" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/REMOVE-COLLISION-OBJECT))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_removeCollisionObject" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeCollisionObject" #.(lispify "btDiscreteDynamicsWorld_removeCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeCollisionObject" DISCRETE-DYNAMICS-WORLD/REMOVE-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_removeCollisionObject" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/DEBUG-DRAW-CONSTRAINT))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_debugDrawConstraint" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_debugDrawConstraint" #.(lispify "btDiscreteDynamicsWorld_debugDrawConstraint" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_debugDrawConstraint" DISCRETE-DYNAMICS-WORLD/DEBUG-DRAW-CONSTRAINT) :void
   (self :pointer)
   (constraint :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_debugDrawConstraint" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/DEBUG-DRAW-WORLD))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_debugDrawWorld" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_debugDrawWorld" #.(lispify "btDiscreteDynamicsWorld_debugDrawWorld" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_debugDrawWorld" DISCRETE-DYNAMICS-WORLD/DEBUG-DRAW-WORLD) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_debugDrawWorld" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/SET-CONSTRAINT-SOLVER))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_setConstraintSolver" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setConstraintSolver" #.(lispify "btDiscreteDynamicsWorld_setConstraintSolver" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setConstraintSolver" DISCRETE-DYNAMICS-WORLD/SET-CONSTRAINT-SOLVER) :void
   (self :pointer)
   (solver :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_setConstraintSolver" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/GET-CONSTRAINT-SOLVER))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getConstraintSolver" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getConstraintSolver" #.(lispify "btDiscreteDynamicsWorld_getConstraintSolver" 'function)) :pointer
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getConstraintSolver" DISCRETE-DYNAMICS-WORLD/GET-CONSTRAINT-SOLVER) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getConstraintSolver" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/GET-NUM-CONSTRAINTS))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getNumConstraints" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getNumConstraints" #.(lispify "btDiscreteDynamicsWorld_getNumConstraints" 'function)) :int
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getNumConstraints" DISCRETE-DYNAMICS-WORLD/GET-NUM-CONSTRAINTS) :int
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getNumConstraints" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/GET-CONSTRAINT))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getConstraint" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getConstraint__SWIG_0" #.(lispify "btDiscreteDynamicsWorld_getConstraint" 'function)) :pointer
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getConstraint__SWIG_0" DISCRETE-DYNAMICS-WORLD/GET-CONSTRAINT) :pointer
   (self :pointer)
   (index :int))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getConstraint" 'function))
-
 #+ (or)
-(progn (declaim (inline #.(lispify "btDiscreteDynamicsWorld_getConstraint" 'function)))
+(progn (declaim (inline DISCRETE-DYNAMICS-WORLD/GET-CONSTRAINT))
 
- (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getConstraint__SWIG_1" #.(lispify "btDiscreteDynamicsWorld_getConstraint" 'function)) :pointer
+       (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getConstraint__SWIG_1" DISCRETE-DYNAMICS-WORLD/GET-CONSTRAINT) :pointer
    (self :pointer)
    (index :int))
 
- #+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getConstraint" 'function)))
+ )
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getWorldType" 'function)))
+DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getWorldType" #.(lispify "btDiscreteDynamicsWorld_getWorldType" 'function)) :pointer
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getWorldType" DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getWorldType" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/CLEAR-FORCES))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_clearForces" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_clearForces" #.(lispify "btDiscreteDynamicsWorld_clearForces" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_clearForces" DISCRETE-DYNAMICS-WORLD/CLEAR-FORCES) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_clearForces" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/APPLY-GRAVITY))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_applyGravity" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_applyGravity" #.(lispify "btDiscreteDynamicsWorld_applyGravity" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_applyGravity" DISCRETE-DYNAMICS-WORLD/APPLY-GRAVITY) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_applyGravity" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/SET-NUM-TASKS))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_setNumTasks" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setNumTasks" #.(lispify "btDiscreteDynamicsWorld_setNumTasks" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setNumTasks" DISCRETE-DYNAMICS-WORLD/SET-NUM-TASKS) :void
   (self :pointer)
   (numTasks :int))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_setNumTasks" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/UPDATE-VEHICLES))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_updateVehicles" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_updateVehicles" #.(lispify "btDiscreteDynamicsWorld_updateVehicles" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_updateVehicles" DISCRETE-DYNAMICS-WORLD/UPDATE-VEHICLES) :void
   (self :pointer)
   (timeStep :float))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_updateVehicles" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-VEHICLE))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_addVehicle" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addVehicle" #.(lispify "btDiscreteDynamicsWorld_addVehicle" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addVehicle" DISCRETE-DYNAMICS-WORLD/ADD-VEHICLE) :void
   (self :pointer)
   (vehicle :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_addVehicle" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/REMOVE-VEHICLE))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_removeVehicle" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeVehicle" #.(lispify "btDiscreteDynamicsWorld_removeVehicle" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeVehicle" DISCRETE-DYNAMICS-WORLD/REMOVE-VEHICLE) :void
   (self :pointer)
   (vehicle :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_removeVehicle" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-CHARACTER))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_addCharacter" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCharacter" #.(lispify "btDiscreteDynamicsWorld_addCharacter" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCharacter" DISCRETE-DYNAMICS-WORLD/ADD-CHARACTER) :void
   (self :pointer)
   (character :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_addCharacter" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/REMOVE-CHARACTER))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_removeCharacter" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeCharacter" #.(lispify "btDiscreteDynamicsWorld_removeCharacter" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_removeCharacter" DISCRETE-DYNAMICS-WORLD/REMOVE-CHARACTER) :void
   (self :pointer)
   (character :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_removeCharacter" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/SET-SYNCHRONIZE-ALL-MOTION-STATES))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_setSynchronizeAllMotionStates" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setSynchronizeAllMotionStates" #.(lispify "btDiscreteDynamicsWorld_setSynchronizeAllMotionStates" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setSynchronizeAllMotionStates" DISCRETE-DYNAMICS-WORLD/SET-SYNCHRONIZE-ALL-MOTION-STATES) :void
   (self :pointer)
   (synchronizeAll :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_setSynchronizeAllMotionStates" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/GET-SYNCHRONIZE-ALL-MOTION-STATES))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getSynchronizeAllMotionStates" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getSynchronizeAllMotionStates" #.(lispify "btDiscreteDynamicsWorld_getSynchronizeAllMotionStates" 'function)) :pointer
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getSynchronizeAllMotionStates" DISCRETE-DYNAMICS-WORLD/GET-SYNCHRONIZE-ALL-MOTION-STATES) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getSynchronizeAllMotionStates" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/SET-APPLY-SPECULATIVE-CONTACT-RESTITUTION))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_setApplySpeculativeContactRestitution" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setApplySpeculativeContactRestitution" #.(lispify "btDiscreteDynamicsWorld_setApplySpeculativeContactRestitution" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setApplySpeculativeContactRestitution" DISCRETE-DYNAMICS-WORLD/SET-APPLY-SPECULATIVE-CONTACT-RESTITUTION) :void
   (self :pointer)
   (enable :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_setApplySpeculativeContactRestitution" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/GET-APPLY-SPECULATIVE-CONTACT-RESTITUTION))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getApplySpeculativeContactRestitution" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getApplySpeculativeContactRestitution" #.(lispify "btDiscreteDynamicsWorld_getApplySpeculativeContactRestitution" 'function)) :pointer
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getApplySpeculativeContactRestitution" DISCRETE-DYNAMICS-WORLD/GET-APPLY-SPECULATIVE-CONTACT-RESTITUTION) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getApplySpeculativeContactRestitution" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/SERIALIZE))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_serialize" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_serialize" #.(lispify "btDiscreteDynamicsWorld_serialize" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_serialize" DISCRETE-DYNAMICS-WORLD/SERIALIZE) :void
   (self :pointer)
   (serializer :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_serialize" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/SET-LATENCY-MOTION-STATE-INTERPOLATION))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_setLatencyMotionStateInterpolation" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setLatencyMotionStateInterpolation" #.(lispify "btDiscreteDynamicsWorld_setLatencyMotionStateInterpolation" 'function)) :void
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_setLatencyMotionStateInterpolation" DISCRETE-DYNAMICS-WORLD/SET-LATENCY-MOTION-STATE-INTERPOLATION) :void
   (self :pointer)
   (latencyInterpolation :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_setLatencyMotionStateInterpolation" 'function))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/GET-LATENCY-MOTION-STATE-INTERPOLATION))
 
-(declaim (inline #.(lispify "btDiscreteDynamicsWorld_getLatencyMotionStateInterpolation" 'function)))
-
-(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getLatencyMotionStateInterpolation" #.(lispify "btDiscreteDynamicsWorld_getLatencyMotionStateInterpolation" 'function)) :pointer
+(cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getLatencyMotionStateInterpolation" DISCRETE-DYNAMICS-WORLD/GET-LATENCY-MOTION-STATE-INTERPOLATION) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btDiscreteDynamicsWorld_getLatencyMotionStateInterpolation" 'function))
+(declaim (inline MAKE-SIMPLE-DYNAMICS-WORLD))
 
-(declaim (inline #.(lispify "new_btSimpleDynamicsWorld" 'function)))
-
-(cffi:defcfun ("_wrap_new_btSimpleDynamicsWorld" #.(lispify "new_btSimpleDynamicsWorld" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btSimpleDynamicsWorld" MAKE-SIMPLE-DYNAMICS-WORLD) :pointer
   (dispatcher :pointer)
   (pairCache :pointer)
   (constraintSolver :pointer)
   (collisionConfiguration :pointer))
 
-#+exportagain (export '#.(lispify "new_btSimpleDynamicsWorld" 'function))
+(declaim (inline DELETE/BT-SIMPLE-DYNAMICS-WORLD))
 
-(declaim (inline #.(lispify "delete_btSimpleDynamicsWorld" 'function)))
-
-(cffi:defcfun ("_wrap_delete_btSimpleDynamicsWorld" #.(lispify "delete_btSimpleDynamicsWorld" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btSimpleDynamicsWorld" DELETE/BT-SIMPLE-DYNAMICS-WORLD) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "delete_btSimpleDynamicsWorld" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/STEP-SIMULATION))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_stepSimulation__SWIG_0" #.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function)) :int
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_stepSimulation__SWIG_0" SIMPLE-DYNAMICS-WORLD/STEP-SIMULATION) :int
   (self :pointer)
   (timeStep :float)
   (maxSubSteps :int)
   (fixedTimeStep :float))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function))
-
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function)))
+  (declaim (inline SIMPLE-DYNAMICS-WORLD/STEP-SIMULATION))
 
- (cffi:defcfun ("_wrap_btSimpleDynamicsWorld_stepSimulation__SWIG_1" #.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function)) :int
+  (cffi:defcfun ("_wrap_btSimpleDynamicsWorld_stepSimulation__SWIG_1" SIMPLE-DYNAMICS-WORLD/STEP-SIMULATION) :int
    (self :pointer)
    (timeStep :float)
    (maxSubSteps :int))
 
- #+exportagain (export '#.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function))
+ 
 
- (declaim (inline #.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function)))
+  (declaim (inline SIMPLE-DYNAMICS-WORLD/STEP-SIMULATION))
 
- (cffi:defcfun ("_wrap_btSimpleDynamicsWorld_stepSimulation__SWIG_2" #.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function)) :int
+  (cffi:defcfun ("_wrap_btSimpleDynamicsWorld_stepSimulation__SWIG_2" SIMPLE-DYNAMICS-WORLD/STEP-SIMULATION) :int
    (self :pointer)
    (timeStep :float))
 
- #+exportagain (export '#.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function)))
+ )
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_setGravity" 'function)))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/SET-GRAVITY))
 
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_setGravity" #.(lispify "btSimpleDynamicsWorld_setGravity" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_setGravity" SIMPLE-DYNAMICS-WORLD/SET-GRAVITY) :void
   (self :pointer)
   (gravity :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_setGravity" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/GET-GRAVITY))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_getGravity" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_getGravity" #.(lispify "btSimpleDynamicsWorld_getGravity" 'function)) :pointer
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_getGravity" SIMPLE-DYNAMICS-WORLD/GET-GRAVITY) :pointer
   (self :pointer))
-
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_getGravity" 'function))
 
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btSimpleDynamicsWorld_addRigidBody" 'function)))
+  (declaim (inline SIMPLE-DYNAMICS-WORLD/ADD-RIGID-BODY))
 
- (cffi:defcfun ("_wrap_btSimpleDynamicsWorld_addRigidBody__SWIG_0" #.(lispify "btSimpleDynamicsWorld_addRigidBody" 'function)) :void
+  (cffi:defcfun ("_wrap_btSimpleDynamicsWorld_addRigidBody__SWIG_0" SIMPLE-DYNAMICS-WORLD/ADD-RIGID-BODY) :void
    (self :pointer)
    (body :pointer))
 
- #+exportagain (export '#.(lispify "btSimpleDynamicsWorld_addRigidBody" 'function)))
+ )
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_addRigidBody" 'function)))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/ADD-RIGID-BODY))
 
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_addRigidBody__SWIG_1" #.(lispify "btSimpleDynamicsWorld_addRigidBody" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_addRigidBody__SWIG_1" SIMPLE-DYNAMICS-WORLD/ADD-RIGID-BODY) :void
   (self :pointer)
   (body :pointer)
   (group :short)
   (mask :short))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_addRigidBody" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/REMOVE-RIGID-BODY))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_removeRigidBody" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_removeRigidBody" #.(lispify "btSimpleDynamicsWorld_removeRigidBody" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_removeRigidBody" SIMPLE-DYNAMICS-WORLD/REMOVE-RIGID-BODY) :void
   (self :pointer)
   (body :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_removeRigidBody" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/DEBUG-DRAW-WORLD))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_debugDrawWorld" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_debugDrawWorld" #.(lispify "btSimpleDynamicsWorld_debugDrawWorld" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_debugDrawWorld" SIMPLE-DYNAMICS-WORLD/DEBUG-DRAW-WORLD) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_debugDrawWorld" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/ADD-ACTION))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_addAction" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_addAction" #.(lispify "btSimpleDynamicsWorld_addAction" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_addAction" SIMPLE-DYNAMICS-WORLD/ADD-ACTION) :void
   (self :pointer)
   (action :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_addAction" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/REMOVE-ACTION))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_removeAction" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_removeAction" #.(lispify "btSimpleDynamicsWorld_removeAction" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_removeAction" SIMPLE-DYNAMICS-WORLD/REMOVE-ACTION) :void
   (self :pointer)
   (action :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_removeAction" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/REMOVE-COLLISION-OBJECT))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_removeCollisionObject" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_removeCollisionObject" #.(lispify "btSimpleDynamicsWorld_removeCollisionObject" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_removeCollisionObject" SIMPLE-DYNAMICS-WORLD/REMOVE-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_removeCollisionObject" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/UPDATE-AABBS))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_updateAabbs" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_updateAabbs" #.(lispify "btSimpleDynamicsWorld_updateAabbs" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_updateAabbs" SIMPLE-DYNAMICS-WORLD/UPDATE-AABBS) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_updateAabbs" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/SYNCHRONIZE-MOTION-STATES))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_synchronizeMotionStates" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_synchronizeMotionStates" #.(lispify "btSimpleDynamicsWorld_synchronizeMotionStates" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_synchronizeMotionStates" SIMPLE-DYNAMICS-WORLD/SYNCHRONIZE-MOTION-STATES) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_synchronizeMotionStates" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/SET-CONSTRAINT-SOLVER))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_setConstraintSolver" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_setConstraintSolver" #.(lispify "btSimpleDynamicsWorld_setConstraintSolver" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_setConstraintSolver" SIMPLE-DYNAMICS-WORLD/SET-CONSTRAINT-SOLVER) :void
   (self :pointer)
   (solver :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_setConstraintSolver" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/GET-CONSTRAINT-SOLVER))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_getConstraintSolver" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_getConstraintSolver" #.(lispify "btSimpleDynamicsWorld_getConstraintSolver" 'function)) :pointer
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_getConstraintSolver" SIMPLE-DYNAMICS-WORLD/GET-CONSTRAINT-SOLVER) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_getConstraintSolver" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/GET-WORLD-TYPE))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_getWorldType" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_getWorldType" #.(lispify "btSimpleDynamicsWorld_getWorldType" 'function)) :pointer
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_getWorldType" SIMPLE-DYNAMICS-WORLD/GET-WORLD-TYPE) :pointer
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_getWorldType" 'function))
+(declaim (inline SIMPLE-DYNAMICS-WORLD/CLEAR-FORCES))
 
-(declaim (inline #.(lispify "btSimpleDynamicsWorld_clearForces" 'function)))
-
-(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_clearForces" #.(lispify "btSimpleDynamicsWorld_clearForces" 'function)) :void
+(cffi:defcfun ("_wrap_btSimpleDynamicsWorld_clearForces" SIMPLE-DYNAMICS-WORLD/CLEAR-FORCES) :void
   (self :pointer))
 
-#+exportagain (export '#.(lispify "btSimpleDynamicsWorld_clearForces" 'function))
+(cffi:defcenum RIGID-BODY-FLAGS
+  (:DISABLE-WORLD-GRAVITY #.1)
+  (:ENABLE-GYROPSCOPIC-FORCE #.2))
 
-(cffi:defcenum #.(lispify "btRigidBodyFlags" 'enumname)
-               (#.(lispify "BT_DISABLE_WORLD_GRAVITY" 'enumvalue :keyword) #.1)
-               (#.(lispify "BT_ENABLE_GYROPSCOPIC_FORCE" 'enumvalue :keyword) #.2))
+(cffi:defcenum POINT-2-POINT-FLAGS
+  (:P-2-P-FLAGS-ERP #.1)
+  (:P-2-P-FLAGS-CFM #.2))
 
-#+exportagain (export '#.(lispify "btRigidBodyFlags" 'enumname))
+(cffi:defcenum HINGE-FLAGS
+  (:HINGE-FLAGS-CFM-STOP #.1)
+  (:HINGE-FLAGS-ERP-STOP #.2)
+  (:HINGE-FLAGS-CFM-NORM #.4))
 
-(cffi:defcenum #.(lispify "btPoint2PointFlags" 'enumname)
-               (#.(lispify "BT_P2P_FLAGS_ERP" 'enumvalue :keyword) #.1)
-               (#.(lispify "BT_P2P_FLAGS_CFM" 'enumvalue :keyword) #.2))
+(cffi:defcenum CONE-TWIST-FLAGS
+  (:CONETWIST-FLAGS-LIN-CFM #.1)
+  (:CONETWIST-FLAGS-LIN-ERP #.2)
+  (:CONETWIST-FLAGS-ANG-CFM #.4))
 
-#+exportagain (export '#.(lispify "btPoint2PointFlags" 'enumname))
+(cffi:defcenum 6-DOF-FLAGS
+  (:6-DOF-FLAGS-CFM-NORM #.1)
+  (:6-DOF-FLAGS-CFM-STOP #.2)
+  (:6-DOF-FLAGS-ERP-STOP #.4))
 
-(cffi:defcenum #.(lispify "btHingeFlags" 'enumname)
-               (#.(lispify "BT_HINGE_FLAGS_CFM_STOP" 'enumvalue :keyword) #.1)
-               (#.(lispify "BT_HINGE_FLAGS_ERP_STOP" 'enumvalue :keyword) #.2)
-               (#.(lispify "BT_HINGE_FLAGS_CFM_NORM" 'enumvalue :keyword) #.4))
-
-#+exportagain (export '#.(lispify "btHingeFlags" 'enumname))
-
-(cffi:defcenum #.(lispify "btConeTwistFlags" 'enumname)
-               (#.(lispify "BT_CONETWIST_FLAGS_LIN_CFM" 'enumvalue :keyword) #.1)
-               (#.(lispify "BT_CONETWIST_FLAGS_LIN_ERP" 'enumvalue :keyword) #.2)
-               (#.(lispify "BT_CONETWIST_FLAGS_ANG_CFM" 'enumvalue :keyword) #.4))
-
-#+exportagain (export '#.(lispify "btConeTwistFlags" 'enumname))
-
-(cffi:defcenum #.(lispify "bt6DofFlags" 'enumname)
-               (#.(lispify "BT_6DOF_FLAGS_CFM_NORM" 'enumvalue :keyword) #.1)
-               (#.(lispify "BT_6DOF_FLAGS_CFM_STOP" 'enumvalue :keyword) #.2)
-               (#.(lispify "BT_6DOF_FLAGS_ERP_STOP" 'enumvalue :keyword) #.4))
-
-#+exportagain (export '#.(lispify "bt6DofFlags" 'enumname))
-
-(cffi:defcenum #.(lispify "btSliderFlags" 'enumname)
-               (#.(lispify "BT_SLIDER_FLAGS_CFM_DIRLIN" 'enumvalue :keyword) #.(ash 1 0))
-               (#.(lispify "BT_SLIDER_FLAGS_ERP_DIRLIN" 'enumvalue :keyword) #.(ash 1 1))
-               (#.(lispify "BT_SLIDER_FLAGS_CFM_DIRANG" 'enumvalue :keyword) #.(ash 1 2))
-               (#.(lispify "BT_SLIDER_FLAGS_ERP_DIRANG" 'enumvalue :keyword) #.(ash 1 3))
-               (#.(lispify "BT_SLIDER_FLAGS_CFM_ORTLIN" 'enumvalue :keyword) #.(ash 1 4))
-               (#.(lispify "BT_SLIDER_FLAGS_ERP_ORTLIN" 'enumvalue :keyword) #.(ash 1 5))
-               (#.(lispify "BT_SLIDER_FLAGS_CFM_ORTANG" 'enumvalue :keyword) #.(ash 1 6))
-               (#.(lispify "BT_SLIDER_FLAGS_ERP_ORTANG" 'enumvalue :keyword) #.(ash 1 7))
-               (#.(lispify "BT_SLIDER_FLAGS_CFM_LIMLIN" 'enumvalue :keyword) #.(ash 1 8))
-               (#.(lispify "BT_SLIDER_FLAGS_ERP_LIMLIN" 'enumvalue :keyword) #.(ash 1 9))
-               (#.(lispify "BT_SLIDER_FLAGS_CFM_LIMANG" 'enumvalue :keyword) #.(ash 1 10))
-               (#.(lispify "BT_SLIDER_FLAGS_ERP_LIMANG" 'enumvalue :keyword) #.(ash 1 11)))
-
-#+exportagain (export '#.(lispify "btSliderFlags" 'enumname))
+(cffi:defcenum SLIDER-FLAGS
+  (:SLIDER-FLAGS-CFM-DIRLIN #.(ash 1 0))
+  (:SLIDER-FLAGS-ERP-DIRLIN #.(ash 1 1))
+  (:SLIDER-FLAGS-CFM-DIRANG #.(ash 1 2))
+  (:SLIDER-FLAGS-ERP-DIRANG #.(ash 1 3))
+  (:SLIDER-FLAGS-CFM-ORTLIN #.(ash 1 4))
+  (:SLIDER-FLAGS-ERP-ORTLIN #.(ash 1 5))
+  (:SLIDER-FLAGS-CFM-ORTANG #.(ash 1 6))
+  (:SLIDER-FLAGS-ERP-ORTANG #.(ash 1 7))
+  (:SLIDER-FLAGS-CFM-LIMLIN #.(ash 1 8))
+  (:SLIDER-FLAGS-ERP-LIMLIN #.(ash 1 9))
+  (:SLIDER-FLAGS-CFM-LIMANG #.(ash 1 10))
+  (:SLIDER-FLAGS-ERP-LIMANG #.(ash 1 11)))
 
 
 
-
-(defklass #.(lispify "bt-collision-world" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
-
-(defmethod initialize-instance :after ((obj #.(lispify "bt-collision-world" 'class))
+(defmethod initialize-instance :after ((obj collision-world)
                                        &key dispatcher broadphase-Pair-Cache
                                          collision-Configuration)
-  (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btCollisionWorld" 'function) dispatcher broadphase-Pair-Cache collision-Configuration)))
+  (setf (slot-value obj 'ff-pointer) (MAKE-COLLISION-WORLD dispatcher broadphase-Pair-Cache collision-Configuration)))
 
-(defmethod #.(lispify "set-broadphase" 'method)
-  ((self #.(lispify "bt-collision-world" 'classname)) pairCache)
-  (#.(lispify "btCollisionWorld_setBroadphase" 'function) (ff-pointer self) pairCache))
+(defmethod (setf broadphase)
+    ((self collision-world) pairCache)
+  (COLLISION-WORLD/SET-BROADPHASE (ff-pointer self) pairCache))
 
-(defmethod #.(lispify "get-broadphase" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getBroadphase" 'function) (ff-pointer self)))
+(defmethod broadphase ((self collision-world))
+  (COLLISION-WORLD/GET-BROADPHASE (ff-pointer self)))
 
-(defmethod #.(lispify "get-broadphase" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getBroadphase" 'function) (ff-pointer self)))
+(defmethod broadphase ((self collision-world))
+  (COLLISION-WORLD/GET-BROADPHASE (ff-pointer self)))
 
-(defmethod #.(lispify "get-pair-cache" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getPairCache" 'function) (ff-pointer self)))
+(defmethod pair-cache ((self collision-world))
+  (COLLISION-WORLD/GET-PAIR-CACHE (ff-pointer self)))
 
-(defmethod #.(lispify "get-dispatcher" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getDispatcher" 'function) (ff-pointer self)))
+(defmethod dispatcher ((self collision-world))
+  (COLLISION-WORLD/GET-DISPATCHER (ff-pointer self)))
 
-(defmethod #.(lispify "get-dispatcher" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getDispatcher" 'function) (ff-pointer self)))
+(defmethod dispatcher ((self collision-world))
+  (COLLISION-WORLD/GET-DISPATCHER (ff-pointer self)))
 
-(defmethod #.(lispify "update-single-aabb" 'method) ((self #.(lispify "bt-collision-world" 'classname)) colObj)
-           (#.(lispify "btCollisionWorld_updateSingleAabb" 'function) (ff-pointer self) colObj))
+(defmethod update-single-aabb ((self collision-world) colObj)
+  (COLLISION-WORLD/UPDATE-SINGLE-AABB (ff-pointer self) colObj))
 
-(defmethod #.(lispify "update-aabbs" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_updateAabbs" 'function) (ff-pointer self)))
+(defmethod update-aabbs ((self collision-world))
+  (COLLISION-WORLD/UPDATE-AABBS (ff-pointer self)))
 
-(defmethod #.(lispify "compute-overlapping-pairs" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_computeOverlappingPairs" 'function) (ff-pointer self)))
+(defmethod compute-overlapping-pairs ((self collision-world))
+  (COLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS (ff-pointer self)))
 
-(defmethod #.(lispify "set-debug-drawer" 'method) ((self #.(lispify "bt-collision-world" 'classname)) debugDrawer)
-           (#.(lispify "btCollisionWorld_setDebugDrawer" 'function) (ff-pointer self) debugDrawer))
+(defmethod (setf debug-drawer) ((self collision-world) debugDrawer)
+  (COLLISION-WORLD/SET-DEBUG-DRAWER (ff-pointer self) debugDrawer))
 
-(defmethod #.(lispify "get-debug-drawer" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getDebugDrawer" 'function) (ff-pointer self)))
+(defmethod debug-drawer ((self COLLISION-WORLD))
+  (COLLISION-WORLD/GET-DEBUG-DRAWER (ff-pointer self)))
 
-(defmethod #.(lispify "debug-draw-world" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_debugDrawWorld" 'function) (ff-pointer self)))
+(defmethod debug-draw-world ((self collision-world))
+  (COLLISION-WORLD/DEBUG-DRAW-WORLD (ff-pointer self)))
 
-(defmethod #.(lispify "debug-draw-object" 'method) ((self #.(lispify "bt-collision-world" 'classname)) worldTransform shape color)
-           (#.(lispify "btCollisionWorld_debugDrawObject" 'function) (ff-pointer self) worldTransform shape color))
+(defmethod debug-draw-object ((self collision-world) worldTransform shape color)
+  (COLLISION-WORLD/DEBUG-DRAW-OBJECT (ff-pointer self) worldTransform shape color))
 
-(defmethod #.(lispify "get-num-collision-objects" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getNumCollisionObjects" 'function) (ff-pointer self)))
+(defmethod num-collision-objects ((self collision-world))
+  (COLLISION-WORLD/GET-NUM-COLLISION-OBJECTS (ff-pointer self)))
 
-(defmethod #.(lispify "ray-test" 'method) ((self #.(lispify "bt-collision-world" 'classname)) rayFromWorld rayToWorld resultCallback)
-           (#.(lispify "btCollisionWorld_rayTest" 'function) (ff-pointer self) rayFromWorld rayToWorld resultCallback))
+(defmethod ray-test ((self collision-world) rayFromWorld rayToWorld resultCallback)
+  (COLLISION-WORLD/RAY-TEST (ff-pointer self) rayFromWorld rayToWorld resultCallback))
 
-(defmethod #.(lispify "convex-sweep-test" 'method)
-  ((self #.(lispify "bt-collision-world" 'classname))
+(defmethod convex-sweep-test
+    ((self collision-world)
    castShape from to resultCallback 
    (allowedCcdPenetration number))
   (COLLISION-WORLD/CONVEX-SWEEP-TEST/with-ccd-penetration
    (ff-pointer self) castShape from to resultCallback
    allowedCcdPenetration))
 
-(defmethod #.(lispify "convex-sweep-test" 'method)
-  ((self #.(lispify "bt-collision-world" 'classname))
+(defmethod convex-sweep-test
+    ((self collision-world)
    castShape from to resultCallback (allowedCcdPenetration null))
   (COLLISION-WORLD/CONVEX-SWEEP-TEST/without-ccd-penetration
    (ff-pointer self) castShape from to resultCallback))
                                                        
-(defmethod #.(lispify "contact-test" 'method)
-  ((self #.(lispify "bt-collision-world" 'classname)) colObj resultCallback)
-  (#.(lispify "btCollisionWorld_contactTest" 'function) (ff-pointer self) colObj resultCallback))
+(defmethod contact-test
+    ((self collision-world) colObj resultCallback)
+  (COLLISION-WORLD/CONTACT-TEST (ff-pointer self) colObj resultCallback))
 
-(defmethod #.(lispify "contact-pair-test" 'method)
-  ((self #.(lispify "bt-collision-world" 'classname)) colObjA colObjB resultCallback)
-  (#.(lispify "btCollisionWorld_contactPairTest" 'function) (ff-pointer self) colObjA colObjB resultCallback))
+(defmethod contact-pair-test
+    ((self collision-world) colObjA colObjB resultCallback)
+  (COLLISION-WORLD/CONTACT-PAIR-TEST (ff-pointer self) colObjA colObjB resultCallback))
 
-(defmethod #.(lispify "add-collision-object" 'method)
-  ((self #.(lispify "bt-collision-world" 'classname)) collisionObject
+(defmethod add-collision-object
+    ((self collision-world) collisionObject
    (collisionFilterGroup integer) (collisionFilterMask integer))
   (COLLISION-WORLD/ADD-COLLISION-OBJECT/WITH-FILTER-GROUP&MASK
      (ff-pointer self) collisionObject
      collisionFilterGroup collisionFilterMask))
 
-(defmethod #.(lispify "add-collision-object" 'method)
-  ((self #.(lispify "bt-collision-world" 'classname)) collisionObject
+(defmethod add-collision-object
+    ((self collision-world) collisionObject
    (collisionFilterGroup integer)  (collisionFilterMask null))
   (COLLISION-WORLD/ADD-COLLISION-OBJECT/WITH-FILTER-GROUP
    (ff-pointer self) collisionObject
    collisionFilterGroup))
 
-(defmethod #.(lispify "add-collision-object" 'method) 
-  ((self #.(lispify "bt-collision-world" 'classname)) collisionObject
+(defmethod add-collision-object 
+    ((self collision-world) collisionObject
    (collisionFilterGroup null)  (collisionFilterMask null))
   (COLLISION-WORLD/ADD-COLLISION-OBJECT/simple
               (ff-pointer self) collisionObject))
 
-(defmethod #.(lispify "get-collision-object-array" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getCollisionObjectArray" 'function) (ff-pointer self)))
+(defmethod collision-object-array ((self collision-world))
+  (COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY (ff-pointer self)))
 
-(defmethod #.(lispify "get-collision-object-array" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getCollisionObjectArray" 'function) (ff-pointer self)))
+(defmethod collision-object-array ((self collision-world))
+  (COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY (ff-pointer self)))
 
-(defmethod #.(lispify "remove-collision-object" 'method) ((self #.(lispify "bt-collision-world" 'classname)) collisionObject)
-           (#.(lispify "btCollisionWorld_removeCollisionObject" 'function) (ff-pointer self) collisionObject))
+(defmethod REMOVE-COLLISION-OBJECT ((self COLLISION-WORLD) collisionObject)
+  (COLLISION-WORLD/REMOVE-COLLISION-OBJECT (ff-pointer self) collisionObject))
 
-(defmethod #.(lispify "perform-discrete-collision-detection" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_performDiscreteCollisionDetection" 'function) (ff-pointer self)))
+(defmethod PERFORM-DISCRETE-COLLISION-DETECTION ((self COLLISION-WORLD))
+  (COLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION (ff-pointer self)))
 
-(defmethod #.(lispify "get-dispatch-info" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getDispatchInfo" 'function) (ff-pointer self)))
+(defmethod DISPATCH-INFO ((self COLLISION-WORLD))
+  (COLLISION-WORLD/GET-DISPATCH-INFO (ff-pointer self)))
 
-(defmethod #.(lispify "get-dispatch-info" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getDispatchInfo" 'function) (ff-pointer self)))
+(defmethod DISPATCH-INFO ((self COLLISION-WORLD))
+  (COLLISION-WORLD/GET-DISPATCH-INFO (ff-pointer self)))
 
-(defmethod #.(lispify "get-force-update-all-aabbs" 'method) ((self #.(lispify "bt-collision-world" 'classname)))
-           (#.(lispify "btCollisionWorld_getForceUpdateAllAabbs" 'function) (ff-pointer self)))
+(defmethod FORCE-UPDATE-ALL-AABBS ((self COLLISION-WORLD))
+  (COLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS (ff-pointer self)))
 
-(defmethod #.(lispify "set-force-update-all-aabbs" 'method) ((self #.(lispify "bt-collision-world" 'classname)) (forceUpdateAllAabbs t))
-           (#.(lispify "btCollisionWorld_setForceUpdateAllAabbs" 'function) (ff-pointer self) forceUpdateAllAabbs))
+(defmethod (SETF FORCE-UPDATE-ALL-AABBS) ((self COLLISION-WORLD) (forceUpdateAllAabbs t))
+  (COLLISION-WORLD/SET-FORCE-UPDATE-ALL-AABBS (ff-pointer self) forceUpdateAllAabbs))
 
 (defgeneric serialize (object &key &allow-other-keys))
 
 (defmethod serialize ((self collision-world) &key serializer &allow-other-keys)
   (COLLISION-WORLD/SERIALIZE (ff-pointer self) serializer))
 
-(defklass #.(lispify "bt-collision-object" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(defmethod #.(lispify "merges-simulation-islands" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_mergesSimulationIslands" 'function) (ff-pointer self)))
 
-(defmethod #.(lispify "get-anisotropic-friction" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getAnisotropicFriction" 'function) (ff-pointer self)))
+(defmethod MERGES-SIMULATION-ISLANDS ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS (ff-pointer self)))
 
-(defmethod #.(lispify "set-anisotropic-friction" 'method)
-  ((self #.(lispify "bt-collision-object" 'classname)) 
+(defmethod ANISOTROPIC-FRICTION ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION (ff-pointer self)))
+
+(defmethod (SETF ANISOTROPIC-FRICTION)
+    ((self COLLISION-OBJECT) 
    anisotropicFriction (frictionMode integer))
            (COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/WITH-MODE
             (ff-pointer self) anisotropicFriction
             frictionMode))
 
-(defmethod #.(lispify "set-anisotropic-friction" 'method)
-  ((self #.(lispify "bt-collision-object" 'classname))
+(defmethod (SETF ANISOTROPIC-FRICTION)
+    ((self COLLISION-OBJECT)
    anisotropicFriction (friction-mode null))
   (COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/WITHOUT-MODE
      (ff-pointer self) anisotropicFriction))
 
-(defmethod #.(lispify "has-anisotropic-friction" 'method)
-  ((self #.(lispify "bt-collision-object" 'classname)) (frictionMode integer))
+(defmethod HAS-ANISOTROPIC-FRICTION-P
+    ((self COLLISION-OBJECT) (frictionMode integer))
   (COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/WITH-MODE
    (ff-pointer self) frictionMode))
 
-(defmethod #.(lispify "has-anisotropic-friction" 'method)
-  ((self #.(lispify "bt-collision-object" 'classname)) (friction-mode null))
+(defmethod HAS-ANISOTROPIC-FRICTION-P
+    ((self COLLISION-OBJECT) (friction-mode null))
   (COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/WITHOUT-MODE
      (ff-pointer self)))
 
-(defmethod #.(lispify "set-contact-processing-threshold" 'method)
-  ((self #.(lispify "bt-collision-object" 'classname))
+(defmethod (SETF CONTACT-PROCESSING-THRESHOLD)
+    ((self COLLISION-OBJECT)
    (contactProcessingThreshold number))
-  (#.(lispify "btCollisionObject_setContactProcessingThreshold" 'function)
+  (COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD
      (ff-pointer self) contactProcessingThreshold))
 
-(defmethod #.(lispify "get-contact-processing-threshold" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getContactProcessingThreshold" 'function) (ff-pointer self)))
+(defmethod CONTACT-PROCESSING-THRESHOLD ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD (ff-pointer self)))
 
-(defmethod #.(lispify "is-static-object" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_isStaticObject" 'function) (ff-pointer self)))
+(defmethod STATIC-OBJECT-P ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/IS-STATIC-OBJECT (ff-pointer self)))
 
-(defmethod #.(lispify "is-kinematic-object" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_isKinematicObject" 'function) (ff-pointer self)))
+(defmethod KINEMATIC-OBJECT-P ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/IS-KINEMATIC-OBJECT (ff-pointer self)))
 
-(defmethod #.(lispify "is-static-or-kinematic-object" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_isStaticOrKinematicObject" 'function) (ff-pointer self)))
+(defmethod STATIC-OR-KINEMATIC-OBJECT-P ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT (ff-pointer self)))
 
-(defmethod #.(lispify "has-contact-response" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_hasContactResponse" 'function) (ff-pointer self)))
+(defmethod HAS-CONTACT-RESPONSE-P ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/HAS-CONTACT-RESPONSE (ff-pointer self)))
 
-(defmethod initialize-instance :after ((obj #.(lispify "bt-collision-object" 'class))
+(defmethod initialize-instance :after ((obj COLLISION-OBJECT)
                                        &key)
-  (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btCollisionObject" 'function))))
+  (setf (slot-value obj 'ff-pointer) (MAKE-COLLISION-OBJECT)))
 
-(defmethod #.(lispify "set-collision-shape" 'method) ((self #.(lispify "bt-collision-object" 'classname)) collisionShape)
-           (#.(lispify "btCollisionObject_setCollisionShape" 'function) (ff-pointer self) collisionShape))
+(defmethod (SETF COLLISION-SHAPE) ((self COLLISION-OBJECT) collisionShape)
+  (COLLISION-OBJECT/SET-COLLISION-SHAPE (ff-pointer self) collisionShape))
 
-(defmethod #.(lispify "get-collision-shape" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getCollisionShape" 'function) (ff-pointer self)))
+(defmethod COLLISION-SHAPE ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-COLLISION-SHAPE (ff-pointer self)))
 
-(defmethod #.(lispify "get-collision-shape" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getCollisionShape" 'function) (ff-pointer self)))
+(defmethod COLLISION-SHAPE ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-COLLISION-SHAPE (ff-pointer self)))
 
-(defmethod #.(lispify "internal-get-extension-pointer" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_internalGetExtensionPointer" 'function) (ff-pointer self)))
+(defmethod INTERNAL-GET-EXTENSION-POINTER ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER (ff-pointer self)))
 
-(defmethod #.(lispify "internal-set-extension-pointer" 'method) ((self #.(lispify "bt-collision-object" 'classname)) pointer)
-           (#.(lispify "btCollisionObject_internalSetExtensionPointer" 'function) (ff-pointer self) pointer))
+(defmethod INTERNAL-SET-EXTENSION-POINTER ((self COLLISION-OBJECT) pointer)
+  (COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER (ff-pointer self) pointer))
 
-(defmethod #.(lispify "get-activation-state" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getActivationState" 'function) (ff-pointer self)))
+(defmethod ACTIVATION-STATE ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-ACTIVATION-STATE (ff-pointer self)))
 
-(defmethod #.(lispify "set-activation-state" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (newState integer))
-           (#.(lispify "btCollisionObject_setActivationState" 'function) (ff-pointer self) newState))
+(defmethod (SETF ACTIVATION-STATE) ((self COLLISION-OBJECT) (newState integer))
+  (COLLISION-OBJECT/SET-ACTIVATION-STATE (ff-pointer self) newState))
 
-(defmethod #.(lispify "set-deactivation-time" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (time number))
-           (#.(lispify "btCollisionObject_setDeactivationTime" 'function) (ff-pointer self) time))
+(defmethod (SETF DEACTIVATION-TIME) ((self COLLISION-OBJECT) (time number))
+  (COLLISION-OBJECT/SET-DEACTIVATION-TIME (ff-pointer self) time))
 
-(defmethod #.(lispify "get-deactivation-time" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getDeactivationTime" 'function) (ff-pointer self)))
+(defmethod DEACTIVATION-TIME ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-DEACTIVATION-TIME (ff-pointer self)))
 
-(defmethod #.(lispify "force-activation-state" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (newState integer))
-           (#.(lispify "btCollisionObject_forceActivationState" 'function) (ff-pointer self) newState))
+(defmethod FORCE-ACTIVATION-STATE ((self COLLISION-OBJECT) (newState integer))
+  (COLLISION-OBJECT/FORCE-ACTIVATION-STATE (ff-pointer self) newState))
 
 (defmethod activate ((self collision-object)
                      &key (force-activation nil force-?))
@@ -2452,312 +1586,304 @@ Swig properly.")
       (collision-object/activate/force (ff-pointer self) force-activation)
       (collision-object/activate (ff-pointer self))))
 
+(defmethod ACTIVEP ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/IS-ACTIVE (ff-pointer self)))
 
+(defmethod (SETF RESTITUTION) ((self COLLISION-OBJECT) (rest number))
+  (COLLISION-OBJECT/SET-RESTITUTION (ff-pointer self) rest))
 
-(defmethod #.(lispify "is-active" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_isActive" 'function) (ff-pointer self)))
+(defmethod RESTITUTION ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-RESTITUTION (ff-pointer self)))
 
-(defmethod #.(lispify "set-restitution" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (rest number))
-           (#.(lispify "btCollisionObject_setRestitution" 'function) (ff-pointer self) rest))
+(defmethod (SETF FRICTION) ((self COLLISION-OBJECT) (frict number))
+  (COLLISION-OBJECT/SET-FRICTION (ff-pointer self) frict))
 
-(defmethod #.(lispify "get-restitution" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getRestitution" 'function) (ff-pointer self)))
+(defmethod FRICTION ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-FRICTION (ff-pointer self)))
 
-(defmethod #.(lispify "set-friction" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (frict number))
-           (#.(lispify "btCollisionObject_setFriction" 'function) (ff-pointer self) frict))
+(defmethod (SETF ROLLING-FRICTION) ((self COLLISION-OBJECT) (frict number))
+  (COLLISION-OBJECT/SET-ROLLING-FRICTION (ff-pointer self) frict))
 
-(defmethod #.(lispify "get-friction" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getFriction" 'function) (ff-pointer self)))
+(defmethod ROLLING-FRICTION ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-ROLLING-FRICTION (ff-pointer self)))
 
-(defmethod #.(lispify "set-rolling-friction" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (frict number))
-           (#.(lispify "btCollisionObject_setRollingFriction" 'function) (ff-pointer self) frict))
+(defmethod INTERNAL-TYPE ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-INTERNAL-TYPE (ff-pointer self)))
 
-(defmethod #.(lispify "get-rolling-friction" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getRollingFriction" 'function) (ff-pointer self)))
+(defmethod WORLD-TRANSFORM ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-WORLD-TRANSFORM (ff-pointer self)))
 
-(defmethod #.(lispify "get-internal-type" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getInternalType" 'function) (ff-pointer self)))
+(defmethod WORLD-TRANSFORM ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-WORLD-TRANSFORM (ff-pointer self)))
 
-(defmethod #.(lispify "get-world-transform" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getWorldTransform" 'function) (ff-pointer self)))
-
-(defmethod #.(lispify "get-world-transform" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getWorldTransform" 'function) (ff-pointer self)))
-
-(defmethod #.(lispify "set-world-transform" 'method) ((self #.(lispify "bt-collision-object" 'classname)) worldTrans)
-           (#.(lispify "btCollisionObject_setWorldTransform" 'function) (ff-pointer self) worldTrans))
+(defmethod (SETF WORLD-TRANSFORM) ((self COLLISION-OBJECT) worldTrans)
+  (COLLISION-OBJECT/SET-WORLD-TRANSFORM (ff-pointer self) worldTrans))
 
 (defmethod GET-BROADPHASE-HANDLE ((self COLLISION-OBJECT))
   (COLLISION-OBJECT/GET-BROADPHASE-HANDLE (ff-pointer self)))
 
-(defmethod #.(lispify "set-broadphase-handle" 'method) ((self #.(lispify "bt-collision-object" 'classname)) handle)
-           (#.(lispify "btCollisionObject_setBroadphaseHandle" 'function) (ff-pointer self) handle))
+(defmethod (SETF BROADPHASE-HANDLE) ((self COLLISION-OBJECT) handle)
+  (COLLISION-OBJECT/SET-BROADPHASE-HANDLE (ff-pointer self) handle))
 
-(defmethod #.(lispify "get-interpolation-world-transform" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function) (ff-pointer self)))
+(defmethod INTERPOLATION-WORLD-TRANSFORM ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM (ff-pointer self)))
 
-(defmethod #.(lispify "get-interpolation-world-transform" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getInterpolationWorldTransform" 'function) (ff-pointer self)))
+(defmethod INTERPOLATION-WORLD-TRANSFORM ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM (ff-pointer self)))
 
-(defmethod #.(lispify "set-interpolation-world-transform" 'method) ((self #.(lispify "bt-collision-object" 'classname)) trans)
-           (#.(lispify "btCollisionObject_setInterpolationWorldTransform" 'function) (ff-pointer self) trans))
+(defmethod (SETF INTERPOLATION-WORLD-TRANSFORM) ((self COLLISION-OBJECT) trans)
+  (COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM (ff-pointer self) trans))
 
-(defmethod #.(lispify "set-interpolation-linear-velocity" 'method) ((self #.(lispify "bt-collision-object" 'classname)) linvel)
-           (#.(lispify "btCollisionObject_setInterpolationLinearVelocity" 'function) (ff-pointer self) linvel))
+(defmethod (SETF INTERPOLATION-LINEAR-VELOCITY) ((self COLLISION-OBJECT) linvel)
+  (COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY (ff-pointer self) linvel))
 
-(defmethod #.(lispify "set-interpolation-angular-velocity" 'method) ((self #.(lispify "bt-collision-object" 'classname)) angvel)
-           (#.(lispify "btCollisionObject_setInterpolationAngularVelocity" 'function) (ff-pointer self) angvel))
+(defmethod (SETF INTERPOLATION-ANGULAR-VELOCITY) ((self COLLISION-OBJECT) angvel)
+  (COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY (ff-pointer self) angvel))
 
-(defmethod #.(lispify "get-interpolation-linear-velocity" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getInterpolationLinearVelocity" 'function) (ff-pointer self)))
+(defmethod INTERPOLATION-LINEAR-VELOCITY ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY (ff-pointer self)))
 
-(defmethod #.(lispify "get-interpolation-angular-velocity" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getInterpolationAngularVelocity" 'function) (ff-pointer self)))
+(defmethod INTERPOLATION-ANGULAR-VELOCITY ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY (ff-pointer self)))
 
-(defmethod #.(lispify "get-island-tag" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getIslandTag" 'function) (ff-pointer self)))
+(defmethod ISLAND-TAG ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-ISLAND-TAG (ff-pointer self)))
 
-(defmethod #.(lispify "set-island-tag" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (tag integer))
-           (#.(lispify "btCollisionObject_setIslandTag" 'function) (ff-pointer self) tag))
+(defmethod (SETF ISLAND-TAG) ((self COLLISION-OBJECT) (tag integer))
+  (COLLISION-OBJECT/SET-ISLAND-TAG (ff-pointer self) tag))
 
-(defmethod #.(lispify "get-companion-id" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getCompanionId" 'function) (ff-pointer self)))
+(defmethod COMPANION-ID ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-COMPANION-ID (ff-pointer self)))
 
-(defmethod #.(lispify "set-companion-id" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (id integer))
-           (#.(lispify "btCollisionObject_setCompanionId" 'function) (ff-pointer self) id))
+(defmethod (SETF COMPANION-ID) ((self COLLISION-OBJECT) (id integer))
+  (COLLISION-OBJECT/SET-COMPANION-ID (ff-pointer self) id))
 
-(defmethod #.(lispify "get-hit-fraction" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getHitFraction" 'function) (ff-pointer self)))
+(defmethod HIT-FRACTION ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-HIT-FRACTION (ff-pointer self)))
 
-(defmethod #.(lispify "set-hit-fraction" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (hitFraction number))
-           (#.(lispify "btCollisionObject_setHitFraction" 'function) (ff-pointer self) hitFraction))
+(defmethod (SETF HIT-FRACTION) ((self COLLISION-OBJECT) (hitFraction number))
+  (COLLISION-OBJECT/SET-HIT-FRACTION (ff-pointer self) hitFraction))
 
-(defmethod #.(lispify "get-collision-flags" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getCollisionFlags" 'function) (ff-pointer self)))
+(defmethod COLLISION-FLAGS ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-COLLISION-FLAGS (ff-pointer self)))
 
-(defmethod #.(lispify "set-collision-flags" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (flags integer))
-           (#.(lispify "btCollisionObject_setCollisionFlags" 'function) (ff-pointer self) flags))
+(defmethod (SETF COLLISION-FLAGS) ((self COLLISION-OBJECT) (flags integer))
+  (COLLISION-OBJECT/SET-COLLISION-FLAGS (ff-pointer self) flags))
 
-(defmethod #.(lispify "get-ccd-swept-sphere-radius" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getCcdSweptSphereRadius" 'function) (ff-pointer self)))
+(defmethod CCD-SWEPT-SPHERE-RADIUS ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS (ff-pointer self)))
 
-(defmethod #.(lispify "set-ccd-swept-sphere-radius" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (radius number))
-           (#.(lispify "btCollisionObject_setCcdSweptSphereRadius" 'function) (ff-pointer self) radius))
+(defmethod (SETF CCD-SWEPT-SPHERE-RADIUS) ((self COLLISION-OBJECT) (radius number))
+  (COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS (ff-pointer self) radius))
 
-(defmethod #.(lispify "get-ccd-motion-threshold" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getCcdMotionThreshold" 'function) (ff-pointer self)))
+(defmethod CCD-MOTION-THRESHOLD ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD (ff-pointer self)))
 
-(defmethod #.(lispify "get-ccd-square-motion-threshold" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getCcdSquareMotionThreshold" 'function) (ff-pointer self)))
+(defmethod CCD-SQUARE-MOTION-THRESHOLD ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD (ff-pointer self)))
 
-(defmethod #.(lispify "set-ccd-motion-threshold" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (ccdMotionThreshold number))
-           (#.(lispify "btCollisionObject_setCcdMotionThreshold" 'function) (ff-pointer self) ccdMotionThreshold))
+(defmethod (SETF CCD-MOTION-THRESHOLD) ((self COLLISION-OBJECT) (ccdMotionThreshold number))
+  (COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD (ff-pointer self) ccdMotionThreshold))
 
-(defmethod #.(lispify "get-user-pointer" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getUserPointer" 'function) (ff-pointer self)))
+(defmethod USER-POINTER ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-USER-POINTER (ff-pointer self)))
 
-(defmethod #.(lispify "get-user-index" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getUserIndex" 'function) (ff-pointer self)))
+(defmethod USER-INDEX ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-USER-INDEX (ff-pointer self)))
 
-(defmethod #.(lispify "set-user-pointer" 'method) ((self #.(lispify "bt-collision-object" 'classname)) userPointer)
-           (#.(lispify "btCollisionObject_setUserPointer" 'function) (ff-pointer self) userPointer))
+(defmethod (SETF USER-POINTER) ((self COLLISION-OBJECT) userPointer)
+  (COLLISION-OBJECT/SET-USER-POINTER (ff-pointer self) userPointer))
 
-(defmethod #.(lispify "set-user-index" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (index integer))
-           (#.(lispify "btCollisionObject_setUserIndex" 'function) (ff-pointer self) index))
+(defmethod (SETF USER-INDEX) ((self COLLISION-OBJECT) (index integer))
+  (COLLISION-OBJECT/SET-USER-INDEX (ff-pointer self) index))
 
-(defmethod #.(lispify "get-update-revision-internal" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_getUpdateRevisionInternal" 'function) (ff-pointer self)))
+(defmethod UPDATE-REVISION-INTERNAL ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL (ff-pointer self)))
 
-(defmethod #.(lispify "check-collide-with" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (co #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_checkCollideWith" 'function) (ff-pointer self) (ff-pointer co)))
+(defmethod CHECK-COLLIDE-WITH ((self COLLISION-OBJECT) (co COLLISION-OBJECT))
+  (COLLISION-OBJECT/CHECK-COLLIDE-WITH (ff-pointer self) (ff-pointer co)))
 
-(defmethod #.(lispify "calculate-serialize-buffer-size" 'method) ((self #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btCollisionObject_calculateSerializeBufferSize" 'function) (ff-pointer self)))
+(defmethod CALCULATE-SERIALIZE-BUFFER-SIZE ((self COLLISION-OBJECT))
+  (COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE (ff-pointer self)))
 
 (defmethod serialize ((self collision-object) &key data-Buffer serializer
                                                 &allow-other-keys)
   (collision-object/serialize (ff-pointer self) data-Buffer serializer))
 
-(defmethod #.(lispify "serialize-single-object" 'method) ((self #.(lispify "bt-collision-object" 'classname)) serializer)
-           (#.(lispify "btCollisionObject_serializeSingleObject" 'function) (ff-pointer self) serializer))
+(defmethod SERIALIZE-SINGLE-OBJECT ((self COLLISION-OBJECT) serializer)
+  (COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT (ff-pointer self) serializer))
 
 
-(defklass #.(lispify "bt-discrete-dynamics-world" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(defmethod initialize-instance :after ((obj #.(lispify "bt-discrete-dynamics-world" 'class)) &key dispatcher pair-Cache constraint-Solver collision-Configuration)
-  (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btDiscreteDynamicsWorld" 'function) dispatcher pair-Cache constraint-Solver collision-Configuration)))
+(defmethod initialize-instance :after ((obj DISCRETE-DYNAMICS-WORLD) &key dispatcher pair-Cache constraint-Solver collision-Configuration)
+  (setf (slot-value obj 'ff-pointer) (MAKE-DISCRETE-DYNAMICS-WORLD dispatcher pair-Cache constraint-Solver collision-Configuration)))
 
-(defmethod #.(lispify "step-simulation" 'method)
-  ((self #.(lispify "bt-discrete-dynamics-world" 'classname))
+(defmethod STEP-SIMULATION
+    ((self DISCRETE-DYNAMICS-WORLD)
    (timeStep number) (maxSubSteps integer) (fixedTimeStep number))
   (discrete-dynamics-world/step-simulation (ff-pointer self)
                                            timeStep maxSubSteps fixedTimeStep))
 
 #+ (or)
-(defmethod #.(lispify "step-simulation" 'method)
-  ((self #.(lispify "bt-discrete-dynamics-world" 'classname))
+(defmethod STEP-SIMULATION
+    ((self DISCRETE-DYNAMICS-WORLD)
    (timeStep number) (maxSubSteps integer))
   (discrete-dynamics-world/step-simulation (ff-pointer self)
                                            timeStep maxSubSteps))
 
 #+ (or)
-(defmethod #.(lispify "step-simulation" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (timeStep number))
-           (#.(lispify "btDiscreteDynamicsWorld_stepSimulation" 'function) (ff-pointer self) timeStep))
+(defmethod STEP-SIMULATION ((self DISCRETE-DYNAMICS-WORLD) (timeStep number))
+  (DISCRETE-DYNAMICS-WORLD/STEP-SIMULATION (ff-pointer self) timeStep))
 
-(defmethod #.(lispify "synchronize-motion-states" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_synchronizeMotionStates" 'function) (ff-pointer self)))
+(defmethod SYNCHRONIZE-MOTION-STATES ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/SYNCHRONIZE-MOTION-STATES (ff-pointer self)))
 
-(defmethod #.(lispify "synchronize-single-motion-state" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) body)
-           (#.(lispify "btDiscreteDynamicsWorld_synchronizeSingleMotionState" 'function) (ff-pointer self) body))
+(defmethod SYNCHRONIZE-SINGLE-MOTION-STATE ((self DISCRETE-DYNAMICS-WORLD) body)
+  (DISCRETE-DYNAMICS-WORLD/SYNCHRONIZE-SINGLE-MOTION-STATE (ff-pointer self) body))
 
-(defmethod #.(lispify "add-constraint" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) constraint (disableCollisionsBetweenLinkedBodies t))
-           (#.(lispify "btDiscreteDynamicsWorld_addConstraint" 'function) (ff-pointer self) constraint disableCollisionsBetweenLinkedBodies))
+(defmethod ADD-CONSTRAINT ((self DISCRETE-DYNAMICS-WORLD) constraint (disableCollisionsBetweenLinkedBodies t))
+  (DISCRETE-DYNAMICS-WORLD/ADD-CONSTRAINT (ff-pointer self) constraint disableCollisionsBetweenLinkedBodies))
 
 #+ (or)
-(defmethod #.(lispify "add-constraint" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) constraint)
-           (#.(lispify "btDiscreteDynamicsWorld_addConstraint" 'function) (ff-pointer self) constraint))
+(defmethod ADD-CONSTRAINT ((self DISCRETE-DYNAMICS-WORLD) constraint)
+  (DISCRETE-DYNAMICS-WORLD/ADD-CONSTRAINT (ff-pointer self) constraint))
 
-(defmethod #.(lispify "remove-constraint" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) constraint)
-           (#.(lispify "btDiscreteDynamicsWorld_removeConstraint" 'function) (ff-pointer self) constraint))
+(defmethod REMOVE-CONSTRAINT ((self DISCRETE-DYNAMICS-WORLD) constraint)
+  (DISCRETE-DYNAMICS-WORLD/REMOVE-CONSTRAINT (ff-pointer self) constraint))
 
-(defmethod #.(lispify "add-action" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) arg1)
-           (#.(lispify "btDiscreteDynamicsWorld_addAction" 'function) (ff-pointer self) arg1))
+(defmethod ADD-ACTION ((self DISCRETE-DYNAMICS-WORLD) arg1)
+  (DISCRETE-DYNAMICS-WORLD/ADD-ACTION (ff-pointer self) arg1))
 
-(defmethod #.(lispify "remove-action" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) arg1)
-           (#.(lispify "btDiscreteDynamicsWorld_removeAction" 'function) (ff-pointer self) arg1))
+(defmethod REMOVE-ACTION ((self DISCRETE-DYNAMICS-WORLD) arg1)
+  (DISCRETE-DYNAMICS-WORLD/REMOVE-ACTION (ff-pointer self) arg1))
 
-(defmethod #.(lispify "get-simulation-island-manager" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getSimulationIslandManager" 'function) (ff-pointer self)))
+(defmethod SIMULATION-ISLAND-MANAGER ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-SIMULATION-ISLAND-MANAGER (ff-pointer self)))
 
-(defmethod #.(lispify "get-simulation-island-manager" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getSimulationIslandManager" 'function) (ff-pointer self)))
+(defmethod SIMULATION-ISLAND-MANAGER ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-SIMULATION-ISLAND-MANAGER (ff-pointer self)))
 
-(defmethod #.(lispify "get-collision-world" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getCollisionWorld" 'function) (ff-pointer self)))
+(defmethod COLLISION-WORLD ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-COLLISION-WORLD (ff-pointer self)))
 
-(defmethod #.(lispify "set-gravity" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) gravity)
-           (#.(lispify "btDiscreteDynamicsWorld_setGravity" 'function) (ff-pointer self) gravity))
+(defmethod (SETF GRAVITY) ((self DISCRETE-DYNAMICS-WORLD) gravity)
+  (DISCRETE-DYNAMICS-WORLD/SET-GRAVITY (ff-pointer self) gravity))
 
-(defmethod #.(lispify "get-gravity" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getGravity" 'function) (ff-pointer self)))
+(defmethod GRAVITY ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-GRAVITY (ff-pointer self)))
 
-(defmethod #.(lispify "add-collision-object" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (collisionObject #.(lispify "bt-collision-object" 'classname)) (collisionFilterGroup integer) (collisionFilterMask integer))
-           (#.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function) (ff-pointer self) collisionObject collisionFilterGroup collisionFilterMask))
+(defmethod ADD-COLLISION-OBJECT ((self DISCRETE-DYNAMICS-WORLD) (collisionObject COLLISION-OBJECT) (collisionFilterGroup integer) (collisionFilterMask integer))
+  (DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT (ff-pointer self) collisionObject collisionFilterGroup collisionFilterMask))
 
 #+ (or)
 (progn
-  (defmethod #.(lispify "add-collision-object" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (collisionObject #.(lispify "bt-collision-object" 'classname)) (collisionFilterGroup integer))
-            (#.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function) (ff-pointer self) collisionObject collisionFilterGroup))
+  (defmethod ADD-COLLISION-OBJECT ((self DISCRETE-DYNAMICS-WORLD) (collisionObject COLLISION-OBJECT) (collisionFilterGroup integer))
+    (DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT (ff-pointer self) collisionObject collisionFilterGroup))
 
- (defmethod #.(lispify "add-collision-object" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (collisionObject #.(lispify "bt-collision-object" 'classname)))
-            (#.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function) (ff-pointer self) collisionObject))
+  (defmethod ADD-COLLISION-OBJECT ((self DISCRETE-DYNAMICS-WORLD) (collisionObject COLLISION-OBJECT))
+    (DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT (ff-pointer self) collisionObject))
  )
 
+(defmethod REMOVE-RIGID-BODY ((self DISCRETE-DYNAMICS-WORLD) body)
+  (DISCRETE-DYNAMICS-WORLD/REMOVE-RIGID-BODY (ff-pointer self) body))
 
+(defmethod REMOVE-COLLISION-OBJECT ((self DISCRETE-DYNAMICS-WORLD) (collisionObject COLLISION-OBJECT))
+  (DISCRETE-DYNAMICS-WORLD/REMOVE-COLLISION-OBJECT (ff-pointer self) collisionObject))
 
-(defmethod #.(lispify "remove-rigid-body" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) body)
-           (#.(lispify "btDiscreteDynamicsWorld_removeRigidBody" 'function) (ff-pointer self) body))
+(defmethod DEBUG-DRAW-CONSTRAINT ((self DISCRETE-DYNAMICS-WORLD) constraint)
+  (DISCRETE-DYNAMICS-WORLD/DEBUG-DRAW-CONSTRAINT (ff-pointer self) constraint))
 
-(defmethod #.(lispify "remove-collision-object" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (collisionObject #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_removeCollisionObject" 'function) (ff-pointer self) collisionObject))
+(defmethod DEBUG-DRAW-WORLD ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/DEBUG-DRAW-WORLD (ff-pointer self)))
 
-(defmethod #.(lispify "debug-draw-constraint" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) constraint)
-           (#.(lispify "btDiscreteDynamicsWorld_debugDrawConstraint" 'function) (ff-pointer self) constraint))
+(defmethod (SETF CONSTRAINT-SOLVER) ((self DISCRETE-DYNAMICS-WORLD) solver)
+  (DISCRETE-DYNAMICS-WORLD/SET-CONSTRAINT-SOLVER (ff-pointer self) solver))
 
-(defmethod #.(lispify "debug-draw-world" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_debugDrawWorld" 'function) (ff-pointer self)))
+(defmethod CONSTRAINT-SOLVER ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-CONSTRAINT-SOLVER (ff-pointer self)))
 
-(defmethod #.(lispify "set-constraint-solver" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) solver)
-           (#.(lispify "btDiscreteDynamicsWorld_setConstraintSolver" 'function) (ff-pointer self) solver))
+(defmethod NUM-CONSTRAINTS ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-NUM-CONSTRAINTS (ff-pointer self)))
 
-(defmethod #.(lispify "get-constraint-solver" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getConstraintSolver" 'function) (ff-pointer self)))
+(defmethod CONSTRAINT ((self DISCRETE-DYNAMICS-WORLD) (index integer))
+  (DISCRETE-DYNAMICS-WORLD/GET-CONSTRAINT (ff-pointer self) index))
 
-(defmethod #.(lispify "get-num-constraints" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getNumConstraints" 'function) (ff-pointer self)))
+(defmethod CONSTRAINT ((self DISCRETE-DYNAMICS-WORLD) (index integer))
+  (DISCRETE-DYNAMICS-WORLD/GET-CONSTRAINT (ff-pointer self) index))
 
-(defmethod #.(lispify "get-constraint" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (index integer))
-           (#.(lispify "btDiscreteDynamicsWorld_getConstraint" 'function) (ff-pointer self) index))
+(defmethod WORLD-TYPE ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE (ff-pointer self)))
 
-(defmethod #.(lispify "get-constraint" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (index integer))
-           (#.(lispify "btDiscreteDynamicsWorld_getConstraint" 'function) (ff-pointer self) index))
+(defmethod CLEAR-FORCES ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/CLEAR-FORCES (ff-pointer self)))
 
-(defmethod #.(lispify "get-world-type" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getWorldType" 'function) (ff-pointer self)))
+(defmethod APPLY-GRAVITY ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/APPLY-GRAVITY (ff-pointer self)))
 
-(defmethod #.(lispify "clear-forces" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_clearForces" 'function) (ff-pointer self)))
+(defmethod (SETF NUM-TASKS) ((self DISCRETE-DYNAMICS-WORLD) (numTasks integer))
+  (DISCRETE-DYNAMICS-WORLD/SET-NUM-TASKS (ff-pointer self) numTasks))
 
-(defmethod #.(lispify "apply-gravity" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_applyGravity" 'function) (ff-pointer self)))
+(defmethod UPDATE-VEHICLES ((self DISCRETE-DYNAMICS-WORLD) (timeStep number))
+  (DISCRETE-DYNAMICS-WORLD/UPDATE-VEHICLES (ff-pointer self) timeStep))
 
-(defmethod #.(lispify "set-num-tasks" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (numTasks integer))
-           (#.(lispify "btDiscreteDynamicsWorld_setNumTasks" 'function) (ff-pointer self) numTasks))
+(defmethod ADD-VEHICLE ((self DISCRETE-DYNAMICS-WORLD) vehicle)
+  (DISCRETE-DYNAMICS-WORLD/ADD-VEHICLE (ff-pointer self) vehicle))
 
-(defmethod #.(lispify "update-vehicles" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (timeStep number))
-           (#.(lispify "btDiscreteDynamicsWorld_updateVehicles" 'function) (ff-pointer self) timeStep))
+(defmethod REMOVE-VEHICLE ((self DISCRETE-DYNAMICS-WORLD) vehicle)
+  (DISCRETE-DYNAMICS-WORLD/REMOVE-VEHICLE (ff-pointer self) vehicle))
 
-(defmethod #.(lispify "add-vehicle" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) vehicle)
-           (#.(lispify "btDiscreteDynamicsWorld_addVehicle" 'function) (ff-pointer self) vehicle))
+(defmethod ADD-CHARACTER ((self DISCRETE-DYNAMICS-WORLD) character)
+  (DISCRETE-DYNAMICS-WORLD/ADD-CHARACTER (ff-pointer self) character))
 
-(defmethod #.(lispify "remove-vehicle" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) vehicle)
-           (#.(lispify "btDiscreteDynamicsWorld_removeVehicle" 'function) (ff-pointer self) vehicle))
+(defmethod REMOVE-CHARACTER ((self DISCRETE-DYNAMICS-WORLD) character)
+  (DISCRETE-DYNAMICS-WORLD/REMOVE-CHARACTER (ff-pointer self) character))
 
-(defmethod #.(lispify "add-character" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) character)
-           (#.(lispify "btDiscreteDynamicsWorld_addCharacter" 'function) (ff-pointer self) character))
+(defmethod (SETF SYNCHRONIZE-ALL-MOTION-STATES) ((self DISCRETE-DYNAMICS-WORLD) (synchronizeAll t))
+  (DISCRETE-DYNAMICS-WORLD/SET-SYNCHRONIZE-ALL-MOTION-STATES (ff-pointer self) synchronizeAll))
 
-(defmethod #.(lispify "remove-character" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) character)
-           (#.(lispify "btDiscreteDynamicsWorld_removeCharacter" 'function) (ff-pointer self) character))
+(defmethod SYNCHRONIZE-ALL-MOTION-STATES ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-SYNCHRONIZE-ALL-MOTION-STATES (ff-pointer self)))
 
-(defmethod #.(lispify "set-synchronize-all-motion-states" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (synchronizeAll t))
-           (#.(lispify "btDiscreteDynamicsWorld_setSynchronizeAllMotionStates" 'function) (ff-pointer self) synchronizeAll))
+(defmethod (SETF APPLY-SPECULATIVE-CONTACT-RESTITUTION) ((self DISCRETE-DYNAMICS-WORLD) (enable t))
+  (DISCRETE-DYNAMICS-WORLD/SET-APPLY-SPECULATIVE-CONTACT-RESTITUTION (ff-pointer self) enable))
 
-(defmethod #.(lispify "get-synchronize-all-motion-states" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getSynchronizeAllMotionStates" 'function) (ff-pointer self)))
-
-(defmethod #.(lispify "set-apply-speculative-contact-restitution" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (enable t))
-           (#.(lispify "btDiscreteDynamicsWorld_setApplySpeculativeContactRestitution" 'function) (ff-pointer self) enable))
-
-(defmethod #.(lispify "get-apply-speculative-contact-restitution" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getApplySpeculativeContactRestitution" 'function) (ff-pointer self)))
+(defmethod APPLY-SPECULATIVE-CONTACT-RESTITUTION ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-APPLY-SPECULATIVE-CONTACT-RESTITUTION (ff-pointer self)))
 
 (defmethod serialize ((self discrete-dynamics-world) &key serializer
                                                        &allow-other-keys)
-           (#.(lispify "btDiscreteDynamicsWorld_serialize" 'function) (ff-pointer self) serializer))
+  (DISCRETE-DYNAMICS-WORLD/SERIALIZE (ff-pointer self) serializer))
 
-(defmethod #.(lispify "set-latency-motion-state-interpolation" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (latencyInterpolation t))
-           (#.(lispify "btDiscreteDynamicsWorld_setLatencyMotionStateInterpolation" 'function) (ff-pointer self) latencyInterpolation))
+(defmethod (SETF LATENCY-MOTION-STATE-INTERPOLATION) ((self DISCRETE-DYNAMICS-WORLD) (latencyInterpolation t))
+  (DISCRETE-DYNAMICS-WORLD/SET-LATENCY-MOTION-STATE-INTERPOLATION (ff-pointer self) latencyInterpolation))
 
-(defmethod #.(lispify "get-latency-motion-state-interpolation" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)))
-           (#.(lispify "btDiscreteDynamicsWorld_getLatencyMotionStateInterpolation" 'function) (ff-pointer self)))
+(defmethod LATENCY-MOTION-STATE-INTERPOLATION ((self DISCRETE-DYNAMICS-WORLD))
+  (DISCRETE-DYNAMICS-WORLD/GET-LATENCY-MOTION-STATE-INTERPOLATION (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-simple-dynamics-world" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj simple-dynamics-world)
                                        &key dispatcher pair-Cache constraint-Solver collision-Configuration)
   (setf (slot-value obj 'ff-pointer)
-        (#.(lispify "new_btSimpleDynamicsWorld" 'function)
+        (MAKE-SIMPLE-DYNAMICS-WORLD
            dispatcher pair-Cache constraint-Solver collision-Configuration)))
 
-(defmethod #.(lispify "step-simulation" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)) (timeStep number) (maxSubSteps integer) (fixedTimeStep number))
-           (#.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function) (ff-pointer self) timeStep maxSubSteps fixedTimeStep))
+(defmethod STEP-SIMULATION ((self SIMPLE-DYNAMICS-WORLD) (timeStep number) (maxSubSteps integer) (fixedTimeStep number))
+  (SIMPLE-DYNAMICS-WORLD/STEP-SIMULATION (ff-pointer self) timeStep maxSubSteps fixedTimeStep))
 
 #+ (or)
 (progn
-  (defmethod #.(lispify "step-simulation" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)) (timeStep number) (maxSubSteps integer))
-            (#.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function) (ff-pointer self) timeStep maxSubSteps))
+  (defmethod STEP-SIMULATION ((self SIMPLE-DYNAMICS-WORLD) (timeStep number) (maxSubSteps integer))
+    (SIMPLE-DYNAMICS-WORLD/STEP-SIMULATION (ff-pointer self) timeStep maxSubSteps))
 
- (defmethod #.(lispify "step-simulation" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)) (timeStep number))
-            (#.(lispify "btSimpleDynamicsWorld_stepSimulation" 'function) (ff-pointer self) timeStep)))
+  (defmethod STEP-SIMULATION ((self SIMPLE-DYNAMICS-WORLD) (timeStep number))
+    (SIMPLE-DYNAMICS-WORLD/STEP-SIMULATION (ff-pointer self) timeStep)))
 
-(defmethod #.(lispify "set-gravity" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)) gravity)
-           (#.(lispify "btSimpleDynamicsWorld_setGravity" 'function) (ff-pointer self) gravity))
+(defmethod (SETF GRAVITY) ((self SIMPLE-DYNAMICS-WORLD) gravity)
+  (SIMPLE-DYNAMICS-WORLD/SET-GRAVITY (ff-pointer self) gravity))
 
-(defmethod #.(lispify "get-gravity" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)))
-           (#.(lispify "btSimpleDynamicsWorld_getGravity" 'function) (ff-pointer self)))
+(defmethod GRAVITY ((self SIMPLE-DYNAMICS-WORLD))
+  (SIMPLE-DYNAMICS-WORLD/GET-GRAVITY (ff-pointer self)))
 
 (defgeneric add-rigid-body (world body &optional group mask)
   (:method ((self simple-dynamics-world) body &optional group mask)
@@ -2775,66 +1901,63 @@ Swig properly.")
           (DISCRETE-DYNAMICS-WORLD/ADD-RIGID-BODY/with-group&mask (ff-pointer self) body group mask))
         (DISCRETE-DYNAMICS-WORLD/ADD-RIGID-BODY (ff-pointer self) body))))
 
+(defmethod REMOVE-RIGID-BODY ((self SIMPLE-DYNAMICS-WORLD) body)
+  (SIMPLE-DYNAMICS-WORLD/REMOVE-RIGID-BODY (ff-pointer self) body))
 
-(defmethod #.(lispify "remove-rigid-body" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)) body)
-           (#.(lispify "btSimpleDynamicsWorld_removeRigidBody" 'function) (ff-pointer self) body))
+(defmethod DEBUG-DRAW-WORLD ((self SIMPLE-DYNAMICS-WORLD))
+  (SIMPLE-DYNAMICS-WORLD/DEBUG-DRAW-WORLD (ff-pointer self)))
 
-(defmethod #.(lispify "debug-draw-world" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)))
-           (#.(lispify "btSimpleDynamicsWorld_debugDrawWorld" 'function) (ff-pointer self)))
+(defmethod ADD-ACTION ((self SIMPLE-DYNAMICS-WORLD) action)
+  (SIMPLE-DYNAMICS-WORLD/ADD-ACTION (ff-pointer self) action))
 
-(defmethod #.(lispify "add-action" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)) action)
-           (#.(lispify "btSimpleDynamicsWorld_addAction" 'function) (ff-pointer self) action))
+(defmethod REMOVE-ACTION ((self SIMPLE-DYNAMICS-WORLD) action)
+  (SIMPLE-DYNAMICS-WORLD/REMOVE-ACTION (ff-pointer self) action))
 
-(defmethod #.(lispify "remove-action" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)) action)
-           (#.(lispify "btSimpleDynamicsWorld_removeAction" 'function) (ff-pointer self) action))
+(defmethod REMOVE-COLLISION-OBJECT ((self SIMPLE-DYNAMICS-WORLD) (collisionObject COLLISION-OBJECT))
+  (SIMPLE-DYNAMICS-WORLD/REMOVE-COLLISION-OBJECT (ff-pointer self) collisionObject))
 
-(defmethod #.(lispify "remove-collision-object" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)) (collisionObject #.(lispify "bt-collision-object" 'classname)))
-           (#.(lispify "btSimpleDynamicsWorld_removeCollisionObject" 'function) (ff-pointer self) collisionObject))
+(defmethod UPDATE-AABBS ((self SIMPLE-DYNAMICS-WORLD))
+  (SIMPLE-DYNAMICS-WORLD/UPDATE-AABBS (ff-pointer self)))
 
-(defmethod #.(lispify "update-aabbs" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)))
-           (#.(lispify "btSimpleDynamicsWorld_updateAabbs" 'function) (ff-pointer self)))
+(defmethod SYNCHRONIZE-MOTION-STATES ((self SIMPLE-DYNAMICS-WORLD))
+  (SIMPLE-DYNAMICS-WORLD/SYNCHRONIZE-MOTION-STATES (ff-pointer self)))
 
-(defmethod #.(lispify "synchronize-motion-states" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)))
-           (#.(lispify "btSimpleDynamicsWorld_synchronizeMotionStates" 'function) (ff-pointer self)))
+(defmethod (SETF CONSTRAINT-SOLVER) ((self SIMPLE-DYNAMICS-WORLD) solver)
+  (SIMPLE-DYNAMICS-WORLD/SET-CONSTRAINT-SOLVER (ff-pointer self) solver))
 
-(defmethod #.(lispify "set-constraint-solver" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)) solver)
-           (#.(lispify "btSimpleDynamicsWorld_setConstraintSolver" 'function) (ff-pointer self) solver))
+(defmethod CONSTRAINT-SOLVER ((self SIMPLE-DYNAMICS-WORLD))
+  (SIMPLE-DYNAMICS-WORLD/GET-CONSTRAINT-SOLVER (ff-pointer self)))
 
-(defmethod #.(lispify "get-constraint-solver" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)))
-           (#.(lispify "btSimpleDynamicsWorld_getConstraintSolver" 'function) (ff-pointer self)))
+(defmethod WORLD-TYPE ((self SIMPLE-DYNAMICS-WORLD))
+  (SIMPLE-DYNAMICS-WORLD/GET-WORLD-TYPE (ff-pointer self)))
 
-(defmethod #.(lispify "get-world-type" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)))
-           (#.(lispify "btSimpleDynamicsWorld_getWorldType" 'function) (ff-pointer self)))
+(defmethod CLEAR-FORCES ((self SIMPLE-DYNAMICS-WORLD))
+  (SIMPLE-DYNAMICS-WORLD/CLEAR-FORCES (ff-pointer self)))
 
-(defmethod #.(lispify "clear-forces" 'method) ((self #.(lispify "bt-simple-dynamics-world" 'classname)))
-           (#.(lispify "btSimpleDynamicsWorld_clearForces" 'function) (ff-pointer self)))
+(define-constant +BULLET-VERSION+ 282)
 
+(export '+BULLET-VERSION+)
 
+(declaim (inline GET-VERSION))
 
-(define-constant #.(lispify "BT_BULLET_VERSION" 'constant) 282)
+(cffi:defcfun ("_wrap_btGetVersion" GET-VERSION) :int)
 
-(export '#.(lispify "BT_BULLET_VERSION" 'constant))
+(export 'GET-VERSION)
 
-(declaim (inline #.(lispify "btGetVersion" 'function)))
+(define-constant +LARGE-FLOAT+ 1d18)
 
-(cffi:defcfun ("_wrap_btGetVersion" #.(lispify "btGetVersion" 'function)) :int)
+(export '+LARGE-FLOAT+)
 
-(export '#.(lispify "btGetVersion" 'function))
-
-(define-constant #.(lispify "BT_LARGE_FLOAT" 'constant) 1d18)
-
-(export '#.(lispify "BT_LARGE_FLOAT" 'constant))
-
-(cffi:defcvar ("btInfinityMask" #.(lispify "btInfinityMask" 'variable))
+(cffi:defcvar ("btInfinityMask" *INFINITY-MASK*)
  :int)
 
-(export '#.(lispify "btInfinityMask" 'variable))
+(export '*INFINITY-MASK*)
 
-(declaim (inline #.(lispify "btGetInfinityMask" 'function)))
+(declaim (inline GET-INFINITY-MASK))
 
-(cffi:defcfun ("_wrap_btGetInfinityMask" #.(lispify "btGetInfinityMask" 'function)) :int)
+(cffi:defcfun ("_wrap_btGetInfinityMask" GET-INFINITY-MASK) :int)
 
-(export '#.(lispify "btGetInfinityMask" 'function))
+(export 'GET-INFINITY-MASK)
 
 (declaim (inline square-root))
 
@@ -2843,12 +1966,12 @@ Swig properly.")
 
 (export 'square-root)
 
-(declaim (inline #.(lispify "btFabs" 'function)))
+(declaim (inline FABS))
 
-(cffi:defcfun ("_wrap_btFabs" #.(lispify "btFabs" 'function)) :float
+(cffi:defcfun ("_wrap_btFabs" FABS) :float
   (x :float))
 
-(export '#.(lispify "btFabs" 'function))
+(export 'FABS)
 
 (declaim (inline cosine))
 
@@ -2892,13 +2015,13 @@ Swig properly.")
 
 (export 'arc-tangent)
 
-(declaim (inline #.(lispify "btAtan2" 'function)))
+(declaim (inline ATAN-2))
 
-(cffi:defcfun ("_wrap_btAtan2" #.(lispify "btAtan2" 'function)) :float
+(cffi:defcfun ("_wrap_btAtan2" ATAN-2) :float
   (x :float)
   (y :float))
 
-(export '#.(lispify "btAtan2" 'function))
+(export 'ATAN-2)
 
 (declaim (inline exponent))
 
@@ -2922,28 +2045,28 @@ Swig properly.")
 
 (export 'power)
 
-(declaim (inline #.(lispify "btFmod" 'function)))
+(declaim (inline FMOD))
 
-(cffi:defcfun ("_wrap_btFmod" #.(lispify "btFmod" 'function)) :float
+(cffi:defcfun ("_wrap_btFmod" FMOD) :float
   (x :float)
   (y :float))
 
-(export '#.(lispify "btFmod" 'function))
+(export 'FMOD)
 
-(declaim (inline #.(lispify "btAtan2Fast" 'function)))
+(declaim (inline ATAN-2-FAST))
 
-(cffi:defcfun ("_wrap_btAtan2Fast" #.(lispify "btAtan2Fast" 'function)) :float
+(cffi:defcfun ("_wrap_btAtan2Fast" ATAN-2-FAST) :float
   (y :float)
   (x :float))
 
-(export '#.(lispify "btAtan2Fast" 'function))
+(export 'ATAN-2-FAST)
 
-(declaim (inline #.(lispify "btFuzzyZero" 'function)))
+(declaim (inline FUZZY-ZERO))
 
-(cffi:defcfun ("_wrap_btFuzzyZero" #.(lispify "btFuzzyZero" 'function)) :pointer
+(cffi:defcfun ("_wrap_btFuzzyZero" FUZZY-ZERO) :pointer
   (x :float))
 
-(export '#.(lispify "btFuzzyZero" 'function))
+(export 'FUZZY-ZERO)
 
 (declaim (inline equals))
 
@@ -2953,218 +2076,218 @@ Swig properly.")
 
 (export 'equals)
 
-(declaim (inline #.(lispify "btGreaterEqual" 'function)))
+(declaim (inline GREATER-EQUAL))
 
-(cffi:defcfun ("_wrap_btGreaterEqual" #.(lispify "btGreaterEqual" 'function)) :pointer
+(cffi:defcfun ("_wrap_btGreaterEqual" GREATER-EQUAL) :pointer
   (a :float)
   (eps :float))
 
-(export '#.(lispify "btGreaterEqual" 'function))
+(export 'GREATER-EQUAL)
 
-(declaim (inline #.(lispify "btIsNegative" 'function)))
+(declaim (inline IS-NEGATIVE))
 
-(cffi:defcfun ("_wrap_btIsNegative" #.(lispify "btIsNegative" 'function)) :int
+(cffi:defcfun ("_wrap_btIsNegative" IS-NEGATIVE) :int
   (x :float))
 
-(export '#.(lispify "btIsNegative" 'function))
+(export 'IS-NEGATIVE)
 
-(declaim (inline #.(lispify "btRadians" 'function)))
+(declaim (inline RADIANS))
 
-(cffi:defcfun ("_wrap_btRadians" #.(lispify "btRadians" 'function)) :float
+(cffi:defcfun ("_wrap_btRadians" RADIANS) :float
   (x :float))
 
-(export '#.(lispify "btRadians" 'function))
+(export 'RADIANS)
 
-(declaim (inline #.(lispify "btDegrees" 'function)))
+(declaim (inline DEGREES))
 
-(cffi:defcfun ("_wrap_btDegrees" #.(lispify "btDegrees" 'function)) :float
+(cffi:defcfun ("_wrap_btDegrees" DEGREES) :float
   (x :float))
 
-(export '#.(lispify "btDegrees" 'function))
+(export 'DEGREES)
 
-(declaim (inline #.(lispify "btFsel" 'function)))
+(declaim (inline FSEL))
 
-(cffi:defcfun ("_wrap_btFsel" #.(lispify "btFsel" 'function)) :float
+(cffi:defcfun ("_wrap_btFsel" FSEL) :float
   (a :float)
   (b :float)
   (c :float))
 
-(export '#.(lispify "btFsel" 'function))
+(export 'FSEL)
 
-(declaim (inline #.(lispify "btMachineIsLittleEndian" 'function)))
+(declaim (inline MACHINE-IS-LITTLE-ENDIAN))
 
-(cffi:defcfun ("_wrap_btMachineIsLittleEndian" #.(lispify "btMachineIsLittleEndian" 'function)) :pointer)
+(cffi:defcfun ("_wrap_btMachineIsLittleEndian" MACHINE-IS-LITTLE-ENDIAN) :pointer)
 
-(export '#.(lispify "btMachineIsLittleEndian" 'function))
+(export 'MACHINE-IS-LITTLE-ENDIAN)
 #+ need-funky-select-forms
 (progn
-       (declaim (inline #.(lispify "btSelect" 'function)))
+  (declaim (inline SELECT))
 
-       (cffi:defcfun ("_wrap_btSelect__SWIG_0" #.(lispify "btSelect" 'function)) :unsigned-int
+  (cffi:defcfun ("_wrap_btSelect__SWIG_0" SELECT) :unsigned-int
          (condition :unsigned-int)
          (valueIfConditionNonZero :unsigned-int)
          (valueIfConditionZero :unsigned-int))
 
-       (export '#.(lispify "btSelect" 'function))
+  (export 'SELECT)
 
-       (declaim (inline #.(lispify "btSelect" 'function)))
+  (declaim (inline SELECT))
 
-       (cffi:defcfun ("_wrap_btSelect__SWIG_1" #.(lispify "btSelect" 'function)) :int
+  (cffi:defcfun ("_wrap_btSelect__SWIG_1" SELECT) :int
          (condition :unsigned-int)
          (valueIfConditionNonZero :int)
          (valueIfConditionZero :int))
 
-       (export '#.(lispify "btSelect" 'function))
+  (export 'SELECT)
 
-       (declaim (inline #.(lispify "btSelect" 'function)))
+  (declaim (inline SELECT))
 
-       (cffi:defcfun ("_wrap_btSelect__SWIG_2" #.(lispify "btSelect" 'function)) :float
+  (cffi:defcfun ("_wrap_btSelect__SWIG_2" SELECT) :float
          (condition :unsigned-int)
          (valueIfConditionNonZero :float)
          (valueIfConditionZero :float))
 
-       (export '#.(lispify "btSelect" 'function))
+  (export 'SELECT)
        )
-(declaim (inline #.(lispify "btSwapEndian" 'function)))
+(declaim (inline SWAP-ENDIAN))
 
-(cffi:defcfun ("_wrap_btSwapEndian__SWIG_0" #.(lispify "btSwapEndian" 'function)) :unsigned-int
+(cffi:defcfun ("_wrap_btSwapEndian__SWIG_0" SWAP-ENDIAN) :unsigned-int
   (val :unsigned-int))
 
-(export '#.(lispify "btSwapEndian" 'function))
+(export 'SWAP-ENDIAN)
 
-(declaim (inline #.(lispify "btSwapEndian" 'function)))
+(declaim (inline SWAP-ENDIAN))
 
 (cffi:defcfun ("_wrap_btSwapEndian__SWIG_1"
                swap-endian/unsigned-short) :unsigned-short
   (val :unsigned-short))
 
-(export '#.(lispify "btSwapEndian" 'function))
+(export 'SWAP-ENDIAN)
 
-(declaim (inline #.(lispify "btSwapEndian" 'function)))
+(declaim (inline SWAP-ENDIAN))
 
 (cffi:defcfun ("_wrap_btSwapEndian__SWIG_2" 
                swap-endian/int) :unsigned-int
   (val :int))
 
-(export '#.(lispify "btSwapEndian" 'function))
+(export 'SWAP-ENDIAN)
 
-(declaim (inline #.(lispify "btSwapEndian" 'function)))
+(declaim (inline SWAP-ENDIAN))
 
 (cffi:defcfun ("_wrap_btSwapEndian__SWIG_3" swap-endian/short)
     :unsigned-short
   (val :short))
 
-(export '#.(lispify "btSwapEndian" 'function))
+(export 'SWAP-ENDIAN)
 
-(declaim (inline #.(lispify "btSwapEndianFloat" 'function)))
+(declaim (inline SWAP-ENDIAN-FLOAT))
 
 (cffi:defcfun ("_wrap_btSwapEndianFloat" swap-endian/float) :unsigned-int
   (d :float))
 
-(export '#.(lispify "btSwapEndianFloat" 'function))
+(export 'SWAP-ENDIAN-FLOAT)
 
-(declaim (inline #.(lispify "btUnswapEndianFloat" 'function)))
+(declaim (inline UNSWAP-ENDIAN-FLOAT))
 
 (cffi:defcfun ("_wrap_btUnswapEndianFloat" unswap-endian/float) :float
   (a :unsigned-int))
 
-(export '#.(lispify "btUnswapEndianFloat" 'function))
+(export 'UNSWAP-ENDIAN-FLOAT)
 
-(declaim (inline #.(lispify "btSwapEndianDouble" 'function)))
+(declaim (inline SWAP-ENDIAN-DOUBLE))
 
 (cffi:defcfun ("_wrap_btSwapEndianDouble" swap-endian/double) :void
   (d :double)
   (dst :pointer))
 
-(export '#.(lispify "btSwapEndianDouble" 'function))
+(export 'SWAP-ENDIAN-DOUBLE)
 
-(declaim (inline #.(lispify "btUnswapEndianDouble" 'function)))
+(declaim (inline UNSWAP-ENDIAN-DOUBLE))
 
 (cffi:defcfun ("_wrap_btUnswapEndianDouble" unswap-endian/double) :double
   (src :pointer))
 
-(export '#.(lispify "btUnswapEndianDouble" 'function))
+(export 'UNSWAP-ENDIAN-DOUBLE)
 
-(declaim (inline #.(lispify "btLargeDot" 'function)))
+(declaim (inline LARGE-DOT))
 
-(cffi:defcfun ("_wrap_btLargeDot" #.(lispify "btLargeDot" 'function)) :float
+(cffi:defcfun ("_wrap_btLargeDot" LARGE-DOT) :float
   (a :pointer)
   (b :pointer)
   (n :int))
 
-(export '#.(lispify "btLargeDot" 'function))
+(export 'LARGE-DOT)
 
-(declaim (inline #.(lispify "btNormalizeAngle" 'function)))
+(declaim (inline NORMALIZE-ANGLE))
 
-(cffi:defcfun ("_wrap_btNormalizeAngle" #.(lispify "btNormalizeAngle" 'function)) :float
+(cffi:defcfun ("_wrap_btNormalizeAngle" NORMALIZE-ANGLE) :float
   (angleInRadians :float))
 
-(export '#.(lispify "btNormalizeAngle" 'function))
+(export 'NORMALIZE-ANGLE)
 
-(cffi:defcstruct #.(lispify "btTypedObject" 'classname)
-	(#.(lispify "m_objectType" 'slotname) :int)
-	(#.(lispify "getObjectType" 'slotname) :pointer))
+(cffi:defcstruct TYPED-OBJECT
+  (OBJECT-TYPE :int)
+  (GET-OBJECT-TYPE :pointer))
 
-(export '#.(lispify "btTypedObject" 'classname))
+(export 'TYPED-OBJECT)
 
-(export '#.(lispify "m_objectType" 'slotname))
+(export 'OBJECT-TYPE)
 
-(export '#.(lispify "getObjectType" 'slotname))
+(export 'GET-OBJECT-TYPE)
 
-(declaim (inline #.(lispify "btAlignedAllocInternal" 'function)))
+(declaim (inline ALIGNED-ALLOC-INTERNAL))
 
-(cffi:defcfun ("_wrap_btAlignedAllocInternal" #.(lispify "btAlignedAllocInternal" 'function)) :pointer
+(cffi:defcfun ("_wrap_btAlignedAllocInternal" ALIGNED-ALLOC-INTERNAL) :pointer
   (size :pointer)
   (alignment :int))
 
-(export '#.(lispify "btAlignedAllocInternal" 'function))
+(export 'ALIGNED-ALLOC-INTERNAL)
 
-(declaim (inline #.(lispify "btAlignedFreeInternal" 'function)))
+(declaim (inline ALIGNED-FREE-INTERNAL))
 
-(cffi:defcfun ("_wrap_btAlignedFreeInternal" #.(lispify "btAlignedFreeInternal" 'function)) :void
+(cffi:defcfun ("_wrap_btAlignedFreeInternal" ALIGNED-FREE-INTERNAL) :void
   (ptr :pointer))
 
-(export '#.(lispify "btAlignedFreeInternal" 'function))
+(export 'ALIGNED-FREE-INTERNAL)
 
-(declaim (inline #.(lispify "btAlignedAllocSetCustom" 'function)))
+(declaim (inline ALIGNED-ALLOC-SET-CUSTOM))
 
-(cffi:defcfun ("_wrap_btAlignedAllocSetCustom" #.(lispify "btAlignedAllocSetCustom" 'function)) :void
+(cffi:defcfun ("_wrap_btAlignedAllocSetCustom" ALIGNED-ALLOC-SET-CUSTOM) :void
   (allocFunc :pointer)
   (freeFunc :pointer))
 
-(export '#.(lispify "btAlignedAllocSetCustom" 'function))
+(export 'ALIGNED-ALLOC-SET-CUSTOM)
 
-(declaim (inline #.(lispify "btAlignedAllocSetCustomAligned" 'function)))
+(declaim (inline ALIGNED-ALLOC-SET-CUSTOM-ALIGNED))
 
-(cffi:defcfun ("_wrap_btAlignedAllocSetCustomAligned" #.(lispify "btAlignedAllocSetCustomAligned" 'function)) :void
+(cffi:defcfun ("_wrap_btAlignedAllocSetCustomAligned" ALIGNED-ALLOC-SET-CUSTOM-ALIGNED) :void
   (allocFunc :pointer)
   (freeFunc :pointer))
 
-(export '#.(lispify "btAlignedAllocSetCustomAligned" 'function))
+(export 'ALIGNED-ALLOC-SET-CUSTOM-ALIGNED)
 
-(define-constant #.(lispify "btVector3DataName" 'constant)
+(define-constant +VECTOR-3-DATA-NAME+
   "btVector3FloatData"
                  :test 'equal)
 
-(export '#.(lispify "btVector3DataName" 'constant))
+(export '+VECTOR-3-DATA-NAME+)
 
-(declaim (inline #.(lispify "btVector3_makeCPlusPlusInstance" 'function)))
+(declaim (inline VECTOR-3/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btVector3_makeCPlusPlusInstance__SWIG_0" #.(lispify "btVector3_makeCPlusPlusInstance" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_makeCPlusPlusInstance__SWIG_0" VECTOR-3/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btVector3_makeCPlusPlusInstance" 'function))
+(export 'VECTOR-3/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btVector3_deleteCPlusPlusInstance" 'function)))
+(declaim (inline VECTOR-3/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btVector3_deleteCPlusPlusInstance__SWIG_0" #.(lispify "btVector3_deleteCPlusPlusInstance" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_deleteCPlusPlusInstance__SWIG_0" VECTOR-3/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btVector3_deleteCPlusPlusInstance" 'function))
+(export 'VECTOR-3/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btVector3_makeCPlusPlusInstance" 'function)))
+(declaim (inline VECTOR-3/MAKE-CPLUS-PLUS-INSTANCE))
 
 (cffi:defcfun ("_wrap_btVector3_makeCPlusPlusInstance__SWIG_1"
                VECTOR-3/MAKE-CPLUS-PLUS-INSTANCE+ARG1) :pointer
@@ -3172,9 +2295,9 @@ Swig properly.")
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btVector3_makeCPlusPlusInstance" 'function))
+(export 'VECTOR-3/MAKE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btVector3_deleteCPlusPlusInstance" 'function)))
+(declaim (inline VECTOR-3/DELETE-CPLUS-PLUS-INSTANCE))
 
 (cffi:defcfun ("_wrap_btVector3_deleteCPlusPlusInstance__SWIG_1" 
                VECTOR-3/DELETE-CPLUS-PLUS-INSTANCE+ARG2+ARG3) :void
@@ -3182,56 +2305,56 @@ Swig properly.")
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btVector3_deleteCPlusPlusInstance" 'function))
+(export 'VECTOR-3/DELETE-CPLUS-PLUS-INSTANCE)
 
-(declaim (inline #.(lispify "btVector3_makeCPlusArray" 'function)))
+(declaim (inline VECTOR-3/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btVector3_makeCPlusArray__SWIG_0" #.(lispify "btVector3_makeCPlusArray" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_makeCPlusArray__SWIG_0" VECTOR-3/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
-(export '#.(lispify "btVector3_makeCPlusArray" 'function))
+(export 'VECTOR-3/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btVector3_deleteCPlusArray" 'function)))
+(declaim (inline VECTOR-3/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btVector3_deleteCPlusArray__SWIG_0" #.(lispify "btVector3_deleteCPlusArray" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_deleteCPlusArray__SWIG_0" VECTOR-3/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btVector3_deleteCPlusArray" 'function))
+(export 'VECTOR-3/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btVector3_makeCPlusArray" 'function)))
+(declaim (inline VECTOR-3/MAKE-CPLUS-ARRAY))
 
 (cffi:defcfun ("_wrap_btVector3_makeCPlusArray__SWIG_1" VECTOR-3/MAKE-CPLUS-ARRAY+ARG1) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
 
-(export '#.(lispify "btVector3_makeCPlusArray" 'function))
+(export 'VECTOR-3/MAKE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btVector3_deleteCPlusArray" 'function)))
+(declaim (inline VECTOR-3/DELETE-CPLUS-ARRAY))
 
 (cffi:defcfun ("_wrap_btVector3_deleteCPlusArray__SWIG_1" VECTOR-3/DELETE-CPLUS-ARRAY+arg1+arg2) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
 
-(export '#.(lispify "btVector3_deleteCPlusArray" 'function))
+(export 'VECTOR-3/DELETE-CPLUS-ARRAY)
 
-(declaim (inline #.(lispify "btVector3_m_floats_set" 'function)))
+(declaim (inline VECTOR-3/M/FLOATS/SET))
 
-(cffi:defcfun ("_wrap_btVector3_m_floats_set" #.(lispify "btVector3_m_floats_set" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_m_floats_set" VECTOR-3/M/FLOATS/SET) :void
   (self :pointer)
   (m_floats :pointer))
 
-(export '#.(lispify "btVector3_m_floats_set" 'function))
+(export 'VECTOR-3/M/FLOATS/SET)
 
-(declaim (inline #.(lispify "btVector3_m_floats_get" 'function)))
+(declaim (inline VECTOR-3/M/FLOATS/GET))
 
-(cffi:defcfun ("_wrap_btVector3_m_floats_get" #.(lispify "btVector3_m_floats_get" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_m_floats_get" VECTOR-3/M/FLOATS/GET) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_m_floats_get" 'function))
+(export 'VECTOR-3/M/FLOATS/GET)
 
 (declaim (inline make-vector3/naked))
 
@@ -3255,182 +2378,182 @@ Swig properly.")
 
 (export 'make-vector3)
 
-(declaim (inline #.(lispify "btVector3_increment" 'function)))
+(declaim (inline VECTOR-3/INCREMENT))
 
-(cffi:defcfun ("_wrap_btVector3_increment" #.(lispify "btVector3_increment" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_increment" VECTOR-3/INCREMENT) :pointer
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btVector3_increment" 'function))
+(export 'VECTOR-3/INCREMENT)
 
-(declaim (inline #.(lispify "btVector3_decrement" 'function)))
+(declaim (inline VECTOR-3/DECREMENT))
 
-(cffi:defcfun ("_wrap_btVector3_decrement" #.(lispify "btVector3_decrement" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_decrement" VECTOR-3/DECREMENT) :pointer
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btVector3_decrement" 'function))
+(export 'VECTOR-3/DECREMENT)
 
-(declaim (inline #.(lispify "btVector3_multiplyAndAssign" 'function)))
+(declaim (inline VECTOR-3/MULTIPLY-AND-ASSIGN))
 
-(cffi:defcfun ("_wrap_btVector3_multiplyAndAssign__SWIG_0" #.(lispify "btVector3_multiplyAndAssign" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_multiplyAndAssign__SWIG_0" VECTOR-3/MULTIPLY-AND-ASSIGN) :pointer
   (self :pointer)
   (s :pointer))
 
-(export '#.(lispify "btVector3_multiplyAndAssign" 'function))
+(export 'VECTOR-3/MULTIPLY-AND-ASSIGN)
 
-(declaim (inline #.(lispify "btVector3_divideAndAssign" 'function)))
+(declaim (inline VECTOR-3/DIVIDE-AND-ASSIGN))
 
-(cffi:defcfun ("_wrap_btVector3_divideAndAssign" #.(lispify "btVector3_divideAndAssign" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_divideAndAssign" VECTOR-3/DIVIDE-AND-ASSIGN) :pointer
   (self :pointer)
   (s :pointer))
 
-(export '#.(lispify "btVector3_divideAndAssign" 'function))
+(export 'VECTOR-3/DIVIDE-AND-ASSIGN)
 
-(declaim (inline #.(lispify "btVector3_dot" 'function)))
+(declaim (inline VECTOR-3/DOT))
 
-(cffi:defcfun ("_wrap_btVector3_dot" #.(lispify "btVector3_dot" 'function)) :float
+(cffi:defcfun ("_wrap_btVector3_dot" VECTOR-3/DOT) :float
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btVector3_dot" 'function))
+(export 'VECTOR-3/DOT)
 
-(declaim (inline #.(lispify "btVector3_length2" 'function)))
+(declaim (inline VECTOR-3/LENGTH-2))
 
-(cffi:defcfun ("_wrap_btVector3_length2" #.(lispify "btVector3_length2" 'function)) :float
+(cffi:defcfun ("_wrap_btVector3_length2" VECTOR-3/LENGTH-2) :float
   (self :pointer))
 
-(export '#.(lispify "btVector3_length2" 'function))
+(export 'VECTOR-3/LENGTH-2)
 
-(declaim (inline #.(lispify "btVector3_length" 'function)))
+(declaim (inline VECTOR-3/LENGTH))
 
-(cffi:defcfun ("_wrap_btVector3_length" #.(lispify "btVector3_length" 'function)) :float
+(cffi:defcfun ("_wrap_btVector3_length" VECTOR-3/LENGTH) :float
   (self :pointer))
 
-(export '#.(lispify "btVector3_length" 'function))
+(export 'VECTOR-3/LENGTH)
 
-(declaim (inline #.(lispify "btVector3_norm" 'function)))
+(declaim (inline VECTOR-3/NORM))
 
-(cffi:defcfun ("_wrap_btVector3_norm" #.(lispify "btVector3_norm" 'function)) :float
+(cffi:defcfun ("_wrap_btVector3_norm" VECTOR-3/NORM) :float
   (self :pointer))
 
-(export '#.(lispify "btVector3_norm" 'function))
+(export 'VECTOR-3/NORM)
 
-(declaim (inline #.(lispify "btVector3_distance2" 'function)))
+(declaim (inline VECTOR-3/DISTANCE-2))
 
-(cffi:defcfun ("_wrap_btVector3_distance2" #.(lispify "btVector3_distance2" 'function)) :float
+(cffi:defcfun ("_wrap_btVector3_distance2" VECTOR-3/DISTANCE-2) :float
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btVector3_distance2" 'function))
+(export 'VECTOR-3/DISTANCE-2)
 
-(declaim (inline #.(lispify "btVector3_distance" 'function)))
+(declaim (inline VECTOR-3/DISTANCE))
 
-(cffi:defcfun ("_wrap_btVector3_distance" #.(lispify "btVector3_distance" 'function)) :float
+(cffi:defcfun ("_wrap_btVector3_distance" VECTOR-3/DISTANCE) :float
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btVector3_distance" 'function))
+(export 'VECTOR-3/DISTANCE)
 
-(declaim (inline #.(lispify "btVector3_safeNormalize" 'function)))
+(declaim (inline VECTOR-3/SAFE-NORMALIZE))
 
-(cffi:defcfun ("_wrap_btVector3_safeNormalize" #.(lispify "btVector3_safeNormalize" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_safeNormalize" VECTOR-3/SAFE-NORMALIZE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_safeNormalize" 'function))
+(export 'VECTOR-3/SAFE-NORMALIZE)
 
-(declaim (inline #.(lispify "btVector3_normalize" 'function)))
+(declaim (inline VECTOR-3/NORMALIZE))
 
-(cffi:defcfun ("_wrap_btVector3_normalize" #.(lispify "btVector3_normalize" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_normalize" VECTOR-3/NORMALIZE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_normalize" 'function))
+(export 'VECTOR-3/NORMALIZE)
 
-(declaim (inline #.(lispify "btVector3_normalized" 'function)))
+(declaim (inline VECTOR-3/NORMALIZED))
 
-(cffi:defcfun ("_wrap_btVector3_normalized" #.(lispify "btVector3_normalized" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_normalized" VECTOR-3/NORMALIZED) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_normalized" 'function))
+(export 'VECTOR-3/NORMALIZED)
 
-(declaim (inline #.(lispify "btVector3_rotate" 'function)))
+(declaim (inline VECTOR-3/ROTATE))
 
-(cffi:defcfun ("_wrap_btVector3_rotate" #.(lispify "btVector3_rotate" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_rotate" VECTOR-3/ROTATE) :pointer
   (self :pointer)
   (wAxis :pointer)
   (angle :float))
 
-(export '#.(lispify "btVector3_rotate" 'function))
+(export 'VECTOR-3/ROTATE)
 
-(declaim (inline #.(lispify "btVector3_angle" 'function)))
+(declaim (inline VECTOR-3/ANGLE))
 
-(cffi:defcfun ("_wrap_btVector3_angle" #.(lispify "btVector3_angle" 'function)) :float
+(cffi:defcfun ("_wrap_btVector3_angle" VECTOR-3/ANGLE) :float
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btVector3_angle" 'function))
+(export 'VECTOR-3/ANGLE)
 
-(declaim (inline #.(lispify "btVector3_absolute" 'function)))
+(declaim (inline VECTOR-3/ABSOLUTE))
 
-(cffi:defcfun ("_wrap_btVector3_absolute" #.(lispify "btVector3_absolute" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_absolute" VECTOR-3/ABSOLUTE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_absolute" 'function))
+(export 'VECTOR-3/ABSOLUTE)
 
-(declaim (inline #.(lispify "btVector3_cross" 'function)))
+(declaim (inline VECTOR-3/CROSS))
 
-(cffi:defcfun ("_wrap_btVector3_cross" #.(lispify "btVector3_cross" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_cross" VECTOR-3/CROSS) :pointer
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btVector3_cross" 'function))
+(export 'VECTOR-3/CROSS)
 
-(declaim (inline #.(lispify "btVector3_triple" 'function)))
+(declaim (inline VECTOR-3/TRIPLE))
 
-(cffi:defcfun ("_wrap_btVector3_triple" #.(lispify "btVector3_triple" 'function)) :float
+(cffi:defcfun ("_wrap_btVector3_triple" VECTOR-3/TRIPLE) :float
   (self :pointer)
   (v1 :pointer)
   (v2 :pointer))
 
-(export '#.(lispify "btVector3_triple" 'function))
+(export 'VECTOR-3/TRIPLE)
 
-(declaim (inline #.(lispify "btVector3_minAxis" 'function)))
+(declaim (inline VECTOR-3/MIN-AXIS))
 
-(cffi:defcfun ("_wrap_btVector3_minAxis" #.(lispify "btVector3_minAxis" 'function)) :int
+(cffi:defcfun ("_wrap_btVector3_minAxis" VECTOR-3/MIN-AXIS) :int
   (self :pointer))
 
-(export '#.(lispify "btVector3_minAxis" 'function))
+(export 'VECTOR-3/MIN-AXIS)
 
-(declaim (inline #.(lispify "btVector3_maxAxis" 'function)))
+(declaim (inline VECTOR-3/MAX-AXIS))
 
-(cffi:defcfun ("_wrap_btVector3_maxAxis" #.(lispify "btVector3_maxAxis" 'function)) :int
+(cffi:defcfun ("_wrap_btVector3_maxAxis" VECTOR-3/MAX-AXIS) :int
   (self :pointer))
 
-(export '#.(lispify "btVector3_maxAxis" 'function))
+(export 'VECTOR-3/MAX-AXIS)
 
-(declaim (inline #.(lispify "btVector3_furthestAxis" 'function)))
+(declaim (inline VECTOR-3/FURTHEST-AXIS))
 
-(cffi:defcfun ("_wrap_btVector3_furthestAxis" #.(lispify "btVector3_furthestAxis" 'function)) :int
+(cffi:defcfun ("_wrap_btVector3_furthestAxis" VECTOR-3/FURTHEST-AXIS) :int
   (self :pointer))
 
-(export '#.(lispify "btVector3_furthestAxis" 'function))
+(export 'VECTOR-3/FURTHEST-AXIS)
 
-(declaim (inline #.(lispify "btVector3_closestAxis" 'function)))
+(declaim (inline VECTOR-3/CLOSEST-AXIS))
 
-(cffi:defcfun ("_wrap_btVector3_closestAxis" #.(lispify "btVector3_closestAxis" 'function)) :int
+(cffi:defcfun ("_wrap_btVector3_closestAxis" VECTOR-3/CLOSEST-AXIS) :int
   (self :pointer))
 
-(export '#.(lispify "btVector3_closestAxis" 'function))
+(export 'VECTOR-3/CLOSEST-AXIS)
 
-(declaim (inline #.(lispify "btVector3_setInterpolate3" 'function)))
+(declaim (inline VECTOR-3/SET-INTERPOLATE-3))
 
-(cffi:defcfun ("_wrap_btVector3_setInterpolate3" #.(lispify "btVector3_setInterpolate3" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_setInterpolate3" VECTOR-3/SET-INTERPOLATE-3) :void
   (self :pointer)
   (v0 :pointer)
   (v1 :pointer)
   (rt :float))
 
-(export '#.(lispify "btVector3_setInterpolate3" 'function))
+(export 'VECTOR-3/SET-INTERPOLATE-3)
 
 #+ (or)
 (progn (declaim (inline vector3/vlerp))
@@ -3443,252 +2566,252 @@ Swig properly.")
  (export 'vector3/vlerp))
 
 #+ (or)
-(progn (declaim (inline #.(lispify "btVector3_multiplyAndAssign" 'function)))
+(progn (declaim (inline VECTOR-3/MULTIPLY-AND-ASSIGN))
 
- (cffi:defcfun ("_wrap_btVector3_multiplyAndAssign__SWIG_1" #.(lispify "btVector3_multiplyAndAssign" 'function)) :pointer
+       (cffi:defcfun ("_wrap_btVector3_multiplyAndAssign__SWIG_1" VECTOR-3/MULTIPLY-AND-ASSIGN) :pointer
    (self :pointer)
    (v :pointer))
 
- (export '#.(lispify "btVector3_multiplyAndAssign" 'function)))
+       (export 'VECTOR-3/MULTIPLY-AND-ASSIGN))
 
-(declaim (inline #.(lispify "btVector3_getX" 'function)))
+(declaim (inline VECTOR-3/GET-X))
 
-(cffi:defcfun ("_wrap_btVector3_getX" #.(lispify "btVector3_getX" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_getX" VECTOR-3/GET-X) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_getX" 'function))
+(export 'VECTOR-3/GET-X)
 
-(declaim (inline #.(lispify "btVector3_getY" 'function)))
+(declaim (inline VECTOR-3/GET-Y))
 
-(cffi:defcfun ("_wrap_btVector3_getY" #.(lispify "btVector3_getY" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_getY" VECTOR-3/GET-Y) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_getY" 'function))
+(export 'VECTOR-3/GET-Y)
 
-(declaim (inline #.(lispify "btVector3_getZ" 'function)))
+(declaim (inline VECTOR-3/GET-Z))
 
-(cffi:defcfun ("_wrap_btVector3_getZ" #.(lispify "btVector3_getZ" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_getZ" VECTOR-3/GET-Z) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_getZ" 'function))
+(export 'VECTOR-3/GET-Z)
 
-(declaim (inline #.(lispify "btVector3_setX" 'function)))
+(declaim (inline VECTOR-3/SET-X))
 
-(cffi:defcfun ("_wrap_btVector3_setX" #.(lispify "btVector3_setX" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_setX" VECTOR-3/SET-X) :void
   (self :pointer)
   (_x :float))
 
-(export '#.(lispify "btVector3_setX" 'function))
+(export 'VECTOR-3/SET-X)
 
-(declaim (inline #.(lispify "btVector3_setY" 'function)))
+(declaim (inline VECTOR-3/SET-Y))
 
-(cffi:defcfun ("_wrap_btVector3_setY" #.(lispify "btVector3_setY" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_setY" VECTOR-3/SET-Y) :void
   (self :pointer)
   (_y :float))
 
-(export '#.(lispify "btVector3_setY" 'function))
+(export 'VECTOR-3/SET-Y)
 
-(declaim (inline #.(lispify "btVector3_setZ" 'function)))
+(declaim (inline VECTOR-3/SET-Z))
 
-(cffi:defcfun ("_wrap_btVector3_setZ" #.(lispify "btVector3_setZ" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_setZ" VECTOR-3/SET-Z) :void
   (self :pointer)
   (_z :float))
 
-(export '#.(lispify "btVector3_setZ" 'function))
+(export 'VECTOR-3/SET-Z)
 
-(declaim (inline #.(lispify "btVector3_setW" 'function)))
+(declaim (inline VECTOR-3/SET-W))
 
-(cffi:defcfun ("_wrap_btVector3_setW" #.(lispify "btVector3_setW" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_setW" VECTOR-3/SET-W) :void
   (self :pointer)
   (_w :float))
 
-(export '#.(lispify "btVector3_setW" 'function))
+(export 'VECTOR-3/SET-W)
 
-(declaim (inline #.(lispify "btVector3_x" 'function)))
+(declaim (inline VECTOR-3/X))
 
-(cffi:defcfun ("_wrap_btVector3_x" #.(lispify "btVector3_x" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_x" VECTOR-3/X) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_x" 'function))
+(export 'VECTOR-3/X)
 
-(declaim (inline #.(lispify "btVector3_y" 'function)))
+(declaim (inline VECTOR-3/Y))
 
-(cffi:defcfun ("_wrap_btVector3_y" #.(lispify "btVector3_y" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_y" VECTOR-3/Y) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_y" 'function))
+(export 'VECTOR-3/Y)
 
-(declaim (inline #.(lispify "btVector3_z" 'function)))
+(declaim (inline VECTOR-3/Z))
 
-(cffi:defcfun ("_wrap_btVector3_z" #.(lispify "btVector3_z" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_z" VECTOR-3/Z) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_z" 'function))
+(export 'VECTOR-3/Z)
 
-(declaim (inline #.(lispify "btVector3_w" 'function)))
+(declaim (inline VECTOR-3/W))
 
-(cffi:defcfun ("_wrap_btVector3_w" #.(lispify "btVector3_w" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_w" VECTOR-3/W) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_w" 'function))
+(export 'VECTOR-3/W)
 
-(declaim (inline #.(lispify "btVector3_isEqual" 'function)))
+(declaim (inline VECTOR-3/IS-EQUAL))
 
-(cffi:defcfun ("_wrap_btVector3_isEqual" #.(lispify "btVector3_isEqual" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_isEqual" VECTOR-3/IS-EQUAL) :pointer
   (self :pointer)
   (other :pointer))
 
-(export '#.(lispify "btVector3_isEqual" 'function))
+(export 'VECTOR-3/IS-EQUAL)
 
-(declaim (inline #.(lispify "btVector3_notEquals" 'function)))
+(declaim (inline VECTOR-3/NOT-EQUALS))
 
-(cffi:defcfun ("_wrap_btVector3_notEquals" #.(lispify "btVector3_notEquals" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_notEquals" VECTOR-3/NOT-EQUALS) :pointer
   (self :pointer)
   (other :pointer))
 
-(export '#.(lispify "btVector3_notEquals" 'function))
+(export 'VECTOR-3/NOT-EQUALS)
 
-(declaim (inline #.(lispify "btVector3_setMax" 'function)))
+(declaim (inline VECTOR-3/SET-MAX))
 
-(cffi:defcfun ("_wrap_btVector3_setMax" #.(lispify "btVector3_setMax" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_setMax" VECTOR-3/SET-MAX) :void
   (self :pointer)
   (other :pointer))
 
-(export '#.(lispify "btVector3_setMax" 'function))
+(export 'VECTOR-3/SET-MAX)
 
-(declaim (inline #.(lispify "btVector3_setMin" 'function)))
+(declaim (inline VECTOR-3/SET-MIN))
 
-(cffi:defcfun ("_wrap_btVector3_setMin" #.(lispify "btVector3_setMin" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_setMin" VECTOR-3/SET-MIN) :void
   (self :pointer)
   (other :pointer))
 
-(export '#.(lispify "btVector3_setMin" 'function))
+(export 'VECTOR-3/SET-MIN)
 
-(declaim (inline #.(lispify "btVector3_setValue" 'function)))
+(declaim (inline VECTOR-3/SET-VALUE))
 
-(cffi:defcfun ("_wrap_btVector3_setValue" #.(lispify "btVector3_setValue" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_setValue" VECTOR-3/SET-VALUE) :void
   (self :pointer)
   (_x :pointer)
   (_y :pointer)
   (_z :pointer))
 
-(export '#.(lispify "btVector3_setValue" 'function))
+(export 'VECTOR-3/SET-VALUE)
 
-(declaim (inline #.(lispify "btVector3_getSkewSymmetricMatrix" 'function)))
+(declaim (inline VECTOR-3/GET-SKEW-SYMMETRIC-MATRIX))
 
-(cffi:defcfun ("_wrap_btVector3_getSkewSymmetricMatrix" #.(lispify "btVector3_getSkewSymmetricMatrix" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_getSkewSymmetricMatrix" VECTOR-3/GET-SKEW-SYMMETRIC-MATRIX) :void
   (self :pointer)
   (v0 :pointer)
   (v1 :pointer)
   (v2 :pointer))
 
-(export '#.(lispify "btVector3_getSkewSymmetricMatrix" 'function))
+(export 'VECTOR-3/GET-SKEW-SYMMETRIC-MATRIX)
 
-(declaim (inline #.(lispify "btVector3_setZero" 'function)))
+(declaim (inline VECTOR-3/SET-ZERO))
 
-(cffi:defcfun ("_wrap_btVector3_setZero" #.(lispify "btVector3_setZero" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_setZero" VECTOR-3/SET-ZERO) :void
   (self :pointer))
 
-(export '#.(lispify "btVector3_setZero" 'function))
+(export 'VECTOR-3/SET-ZERO)
 
-(declaim (inline #.(lispify "btVector3_isZero" 'function)))
+(declaim (inline VECTOR-3/IS-ZERO))
 
-(cffi:defcfun ("_wrap_btVector3_isZero" #.(lispify "btVector3_isZero" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_isZero" VECTOR-3/IS-ZERO) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_isZero" 'function))
+(export 'VECTOR-3/IS-ZERO)
 
-(declaim (inline #.(lispify "btVector3_fuzzyZero" 'function)))
+(declaim (inline VECTOR-3/FUZZY-ZERO))
 
-(cffi:defcfun ("_wrap_btVector3_fuzzyZero" #.(lispify "btVector3_fuzzyZero" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_fuzzyZero" VECTOR-3/FUZZY-ZERO) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector3_fuzzyZero" 'function))
+(export 'VECTOR-3/FUZZY-ZERO)
 
-(declaim (inline #.(lispify "btVector3_serialize" 'function)))
+(declaim (inline VECTOR-3/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btVector3_serialize" #.(lispify "btVector3_serialize" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_serialize" VECTOR-3/SERIALIZE) :void
   (self :pointer)
   (dataOut :pointer))
 
-(export '#.(lispify "btVector3_serialize" 'function))
+(export 'VECTOR-3/SERIALIZE)
 
-(declaim (inline #.(lispify "btVector3_deSerialize" 'function)))
+(declaim (inline VECTOR-3/DE-SERIALIZE))
 
-(cffi:defcfun ("_wrap_btVector3_deSerialize" #.(lispify "btVector3_deSerialize" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_deSerialize" VECTOR-3/DE-SERIALIZE) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export '#.(lispify "btVector3_deSerialize" 'function))
+(export 'VECTOR-3/DE-SERIALIZE)
 
-(declaim (inline #.(lispify "btVector3_serializeFloat" 'function)))
+(declaim (inline VECTOR-3/SERIALIZE-FLOAT))
 
-(cffi:defcfun ("_wrap_btVector3_serializeFloat" #.(lispify "btVector3_serializeFloat" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_serializeFloat" VECTOR-3/SERIALIZE-FLOAT) :void
   (self :pointer)
   (dataOut :pointer))
 
-(export '#.(lispify "btVector3_serializeFloat" 'function))
+(export 'VECTOR-3/SERIALIZE-FLOAT)
 
-(declaim (inline #.(lispify "btVector3_deSerializeFloat" 'function)))
+(declaim (inline VECTOR-3/DE-SERIALIZE-FLOAT))
 
-(cffi:defcfun ("_wrap_btVector3_deSerializeFloat" #.(lispify "btVector3_deSerializeFloat" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_deSerializeFloat" VECTOR-3/DE-SERIALIZE-FLOAT) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export '#.(lispify "btVector3_deSerializeFloat" 'function))
+(export 'VECTOR-3/DE-SERIALIZE-FLOAT)
 
-(declaim (inline #.(lispify "btVector3_serializeDouble" 'function)))
+(declaim (inline VECTOR-3/SERIALIZE-DOUBLE))
 
-(cffi:defcfun ("_wrap_btVector3_serializeDouble" #.(lispify "btVector3_serializeDouble" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_serializeDouble" VECTOR-3/SERIALIZE-DOUBLE) :void
   (self :pointer)
   (dataOut :pointer))
 
-(export '#.(lispify "btVector3_serializeDouble" 'function))
+(export 'VECTOR-3/SERIALIZE-DOUBLE)
 
-(declaim (inline #.(lispify "btVector3_deSerializeDouble" 'function)))
+(declaim (inline VECTOR-3/DE-SERIALIZE-DOUBLE))
 
-(cffi:defcfun ("_wrap_btVector3_deSerializeDouble" #.(lispify "btVector3_deSerializeDouble" 'function)) :void
+(cffi:defcfun ("_wrap_btVector3_deSerializeDouble" VECTOR-3/DE-SERIALIZE-DOUBLE) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export '#.(lispify "btVector3_deSerializeDouble" 'function))
+(export 'VECTOR-3/DE-SERIALIZE-DOUBLE)
 
-(declaim (inline #.(lispify "btVector3_maxDot" 'function)))
+(declaim (inline VECTOR-3/MAX-DOT))
 
-(cffi:defcfun ("_wrap_btVector3_maxDot" #.(lispify "btVector3_maxDot" 'function)) :long
+(cffi:defcfun ("_wrap_btVector3_maxDot" VECTOR-3/MAX-DOT) :long
   (self :pointer)
   (array :pointer)
   (array_count :long)
   (dotOut :pointer))
 
-(export '#.(lispify "btVector3_maxDot" 'function))
+(export 'VECTOR-3/MAX-DOT)
 
-(declaim (inline #.(lispify "btVector3_minDot" 'function)))
+(declaim (inline VECTOR-3/MIN-DOT))
 
-(cffi:defcfun ("_wrap_btVector3_minDot" #.(lispify "btVector3_minDot" 'function)) :long
+(cffi:defcfun ("_wrap_btVector3_minDot" VECTOR-3/MIN-DOT) :long
   (self :pointer)
   (array :pointer)
   (array_count :long)
   (dotOut :pointer))
 
-(export '#.(lispify "btVector3_minDot" 'function))
+(export 'VECTOR-3/MIN-DOT)
 
-(declaim (inline #.(lispify "btVector3_dot3" 'function)))
+(declaim (inline VECTOR-3/DOT-3))
 
-(cffi:defcfun ("_wrap_btVector3_dot3" #.(lispify "btVector3_dot3" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector3_dot3" VECTOR-3/DOT-3) :pointer
   (self :pointer)
   (v0 :pointer)
   (v1 :pointer)
   (v2 :pointer))
 
-(export '#.(lispify "btVector3_dot3" 'function))
+(export 'VECTOR-3/DOT-3)
 
-(declaim (inline #.(lispify "delete_btVector3" 'function)))
+(declaim (inline DELETE/BT-VECTOR-3))
 
-(cffi:defcfun ("_wrap_delete_btVector3" #.(lispify "delete_btVector3" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btVector3" DELETE/BT-VECTOR-3) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btVector3" 'function))
+(export 'DELETE/BT-VECTOR-3)
 
 (declaim (inline vector3/dot))
 
@@ -3698,21 +2821,21 @@ Swig properly.")
 
 (export 'vector3/dot)
 
-(declaim (inline #.(lispify "btDistance2" 'function)))
+(declaim (inline DISTANCE-2))
 
-(cffi:defcfun ("_wrap_btDistance2" #.(lispify "btDistance2" 'function)) :float
+(cffi:defcfun ("_wrap_btDistance2" DISTANCE-2) :float
   (v1 :pointer)
   (v2 :pointer))
 
-(export '#.(lispify "btDistance2" 'function))
+(export 'DISTANCE-2)
 
-(declaim (inline #.(lispify "btDistance" 'function)))
+(declaim (inline DISTANCE))
 
-(cffi:defcfun ("_wrap_btDistance" #.(lispify "btDistance" 'function)) :float
+(cffi:defcfun ("_wrap_btDistance" DISTANCE) :float
   (v1 :pointer)
   (v2 :pointer))
 
-(export '#.(lispify "btDistance" 'function))
+(export 'DISTANCE)
 
 (declaim (inline vector/angle))
 
@@ -3722,31 +2845,31 @@ Swig properly.")
 
 (export 'vector/angle)
 
-(declaim (inline #.(lispify "btCross" 'function)))
+(declaim (inline CROSS))
 
-(cffi:defcfun ("_wrap_btCross" #.(lispify "btCross" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCross" CROSS) :pointer
   (v1 :pointer)
   (v2 :pointer))
 
-(export '#.(lispify "btCross" 'function))
+(export 'CROSS)
 
-(declaim (inline #.(lispify "btTriple" 'function)))
+(declaim (inline TRIPLE))
 
-(cffi:defcfun ("_wrap_btTriple" #.(lispify "btTriple" 'function)) :float
+(cffi:defcfun ("_wrap_btTriple" TRIPLE) :float
   (v1 :pointer)
   (v2 :pointer)
   (v3 :pointer))
 
-(export '#.(lispify "btTriple" 'function))
+(export 'TRIPLE)
 
-(declaim (inline #.(lispify "vlerp" 'function)))
+(declaim (inline VLERP))
 
-(cffi:defcfun ("_wrap_lerp" #.(lispify "vlerp" 'function)) :pointer
+(cffi:defcfun ("_wrap_lerp" VLERP) :pointer
   (v1 :pointer)
   (v2 :pointer)
   (t_arg2 :pointer))
 
-(export '#.(lispify "vlerp" 'function))
+(export 'VLERP)
 
 (declaim (inline make-vector-4/naked))
 
@@ -3770,95 +2893,95 @@ Swig properly.")
 
 (export 'make-vector-4)
 
-(declaim (inline #.(lispify "btVector4_absolute4" 'function)))
+(declaim (inline VECTOR-4/ABSOLUTE-4))
 
-(cffi:defcfun ("_wrap_btVector4_absolute4" #.(lispify "btVector4_absolute4" 'function)) :pointer
+(cffi:defcfun ("_wrap_btVector4_absolute4" VECTOR-4/ABSOLUTE-4) :pointer
   (self :pointer))
 
-(export '#.(lispify "btVector4_absolute4" 'function))
+(export 'VECTOR-4/ABSOLUTE-4)
 
-(declaim (inline #.(lispify "btVector4_getW" 'function)))
+(declaim (inline VECTOR-4/GET-W))
 
-(cffi:defcfun ("_wrap_btVector4_getW" #.(lispify "btVector4_getW" 'function)) :float
+(cffi:defcfun ("_wrap_btVector4_getW" VECTOR-4/GET-W) :float
   (self :pointer))
 
-(export '#.(lispify "btVector4_getW" 'function))
+(export 'VECTOR-4/GET-W)
 
-(declaim (inline #.(lispify "btVector4_maxAxis4" 'function)))
+(declaim (inline VECTOR-4/MAX-AXIS-4))
 
-(cffi:defcfun ("_wrap_btVector4_maxAxis4" #.(lispify "btVector4_maxAxis4" 'function)) :int
+(cffi:defcfun ("_wrap_btVector4_maxAxis4" VECTOR-4/MAX-AXIS-4) :int
   (self :pointer))
 
-(export '#.(lispify "btVector4_maxAxis4" 'function))
+(export 'VECTOR-4/MAX-AXIS-4)
 
-(declaim (inline #.(lispify "btVector4_minAxis4" 'function)))
+(declaim (inline VECTOR-4/MIN-AXIS-4))
 
-(cffi:defcfun ("_wrap_btVector4_minAxis4" #.(lispify "btVector4_minAxis4" 'function)) :int
+(cffi:defcfun ("_wrap_btVector4_minAxis4" VECTOR-4/MIN-AXIS-4) :int
   (self :pointer))
 
-(export '#.(lispify "btVector4_minAxis4" 'function))
+(export 'VECTOR-4/MIN-AXIS-4)
 
-(declaim (inline #.(lispify "btVector4_closestAxis4" 'function)))
+(declaim (inline VECTOR-4/CLOSEST-AXIS-4))
 
-(cffi:defcfun ("_wrap_btVector4_closestAxis4" #.(lispify "btVector4_closestAxis4" 'function)) :int
+(cffi:defcfun ("_wrap_btVector4_closestAxis4" VECTOR-4/CLOSEST-AXIS-4) :int
   (self :pointer))
 
-(export '#.(lispify "btVector4_closestAxis4" 'function))
+(export 'VECTOR-4/CLOSEST-AXIS-4)
 
-(declaim (inline #.(lispify "btVector4_setValue" 'function)))
+(declaim (inline VECTOR-4/SET-VALUE))
 
-(cffi:defcfun ("_wrap_btVector4_setValue" #.(lispify "btVector4_setValue" 'function)) :void
+(cffi:defcfun ("_wrap_btVector4_setValue" VECTOR-4/SET-VALUE) :void
   (self :pointer)
   (_x :pointer)
   (_y :pointer)
   (_z :pointer)
   (_w :pointer))
 
-(export '#.(lispify "btVector4_setValue" 'function))
+(export 'VECTOR-4/SET-VALUE)
 
-(declaim (inline #.(lispify "delete_btVector4" 'function)))
+(declaim (inline DELETE/BT-VECTOR-4))
 
-(cffi:defcfun ("_wrap_delete_btVector4" #.(lispify "delete_btVector4" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btVector4" DELETE/BT-VECTOR-4) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btVector4" 'function))
+(export 'DELETE/BT-VECTOR-4)
 
-(declaim (inline #.(lispify "btSwapScalarEndian" 'function)))
+(declaim (inline SWAP-SCALAR-ENDIAN))
 
-(cffi:defcfun ("_wrap_btSwapScalarEndian" #.(lispify "btSwapScalarEndian" 'function)) :void
+(cffi:defcfun ("_wrap_btSwapScalarEndian" SWAP-SCALAR-ENDIAN) :void
   (sourceVal :pointer)
   (destVal :pointer))
 
-(export '#.(lispify "btSwapScalarEndian" 'function))
+(export 'SWAP-SCALAR-ENDIAN)
 
-(declaim (inline #.(lispify "btSwapVector3Endian" 'function)))
+(declaim (inline SWAP-VECTOR-3-ENDIAN))
 
-(cffi:defcfun ("_wrap_btSwapVector3Endian" #.(lispify "btSwapVector3Endian" 'function)) :void
+(cffi:defcfun ("_wrap_btSwapVector3Endian" SWAP-VECTOR-3-ENDIAN) :void
   (sourceVec :pointer)
   (destVec :pointer))
 
-(export '#.(lispify "btSwapVector3Endian" 'function))
+(export 'SWAP-VECTOR-3-ENDIAN)
 
-(declaim (inline #.(lispify "btUnSwapVector3Endian" 'function)))
+(declaim (inline UN-SWAP-VECTOR-3-ENDIAN))
 
-(cffi:defcfun ("_wrap_btUnSwapVector3Endian" #.(lispify "btUnSwapVector3Endian" 'function)) :void
+(cffi:defcfun ("_wrap_btUnSwapVector3Endian" UN-SWAP-VECTOR-3-ENDIAN) :void
   (vector :pointer))
 
-(export '#.(lispify "btUnSwapVector3Endian" 'function))
+(export 'UN-SWAP-VECTOR-3-ENDIAN)
 
-(cffi:defcstruct #.(lispify "btVector3FloatData" 'classname)
-	(#.(lispify "m_floats" 'slotname) :pointer))
+(cffi:defcstruct VECTOR-3-FLOAT-DATA
+  (FLOATS :pointer))
 
-(export '#.(lispify "btVector3FloatData" 'classname))
+(export 'VECTOR-3-FLOAT-DATA)
 
-(export '#.(lispify "m_floats" 'slotname))
+(export 'FLOATS)
 
-(cffi:defcstruct #.(lispify "btVector3DoubleData" 'classname)
-	(#.(lispify "m_floats" 'slotname) :pointer))
+(cffi:defcstruct VECTOR-3-DOUBLE-DATA
+  (FLOATS :pointer))
 
-(export '#.(lispify "btVector3DoubleData" 'classname))
+(export 'VECTOR-3-DOUBLE-DATA)
 
-(export '#.(lispify "m_floats" 'slotname))
+(export 'FLOATS)
 
 (declaim (inline make-quaternion/naked))
 
@@ -3887,7 +3010,6 @@ Swig properly.")
   (pitch :pointer)
   (roll :pointer))
 
-
 (declaim (inline make-quaternion))
 
 (defun make-quaternion  (&optional 
@@ -3902,242 +3024,242 @@ Swig properly.")
     (x? (error "MAKE-QUATERNION needs 0 args or 2 (axis&angle) or 3 (yaw&pitch&roll) or 4 (x&y&z&w)"))
     (t (make-quaternion/naked))))
 
-(export '#.(lispify "new_btQuaternion" 'function))
+(export 'MAKE-QUATERNION)
 
-(declaim (inline #.(lispify "btQuaternion_setRotation" 'function)))
+(declaim (inline QUATERNION/SET-ROTATION))
 
-(cffi:defcfun ("_wrap_btQuaternion_setRotation" #.(lispify "btQuaternion_setRotation" 'function)) :void
+(cffi:defcfun ("_wrap_btQuaternion_setRotation" QUATERNION/SET-ROTATION) :void
   (self :pointer)
   (axis :pointer)
   (_angle :pointer))
 
-(export '#.(lispify "btQuaternion_setRotation" 'function))
+(export 'QUATERNION/SET-ROTATION)
 
-(declaim (inline #.(lispify "btQuaternion_setEuler" 'function)))
+(declaim (inline QUATERNION/SET-EULER))
 
-(cffi:defcfun ("_wrap_btQuaternion_setEuler" #.(lispify "btQuaternion_setEuler" 'function)) :void
+(cffi:defcfun ("_wrap_btQuaternion_setEuler" QUATERNION/SET-EULER) :void
   (self :pointer)
   (yaw :pointer)
   (pitch :pointer)
   (roll :pointer))
 
-(export '#.(lispify "btQuaternion_setEuler" 'function))
+(export 'QUATERNION/SET-EULER)
 
-(declaim (inline #.(lispify "btQuaternion_setEulerZYX" 'function)))
+(declaim (inline QUATERNION/SET-EULER-ZYX))
 
-(cffi:defcfun ("_wrap_btQuaternion_setEulerZYX" #.(lispify "btQuaternion_setEulerZYX" 'function)) :void
+(cffi:defcfun ("_wrap_btQuaternion_setEulerZYX" QUATERNION/SET-EULER-ZYX) :void
   (self :pointer)
   (yaw :pointer)
   (pitch :pointer)
   (roll :pointer))
 
-(export '#.(lispify "btQuaternion_setEulerZYX" 'function))
+(export 'QUATERNION/SET-EULER-ZYX)
 
-(declaim (inline #.(lispify "btQuaternion_increment" 'function)))
+(declaim (inline QUATERNION/INCREMENT))
 
-(cffi:defcfun ("_wrap_btQuaternion_increment" #.(lispify "btQuaternion_increment" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_increment" QUATERNION/INCREMENT) :pointer
   (self :pointer)
   (q :pointer))
 
-(export '#.(lispify "btQuaternion_increment" 'function))
+(export 'QUATERNION/INCREMENT)
 
-(declaim (inline #.(lispify "btQuaternion_decrement" 'function)))
+(declaim (inline QUATERNION/DECREMENT))
 
-(cffi:defcfun ("_wrap_btQuaternion_decrement" #.(lispify "btQuaternion_decrement" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_decrement" QUATERNION/DECREMENT) :pointer
   (self :pointer)
   (q :pointer))
 
-(export '#.(lispify "btQuaternion_decrement" 'function))
+(export 'QUATERNION/DECREMENT)
 
 #+ (or)
 (progn
- (declaim (inline #.(lispify "btQuaternion_multiplyAndAssign" 'function)))
+  (declaim (inline QUATERNION/MULTIPLY-AND-ASSIGN))
 
- (cffi:defcfun ("_wrap_btQuaternion_multiplyAndAssign__SWIG_0" #.(lispify "btQuaternion_multiplyAndAssign" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btQuaternion_multiplyAndAssign__SWIG_0" QUATERNION/MULTIPLY-AND-ASSIGN) :pointer
    (self :pointer)
    (s :pointer))
 
- (export '#.(lispify "btQuaternion_multiplyAndAssign" 'function))
+  (export 'QUATERNION/MULTIPLY-AND-ASSIGN)
 
- (declaim (inline #.(lispify "btQuaternion_multiplyAndAssign" 'function)))
+  (declaim (inline QUATERNION/MULTIPLY-AND-ASSIGN))
 
- (cffi:defcfun ("_wrap_btQuaternion_multiplyAndAssign__SWIG_1" #.(lispify "btQuaternion_multiplyAndAssign" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btQuaternion_multiplyAndAssign__SWIG_1" QUATERNION/MULTIPLY-AND-ASSIGN) :pointer
    (self :pointer)
    (q :pointer))
 
- (export '#.(lispify "btQuaternion_multiplyAndAssign" 'function))
+  (export 'QUATERNION/MULTIPLY-AND-ASSIGN)
  )
-(declaim (inline #.(lispify "btQuaternion_dot" 'function)))
+(declaim (inline QUATERNION/DOT))
 
-(cffi:defcfun ("_wrap_btQuaternion_dot" #.(lispify "btQuaternion_dot" 'function)) :float
+(cffi:defcfun ("_wrap_btQuaternion_dot" QUATERNION/DOT) :float
   (self :pointer)
   (q :pointer))
 
-(export '#.(lispify "btQuaternion_dot" 'function))
+(export 'QUATERNION/DOT)
 
-(declaim (inline #.(lispify "btQuaternion_length2" 'function)))
+(declaim (inline QUATERNION/LENGTH-2))
 
-(cffi:defcfun ("_wrap_btQuaternion_length2" #.(lispify "btQuaternion_length2" 'function)) :float
+(cffi:defcfun ("_wrap_btQuaternion_length2" QUATERNION/LENGTH-2) :float
   (self :pointer))
 
-(export '#.(lispify "btQuaternion_length2" 'function))
+(export 'QUATERNION/LENGTH-2)
 
-(declaim (inline #.(lispify "btQuaternion_length" 'function)))
+(declaim (inline QUATERNION/LENGTH))
 
-(cffi:defcfun ("_wrap_btQuaternion_length" #.(lispify "btQuaternion_length" 'function)) :float
+(cffi:defcfun ("_wrap_btQuaternion_length" QUATERNION/LENGTH) :float
   (self :pointer))
 
-(export '#.(lispify "btQuaternion_length" 'function))
+(export 'QUATERNION/LENGTH)
 
-(declaim (inline #.(lispify "btQuaternion_normalize" 'function)))
+(declaim (inline QUATERNION/NORMALIZE))
 
-(cffi:defcfun ("_wrap_btQuaternion_normalize" #.(lispify "btQuaternion_normalize" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_normalize" QUATERNION/NORMALIZE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btQuaternion_normalize" 'function))
+(export 'QUATERNION/NORMALIZE)
 
-(declaim (inline #.(lispify "btQuaternion_multiply" 'function)))
+(declaim (inline QUATERNION/MULTIPLY))
 
-(cffi:defcfun ("_wrap_btQuaternion_multiply" #.(lispify "btQuaternion_multiply" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_multiply" QUATERNION/MULTIPLY) :pointer
   (self :pointer)
   (s :pointer))
 
-(export '#.(lispify "btQuaternion_multiply" 'function))
+(export 'QUATERNION/MULTIPLY)
 
-(declaim (inline #.(lispify "btQuaternion_divide" 'function)))
+(declaim (inline QUATERNION/DIVIDE))
 
-(cffi:defcfun ("_wrap_btQuaternion_divide" #.(lispify "btQuaternion_divide" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_divide" QUATERNION/DIVIDE) :pointer
   (self :pointer)
   (s :pointer))
 
-(export '#.(lispify "btQuaternion_divide" 'function))
+(export 'QUATERNION/DIVIDE)
 
-(declaim (inline #.(lispify "btQuaternion_divideAndAssign" 'function)))
+(declaim (inline QUATERNION/DIVIDE-AND-ASSIGN))
 
-(cffi:defcfun ("_wrap_btQuaternion_divideAndAssign" #.(lispify "btQuaternion_divideAndAssign" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_divideAndAssign" QUATERNION/DIVIDE-AND-ASSIGN) :pointer
   (self :pointer)
   (s :pointer))
 
-(export '#.(lispify "btQuaternion_divideAndAssign" 'function))
+(export 'QUATERNION/DIVIDE-AND-ASSIGN)
 
-(declaim (inline #.(lispify "btQuaternion_normalized" 'function)))
+(declaim (inline QUATERNION/NORMALIZED))
 
-(cffi:defcfun ("_wrap_btQuaternion_normalized" #.(lispify "btQuaternion_normalized" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_normalized" QUATERNION/NORMALIZED) :pointer
   (self :pointer))
 
-(export '#.(lispify "btQuaternion_normalized" 'function))
+(export 'QUATERNION/NORMALIZED)
 
-(declaim (inline #.(lispify "btQuaternion_angle" 'function)))
+(declaim (inline QUATERNION/ANGLE))
 
-(cffi:defcfun ("_wrap_btQuaternion_angle" #.(lispify "btQuaternion_angle" 'function)) :float
+(cffi:defcfun ("_wrap_btQuaternion_angle" QUATERNION/ANGLE) :float
   (self :pointer)
   (q :pointer))
 
-(export '#.(lispify "btQuaternion_angle" 'function))
+(export 'QUATERNION/ANGLE)
 
-(declaim (inline #.(lispify "btQuaternion_angleShortestPath" 'function)))
+(declaim (inline QUATERNION/ANGLE-SHORTEST-PATH))
 
-(cffi:defcfun ("_wrap_btQuaternion_angleShortestPath" #.(lispify "btQuaternion_angleShortestPath" 'function)) :float
+(cffi:defcfun ("_wrap_btQuaternion_angleShortestPath" QUATERNION/ANGLE-SHORTEST-PATH) :float
   (self :pointer)
   (q :pointer))
 
-(export '#.(lispify "btQuaternion_angleShortestPath" 'function))
+(export 'QUATERNION/ANGLE-SHORTEST-PATH)
 
-(declaim (inline #.(lispify "btQuaternion_getAngle" 'function)))
+(declaim (inline QUATERNION/GET-ANGLE))
 
-(cffi:defcfun ("_wrap_btQuaternion_getAngle" #.(lispify "btQuaternion_getAngle" 'function)) :float
+(cffi:defcfun ("_wrap_btQuaternion_getAngle" QUATERNION/GET-ANGLE) :float
   (self :pointer))
 
-(export '#.(lispify "btQuaternion_getAngle" 'function))
+(export 'QUATERNION/GET-ANGLE)
 
-(declaim (inline #.(lispify "btQuaternion_getAngleShortestPath" 'function)))
+(declaim (inline QUATERNION/GET-ANGLE-SHORTEST-PATH))
 
-(cffi:defcfun ("_wrap_btQuaternion_getAngleShortestPath" #.(lispify "btQuaternion_getAngleShortestPath" 'function)) :float
+(cffi:defcfun ("_wrap_btQuaternion_getAngleShortestPath" QUATERNION/GET-ANGLE-SHORTEST-PATH) :float
   (self :pointer))
 
-(export '#.(lispify "btQuaternion_getAngleShortestPath" 'function))
+(export 'QUATERNION/GET-ANGLE-SHORTEST-PATH)
 
-(declaim (inline #.(lispify "btQuaternion_getAxis" 'function)))
+(declaim (inline QUATERNION/GET-AXIS))
 
-(cffi:defcfun ("_wrap_btQuaternion_getAxis" #.(lispify "btQuaternion_getAxis" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_getAxis" QUATERNION/GET-AXIS) :pointer
   (self :pointer))
 
-(export '#.(lispify "btQuaternion_getAxis" 'function))
+(export 'QUATERNION/GET-AXIS)
 
-(declaim (inline #.(lispify "btQuaternion_inverse" 'function)))
+(declaim (inline QUATERNION/INVERSE))
 
-(cffi:defcfun ("_wrap_btQuaternion_inverse" #.(lispify "btQuaternion_inverse" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_inverse" QUATERNION/INVERSE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btQuaternion_inverse" 'function))
+(export 'QUATERNION/INVERSE)
 
-(declaim (inline #.(lispify "btQuaternion_add" 'function)))
+(declaim (inline QUATERNION/ADD))
 
-(cffi:defcfun ("_wrap_btQuaternion_add" #.(lispify "btQuaternion_add" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_add" QUATERNION/ADD) :pointer
   (self :pointer)
   (q2 :pointer))
 
-(export '#.(lispify "btQuaternion_add" 'function))
+(export 'QUATERNION/ADD)
 
-(declaim (inline #.(lispify "btQuaternion_subtract" 'function)))
+(declaim (inline QUATERNION/SUBTRACT))
 
-(cffi:defcfun ("_wrap_btQuaternion_subtract" #.(lispify "btQuaternion_subtract" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_subtract" QUATERNION/SUBTRACT) :pointer
   (self :pointer)
   (q2 :pointer))
 
-(export '#.(lispify "btQuaternion_subtract" 'function))
+(export 'QUATERNION/SUBTRACT)
 
-(declaim (inline #.(lispify "btQuaternion___neg__" 'function)))
+(declaim (inline QUATERNION///NEG//))
 
-(cffi:defcfun ("_wrap_btQuaternion___neg__" #.(lispify "btQuaternion___neg__" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion___neg__" QUATERNION///NEG//) :pointer
   (self :pointer))
 
-(export '#.(lispify "btQuaternion___neg__" 'function))
+(export 'QUATERNION///NEG//)
 
-(declaim (inline #.(lispify "btQuaternion_farthest" 'function)))
+(declaim (inline QUATERNION/FARTHEST))
 
-(cffi:defcfun ("_wrap_btQuaternion_farthest" #.(lispify "btQuaternion_farthest" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_farthest" QUATERNION/FARTHEST) :pointer
   (self :pointer)
   (qd :pointer))
 
-(export '#.(lispify "btQuaternion_farthest" 'function))
+(export 'QUATERNION/FARTHEST)
 
-(declaim (inline #.(lispify "btQuaternion_nearest" 'function)))
+(declaim (inline QUATERNION/NEAREST))
 
-(cffi:defcfun ("_wrap_btQuaternion_nearest" #.(lispify "btQuaternion_nearest" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_nearest" QUATERNION/NEAREST) :pointer
   (self :pointer)
   (qd :pointer))
 
-(export '#.(lispify "btQuaternion_nearest" 'function))
+(export 'QUATERNION/NEAREST)
 
-(declaim (inline #.(lispify "btQuaternion_slerp" 'function)))
+(declaim (inline QUATERNION/SLERP))
 
-(cffi:defcfun ("_wrap_btQuaternion_slerp" #.(lispify "btQuaternion_slerp" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_slerp" QUATERNION/SLERP) :pointer
   (self :pointer)
   (q :pointer)
   (t_arg2 :pointer))
 
-(export '#.(lispify "btQuaternion_slerp" 'function))
+(export 'QUATERNION/SLERP)
 
-(declaim (inline #.(lispify "btQuaternion_getIdentity" 'function)))
+(declaim (inline QUATERNION/GET-IDENTITY))
 
-(cffi:defcfun ("_wrap_btQuaternion_getIdentity" #.(lispify "btQuaternion_getIdentity" 'function)) :pointer)
+(cffi:defcfun ("_wrap_btQuaternion_getIdentity" QUATERNION/GET-IDENTITY) :pointer)
 
-(export '#.(lispify "btQuaternion_getIdentity" 'function))
+(export 'QUATERNION/GET-IDENTITY)
 
-(declaim (inline #.(lispify "btQuaternion_getW" 'function)))
+(declaim (inline QUATERNION/GET-W))
 
-(cffi:defcfun ("_wrap_btQuaternion_getW" #.(lispify "btQuaternion_getW" 'function)) :pointer
+(cffi:defcfun ("_wrap_btQuaternion_getW" QUATERNION/GET-W) :pointer
   (self :pointer))
 
-(export '#.(lispify "btQuaternion_getW" 'function))
+(export 'QUATERNION/GET-W)
 
-(declaim (inline #.(lispify "delete_btQuaternion" 'function)))
+(declaim (inline DELETE/BT-QUATERNION))
 
-(cffi:defcfun ("_wrap_delete_btQuaternion" #.(lispify "delete_btQuaternion" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btQuaternion" DELETE/BT-QUATERNION) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btQuaternion" 'function))
+(export 'DELETE/BT-QUATERNION)
 
 (declaim (inline dot))
 
@@ -4162,45 +3284,45 @@ Swig properly.")
 
 (export 'quaternion/angle)
 
-(declaim (inline #.(lispify "inverse" 'function)))
+(declaim (inline INVERSE))
 
-(cffi:defcfun ("_wrap_inverse" #.(lispify "inverse" 'function)) :pointer
+(cffi:defcfun ("_wrap_inverse" INVERSE) :pointer
   (q :pointer))
 
-(export '#.(lispify "inverse" 'function))
+(export 'INVERSE)
 
-(declaim (inline #.(lispify "slerp" 'function)))
+(declaim (inline SLERP))
 
-(cffi:defcfun ("_wrap_slerp" #.(lispify "slerp" 'function)) :pointer
+(cffi:defcfun ("_wrap_slerp" SLERP) :pointer
   (q1 :pointer)
   (q2 :pointer)
   (t_arg2 :pointer))
 
-(export '#.(lispify "slerp" 'function))
+(export 'SLERP)
 
-(declaim (inline #.(lispify "quatRotate" 'function)))
+(declaim (inline QUAT-ROTATE))
 
-(cffi:defcfun ("_wrap_quatRotate" #.(lispify "quatRotate" 'function)) :pointer
+(cffi:defcfun ("_wrap_quatRotate" QUAT-ROTATE) :pointer
   (rotation :pointer)
   (v :pointer))
 
-(export '#.(lispify "quatRotate" 'function))
+(export 'QUAT-ROTATE)
 
-(declaim (inline #.(lispify "shortestArcQuat" 'function)))
+(declaim (inline SHORTEST-ARC-QUAT))
 
-(cffi:defcfun ("_wrap_shortestArcQuat" #.(lispify "shortestArcQuat" 'function)) :pointer
+(cffi:defcfun ("_wrap_shortestArcQuat" SHORTEST-ARC-QUAT) :pointer
   (v0 :pointer)
   (v1 :pointer))
 
-(export '#.(lispify "shortestArcQuat" 'function))
+(export 'SHORTEST-ARC-QUAT)
 
-(declaim (inline #.(lispify "shortestArcQuatNormalize2" 'function)))
+(declaim (inline SHORTEST-ARC-QUAT-NORMALIZE-2))
 
-(cffi:defcfun ("_wrap_shortestArcQuatNormalize2" #.(lispify "shortestArcQuatNormalize2" 'function)) :pointer
+(cffi:defcfun ("_wrap_shortestArcQuatNormalize2" SHORTEST-ARC-QUAT-NORMALIZE-2) :pointer
   (v0 :pointer)
   (v1 :pointer))
 
-(export '#.(lispify "shortestArcQuatNormalize2" 'function))
+(export 'SHORTEST-ARC-QUAT-NORMALIZE-2)
 
 (declaim (inline make-matrix-3x3/naked))
 
@@ -4255,13 +3377,13 @@ Swig properly.")
 
 (export 'matrix-3x3/get-column)
 
-(declaim (inline #.(lispify "btMatrix3x3_getRow" 'function)))
+(declaim (inline MATRIX-3X-3/GET-ROW))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getRow" #.(lispify "btMatrix3x3_getRow" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_getRow" MATRIX-3X-3/GET-ROW) :pointer
   (self :pointer)
   (i :int))
 
-(export '#.(lispify "btMatrix3x3_getRow" 'function))
+(export 'MATRIX-3X-3/GET-ROW)
 
 (declaim (inline matrix-3x3/aref))
 
@@ -4280,41 +3402,41 @@ Swig properly.")
 
  (export 'matrix-3x3/aref))
 
-(declaim (inline #.(lispify "btMatrix3x3_multiplyAndAssign" 'function)))
+(declaim (inline MATRIX-3X-3/MULTIPLY-AND-ASSIGN))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_multiplyAndAssign" #.(lispify "btMatrix3x3_multiplyAndAssign" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_multiplyAndAssign" MATRIX-3X-3/MULTIPLY-AND-ASSIGN) :pointer
   (self :pointer)
   (m :pointer))
 
-(export '#.(lispify "btMatrix3x3_multiplyAndAssign" 'function))
+(export 'MATRIX-3X-3/MULTIPLY-AND-ASSIGN)
 
-(declaim (inline #.(lispify "btMatrix3x3_increment" 'function)))
+(declaim (inline MATRIX-3X-3/INCREMENT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_increment" #.(lispify "btMatrix3x3_increment" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_increment" MATRIX-3X-3/INCREMENT) :pointer
   (self :pointer)
   (m :pointer))
 
-(export '#.(lispify "btMatrix3x3_increment" 'function))
+(export 'MATRIX-3X-3/INCREMENT)
 
-(declaim (inline #.(lispify "btMatrix3x3_decrement" 'function)))
+(declaim (inline MATRIX-3X-3/DECREMENT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_decrement" #.(lispify "btMatrix3x3_decrement" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_decrement" MATRIX-3X-3/DECREMENT) :pointer
   (self :pointer)
   (m :pointer))
 
-(export '#.(lispify "btMatrix3x3_decrement" 'function))
+(export 'MATRIX-3X-3/DECREMENT)
 
-(declaim (inline #.(lispify "btMatrix3x3_setFromOpenGLSubMatrix" 'function)))
+(declaim (inline MATRIX-3X-3/SET-FROM-OPEN-GLSUB-MATRIX))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setFromOpenGLSubMatrix" #.(lispify "btMatrix3x3_setFromOpenGLSubMatrix" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setFromOpenGLSubMatrix" MATRIX-3X-3/SET-FROM-OPEN-GLSUB-MATRIX) :void
   (self :pointer)
   (m :pointer))
 
-(export '#.(lispify "btMatrix3x3_setFromOpenGLSubMatrix" 'function))
+(export 'MATRIX-3X-3/SET-FROM-OPEN-GLSUB-MATRIX)
 
-(declaim (inline #.(lispify "btMatrix3x3_setValue" 'function)))
+(declaim (inline MATRIX-3X-3/SET-VALUE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setValue" #.(lispify "btMatrix3x3_setValue" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setValue" MATRIX-3X-3/SET-VALUE) :void
   (self :pointer)
   (xx :pointer)
   (xy :pointer)
@@ -4326,74 +3448,74 @@ Swig properly.")
   (zy :pointer)
   (zz :pointer))
 
-(export '#.(lispify "btMatrix3x3_setValue" 'function))
+(export 'MATRIX-3X-3/SET-VALUE)
 
-(declaim (inline #.(lispify "btMatrix3x3_setRotation" 'function)))
+(declaim (inline MATRIX-3X-3/SET-ROTATION))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setRotation" #.(lispify "btMatrix3x3_setRotation" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setRotation" MATRIX-3X-3/SET-ROTATION) :void
   (self :pointer)
   (q :pointer))
 
-(export '#.(lispify "btMatrix3x3_setRotation" 'function))
+(export 'MATRIX-3X-3/SET-ROTATION)
 
-(declaim (inline #.(lispify "btMatrix3x3_setEulerYPR" 'function)))
+(declaim (inline MATRIX-3X-3/SET-EULER-YPR))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setEulerYPR" #.(lispify "btMatrix3x3_setEulerYPR" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setEulerYPR" MATRIX-3X-3/SET-EULER-YPR) :void
   (self :pointer)
   (yaw :pointer)
   (pitch :pointer)
   (roll :pointer))
 
-(export '#.(lispify "btMatrix3x3_setEulerYPR" 'function))
+(export 'MATRIX-3X-3/SET-EULER-YPR)
 
-(declaim (inline #.(lispify "btMatrix3x3_setEulerZYX" 'function)))
+(declaim (inline MATRIX-3X-3/SET-EULER-ZYX))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setEulerZYX" #.(lispify "btMatrix3x3_setEulerZYX" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setEulerZYX" MATRIX-3X-3/SET-EULER-ZYX) :void
   (self :pointer)
   (eulerX :float)
   (eulerY :float)
   (eulerZ :float))
 
-(export '#.(lispify "btMatrix3x3_setEulerZYX" 'function))
+(export 'MATRIX-3X-3/SET-EULER-ZYX)
 
-(declaim (inline #.(lispify "btMatrix3x3_setIdentity" 'function)))
+(declaim (inline MATRIX-3X-3/SET-IDENTITY))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setIdentity" #.(lispify "btMatrix3x3_setIdentity" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setIdentity" MATRIX-3X-3/SET-IDENTITY) :void
   (self :pointer))
 
-(export '#.(lispify "btMatrix3x3_setIdentity" 'function))
+(export 'MATRIX-3X-3/SET-IDENTITY)
 
-(declaim (inline #.(lispify "btMatrix3x3_getIdentity" 'function)))
+(declaim (inline MATRIX-3X-3/GET-IDENTITY))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getIdentity" #.(lispify "btMatrix3x3_getIdentity" 'function)) :pointer)
+(cffi:defcfun ("_wrap_btMatrix3x3_getIdentity" MATRIX-3X-3/GET-IDENTITY) :pointer)
 
-(export '#.(lispify "btMatrix3x3_getIdentity" 'function))
+(export 'MATRIX-3X-3/GET-IDENTITY)
 
-(declaim (inline #.(lispify "btMatrix3x3_getOpenGLSubMatrix" 'function)))
+(declaim (inline MATRIX-3X-3/GET-OPEN-GLSUB-MATRIX))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getOpenGLSubMatrix" #.(lispify "btMatrix3x3_getOpenGLSubMatrix" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_getOpenGLSubMatrix" MATRIX-3X-3/GET-OPEN-GLSUB-MATRIX) :void
   (self :pointer)
   (m :pointer))
 
-(export '#.(lispify "btMatrix3x3_getOpenGLSubMatrix" 'function))
+(export 'MATRIX-3X-3/GET-OPEN-GLSUB-MATRIX)
 
-(declaim (inline #.(lispify "btMatrix3x3_getRotation" 'function)))
+(declaim (inline MATRIX-3X-3/GET-ROTATION))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getRotation" #.(lispify "btMatrix3x3_getRotation" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_getRotation" MATRIX-3X-3/GET-ROTATION) :void
   (self :pointer)
   (q :pointer))
 
-(export '#.(lispify "btMatrix3x3_getRotation" 'function))
+(export 'MATRIX-3X-3/GET-ROTATION)
 
-(declaim (inline #.(lispify "btMatrix3x3_getEulerYPR" 'function)))
+(declaim (inline MATRIX-3X-3/GET-EULER-YPR))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getEulerYPR" #.(lispify "btMatrix3x3_getEulerYPR" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_getEulerYPR" MATRIX-3X-3/GET-EULER-YPR) :void
   (self :pointer)
   (yaw :pointer)
   (pitch :pointer)
   (roll :pointer))
 
-(export '#.(lispify "btMatrix3x3_getEulerYPR" 'function))
+(export 'MATRIX-3X-3/GET-EULER-YPR)
 
 (declaim (inline MATRIX-3X-3/GET-EULER-ZYX/WITH-SOLUTION#))
 
@@ -4424,156 +3546,156 @@ Swig properly.")
 
 (export 'MATRIX-3X-3/GET-EULER-ZYX)
 
-(declaim (inline #.(lispify "btMatrix3x3_scaled" 'function)))
+(declaim (inline MATRIX-3X-3/SCALED))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_scaled" #.(lispify "btMatrix3x3_scaled" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_scaled" MATRIX-3X-3/SCALED) :pointer
   (self :pointer)
   (s :pointer))
 
-(export '#.(lispify "btMatrix3x3_scaled" 'function))
+(export 'MATRIX-3X-3/SCALED)
 
-(declaim (inline #.(lispify "btMatrix3x3_determinant" 'function)))
+(declaim (inline MATRIX-3X-3/DETERMINANT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_determinant" #.(lispify "btMatrix3x3_determinant" 'function)) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_determinant" MATRIX-3X-3/DETERMINANT) :float
   (self :pointer))
 
-(export '#.(lispify "btMatrix3x3_determinant" 'function))
+(export 'MATRIX-3X-3/DETERMINANT)
 
-(declaim (inline #.(lispify "btMatrix3x3_adjoint" 'function)))
+(declaim (inline MATRIX-3X-3/ADJOINT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_adjoint" #.(lispify "btMatrix3x3_adjoint" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_adjoint" MATRIX-3X-3/ADJOINT) :pointer
   (self :pointer))
 
-(export '#.(lispify "btMatrix3x3_adjoint" 'function))
+(export 'MATRIX-3X-3/ADJOINT)
 
-(declaim (inline #.(lispify "btMatrix3x3_absolute" 'function)))
+(declaim (inline MATRIX-3X-3/ABSOLUTE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_absolute" #.(lispify "btMatrix3x3_absolute" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_absolute" MATRIX-3X-3/ABSOLUTE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btMatrix3x3_absolute" 'function))
+(export 'MATRIX-3X-3/ABSOLUTE)
 
-(declaim (inline #.(lispify "btMatrix3x3_transpose" 'function)))
+(declaim (inline MATRIX-3X-3/TRANSPOSE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_transpose" #.(lispify "btMatrix3x3_transpose" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_transpose" MATRIX-3X-3/TRANSPOSE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btMatrix3x3_transpose" 'function))
+(export 'MATRIX-3X-3/TRANSPOSE)
 
-(declaim (inline #.(lispify "btMatrix3x3_inverse" 'function)))
+(declaim (inline MATRIX-3X-3/INVERSE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_inverse" #.(lispify "btMatrix3x3_inverse" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_inverse" MATRIX-3X-3/INVERSE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btMatrix3x3_inverse" 'function))
+(export 'MATRIX-3X-3/INVERSE)
 
-(declaim (inline #.(lispify "btMatrix3x3_transposeTimes" 'function)))
+(declaim (inline MATRIX-3X-3/TRANSPOSE-TIMES))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_transposeTimes" #.(lispify "btMatrix3x3_transposeTimes" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_transposeTimes" MATRIX-3X-3/TRANSPOSE-TIMES) :pointer
   (self :pointer)
   (m :pointer))
 
-(export '#.(lispify "btMatrix3x3_transposeTimes" 'function))
+(export 'MATRIX-3X-3/TRANSPOSE-TIMES)
 
-(declaim (inline #.(lispify "btMatrix3x3_timesTranspose" 'function)))
+(declaim (inline MATRIX-3X-3/TIMES-TRANSPOSE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_timesTranspose" #.(lispify "btMatrix3x3_timesTranspose" 'function)) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_timesTranspose" MATRIX-3X-3/TIMES-TRANSPOSE) :pointer
   (self :pointer)
   (m :pointer))
 
-(export '#.(lispify "btMatrix3x3_timesTranspose" 'function))
+(export 'MATRIX-3X-3/TIMES-TRANSPOSE)
 
-(declaim (inline #.(lispify "btMatrix3x3_tdotx" 'function)))
+(declaim (inline MATRIX-3X-3/TDOTX))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_tdotx" #.(lispify "btMatrix3x3_tdotx" 'function)) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_tdotx" MATRIX-3X-3/TDOTX) :float
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btMatrix3x3_tdotx" 'function))
+(export 'MATRIX-3X-3/TDOTX)
 
-(declaim (inline #.(lispify "btMatrix3x3_tdoty" 'function)))
+(declaim (inline MATRIX-3X-3/TDOTY))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_tdoty" #.(lispify "btMatrix3x3_tdoty" 'function)) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_tdoty" MATRIX-3X-3/TDOTY) :float
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btMatrix3x3_tdoty" 'function))
+(export 'MATRIX-3X-3/TDOTY)
 
-(declaim (inline #.(lispify "btMatrix3x3_tdotz" 'function)))
+(declaim (inline MATRIX-3X-3/TDOTZ))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_tdotz" #.(lispify "btMatrix3x3_tdotz" 'function)) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_tdotz" MATRIX-3X-3/TDOTZ) :float
   (self :pointer)
   (v :pointer))
 
-(export '#.(lispify "btMatrix3x3_tdotz" 'function))
+(export 'MATRIX-3X-3/TDOTZ)
 
-(declaim (inline #.(lispify "btMatrix3x3_diagonalize" 'function)))
+(declaim (inline MATRIX-3X-3/DIAGONALIZE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_diagonalize" #.(lispify "btMatrix3x3_diagonalize" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_diagonalize" MATRIX-3X-3/DIAGONALIZE) :void
   (self :pointer)
   (rot :pointer)
   (threshold :float)
   (maxSteps :int))
 
-(export '#.(lispify "btMatrix3x3_diagonalize" 'function))
+(export 'MATRIX-3X-3/DIAGONALIZE)
 
-(declaim (inline #.(lispify "btMatrix3x3_cofac" 'function)))
+(declaim (inline MATRIX-3X-3/COFAC))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_cofac" #.(lispify "btMatrix3x3_cofac" 'function)) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_cofac" MATRIX-3X-3/COFAC) :float
   (self :pointer)
   (r1 :int)
   (c1 :int)
   (r2 :int)
   (c2 :int))
 
-(export '#.(lispify "btMatrix3x3_cofac" 'function))
+(export 'MATRIX-3X-3/COFAC)
 
-(declaim (inline #.(lispify "btMatrix3x3_serialize" 'function)))
+(declaim (inline MATRIX-3X-3/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_serialize" #.(lispify "btMatrix3x3_serialize" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_serialize" MATRIX-3X-3/SERIALIZE) :void
   (self :pointer)
   (dataOut :pointer))
 
-(export '#.(lispify "btMatrix3x3_serialize" 'function))
+(export 'MATRIX-3X-3/SERIALIZE)
 
-(declaim (inline #.(lispify "btMatrix3x3_serializeFloat" 'function)))
+(declaim (inline MATRIX-3X-3/SERIALIZE-FLOAT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_serializeFloat" #.(lispify "btMatrix3x3_serializeFloat" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_serializeFloat" MATRIX-3X-3/SERIALIZE-FLOAT) :void
   (self :pointer)
   (dataOut :pointer))
 
-(export '#.(lispify "btMatrix3x3_serializeFloat" 'function))
+(export 'MATRIX-3X-3/SERIALIZE-FLOAT)
 
-(declaim (inline #.(lispify "btMatrix3x3_deSerialize" 'function)))
+(declaim (inline MATRIX-3X-3/DE-SERIALIZE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_deSerialize" #.(lispify "btMatrix3x3_deSerialize" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_deSerialize" MATRIX-3X-3/DE-SERIALIZE) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export '#.(lispify "btMatrix3x3_deSerialize" 'function))
+(export 'MATRIX-3X-3/DE-SERIALIZE)
 
-(declaim (inline #.(lispify "btMatrix3x3_deSerializeFloat" 'function)))
+(declaim (inline MATRIX-3X-3/DE-SERIALIZE-FLOAT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_deSerializeFloat" #.(lispify "btMatrix3x3_deSerializeFloat" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_deSerializeFloat" MATRIX-3X-3/DE-SERIALIZE-FLOAT) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export '#.(lispify "btMatrix3x3_deSerializeFloat" 'function))
+(export 'MATRIX-3X-3/DE-SERIALIZE-FLOAT)
 
-(declaim (inline #.(lispify "btMatrix3x3_deSerializeDouble" 'function)))
+(declaim (inline MATRIX-3X-3/DE-SERIALIZE-DOUBLE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_deSerializeDouble" #.(lispify "btMatrix3x3_deSerializeDouble" 'function)) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_deSerializeDouble" MATRIX-3X-3/DE-SERIALIZE-DOUBLE) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export '#.(lispify "btMatrix3x3_deSerializeDouble" 'function))
+(export 'MATRIX-3X-3/DE-SERIALIZE-DOUBLE)
 
-(declaim (inline #.(lispify "delete_btMatrix3x3" 'function)))
+(declaim (inline DELETE/BT-MATRIX-3X-3))
 
-(cffi:defcfun ("_wrap_delete_btMatrix3x3" #.(lispify "delete_btMatrix3x3" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btMatrix3x3" DELETE/BT-MATRIX-3X-3) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btMatrix3x3" 'function))
+(export 'DELETE/BT-MATRIX-3X-3)
 
 (cffi:defcstruct matrix-3x3-float-data
                  (el :pointer))
@@ -4582,455 +3704,470 @@ Swig properly.")
 
 (export 'el)
 
-(cffi:defcstruct #.(lispify "btMatrix3x3DoubleData" 'classname)
+(cffi:defcstruct MATRIX-3X-3-DOUBLE-DATA
                  (el :pointer))
 
-(export '#.(lispify "btMatrix3x3DoubleData" 'classname))
+(export 'MATRIX-3X-3-DOUBLE-DATA)
 
 (export 'el)
 
-(declaim (inline #.(lispify "new_btTransform" 'function)))
+(declaim (inline MAKE-TRANSFORM))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_0" #.(lispify "new_btTransform" 'function)) :pointer)
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_0" MAKE-TRANSFORM) :pointer)
 
-(export '#.(lispify "new_btTransform" 'function))
+(export 'MAKE-TRANSFORM)
 
-(declaim (inline #.(lispify "new_btTransform" 'function)))
+(declaim (inline MAKE-TRANSFORM))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_1" #.(lispify "new_btTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_1" MAKE-TRANSFORM) :pointer
   (q :pointer)
   (c :pointer))
 
-(export '#.(lispify "new_btTransform" 'function))
+(export 'MAKE-TRANSFORM)
 
-(declaim (inline #.(lispify "new_btTransform" 'function)))
+(declaim (inline MAKE-TRANSFORM))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_2" #.(lispify "new_btTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_2" MAKE-TRANSFORM) :pointer
   (q :pointer))
 
-(export '#.(lispify "new_btTransform" 'function))
+(export 'MAKE-TRANSFORM)
 
-(declaim (inline #.(lispify "new_btTransform" 'function)))
+(declaim (inline MAKE-TRANSFORM))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_3" #.(lispify "new_btTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_3" MAKE-TRANSFORM) :pointer
   (b :pointer)
   (c :pointer))
 
-(export '#.(lispify "new_btTransform" 'function))
+(export 'MAKE-TRANSFORM)
 
-(declaim (inline #.(lispify "new_btTransform" 'function)))
+(declaim (inline MAKE-TRANSFORM))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_4" #.(lispify "new_btTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_4" MAKE-TRANSFORM) :pointer
   (b :pointer))
 
-(export '#.(lispify "new_btTransform" 'function))
+(export 'MAKE-TRANSFORM)
 
-(declaim (inline #.(lispify "new_btTransform" 'function)))
+(declaim (inline MAKE-TRANSFORM))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_5" #.(lispify "new_btTransform" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_5" MAKE-TRANSFORM) :pointer
   (other :pointer))
 
-(export '#.(lispify "new_btTransform" 'function))
+(export 'MAKE-TRANSFORM)
 
-(declaim (inline #.(lispify "btTransform_assignValue" 'function)))
+(declaim (inline TRANSFORM/ASSIGN-VALUE))
 
-(cffi:defcfun ("_wrap_btTransform_assignValue" #.(lispify "btTransform_assignValue" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_assignValue" TRANSFORM/ASSIGN-VALUE) :pointer
   (self :pointer)
   (other :pointer))
 
-(export '#.(lispify "btTransform_assignValue" 'function))
+(export 'TRANSFORM/ASSIGN-VALUE)
 
-(declaim (inline #.(lispify "btTransform_mult" 'function)))
+(declaim (inline TRANSFORM/MULT))
 
-(cffi:defcfun ("_wrap_btTransform_mult" #.(lispify "btTransform_mult" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_mult" TRANSFORM/MULT) :void
   (self :pointer)
   (t1 :pointer)
   (t2 :pointer))
 
-(export '#.(lispify "btTransform_mult" 'function))
+(export 'TRANSFORM/MULT)
 
-(declaim (inline #.(lispify "btTransform___funcall__" 'function)))
+(declaim (inline TRANSFORM///FUNCALL//))
 
-(cffi:defcfun ("_wrap_btTransform___funcall__" #.(lispify "btTransform___funcall__" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform___funcall__" TRANSFORM///FUNCALL//) :pointer
   (self :pointer)
   (x :pointer))
 
-(export '#.(lispify "btTransform___funcall__" 'function))
+(export 'TRANSFORM///FUNCALL//)
 
-(declaim (inline #.(lispify "btTransform_multiply" 'function)))
+(declaim (inline TRANSFORM/MULTIPLY))
 
-(cffi:defcfun ("_wrap_btTransform_multiply__SWIG_0" #.(lispify "btTransform_multiply" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_multiply__SWIG_0" TRANSFORM/MULTIPLY) :pointer
   (self :pointer)
   (x :pointer))
 
-(export '#.(lispify "btTransform_multiply" 'function))
+(export 'TRANSFORM/MULTIPLY)
 
-(declaim (inline #.(lispify "btTransform_multiply" 'function)))
+(declaim (inline TRANSFORM/MULTIPLY))
 
-(cffi:defcfun ("_wrap_btTransform_multiply__SWIG_1" #.(lispify "btTransform_multiply" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_multiply__SWIG_1" TRANSFORM/MULTIPLY) :pointer
   (self :pointer)
   (q :pointer))
 
-(export '#.(lispify "btTransform_multiply" 'function))
+(export 'TRANSFORM/MULTIPLY)
 
-(declaim (inline #.(lispify "btTransform_getBasis" 'function)))
+(declaim (inline TRANSFORM/GET-BASIS))
 
-(cffi:defcfun ("_wrap_btTransform_getBasis__SWIG_0" #.(lispify "btTransform_getBasis" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_getBasis__SWIG_0" TRANSFORM/GET-BASIS) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTransform_getBasis" 'function))
+(export 'TRANSFORM/GET-BASIS)
 
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btTransform_getBasis" 'function)))
+  (declaim (inline TRANSFORM/GET-BASIS))
 
-  (cffi:defcfun ("_wrap_btTransform_getBasis__SWIG_1" #.(lispify "btTransform_getBasis" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btTransform_getBasis__SWIG_1" TRANSFORM/GET-BASIS) :pointer
     (self :pointer))
 
-  (export '#.(lispify "btTransform_getBasis" 'function)))
+  (export 'TRANSFORM/GET-BASIS))
 
-(declaim (inline #.(lispify "btTransform_getOrigin" 'function)))
+(declaim (inline TRANSFORM/GET-ORIGIN))
 
-(cffi:defcfun ("_wrap_btTransform_getOrigin__SWIG_0" #.(lispify "btTransform_getOrigin" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_getOrigin__SWIG_0" TRANSFORM/GET-ORIGIN) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTransform_getOrigin" 'function))
+(export 'TRANSFORM/GET-ORIGIN)
 
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btTransform_getOrigin" 'function)))
+  (declaim (inline TRANSFORM/GET-ORIGIN))
 
- (cffi:defcfun ("_wrap_btTransform_getOrigin__SWIG_1" #.(lispify "btTransform_getOrigin" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btTransform_getOrigin__SWIG_1" TRANSFORM/GET-ORIGIN) :pointer
    (self :pointer))
 
- (export '#.(lispify "btTransform_getOrigin" 'function)))
+  (export 'TRANSFORM/GET-ORIGIN))
 
-(declaim (inline #.(lispify "btTransform_getRotation" 'function)))
+(declaim (inline TRANSFORM/GET-ROTATION))
 
-(cffi:defcfun ("_wrap_btTransform_getRotation" #.(lispify "btTransform_getRotation" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_getRotation" TRANSFORM/GET-ROTATION) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTransform_getRotation" 'function))
+(export 'TRANSFORM/GET-ROTATION)
 
-(declaim (inline #.(lispify "btTransform_setFromOpenGLMatrix" 'function)))
+(declaim (inline TRANSFORM/SET-FROM-OPEN-GLMATRIX))
 
-(cffi:defcfun ("_wrap_btTransform_setFromOpenGLMatrix" #.(lispify "btTransform_setFromOpenGLMatrix" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_setFromOpenGLMatrix" TRANSFORM/SET-FROM-OPEN-GLMATRIX) :void
   (self :pointer)
   (m :pointer))
 
-(export '#.(lispify "btTransform_setFromOpenGLMatrix" 'function))
+(export 'TRANSFORM/SET-FROM-OPEN-GLMATRIX)
 
-(declaim (inline #.(lispify "btTransform_getOpenGLMatrix" 'function)))
+(declaim (inline TRANSFORM/GET-OPEN-GLMATRIX))
 
-(cffi:defcfun ("_wrap_btTransform_getOpenGLMatrix" #.(lispify "btTransform_getOpenGLMatrix" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_getOpenGLMatrix" TRANSFORM/GET-OPEN-GLMATRIX) :void
   (self :pointer)
   (m :pointer))
 
-(export '#.(lispify "btTransform_getOpenGLMatrix" 'function))
+(export 'TRANSFORM/GET-OPEN-GLMATRIX)
 
-(declaim (inline #.(lispify "btTransform_setOrigin" 'function)))
+(declaim (inline TRANSFORM/SET-ORIGIN))
 
-(cffi:defcfun ("_wrap_btTransform_setOrigin" #.(lispify "btTransform_setOrigin" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_setOrigin" TRANSFORM/SET-ORIGIN) :void
   (self :pointer)
   (origin :pointer))
 
-(export '#.(lispify "btTransform_setOrigin" 'function))
+(export 'TRANSFORM/SET-ORIGIN)
 
-(declaim (inline #.(lispify "btTransform_invXform" 'function)))
+(declaim (inline TRANSFORM/INV-XFORM))
 
-(cffi:defcfun ("_wrap_btTransform_invXform" #.(lispify "btTransform_invXform" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_invXform" TRANSFORM/INV-XFORM) :pointer
   (self :pointer)
   (inVec :pointer))
 
-(export '#.(lispify "btTransform_invXform" 'function))
+(export 'TRANSFORM/INV-XFORM)
 
-(declaim (inline #.(lispify "btTransform_setBasis" 'function)))
+(declaim (inline TRANSFORM/SET-BASIS))
 
-(cffi:defcfun ("_wrap_btTransform_setBasis" #.(lispify "btTransform_setBasis" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_setBasis" TRANSFORM/SET-BASIS) :void
   (self :pointer)
   (basis :pointer))
 
-(export '#.(lispify "btTransform_setBasis" 'function))
+(export 'TRANSFORM/SET-BASIS)
 
-(declaim (inline #.(lispify "btTransform_setRotation" 'function)))
+(declaim (inline TRANSFORM/SET-ROTATION))
 
-(cffi:defcfun ("_wrap_btTransform_setRotation" #.(lispify "btTransform_setRotation" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_setRotation" TRANSFORM/SET-ROTATION) :void
   (self :pointer)
   (q :pointer))
 
-(export '#.(lispify "btTransform_setRotation" 'function))
+(export 'TRANSFORM/SET-ROTATION)
 
-(declaim (inline #.(lispify "btTransform_setIdentity" 'function)))
+(declaim (inline TRANSFORM/SET-IDENTITY))
 
-(cffi:defcfun ("_wrap_btTransform_setIdentity" #.(lispify "btTransform_setIdentity" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_setIdentity" TRANSFORM/SET-IDENTITY) :void
   (self :pointer))
 
-(export '#.(lispify "btTransform_setIdentity" 'function))
+(export 'TRANSFORM/SET-IDENTITY)
 
-(declaim (inline #.(lispify "btTransform_multiplyAndAssign" 'function)))
+(declaim (inline TRANSFORM/MULTIPLY-AND-ASSIGN))
 
-(cffi:defcfun ("_wrap_btTransform_multiplyAndAssign" #.(lispify "btTransform_multiplyAndAssign" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_multiplyAndAssign" TRANSFORM/MULTIPLY-AND-ASSIGN) :pointer
   (self :pointer)
   (t_arg1 :pointer))
 
-(export '#.(lispify "btTransform_multiplyAndAssign" 'function))
+(export 'TRANSFORM/MULTIPLY-AND-ASSIGN)
 
-(declaim (inline #.(lispify "btTransform_inverse" 'function)))
+(declaim (inline TRANSFORM/INVERSE))
 
-(cffi:defcfun ("_wrap_btTransform_inverse" #.(lispify "btTransform_inverse" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_inverse" TRANSFORM/INVERSE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btTransform_inverse" 'function))
+(export 'TRANSFORM/INVERSE)
 
-(declaim (inline #.(lispify "btTransform_inverseTimes" 'function)))
+(declaim (inline TRANSFORM/INVERSE-TIMES))
 
-(cffi:defcfun ("_wrap_btTransform_inverseTimes" #.(lispify "btTransform_inverseTimes" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTransform_inverseTimes" TRANSFORM/INVERSE-TIMES) :pointer
   (self :pointer)
   (t_arg1 :pointer))
 
-(export '#.(lispify "btTransform_inverseTimes" 'function))
+(export 'TRANSFORM/INVERSE-TIMES)
 
 #+ (or)
 (progn
-  (declaim (inline #.(lispify "btTransform_multiply" 'function)))
+  (declaim (inline TRANSFORM/MULTIPLY))
 
- (cffi:defcfun ("_wrap_btTransform_multiply__SWIG_2" #.(lispify "btTransform_multiply" 'function)) :pointer
+  (cffi:defcfun ("_wrap_btTransform_multiply__SWIG_2" TRANSFORM/MULTIPLY) :pointer
    (self :pointer)
    (t_arg1 :pointer))
 
- (export '#.(lispify "btTransform_multiply" 'function)))
+  (export 'TRANSFORM/MULTIPLY))
 
-(declaim (inline #.(lispify "btTransform_getIdentity" 'function)))
+(declaim (inline TRANSFORM/GET-IDENTITY))
 
-(cffi:defcfun ("_wrap_btTransform_getIdentity" #.(lispify "btTransform_getIdentity" 'function)) :pointer)
+(cffi:defcfun ("_wrap_btTransform_getIdentity" TRANSFORM/GET-IDENTITY) :pointer)
 
-(export '#.(lispify "btTransform_getIdentity" 'function))
+(export 'TRANSFORM/GET-IDENTITY)
 
-(declaim (inline #.(lispify "btTransform_serialize" 'function)))
+(declaim (inline TRANSFORM/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btTransform_serialize" #.(lispify "btTransform_serialize" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_serialize" TRANSFORM/SERIALIZE) :void
   (self :pointer)
   (dataOut :pointer))
 
-(export '#.(lispify "btTransform_serialize" 'function))
+(export 'TRANSFORM/SERIALIZE)
 
-(declaim (inline #.(lispify "btTransform_serializeFloat" 'function)))
+(declaim (inline TRANSFORM/SERIALIZE-FLOAT))
 
-(cffi:defcfun ("_wrap_btTransform_serializeFloat" #.(lispify "btTransform_serializeFloat" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_serializeFloat" TRANSFORM/SERIALIZE-FLOAT) :void
   (self :pointer)
   (dataOut :pointer))
 
-(export '#.(lispify "btTransform_serializeFloat" 'function))
+(export 'TRANSFORM/SERIALIZE-FLOAT)
 
-(declaim (inline #.(lispify "btTransform_deSerialize" 'function)))
+(declaim (inline TRANSFORM/DE-SERIALIZE))
 
-(cffi:defcfun ("_wrap_btTransform_deSerialize" #.(lispify "btTransform_deSerialize" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_deSerialize" TRANSFORM/DE-SERIALIZE) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export '#.(lispify "btTransform_deSerialize" 'function))
+(export 'TRANSFORM/DE-SERIALIZE)
 
-(declaim (inline #.(lispify "btTransform_deSerializeDouble" 'function)))
+(declaim (inline TRANSFORM/DE-SERIALIZE-DOUBLE))
 
-(cffi:defcfun ("_wrap_btTransform_deSerializeDouble" #.(lispify "btTransform_deSerializeDouble" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_deSerializeDouble" TRANSFORM/DE-SERIALIZE-DOUBLE) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export '#.(lispify "btTransform_deSerializeDouble" 'function))
+(export 'TRANSFORM/DE-SERIALIZE-DOUBLE)
 
-(declaim (inline #.(lispify "btTransform_deSerializeFloat" 'function)))
+(declaim (inline TRANSFORM/DE-SERIALIZE-FLOAT))
 
-(cffi:defcfun ("_wrap_btTransform_deSerializeFloat" #.(lispify "btTransform_deSerializeFloat" 'function)) :void
+(cffi:defcfun ("_wrap_btTransform_deSerializeFloat" TRANSFORM/DE-SERIALIZE-FLOAT) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export '#.(lispify "btTransform_deSerializeFloat" 'function))
+(export 'TRANSFORM/DE-SERIALIZE-FLOAT)
 
-(declaim (inline #.(lispify "delete_btTransform" 'function)))
+(declaim (inline DELETE/BT-TRANSFORM))
 
-(cffi:defcfun ("_wrap_delete_btTransform" #.(lispify "delete_btTransform" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btTransform" DELETE/BT-TRANSFORM) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btTransform" 'function))
+(export 'DELETE/BT-TRANSFORM)
 
-(cffi:defcstruct #.(lispify "btTransformFloatData" 'classname)
-                 (#.(lispify "m_basis" 'slotname) (:pointer (:struct matrix-3x3-float-data)))
-                 (#.(lispify "m_origin" 'slotname) (:pointer (:struct #.(lispify "btVector3FloatData" 'classname)))))
+(cffi:defcstruct TRANSFORM-FLOAT-DATA
+  (BASIS (:pointer (:struct matrix-3x3-float-data)))
+  (ORIGIN (:pointer (:struct VECTOR-3-FLOAT-DATA))))
 
-(export '#.(lispify "btTransformFloatData" 'classname))
+(export 'TRANSFORM-FLOAT-DATA)
 
-(export '#.(lispify "m_basis" 'slotname))
+(export 'BASIS)
 
-(export '#.(lispify "m_origin" 'slotname))
+(export 'ORIGIN)
 
-(cffi:defcstruct #.(lispify "btTransformDoubleData" 'classname)
-	(#.(lispify "m_basis" 'slotname) #.(lispify "btMatrix3x3DoubleData" 'classname))
-	(#.(lispify "m_origin" 'slotname) #.(lispify "btVector3DoubleData" 'classname)))
+(cffi:defcstruct TRANSFORM-DOUBLE-DATA
+  (BASIS MATRIX-3X-3-DOUBLE-DATA)
+  (ORIGIN VECTOR-3-DOUBLE-DATA))
 
-(export '#.(lispify "btTransformDoubleData" 'classname))
+(export 'TRANSFORM-DOUBLE-DATA)
 
-(export '#.(lispify "m_basis" 'slotname))
+(export 'BASIS)
 
-(export '#.(lispify "m_origin" 'slotname))
+(export 'ORIGIN)
 
-(declaim (inline #.(lispify "delete_btMotionState" 'function)))
+(declaim (inline DELETE/BT-MOTION-STATE))
 
-(cffi:defcfun ("_wrap_delete_btMotionState" #.(lispify "delete_btMotionState" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btMotionState" DELETE/BT-MOTION-STATE) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btMotionState" 'function))
+(export 'DELETE/BT-MOTION-STATE)
 
-(declaim (inline #.(lispify "btMotionState_getWorldTransform" 'function)))
+(declaim (inline MOTION-STATE/GET-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btMotionState_getWorldTransform" #.(lispify "btMotionState_getWorldTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btMotionState_getWorldTransform" MOTION-STATE/GET-WORLD-TRANSFORM) :void
   (self :pointer)
   (worldTrans :pointer))
 
-(export '#.(lispify "btMotionState_getWorldTransform" 'function))
+(export 'MOTION-STATE/GET-WORLD-TRANSFORM)
 
-(declaim (inline #.(lispify "btMotionState_setWorldTransform" 'function)))
+(declaim (inline MOTION-STATE/SET-WORLD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btMotionState_setWorldTransform" #.(lispify "btMotionState_setWorldTransform" 'function)) :void
+(cffi:defcfun ("_wrap_btMotionState_setWorldTransform" MOTION-STATE/SET-WORLD-TRANSFORM) :void
   (self :pointer)
   (worldTrans :pointer))
 
-(export '#.(lispify "btMotionState_setWorldTransform" 'function))
+(export 'MOTION-STATE/SET-WORLD-TRANSFORM)
 
-(define-constant #.(lispify "BT_USE_PLACEMENT_NEW" 'constant) 1)
+(define-constant +USE-PLACEMENT-NEW+ 1)
 
-(export '#.(lispify "BT_USE_PLACEMENT_NEW" 'constant))
+(export '+USE-PLACEMENT-NEW+)
 
-(cffi:defcfun ("_wrap_new_btCollisionWorld" #.(lispify "new_btCollisionWorld" 'function)) :pointer
+(cffi:defcfun ("_wrap_new_btCollisionWorld" MAKE-COLLISION-WORLD) :pointer
   (dispatcher :pointer)
   (broadphasePairCache :pointer)
   (collisionConfiguration :pointer))
 
-(export '#.(lispify "new_btCollisionWorld" 'function))
+(export 'MAKE-COLLISION-WORLD)
 
-(declaim (inline #.(lispify "delete_btCollisionWorld" 'function)))
+(declaim (inline DELETE/BT-COLLISION-WORLD))
 
-(cffi:defcfun ("_wrap_delete_btCollisionWorld" #.(lispify "delete_btCollisionWorld" 'function)) :void
+(cffi:defcfun ("_wrap_delete_btCollisionWorld" DELETE/BT-COLLISION-WORLD) :void
   (self :pointer))
 
-(export '#.(lispify "delete_btCollisionWorld" 'function))
+(export 'DELETE/BT-COLLISION-WORLD)
 
-(declaim (inline #.(lispify "btCollisionWorld_setBroadphase" 'function)))
+(declaim (inline COLLISION-WORLD/SET-BROADPHASE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_setBroadphase" #.(lispify "btCollisionWorld_setBroadphase" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_setBroadphase" COLLISION-WORLD/SET-BROADPHASE) :void
   (self :pointer)
   (pairCache :pointer))
 
-(export '#.(lispify "btCollisionWorld_setBroadphase" 'function))
+(export 'COLLISION-WORLD/SET-BROADPHASE)
 
-(declaim (inline #.(lispify "btCollisionWorld_getBroadphase" 'function)))
+(declaim (inline COLLISION-WORLD/GET-BROADPHASE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_0" #.(lispify "btCollisionWorld_getBroadphase" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_0" COLLISION-WORLD/GET-BROADPHASE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getBroadphase" 'function))
+(export 'COLLISION-WORLD/GET-BROADPHASE)
 
-(declaim (inline #.(lispify "btCollisionWorld_getBroadphase" 'function)))
+(declaim (inline COLLISION-WORLD/GET-BROADPHASE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_1" #.(lispify "btCollisionWorld_getBroadphase" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_1" COLLISION-WORLD/GET-BROADPHASE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getBroadphase" 'function))
+(export 'COLLISION-WORLD/GET-BROADPHASE)
 
-(declaim (inline #.(lispify "btCollisionWorld_getPairCache" 'function)))
+(declaim (inline COLLISION-WORLD/GET-PAIR-CACHE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getPairCache" #.(lispify "btCollisionWorld_getPairCache" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getPairCache" COLLISION-WORLD/GET-PAIR-CACHE) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getPairCache" 'function))
+(export 'COLLISION-WORLD/GET-PAIR-CACHE)
 
-(declaim (inline #.(lispify "btCollisionWorld_getDispatcher" 'function)))
+(declaim (inline COLLISION-WORLD/GET-DISPATCHER))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_0" #.(lispify "btCollisionWorld_getDispatcher" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_0" COLLISION-WORLD/GET-DISPATCHER) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getDispatcher" 'function))
+(export 'COLLISION-WORLD/GET-DISPATCHER)
 
-(declaim (inline #.(lispify "btCollisionWorld_getDispatcher" 'function)))
+(declaim (inline COLLISION-WORLD/GET-DISPATCHER))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_1" #.(lispify "btCollisionWorld_getDispatcher" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_1" COLLISION-WORLD/GET-DISPATCHER) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getDispatcher" 'function))
+(export 'COLLISION-WORLD/GET-DISPATCHER)
 
-(declaim (inline #.(lispify "btCollisionWorld_updateSingleAabb" 'function)))
+(declaim (inline COLLISION-WORLD/UPDATE-SINGLE-AABB))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_updateSingleAabb" #.(lispify "btCollisionWorld_updateSingleAabb" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_updateSingleAabb" COLLISION-WORLD/UPDATE-SINGLE-AABB) :void
   (self :pointer)
   (colObj :pointer))
 
-(export '#.(lispify "btCollisionWorld_updateSingleAabb" 'function))
+(export 'COLLISION-WORLD/UPDATE-SINGLE-AABB)
 
-(declaim (inline #.(lispify "btCollisionWorld_updateAabbs" 'function)))
+(declaim (inline COLLISION-WORLD/UPDATE-AABBS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_updateAabbs" #.(lispify "btCollisionWorld_updateAabbs" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_updateAabbs" COLLISION-WORLD/UPDATE-AABBS) :void
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_updateAabbs" 'function))
+(export 'COLLISION-WORLD/UPDATE-AABBS)
 
-(declaim (inline #.(lispify "btCollisionWorld_computeOverlappingPairs" 'function)))
+(declaim (inline COLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_computeOverlappingPairs" #.(lispify "btCollisionWorld_computeOverlappingPairs" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_computeOverlappingPairs" COLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS) :void
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_computeOverlappingPairs" 'function))
+(export 'COLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS)
 
-(declaim (inline #.(lispify "btCollisionWorld_setDebugDrawer" 'function)))
+(declaim (inline COLLISION-WORLD/SET-DEBUG-DRAWER))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_setDebugDrawer" #.(lispify "btCollisionWorld_setDebugDrawer" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_setDebugDrawer" COLLISION-WORLD/SET-DEBUG-DRAWER) :void
   (self :pointer)
   (debugDrawer :pointer))
 
-(export '#.(lispify "btCollisionWorld_setDebugDrawer" 'function))
+(export 'COLLISION-WORLD/SET-DEBUG-DRAWER)
 
-(declaim (inline #.(lispify "btCollisionWorld_getDebugDrawer" 'function)))
+(declaim (inline COLLISION-WORLD/GET-DEBUG-DRAWER))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDebugDrawer" #.(lispify "btCollisionWorld_getDebugDrawer" 'function)) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDebugDrawer" COLLISION-WORLD/GET-DEBUG-DRAWER) :pointer
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getDebugDrawer" 'function))
+(export 'COLLISION-WORLD/GET-DEBUG-DRAWER)
 
-(declaim (inline #.(lispify "btCollisionWorld_debugDrawWorld" 'function)))
+(declaim (inline COLLISION-WORLD/DEBUG-DRAW-WORLD))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawWorld" #.(lispify "btCollisionWorld_debugDrawWorld" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawWorld" COLLISION-WORLD/DEBUG-DRAW-WORLD) :void
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_debugDrawWorld" 'function))
+(export 'COLLISION-WORLD/DEBUG-DRAW-WORLD)
 
-(declaim (inline #.(lispify "btCollisionWorld_debugDrawObject" 'function)))
+(declaim (inline COLLISION-WORLD/DEBUG-DRAW-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawObject" #.(lispify "btCollisionWorld_debugDrawObject" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawObject" COLLISION-WORLD/DEBUG-DRAW-OBJECT) :void
   (self :pointer)
   (worldTransform :pointer)
   (shape :pointer)
   (color :pointer))
 
-(export '#.(lispify "btCollisionWorld_debugDrawObject" 'function))
+(export 'COLLISION-WORLD/DEBUG-DRAW-OBJECT)
 
-(declaim (inline #.(lispify "btCollisionWorld_getNumCollisionObjects" 'function)))
+(declaim (inline COLLISION-WORLD/GET-NUM-COLLISION-OBJECTS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getNumCollisionObjects" #.(lispify "btCollisionWorld_getNumCollisionObjects" 'function)) :int
+(cffi:defcfun ("_wrap_btCollisionWorld_getNumCollisionObjects" COLLISION-WORLD/GET-NUM-COLLISION-OBJECTS) :int
   (self :pointer))
 
-(export '#.(lispify "btCollisionWorld_getNumCollisionObjects" 'function))
+(export 'COLLISION-WORLD/GET-NUM-COLLISION-OBJECTS)
 
-(declaim (inline #.(lispify "btCollisionWorld_rayTest" 'function)))
+(declaim (inline COLLISION-WORLD/RAY-TEST))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_rayTest" #.(lispify "btCollisionWorld_rayTest" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_rayTest" COLLISION-WORLD/RAY-TEST) :void
   (self :pointer)
   (rayFromWorld :pointer)
   (rayToWorld :pointer)
   (resultCallback :pointer))
 
-(export '#.(lispify "btCollisionWorld_rayTest" 'function))
+(export 'COLLISION-WORLD/RAY-TEST)
 
-(declaim (inline #.(lispify "btCollisionWorld_convexSweepTest" 'function)))
+(declaim (inline COLLISION-WORLD/CONVEX-SWEEP-TEST))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_convexSweepTest__SWIG_0" #.(lispify "btCollisionWorld_convexSweepTest" 'function)) :void
+
+#+i-am-emacs
+(progn
+  (defun eval-lispify ()
+    (interactive)
+    (execute-kbd-macro [?\C-s ?# ?. ?\( ?l ?i ?s ?p ?i ?f ?y ?\C-m ?\C-\M-b ?\C-\M-b ?\C-\M-  ?\C-w ?\C-? ?\C-? f8 ?\C-y ?\C-m ])
+    (sleep-for .75)
+    (execute-kbd-macro [?\C-\M-b ?\C-\M-b ?\C-\M-  ?\M-w ?\C-x ?o ?\C-y]))
+  
+  (defun eval-lispify-all ()
+    (interactive)
+    (dotimes (i 1000)
+      (eval-lispify))))
+
+
+(cffi:defcfun ("_wrap_btCollisionWorld_convexSweepTest__SWIG_0" COLLISION-WORLD/CONVEX-SWEEP-TEST) :void
   (self :pointer)
   (castShape :pointer)
   (from :pointer)
@@ -5038,18 +4175,18 @@ Swig properly.")
   (resultCallback :pointer)
   (allowedCcdPenetration :float))
 
-(export '#.(lispify "btCollisionWorld_convexSweepTest" 'function))
+(export 'COLLISION-WORLD/CONVEX-SWEEP-TEST)
 
-(declaim (inline #.(lispify "btCollisionWorld_convexSweepTest" 'function)))
+(declaim (inline COLLISION-WORLD/CONVEX-SWEEP-TEST))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_convexSweepTest__SWIG_1" #.(lispify "btCollisionWorld_convexSweepTest" 'function)) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_convexSweepTest__SWIG_1" COLLISION-WORLD/CONVEX-SWEEP-TEST) :void
   (self :pointer)
   (castShape :pointer)
   (from :pointer)
   (to :pointer)
   (resultCallback :pointer))
 
-(export '#.(lispify "btCollisionWorld_convexSweepTest" 'function))
+(export 'COLLISION-WORLD/CONVEX-SWEEP-TEST)
 
 (declaim (inline #.(lispify "btCollisionWorld_contactTest" 'function)))
 
@@ -14110,42 +13247,6 @@ Swig properly.")
 
 (export '#.(lispify "btTypedConstraint_getDbgDrawSize" 'function))
 
-(declaim (inline #.(lispify "btTypedConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btTypedConstraint_setParam__SWIG_0" #.(lispify "btTypedConstraint_setParam" 'function)) :void
-  (self :pointer)
-  (num :int)
-  (value :float)
-  (axis :int))
-
-(export '#.(lispify "btTypedConstraint_setParam" 'function))
-
-(declaim (inline #.(lispify "btTypedConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btTypedConstraint_setParam__SWIG_1" #.(lispify "btTypedConstraint_setParam" 'function)) :void
-  (self :pointer)
-  (num :int)
-  (value :float))
-
-(export '#.(lispify "btTypedConstraint_setParam" 'function))
-
-(declaim (inline #.(lispify "btTypedConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btTypedConstraint_getParam__SWIG_0" #.(lispify "btTypedConstraint_getParam" 'function)) :float
-  (self :pointer)
-  (num :int)
-  (axis :int))
-
-(export '#.(lispify "btTypedConstraint_getParam" 'function))
-
-(declaim (inline #.(lispify "btTypedConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btTypedConstraint_getParam__SWIG_1" #.(lispify "btTypedConstraint_getParam" 'function)) :float
-  (self :pointer)
-  (num :int))
-
-(export '#.(lispify "btTypedConstraint_getParam" 'function))
-
 (declaim (inline #.(lispify "btTypedConstraint_calculateSerializeBufferSize" 'function)))
 
 (cffi:defcfun ("_wrap_btTypedConstraint_calculateSerializeBufferSize" #.(lispify "btTypedConstraint_calculateSerializeBufferSize" 'function)) :int
@@ -14662,42 +13763,6 @@ Swig properly.")
 
 (export '#.(lispify "btPoint2PointConstraint_getPivotInB" 'function))
 
-(declaim (inline #.(lispify "btPoint2PointConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btPoint2PointConstraint_setParam__SWIG_0" #.(lispify "btPoint2PointConstraint_setParam" 'function)) :void
-  (self :pointer)
-  (num :int)
-  (value :float)
-  (axis :int))
-
-(export '#.(lispify "btPoint2PointConstraint_setParam" 'function))
-
-(declaim (inline #.(lispify "btPoint2PointConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btPoint2PointConstraint_setParam__SWIG_1" #.(lispify "btPoint2PointConstraint_setParam" 'function)) :void
-  (self :pointer)
-  (num :int)
-  (value :float))
-
-(export '#.(lispify "btPoint2PointConstraint_setParam" 'function))
-
-(declaim (inline #.(lispify "btPoint2PointConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btPoint2PointConstraint_getParam__SWIG_0" #.(lispify "btPoint2PointConstraint_getParam" 'function)) :float
-  (self :pointer)
-  (num :int)
-  (axis :int))
-
-(export '#.(lispify "btPoint2PointConstraint_getParam" 'function))
-
-(declaim (inline #.(lispify "btPoint2PointConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btPoint2PointConstraint_getParam__SWIG_1" #.(lispify "btPoint2PointConstraint_getParam" 'function)) :float
-  (self :pointer)
-  (num :int))
-
-(export '#.(lispify "btPoint2PointConstraint_getParam" 'function))
-
 (declaim (inline #.(lispify "btPoint2PointConstraint_calculateSerializeBufferSize" 'function)))
 
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_calculateSerializeBufferSize" #.(lispify "btPoint2PointConstraint_calculateSerializeBufferSize" 'function)) :int
@@ -14791,7 +13856,6 @@ Swig properly.")
 
 (export '#.(lispify "btHingeConstraint_deleteCPlusPlusInstance" 'function))
 
-
 #+ (or)
 (progn 
   (declaim (inline #.(lispify "btHingeConstraint_makeCPlusPlusInstance" 'function)))
@@ -14826,7 +13890,6 @@ Swig properly.")
   (ptr :pointer))
 
 (export '#.(lispify "btHingeConstraint_deleteCPlusArray" 'function))
-
 
 #+ (or)
 (progn
@@ -15095,66 +14158,70 @@ Swig properly.")
 
 (declaim (inline #.(lispify "btHingeConstraint_setMotorTarget" 'function)))
 
-(cffi:defcfun ("_wrap_btHingeConstraint_setMotorTarget__SWIG_0" #.(lispify "btHingeConstraint_setMotorTarget" 'function)) :void
+(cffi:defcfun ("_wrap_btHingeConstraint_setMotorTarget__SWIG_0" 
+               hinge-constraint/set-motor-target/q-a-in-b) :void
   (self :pointer)
   (qAinB :pointer)
   (dt :float))
 
-(export '#.(lispify "btHingeConstraint_setMotorTarget" 'function))
+(export 'hinge-constraint/set-motor-target/q-a-in-b)
 
-#+ (or)
-(progn
   (declaim (inline #.(lispify "btHingeConstraint_setMotorTarget" 'function)))
 
- (cffi:defcfun ("_wrap_btHingeConstraint_setMotorTarget__SWIG_1" #.(lispify "btHingeConstraint_setMotorTarget" 'function)) :void
+ (cffi:defcfun ("_wrap_btHingeConstraint_setMotorTarget__SWIG_1" 
+                hinge-constraint/set-motor-target/target-angle) :void
    (self :pointer)
    (targetAngle :float)
    (dt :float))
 
- (export '#.(lispify "btHingeConstraint_setMotorTarget" 'function))
+(export 'hinge-constraint/set-motor-target/target-angle)
 
- (declaim (inline #.(lispify "btHingeConstraint_setLimit" 'function)))
+(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/softness&bias&relaxation))
+  
+(cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_0" 
+               HINGE-CONSTRAINT/SET-LIMIT/softness&bias&relaxation) :void
+  (self :pointer)
+  (low :float)
+  (high :float)
+  (_softness :float)
+  (_biasFactor :float)
+  (_relaxationFactor :float))
+  
+(export 'HINGE-CONSTRAINT/SET-LIMIT/softness&bias&relaxation)
+  
+(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/softness&bias))
+  
+(cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_1"
+               HINGE-CONSTRAINT/SET-LIMIT/softness&bias) :void
+  (self :pointer)
+  (low :float)
+  (high :float)
+  (_softness :float)
+  (_biasFactor :float))
+  
+(export 'HINGE-CONSTRAINT/SET-LIMIT/softness&bias)
 
- (cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_0" #.(lispify "btHingeConstraint_setLimit" 'function)) :void
-   (self :pointer)
-   (low :float)
-   (high :float)
-   (_softness :float)
-   (_biasFactor :float)
-   (_relaxationFactor :float))
+(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/softness))
 
- (export '#.(lispify "btHingeConstraint_setLimit" 'function))
+(cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_2" 
+               HINGE-CONSTRAINT/SET-LIMIT/softness) :void
+  (self :pointer)
+  (low :float)
+  (high :float)
+  (_softness :float))
 
- (declaim (inline #.(lispify "btHingeConstraint_setLimit" 'function)))
+(export 'HINGE-CONSTRAINT/SET-LIMIT/softness)
 
- (cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_1" #.(lispify "btHingeConstraint_setLimit" 'function)) :void
-   (self :pointer)
-   (low :float)
-   (high :float)
-   (_softness :float)
-   (_biasFactor :float))
+(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/naked))
 
- (export '#.(lispify "btHingeConstraint_setLimit" 'function))
+(cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_3" 
+               HINGE-CONSTRAINT/SET-LIMIT/naked) :void
+  (self :pointer)
+  (low :float)
+  (high :float))
 
- (declaim (inline #.(lispify "btHingeConstraint_setLimit" 'function)))
-
- (cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_2" #.(lispify "btHingeConstraint_setLimit" 'function)) :void
-   (self :pointer)
-   (low :float)
-   (high :float)
-   (_softness :float))
-
- (export '#.(lispify "btHingeConstraint_setLimit" 'function))
-
- (declaim (inline #.(lispify "btHingeConstraint_setLimit" 'function)))
-
- (cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_3" #.(lispify "btHingeConstraint_setLimit" 'function)) :void
-   (self :pointer)
-   (low :float)
-   (high :float))
-
- (export '#.(lispify "btHingeConstraint_setLimit" 'function))
- )
+(export 'HINGE-CONSTRAINT/SET-LIMIT/naked)
+ 
 (declaim (inline #.(lispify "btHingeConstraint_setAxis" 'function)))
 
 (cffi:defcfun ("_wrap_btHingeConstraint_setAxis" #.(lispify "btHingeConstraint_setAxis" 'function)) :void
@@ -15289,44 +14356,6 @@ Swig properly.")
   (frameOffsetOnOff :pointer))
 
 (export '#.(lispify "btHingeConstraint_setUseFrameOffset" 'function))
-
-(declaim (inline #.(lispify "btHingeConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btHingeConstraint_setParam__SWIG_0" #.(lispify "btHingeConstraint_setParam" 'function)) :void
-  (self :pointer)
-  (num :int)
-  (value :float)
-  (axis :int))
-
-(export '#.(lispify "btHingeConstraint_setParam" 'function))
-
-(declaim (inline #.(lispify "btHingeConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btHingeConstraint_setParam__SWIG_1" 
-               HINGE-CONSTRAINT/SET-PARAM/without-axis) :void
-  (self :pointer)
-  (num :int)
-  (value :float))
-
-(export '#.(lispify "btHingeConstraint_setParam" 'function))
-
-(declaim (inline #.(lispify "btHingeConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btHingeConstraint_getParam__SWIG_0" #.(lispify "btHingeConstraint_getParam" 'function)) :float
-  (self :pointer)
-  (num :int)
-  (axis :int))
-
-(export '#.(lispify "btHingeConstraint_getParam" 'function))
-
-(declaim (inline #.(lispify "btHingeConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btHingeConstraint_getParam__SWIG_1" 
-               HINGE-CONSTRAINT/GET-PARAM/without-axis) :float
-  (self :pointer)
-  (num :int))
-
-(export '#.(lispify "btHingeConstraint_getParam" 'function))
 
 (declaim (inline #.(lispify "btHingeConstraint_calculateSerializeBufferSize" 'function)))
 
@@ -15552,7 +14581,6 @@ Swig properly.")
   (ptr :pointer))
 
 (export '#.(lispify "btConeTwistConstraint_deleteCPlusArray" 'function))
-
 
 #+ (or)
 (progn
@@ -15893,26 +14921,6 @@ Swig properly.")
 
 (export '#.(lispify "btConeTwistConstraint_GetPointForAngle" 'function))
 
-(declaim (inline #.(lispify "btConeTwistConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setParam__SWIG_0" #.(lispify "btConeTwistConstraint_setParam" 'function)) :void
-  (self :pointer)
-  (num :int)
-  (value :float)
-  (axis :int))
-
-(export '#.(lispify "btConeTwistConstraint_setParam" 'function))
-
-(declaim (inline #.(lispify "btConeTwistConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setParam__SWIG_1"
-               CONE-TWIST-CONSTRAINT/SET-PARAM/without-axis) :void
-  (self :pointer)
-  (num :int)
-  (value :float))
-
-(export '#.(lispify "btConeTwistConstraint_setParam" 'function))
-
 (declaim (inline #.(lispify "btConeTwistConstraint_setFrames" 'function)))
 
 (cffi:defcfun ("_wrap_btConeTwistConstraint_setFrames" #.(lispify "btConeTwistConstraint_setFrames" 'function)) :void
@@ -15935,24 +14943,6 @@ Swig properly.")
   (self :pointer))
 
 (export '#.(lispify "btConeTwistConstraint_getFrameOffsetB" 'function))
-
-(declaim (inline #.(lispify "btConeTwistConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getParam__SWIG_0" #.(lispify "btConeTwistConstraint_getParam" 'function)) :float
-  (self :pointer)
-  (num :int)
-  (axis :int))
-
-(export '#.(lispify "btConeTwistConstraint_getParam" 'function))
-
-(declaim (inline #.(lispify "btConeTwistConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getParam__SWIG_1"
-               CONE-TWIST-CONSTRAINT/GET-PARAM/without-axis) :float
-  (self :pointer)
-  (num :int))
-
-(export '#.(lispify "btConeTwistConstraint_getParam" 'function))
 
 (declaim (inline #.(lispify "btConeTwistConstraint_calculateSerializeBufferSize" 'function)))
 
@@ -17052,44 +16042,6 @@ Swig properly.")
 
 (export '#.(lispify "btGeneric6DofConstraint_setUseFrameOffset" 'function))
 
-(declaim (inline #.(lispify "btGeneric6DofConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btGeneric6DofConstraint_setParam__SWIG_0" #.(lispify "btGeneric6DofConstraint_setParam" 'function)) :void
-  (self :pointer)
-  (num :int)
-  (value :float)
-  (axis :int))
-
-(export '#.(lispify "btGeneric6DofConstraint_setParam" 'function))
-
-(declaim (inline #.(lispify "btGeneric6DofConstraint_setParam" 'function)))
-
-(cffi:defcfun ("_wrap_btGeneric6DofConstraint_setParam__SWIG_1"
-               GENERIC-6-DOF-CONSTRAINT/SET-PARAM/without-axis) :void
-  (self :pointer)
-  (num :int)
-  (value :float))
-
-(export '#.(lispify "btGeneric6DofConstraint_setParam" 'function))
-
-(declaim (inline #.(lispify "btGeneric6DofConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btGeneric6DofConstraint_getParam__SWIG_0" #.(lispify "btGeneric6DofConstraint_getParam" 'function)) :float
-  (self :pointer)
-  (num :int)
-  (axis :int))
-
-(export '#.(lispify "btGeneric6DofConstraint_getParam" 'function))
-
-(declaim (inline #.(lispify "btGeneric6DofConstraint_getParam" 'function)))
-
-(cffi:defcfun ("_wrap_btGeneric6DofConstraint_getParam__SWIG_1" 
-               GENERIC-6-DOF-CONSTRAINT/GET-PARAM/without-axis) :float
-  (self :pointer)
-  (num :int))
-
-(export '#.(lispify "btGeneric6DofConstraint_getParam" 'function))
-
 (declaim (inline #.(lispify "btGeneric6DofConstraint_setAxis" 'function)))
 
 (cffi:defcfun ("_wrap_btGeneric6DofConstraint_setAxis" #.(lispify "btGeneric6DofConstraint_setAxis" 'function)) :void
@@ -17268,7 +16220,6 @@ Swig properly.")
   (ptr :pointer))
 
 (export '#.(lispify "btSliderConstraint_deleteCPlusArray" 'function))
-
 
 #+ (or)
 (progn
@@ -17680,32 +16631,7 @@ Swig properly.")
   (frameA :pointer)
   (frameB :pointer))
 (export '#.(lispify "btSliderConstraint_setFrames" 'function))
-(declaim (inline #.(lispify "btSliderConstraint_setParam" 'function)))
-(cffi:defcfun ("_wrap_btSliderConstraint_setParam__SWIG_0" #.(lispify "btSliderConstraint_setParam" 'function)) :void
-  (self :pointer)
-  (num :int)
-  (value :float)
-  (axis :int))
-(export '#.(lispify "btSliderConstraint_setParam" 'function))
-(declaim (inline #.(lispify "btSliderConstraint_setParam" 'function)))
-(cffi:defcfun ("_wrap_btSliderConstraint_setParam__SWIG_1"
-               SLIDER-CONSTRAINT/SET-PARAM/without-axis) :void
-  (self :pointer)
-  (num :int)
-  (value :float))
-(export '#.(lispify "btSliderConstraint_setParam" 'function))
-(declaim (inline SLIDER-CONSTRAINT/GET-PARAM/with-axis))
-(cffi:defcfun ("_wrap_btSliderConstraint_getParam__SWIG_0"
-               SLIDER-CONSTRAINT/GET-PARAM/with-axis) :float
-  (num :int)
-  (axis :int))
-(export 'SLIDER-CONSTRAINT/GET-PARAM/with-axis)
-(declaim (inline SLIDER-CONSTRAINT/GET-PARAM/without-axis))
-(cffi:defcfun ("_wrap_btSliderConstraint_getParam__SWIG_1"
-               SLIDER-CONSTRAINT/GET-PARAM/without-axis) :float
-  (self :pointer)
-  (num :int))
-(export 'SLIDER-CONSTRAINT/GET-PARAM/without-axis)
+
 (declaim (inline #.(lispify "btSliderConstraint_calculateSerializeBufferSize" 'function)))
 (cffi:defcfun ("_wrap_btSliderConstraint_calculateSerializeBufferSize" #.(lispify "btSliderConstraint_calculateSerializeBufferSize" 'function)) :int  (self :pointer))
 (export '#.(lispify "btSliderConstraint_calculateSerializeBufferSize" 'function))
@@ -18144,29 +17070,7 @@ Swig properly.")
 (declaim (inline #.(lispify "btGearConstraint_getRatio" 'function)))
 (cffi:defcfun ("_wrap_btGearConstraint_getRatio" #.(lispify "btGearConstraint_getRatio" 'function)) :float  (self :pointer))
 (export '#.(lispify "btGearConstraint_getRatio" 'function))
-(declaim (inline gear-constraint/set-param/with-axis))
-(cffi:defcfun ("_wrap_btGearConstraint_setParam__SWIG_0" 
-               gear-constraint/set-param/with-axis) :void
-  (num :int)
-  (value :float)
-  (axis :int))
-(export 'gear-constraint/set-param/with-axis)
-(declaim (inline gear-constraint/set-param/without-axis))
-(cffi:defcfun ("_wrap_btGearConstraint_setParam__SWIG_1"
-               gear-constraint/set-param/without-axis) :void
-  (num :int)
-  (value :float))
-(export 'gear-constraint/set-param/without-axis)
-(declaim (inline gear-constraint/get-param/with-axis))
-(cffi:defcfun ("_wrap_btGearConstraint_getParam__SWIG_0" gear-constraint/get-param/with-axis) :float
-  (num :int)
-  (axis :int))
-(export 'gear-constraint/get-param/with-axis)
-(declaim (inline gear-constraint/get-param/without-axis))
-(cffi:defcfun ("_wrap_btGearConstraint_getParam__SWIG_1"
-               gear-constraint/get-param/without-axis) :float
-  (num :int))
-(export 'gear-constraint/get-param/without-axis)
+
 (declaim (inline #.(lispify "btGearConstraint_calculateSerializeBufferSize" 'function)))
 (cffi:defcfun ("_wrap_btGearConstraint_calculateSerializeBufferSize" #.(lispify "btGearConstraint_calculateSerializeBufferSize" 'function)) :int
   (self :pointer))
@@ -18223,42 +17127,7 @@ Swig properly.")
   (self :pointer)
   (info :pointer))
 (export '#.(lispify "btFixedConstraint_getInfo2" 'function))
-(declaim (inline FIXED-CONSTRAINT/SET-PARAM/with-axis))
-(cffi:defcfun ("_wrap_btFixedConstraint_setParam__SWIG_0"
-               FIXED-CONSTRAINT/SET-PARAM/with-axis) :void
-  (num :int)
-  (value :float)
-  (axis :int))
-(export 'FIXED-CONSTRAINT/SET-PARAM/with-axis)
-(declaim (inline FIXED-CONSTRAINT/SET-PARAM/without-axis))
-(cffi:defcfun ("_wrap_btFixedConstraint_setParam__SWIG_1" 
-               FIXED-CONSTRAINT/SET-PARAM/without-axis) :void
-  (num :int)
-  (value :float))
-(export 'FIXED-CONSTRAINT/SET-PARAM/without-axis)
-(declaim (inline FIXED-CONSTRAINT/SET-PARAM))
-(defun FIXED-CONSTRAINT/SET-PARAM (num value &optional axis)
-  (if axis
-      (FIXED-CONSTRAINT/SET-PARAM/with-axis num value axis)
-      (FIXED-CONSTRAINT/SET-PARAM/without-axis num value)))
-(export 'FIXED-CONSTRAINT/SET-PARAM)
-(declaim (inline FIXED-CONSTRAINT/GET-PARAM/with-axis))
-(cffi:defcfun ("_wrap_btFixedConstraint_getParam__SWIG_0" 
-               FIXED-CONSTRAINT/GET-PARAM/with-axis) :float
-  (num :int)
-  (axis :int))
-(declaim (inline FIXED-CONSTRAINT/GET-PARAM/without-axis))
-(cffi:defcfun ("_wrap_btFixedConstraint_getParam__SWIG_1"
-               FIXED-CONSTRAINT/GET-PARAM/without-axis) :float
-  (num :int))
 
-(declaim (inline FIXED-CONSTRAINT/GET-PARAM))
-(defun FIXED-CONSTRAINT/GET-PARAM (num &optional axis)
-  (if axis
-      (FIXED-CONSTRAINT/GET-PARAM/with-axis num axis)
-      (FIXED-CONSTRAINT/GET-PARAM/without-axis num)))
-
-(export 'FIXED-CONSTRAINT/GET-PARAM)
 (declaim (inline #.(lispify "btSequentialImpulseConstraintSolver_makeCPlusPlusInstance" 'function)))
 (cffi:defcfun ("_wrap_btSequentialImpulseConstraintSolver_makeCPlusPlusInstance__SWIG_0" #.(lispify "btSequentialImpulseConstraintSolver_makeCPlusPlusInstance" 'function)) :pointer
   (self :pointer)
@@ -18345,25 +17214,21 @@ Swig properly.")
   (self :pointer))
 (export '#.(lispify "btSequentialImpulseConstraintSolver_getSolverType" 'function))
 
-(defklass #.(lispify "bt-vector3" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
+
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-vector3" 'classname)) sizeInBytes)
   (#.(lispify "btVector3_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-vector3" 'classname)) ptr)
   (#.(lispify "btVector3_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-
 #+ (or)
 (progn
-  (shadow "new")
+  
   (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-vector3" 'classname)) arg1 ptr)
              (#.(lispify "btVector3_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
   
-  (shadow "delete")
+  
  (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-vector3" 'classname)) arg1 arg2)
             (#.(lispify "btVector3_deleteCPlusPlusInstance" 'function)
                (ff-pointer self) arg1 arg2)))
@@ -18579,8 +17444,6 @@ Swig properly.")
   (#.(lispify "btVector3_dot3" 'function) (ff-pointer self) (ff-pointer v0) (ff-pointer v1) (ff-pointer v2)))
 
 
-(defklass #.(lispify "bt-vector4" 'classname)(#.(lispify "btVector3" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-vector4" 'class)) &key)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btVector4" 'function))))
@@ -18607,8 +17470,6 @@ Swig properly.")
   (#.(lispify "btVector4_setValue" 'function) (ff-pointer self) _x _y _z _w))
 
 
-(defklass #.(lispify "bt-quaternion" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-quaternion" 'class)) &key)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btQuaternion" 'function))))
@@ -18719,8 +17580,6 @@ Swig properly.")
   (#.(lispify "btQuaternion_getW" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-matrix3x3" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-matrix3x3" 'class)) &key)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btMatrix3x3" 'function))))
@@ -18852,8 +17711,6 @@ Swig properly.")
   (#.(lispify "btMatrix3x3_deSerializeDouble" 'function) (ff-pointer self) dataIn))
 
 
-(defklass #.(lispify "bt-transform" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-transform" 'class)) &key)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btTransform" 'function))))
@@ -18958,8 +17815,6 @@ Swig properly.")
   (#.(lispify "btTransform_deSerializeFloat" 'function) (ff-pointer self) dataIn))
 
 
-(defklass #.(lispify "bt-motion-state" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod #.(lispify "get-world-transform" 'method) ((self #.(lispify "bt-motion-state" 'classname)) (worldTrans #.(lispify "bt-transform" 'classname)))
   (#.(lispify "btMotionState_getWorldTransform" 'function) (ff-pointer self) worldTrans))
@@ -18967,25 +17822,20 @@ Swig properly.")
 (defmethod #.(lispify "set-world-transform" 'method) ((self #.(lispify "bt-motion-state" 'classname)) (worldTrans #.(lispify "bt-transform" 'classname)))
   (#.(lispify "btMotionState_setWorldTransform" 'function) (ff-pointer self) worldTrans))
 
-
 (defmethod #.(lispify "debug-draw-object" 'method) ((self #.(lispify "bt-collision-world" 'classname)) (worldTransform #.(lispify "bt-transform" 'classname)) shape (color #.(lispify "bt-vector3" 'classname)))  (#.(lispify "btCollisionWorld_debugDrawObject" 'function) (ff-pointer self) worldTransform shape color))
 
 (defmethod #.(lispify "ray-test" 'method) ((self #.(lispify "bt-collision-world" 'classname)) (rayFromWorld #.(lispify "bt-vector3" 'classname)) (rayToWorld #.(lispify "bt-vector3" 'classname)) resultCallback)
            (#.(lispify "btCollisionWorld_rayTest" 'function) (ff-pointer self) rayFromWorld rayToWorld resultCallback))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-collision-object" 'classname)) sizeInBytes)
   (#.(lispify "btCollisionObject_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-collision-object" 'classname)) ptr)
   (#.(lispify "btCollisionObject_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-collision-object" 'classname)) arg1 ptr)
   (#.(lispify "btCollisionObject_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-collision-object" 'classname)) arg1 arg2)
   (#.(lispify "btCollisionObject_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19016,18 +17866,17 @@ Swig properly.")
 (defmethod #.(lispify "set-interpolation-angular-velocity" 'method) ((self #.(lispify "bt-collision-object" 'classname)) (angvel #.(lispify "bt-vector3" 'classname)))
            (#.(lispify "btCollisionObject_setInterpolationWorldTransform" 'function) (ff-pointer self) trans))
 
-(defklass #.(lispify "bt-box-shape" 'classname)()  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
+
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-box-shape" 'classname)) sizeInBytes)
   (#.(lispify "btBoxShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
-(shadow "delete")
+
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-box-shape" 'classname)) ptr)
   (#.(lispify "btBoxShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
-(shadow "new")
+
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-box-shape" 'classname)) arg1 ptr)
   (#.(lispify "btBoxShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
-(shadow "delete")
+
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-box-shape" 'classname)) arg1 arg2)
   (#.(lispify "btBoxShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 (shadow "new[]")
@@ -19090,22 +17939,16 @@ Swig properly.")
   (#.(lispify "btBoxShape_getPreferredPenetrationDirection" 'function) (ff-pointer self) index penetrationVector))
 
 
-(defklass #.(lispify "bt-sphere-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-sphere-shape" 'classname)) sizeInBytes)
   (#.(lispify "btSphereShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-sphere-shape" 'classname)) ptr)
   (#.(lispify "btSphereShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-sphere-shape" 'classname)) arg1 ptr)
   (#.(lispify "btSphereShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-sphere-shape" 'classname)) arg1 arg2)
   (#.(lispify "btSphereShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19159,22 +18002,16 @@ Swig properly.")
   (#.(lispify "btSphereShape_getMargin" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-capsule-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-capsule-shape" 'classname)) sizeInBytes)
   (#.(lispify "btCapsuleShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-capsule-shape" 'classname)) ptr)
   (#.(lispify "btCapsuleShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-capsule-shape" 'classname)) arg1 ptr)
   (#.(lispify "btCapsuleShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-capsule-shape" 'classname)) arg1 arg2)
   (#.(lispify "btCapsuleShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19237,8 +18074,6 @@ Swig properly.")
   (#.(lispify "btCapsuleShape_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-capsule-shape-x" 'classname)(#.(lispify "btCapsuleShape" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-capsule-shape-x" 'class)) &key (radius number) (height number))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btCapsuleShapeX" 'function) radius height)))
@@ -19247,8 +18082,6 @@ Swig properly.")
   (#.(lispify "btCapsuleShapeX_getName" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-capsule-shape-z" 'classname)(#.(lispify "btCapsuleShape" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-capsule-shape-z" 'class)) &key (radius number) (height number))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btCapsuleShapeZ" 'function) radius height)))
@@ -19257,22 +18090,16 @@ Swig properly.")
   (#.(lispify "btCapsuleShapeZ_getName" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-cylinder-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cylinder-shape" 'classname)) sizeInBytes)
   (#.(lispify "btCylinderShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cylinder-shape" 'classname)) ptr)
   (#.(lispify "btCylinderShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cylinder-shape" 'classname)) arg1 ptr)
   (#.(lispify "btCylinderShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cylinder-shape" 'classname)) arg1 arg2)
   (#.(lispify "btCylinderShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19341,22 +18168,16 @@ Swig properly.")
   (#.(lispify "btCylinderShape_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-cylinder-shape-x" 'classname)(#.(lispify "btCylinderShape" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cylinder-shape-x" 'classname)) sizeInBytes)
   (#.(lispify "btCylinderShapeX_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cylinder-shape-x" 'classname)) ptr)
   (#.(lispify "btCylinderShapeX_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cylinder-shape-x" 'classname)) arg1 ptr)
   (#.(lispify "btCylinderShapeX_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cylinder-shape-x" 'classname)) arg1 arg2)
   (#.(lispify "btCylinderShapeX_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19392,22 +18213,16 @@ Swig properly.")
   (#.(lispify "btCylinderShapeX_getRadius" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-cylinder-shape-z" 'classname)(#.(lispify "btCylinderShape" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cylinder-shape-z" 'classname)) sizeInBytes)
   (#.(lispify "btCylinderShapeZ_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cylinder-shape-z" 'classname)) ptr)
   (#.(lispify "btCylinderShapeZ_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cylinder-shape-z" 'classname)) arg1 ptr)
   (#.(lispify "btCylinderShapeZ_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cylinder-shape-z" 'classname)) arg1 arg2)
   (#.(lispify "btCylinderShapeZ_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19443,22 +18258,16 @@ Swig properly.")
   (#.(lispify "btCylinderShapeZ_getRadius" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-cone-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cone-shape" 'classname)) sizeInBytes)
   (#.(lispify "btConeShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cone-shape" 'classname)) ptr)
   (#.(lispify "btConeShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cone-shape" 'classname)) arg1 ptr)
   (#.(lispify "btConeShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cone-shape" 'classname)) arg1 arg2)
   (#.(lispify "btConeShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19521,8 +18330,6 @@ Swig properly.")
   (#.(lispify "btConeShape_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-cone-shape-x" 'classname)(#.(lispify "btConeShape" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-cone-shape-x" 'class)) &key (radius number) (height number))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btConeShapeX" 'function) radius height)))
@@ -19534,8 +18341,6 @@ Swig properly.")
   (#.(lispify "btConeShapeX_getName" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-cone-shape-z" 'classname)(#.(lispify "btConeShape" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-cone-shape-z" 'class)) &key (radius number) (height number))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btConeShapeZ" 'function) radius height)))
@@ -19547,22 +18352,16 @@ Swig properly.")
   (#.(lispify "btConeShapeZ_getName" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-static-plane-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-static-plane-shape" 'classname)) sizeInBytes)
   (#.(lispify "btStaticPlaneShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-static-plane-shape" 'classname)) ptr)
   (#.(lispify "btStaticPlaneShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-static-plane-shape" 'classname)) arg1 ptr)
   (#.(lispify "btStaticPlaneShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-static-plane-shape" 'classname)) arg1 arg2)
   (#.(lispify "btStaticPlaneShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19616,22 +18415,16 @@ Swig properly.")
   (#.(lispify "btStaticPlaneShape_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-convex-hull-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-convex-hull-shape" 'classname)) sizeInBytes)
   (#.(lispify "btConvexHullShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-convex-hull-shape" 'classname)) ptr)
   (#.(lispify "btConvexHullShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-convex-hull-shape" 'classname)) arg1 ptr)
   (#.(lispify "btConvexHullShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-convex-hull-shape" 'classname)) arg1 arg2)
   (#.(lispify "btConvexHullShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19730,8 +18523,6 @@ Swig properly.")
   (#.(lispify "btConvexHullShape_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-triangle-mesh" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod (setf #.(lispify "m_weldingThreshold" 'method)) (arg0 (obj #.(lispify "bt-triangle-mesh" 'class)))
   (#.(lispify "btTriangleMesh_m_weldingThreshold_set" 'function) (ff-pointer obj) arg0))
@@ -19776,22 +18567,16 @@ Swig properly.")
   (#.(lispify "btTriangleMesh_addIndex" 'function) (ff-pointer self) index))
 
 
-(defklass #.(lispify "bt-convex-triangle-mesh-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-convex-triangle-mesh-shape" 'classname)) sizeInBytes)
   (#.(lispify "btConvexTriangleMeshShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-convex-triangle-mesh-shape" 'classname)) ptr)
   (#.(lispify "btConvexTriangleMeshShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-convex-triangle-mesh-shape" 'classname)) arg1 ptr)
   (#.(lispify "btConvexTriangleMeshShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-convex-triangle-mesh-shape" 'classname)) arg1 arg2)
   (#.(lispify "btConvexTriangleMeshShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19866,22 +18651,16 @@ Swig properly.")
   (#.(lispify "btConvexTriangleMeshShape_calculatePrincipalAxisTransform" 'function) (ff-pointer self) principal inertia volume))
 
 
-(defklass #.(lispify "bt-bvh-triangle-mesh-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-bvh-triangle-mesh-shape" 'classname)) sizeInBytes)
   (#.(lispify "btBvhTriangleMeshShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-bvh-triangle-mesh-shape" 'classname)) ptr)
   (#.(lispify "btBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-bvh-triangle-mesh-shape" 'classname)) arg1 ptr)
   (#.(lispify "btBvhTriangleMeshShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-bvh-triangle-mesh-shape" 'classname)) arg1 arg2)
   (#.(lispify "btBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -19974,22 +18753,16 @@ Swig properly.")
   (#.(lispify "btBvhTriangleMeshShape_serializeSingleTriangleInfoMap" 'function) (ff-pointer self) serializer))
 
 
-(defklass #.(lispify "bt-scaled-bvh-triangle-mesh-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-scaled-bvh-triangle-mesh-shape" 'classname)) sizeInBytes)
   (#.(lispify "btScaledBvhTriangleMeshShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-scaled-bvh-triangle-mesh-shape" 'classname)) ptr)
   (#.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-scaled-bvh-triangle-mesh-shape" 'classname)) arg1 ptr)
   (#.(lispify "btScaledBvhTriangleMeshShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-scaled-bvh-triangle-mesh-shape" 'classname)) arg1 arg2)
   (#.(lispify "btScaledBvhTriangleMeshShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -20043,22 +18816,16 @@ Swig properly.")
   (#.(lispify "btScaledBvhTriangleMeshShape_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-triangle-mesh-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-triangle-mesh-shape" 'classname)) sizeInBytes)
   (#.(lispify "btTriangleMeshShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-triangle-mesh-shape" 'classname)) ptr)
   (#.(lispify "btTriangleMeshShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-triangle-mesh-shape" 'classname)) arg1 ptr)
   (#.(lispify "btTriangleMeshShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-triangle-mesh-shape" 'classname)) arg1 arg2)
   (#.(lispify "btTriangleMeshShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -20118,22 +18885,16 @@ Swig properly.")
   (#.(lispify "btTriangleMeshShape_getName" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-triangle-index-vertex-array" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-triangle-index-vertex-array" 'classname)) sizeInBytes)
   (#.(lispify "btTriangleIndexVertexArray_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-triangle-index-vertex-array" 'classname)) ptr)
   (#.(lispify "btTriangleIndexVertexArray_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-triangle-index-vertex-array" 'classname)) arg1 ptr)
   (#.(lispify "btTriangleIndexVertexArray_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-triangle-index-vertex-array" 'classname)) arg1 arg2)
   (#.(lispify "btTriangleIndexVertexArray_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -20208,22 +18969,16 @@ Swig properly.")
   (#.(lispify "btTriangleIndexVertexArray_getPremadeAabb" 'function) (ff-pointer self) aabbMin aabbMax))
 
 
-(defklass #.(lispify "bt-compound-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-compound-shape" 'classname)) sizeInBytes)
   (#.(lispify "btCompoundShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-compound-shape" 'classname)) ptr)
   (#.(lispify "btCompoundShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-compound-shape" 'classname)) arg1 ptr)
   (#.(lispify "btCompoundShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-compound-shape" 'classname)) arg1 arg2)
   (#.(lispify "btCompoundShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -20328,22 +19083,16 @@ Swig properly.")
   (#.(lispify "btCompoundShape_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-bu-simplex1to4" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-bu-simplex1to4" 'classname)) sizeInBytes)
   (#.(lispify "btBU_Simplex1to4_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-bu-simplex1to4" 'classname)) ptr)
   (#.(lispify "btBU_Simplex1to4_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-bu-simplex1to4" 'classname)) arg1 ptr)
   (#.(lispify "btBU_Simplex1to4_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-bu-simplex1to4" 'classname)) arg1 arg2)
   (#.(lispify "btBU_Simplex1to4_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -20415,22 +19164,16 @@ Swig properly.")
   (#.(lispify "btBU_Simplex1to4_getName" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-empty-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-empty-shape" 'classname)) sizeInBytes)
   (#.(lispify "btEmptyShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-empty-shape" 'classname)) ptr)
   (#.(lispify "btEmptyShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-empty-shape" 'classname)) arg1 ptr)
   (#.(lispify "btEmptyShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-empty-shape" 'classname)) arg1 arg2)
   (#.(lispify "btEmptyShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -20472,22 +19215,16 @@ Swig properly.")
   (#.(lispify "btEmptyShape_processAllTriangles" 'function) (ff-pointer self) arg1 arg2 arg3))
 
 
-(defklass #.(lispify "bt-multi-sphere-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-multi-sphere-shape" 'classname)) sizeInBytes)
   (#.(lispify "btMultiSphereShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-multi-sphere-shape" 'classname)) ptr)
   (#.(lispify "btMultiSphereShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-multi-sphere-shape" 'classname)) arg1 ptr)
   (#.(lispify "btMultiSphereShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-multi-sphere-shape" 'classname)) arg1 arg2)
   (#.(lispify "btMultiSphereShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -20538,22 +19275,16 @@ Swig properly.")
   (#.(lispify "btMultiSphereShape_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-uniform-scaling-shape" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-uniform-scaling-shape" 'classname)) sizeInBytes)
   (#.(lispify "btUniformScalingShape_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-uniform-scaling-shape" 'classname)) ptr)
   (#.(lispify "btUniformScalingShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-uniform-scaling-shape" 'classname)) arg1 ptr)
   (#.(lispify "btUniformScalingShape_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-uniform-scaling-shape" 'classname)) arg1 arg2)
   (#.(lispify "btUniformScalingShape_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -20625,8 +19356,6 @@ Swig properly.")
   (#.(lispify "btUniformScalingShape_getPreferredPenetrationDirection" 'function) (ff-pointer self) index penetrationVector))
 
 
-(defklass #.(lispify "bt-sphere-sphere-collision-algorithm" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-sphere-sphere-collision-algorithm" 'class)) &key mf ci col0Wrap col1Wrap)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btSphereSphereCollisionAlgorithm" 'function) mf ci col0Wrap col1Wrap)))
@@ -20644,8 +19373,6 @@ Swig properly.")
   (#.(lispify "btSphereSphereCollisionAlgorithm_getAllContactManifolds" 'function) (ff-pointer self) manifoldArray))
 
 
-(defklass #.(lispify "bt-default-collision-configuration" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 #+ (or)
 (defmethod initialize-instance :after ((obj #.(lispify "bt-default-collision-configuration" 'class)) &key constructionInfo)
@@ -20685,8 +19412,6 @@ Swig properly.")
   (#.(lispify "btDefaultCollisionConfiguration_setPlaneConvexMultipointIterations" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-collision-dispatcher" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod #.(lispify "get-dispatcher-flags" 'method) ((self #.(lispify "bt-collision-dispatcher" 'classname)))
   (#.(lispify "btCollisionDispatcher_getDispatcherFlags" 'function) (ff-pointer self)))
@@ -20764,8 +19489,6 @@ Swig properly.")
   (#.(lispify "btCollisionDispatcher_getInternalManifoldPool" 'function) (ff-pointer self)))
 
 
-(defklass simple-broadphase ()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj simple-broadphase) &key (maxProxies integer) overlappingPairCache)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btSimpleBroadphase" 'function) maxProxies overlappingPairCache)))
@@ -20819,8 +19542,6 @@ Swig properly.")
   (#.(lispify "btSimpleBroadphase_printStats" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-axis-sweep3" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-axis-sweep3" 'class)) &key (worldAabbMin #.(lispify "bt-vector3" 'classname)) (worldAabbMax #.(lispify "bt-vector3" 'classname)) (maxHandles integer) pairCache (disableRaycastAccelerator t))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btAxisSweep3" 'function) worldAabbMin worldAabbMax maxHandles pairCache disableRaycastAccelerator)))
@@ -20835,8 +19556,6 @@ Swig properly.")
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btAxisSweep3" 'function) worldAabbMin worldAabbMax)))
 
 
-(defklass #.(lispify "bt32-bit-axis-sweep3" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt32-bit-axis-sweep3" 'class)) &key (worldAabbMin #.(lispify "bt-vector3" 'classname)) (worldAabbMax #.(lispify "bt-vector3" 'classname)) (maxHandles integer) pairCache (disableRaycastAccelerator t))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_bt32BitAxisSweep3" 'function) worldAabbMin worldAabbMax maxHandles pairCache disableRaycastAccelerator)))
@@ -20851,8 +19570,6 @@ Swig properly.")
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_bt32BitAxisSweep3" 'function) worldAabbMin worldAabbMax)))
 
 
-(defklass #.(lispify "bt-multi-sap-broadphase" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod #.(lispify "get-broadphase-array" 'method) ((self #.(lispify "bt-multi-sap-broadphase" 'classname)))
   (#.(lispify "btMultiSapBroadphase_getBroadphaseArray" 'function) (ff-pointer self)))
@@ -20912,8 +19629,6 @@ Swig properly.")
   (#.(lispify "btMultiSapBroadphase_resetPool" 'function) (ff-pointer self) dispatcher))
 
 
-(defklass #.(lispify "bt-clock" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-clock" 'class)) &key)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btClock" 'function))))
@@ -20935,8 +19650,6 @@ Swig properly.")
   (#.(lispify "btClock_getTimeMicroseconds" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "cprofile-node" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "cprofile-node" 'class)) &key (name string) (parent #.(lispify "cprofile-node" 'classname)))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_CProfileNode" 'function) name (ff-pointer parent))))
@@ -20981,8 +19694,6 @@ Swig properly.")
   (#.(lispify "CProfileNode_SetUserPointer" 'function) (ff-pointer self) ptr))
 
 
-(defklass #.(lispify "cprofile-iterator" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod #.(lispify "first" 'method) ((self #.(lispify "cprofile-iterator" 'classname)))
   (#.(lispify "CProfileIterator_First" 'function) (ff-pointer self)))
@@ -21030,22 +19741,16 @@ Swig properly.")
   (#.(lispify "CProfileIterator_Get_Current_Parent_Total_Time" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "cprofile-manager" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "cprofile-manager" 'class)) &key)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_CProfileManager" 'function))))
 
 
-(defklass #.(lispify "cprofile-sample" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "cprofile-sample" 'class)) &key (name string))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_CProfileSample" 'function) name)))
 
 
-(defklass #.(lispify "bt-idebug-draw" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod #.(lispify "draw-line" 'method) ((self #.(lispify "bt-idebug-draw" 'classname)) (from #.(lispify "bt-vector3" 'classname)) (to #.(lispify "bt-vector3" 'classname)) (color #.(lispify "bt-vector3" 'classname)))
   (#.(lispify "btIDebugDraw_drawLine" 'function) (ff-pointer self) from to color))
@@ -21120,8 +19825,6 @@ Swig properly.")
   (#.(lispify "btIDebugDraw_drawPlane" 'function) (ff-pointer self) planeNormal planeConst transform color))
 
 
-(defklass #.(lispify "bt-chunk" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod (setf #.(lispify "m_chunkCode" 'method)) (arg0 (obj #.(lispify "bt-chunk" 'class)))
   (#.(lispify "btChunk_m_chunkCode_set" 'function) (ff-pointer obj) arg0))
@@ -21157,8 +19860,6 @@ Swig properly.")
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btChunk" 'function))))
 
 
-(defklass #.(lispify "bt-serializer" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod #.(lispify "get-buffer-pointer" 'method) ((self #.(lispify "bt-serializer" 'classname)))
   (#.(lispify "btSerializer_getBufferPointer" 'function) (ff-pointer self)))
@@ -21200,8 +19901,6 @@ Swig properly.")
   (#.(lispify "btSerializer_setSerializationFlags" 'function) (ff-pointer self) flags))
 
 
-(defklass #.(lispify "bt-default-serializer" 'classname)(#.(lispify "btSerializer" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-default-serializer" 'class)) &key (totalSize integer))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btDefaultSerializer" 'function) totalSize)))
@@ -21252,22 +19951,16 @@ Swig properly.")
   (#.(lispify "btDefaultSerializer_setSerializationFlags" 'function) (ff-pointer self) flags))
 
 
-(defklass #.(lispify "bt-discrete-dynamics-world" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) sizeInBytes)
   (#.(lispify "btDiscreteDynamicsWorld_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) ptr)
   (#.(lispify "btDiscreteDynamicsWorld_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) arg1 ptr)
   (#.(lispify "btDiscreteDynamicsWorld_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) arg1 arg2)
   (#.(lispify "btDiscreteDynamicsWorld_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -21344,7 +20037,6 @@ Swig properly.")
 (defmethod #.(lispify "add-collision-object" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) (collisionObject #.(lispify "bt-collision-object" 'classname)))
   (#.(lispify "btDiscreteDynamicsWorld_addCollisionObject" 'function) (ff-pointer self) collisionObject))
 
-
 (defmethod #.(lispify "remove-rigid-body" 'method) ((self #.(lispify "bt-discrete-dynamics-world" 'classname)) body)
   (#.(lispify "btDiscreteDynamicsWorld_removeRigidBody" 'function) (ff-pointer self) body))
 
@@ -21420,8 +20112,6 @@ Swig properly.")
   (#.(lispify "btDiscreteDynamicsWorld_getLatencyMotionStateInterpolation" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-simple-dynamics-world" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-simple-dynamics-world" 'class)) &key dispatcher pairCache constraintSolver collisionConfiguration)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btSimpleDynamicsWorld" 'function) dispatcher pairCache constraintSolver collisionConfiguration)))
@@ -21481,8 +20171,6 @@ Swig properly.")
   (#.(lispify "btSimpleDynamicsWorld_clearForces" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-rigid-body" 'classname)(#.(lispify "btCollisionObject" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-rigid-body" 'class)) &key constructionInfo)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btRigidBody" 'function) constructionInfo)))
@@ -21713,22 +20401,16 @@ Swig properly.")
   (#.(lispify "btRigidBody_serializeSingleObject" 'function) (ff-pointer self) serializer))
 
 
-(defklass #.(lispify "bt-typed-constraint" 'classname)(#.(lispify "btTypedObject" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)) sizeInBytes)
   (#.(lispify "btTypedConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)) ptr)
   (#.(lispify "btTypedConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)) arg1 ptr)
   (#.(lispify "btTypedConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)) arg1 arg2)
   (#.(lispify "btTypedConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -21847,18 +20529,6 @@ Swig properly.")
 (defmethod #.(lispify "get-dbg-draw-size" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)))
   (#.(lispify "btTypedConstraint_getDbgDrawSize" 'function) (ff-pointer self)))
 
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)) (num integer) (value number) (axis integer))
-  (#.(lispify "btTypedConstraint_setParam" 'function) (ff-pointer self) num value axis))
-
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)) (num integer) (value number))
-  (#.(lispify "btTypedConstraint_setParam" 'function) (ff-pointer self) num value))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)) (num integer) (axis integer))
-  (#.(lispify "btTypedConstraint_getParam" 'function) (ff-pointer self) num axis))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)) (num integer))
-  (#.(lispify "btTypedConstraint_getParam" 'function) (ff-pointer self) num))
-
 (defmethod #.(lispify "calculate-serialize-buffer-size" 'method) ((self #.(lispify "bt-typed-constraint" 'classname)))
   (#.(lispify "btTypedConstraint_calculateSerializeBufferSize" 'function) (ff-pointer self)))
 
@@ -21866,8 +20536,6 @@ Swig properly.")
   (#.(lispify "btTypedConstraint_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-angular-limit" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-angular-limit" 'class)) &key)
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btAngularLimit" 'function))))
@@ -21921,22 +20589,16 @@ Swig properly.")
   (#.(lispify "btAngularLimit_getHigh" 'function) (ff-pointer self)))
 
 
-(defklass #.(lispify "bt-point2-point-constraint" 'classname)(#.(lispify "btTypedConstraint" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)) sizeInBytes)
   (#.(lispify "btPoint2PointConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)) ptr)
   (#.(lispify "btPoint2PointConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)) arg1 ptr)
   (#.(lispify "btPoint2PointConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)) arg1 arg2)
   (#.(lispify "btPoint2PointConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -22004,18 +20666,6 @@ Swig properly.")
 (defmethod #.(lispify "get-pivot-in-b" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)))
   (#.(lispify "btPoint2PointConstraint_getPivotInB" 'function) (ff-pointer self)))
 
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)) (num integer) (value number) (axis integer))
-  (#.(lispify "btPoint2PointConstraint_setParam" 'function) (ff-pointer self) num value axis))
-
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)) (num integer) (value number))
-  (#.(lispify "btPoint2PointConstraint_setParam" 'function) (ff-pointer self) num value))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)) (num integer) (axis integer))
-  (#.(lispify "btPoint2PointConstraint_getParam" 'function) (ff-pointer self) num axis))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)) (num integer))
-  (#.(lispify "btPoint2PointConstraint_getParam" 'function) (ff-pointer self) num))
-
 (defmethod #.(lispify "calculate-serialize-buffer-size" 'method) ((self #.(lispify "bt-point2-point-constraint" 'classname)))
   (#.(lispify "btPoint2PointConstraint_calculateSerializeBufferSize" 'function) (ff-pointer self)))
 
@@ -22023,22 +20673,16 @@ Swig properly.")
   (#.(lispify "btPoint2PointConstraint_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-hinge-constraint" 'classname)(#.(lispify "btTypedConstraint" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) sizeInBytes)
   (#.(lispify "btHingeConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) ptr)
   (#.(lispify "btHingeConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) arg1 ptr)
   (#.(lispify "btHingeConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) arg1 arg2)
   (#.(lispify "btHingeConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -22146,16 +20790,16 @@ Swig properly.")
   (#.(lispify "btHingeConstraint_setMotorTarget" 'function) (ff-pointer self) targetAngle dt))
 
 (defmethod #.(lispify "set-limit" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (low number) (high number) (_softness number) (_biasFactor number) (_relaxationFactor number))
-  (#.(lispify "btHingeConstraint_setLimit" 'function) (ff-pointer self) low high _softness _biasFactor _relaxationFactor))
+  (HINGE-CONSTRAINT/SET-LIMIT (ff-pointer self) low high _softness _biasFactor _relaxationFactor))
 
 (defmethod #.(lispify "set-limit" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (low number) (high number) (_softness number) (_biasFactor number))
-  (#.(lispify "btHingeConstraint_setLimit" 'function) (ff-pointer self) low high _softness _biasFactor))
+  (HINGE-CONSTRAINT/SET-LIMIT (ff-pointer self) low high _softness _biasFactor))
 
 (defmethod #.(lispify "set-limit" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (low number) (high number) (_softness number))
-  (#.(lispify "btHingeConstraint_setLimit" 'function) (ff-pointer self) low high _softness))
+  (HINGE-CONSTRAINT/SET-LIMIT (ff-pointer self) low high _softness))
 
 (defmethod #.(lispify "set-limit" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (low number) (high number))
-  (#.(lispify "btHingeConstraint_setLimit" 'function) (ff-pointer self) low high))
+           (HINGE-CONSTRAINT/SET-LIMIT (ff-pointer self) low high))
 
 (defmethod #.(lispify "set-axis" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (axisInA #.(lispify "bt-vector3" 'classname)))
   (#.(lispify "btHingeConstraint_setAxis" 'function) (ff-pointer self) axisInA))
@@ -22211,18 +20855,6 @@ Swig properly.")
 (defmethod #.(lispify "set-use-frame-offset" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (frameOffsetOnOff t))
   (#.(lispify "btHingeConstraint_setUseFrameOffset" 'function) (ff-pointer self) frameOffsetOnOff))
 
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (num integer) (value number) (axis integer))
-  (#.(lispify "btHingeConstraint_setParam" 'function) (ff-pointer self) num value axis))
-
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (num integer) (value number))
-  (#.(lispify "btHingeConstraint_setParam" 'function) (ff-pointer self) num value))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (num integer) (axis integer))
-  (#.(lispify "btHingeConstraint_getParam" 'function) (ff-pointer self) num axis))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)) (num integer))
-  (#.(lispify "btHingeConstraint_getParam" 'function) (ff-pointer self) num))
-
 (defmethod #.(lispify "calculate-serialize-buffer-size" 'method) ((self #.(lispify "bt-hinge-constraint" 'classname)))
   (#.(lispify "btHingeConstraint_calculateSerializeBufferSize" 'function) (ff-pointer self)))
 
@@ -22230,22 +20862,16 @@ Swig properly.")
   (#.(lispify "btHingeConstraint_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-cone-twist-constraint" 'classname)(#.(lispify "btTypedConstraint" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) sizeInBytes)
   (#.(lispify "btConeTwistConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) ptr)
   (#.(lispify "btConeTwistConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) arg1 ptr)
   (#.(lispify "btConeTwistConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) arg1 arg2)
   (#.(lispify "btConeTwistConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -22379,26 +21005,11 @@ Swig properly.")
 (defmethod #.(lispify "get-point-for-angle" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) (fAngleInRadians number) (fLength number))
   (#.(lispify "btConeTwistConstraint_GetPointForAngle" 'function) (ff-pointer self) fAngleInRadians fLength))
 
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) (num integer) (value number) (axis integer))
-  (#.(lispify "btConeTwistConstraint_setParam" 'function) (ff-pointer self) num value axis))
-
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) (num integer) (value number))
-  (#.(lispify "btConeTwistConstraint_setParam" 'function) (ff-pointer self) num value))
-
-(defmethod #.(lispify "set-frames" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) (frameA #.(lispify "bt-transform" 'classname)) (frameB #.(lispify "bt-transform" 'classname)))
-  (#.(lispify "btConeTwistConstraint_setFrames" 'function) (ff-pointer self) frameA frameB))
-
 (defmethod #.(lispify "get-frame-offset-a" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)))
   (#.(lispify "btConeTwistConstraint_getFrameOffsetA" 'function) (ff-pointer self)))
 
 (defmethod #.(lispify "get-frame-offset-b" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)))
   (#.(lispify "btConeTwistConstraint_getFrameOffsetB" 'function) (ff-pointer self)))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) (num integer) (axis integer))
-  (#.(lispify "btConeTwistConstraint_getParam" 'function) (ff-pointer self) num axis))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)) (num integer))
-  (#.(lispify "btConeTwistConstraint_getParam" 'function) (ff-pointer self) num))
 
 (defmethod #.(lispify "calculate-serialize-buffer-size" 'method) ((self #.(lispify "bt-cone-twist-constraint" 'classname)))
   (#.(lispify "btConeTwistConstraint_calculateSerializeBufferSize" 'function) (ff-pointer self)))
@@ -22407,8 +21018,6 @@ Swig properly.")
   (#.(lispify "btConeTwistConstraint_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-rotational-limit-motor" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod (setf #.(lispify "m_loLimit" 'method)) (arg0 (obj #.(lispify "bt-rotational-limit-motor" 'class)))
   (#.(lispify "btRotationalLimitMotor_m_loLimit_set" 'function) (ff-pointer obj) arg0))
@@ -22525,8 +21134,6 @@ Swig properly.")
   (#.(lispify "btRotationalLimitMotor_solveAngularLimits" 'function) (ff-pointer self) timeStep axis jacDiagABInv body0 body1))
 
 
-(defklass #.(lispify "bt-translational-limit-motor" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod (setf #.(lispify "m_lowerLimit" 'method)) (arg0 (obj #.(lispify "bt-translational-limit-motor" 'class)))
   (#.(lispify "btTranslationalLimitMotor_m_lowerLimit_set" 'function) (ff-pointer obj) arg0))
@@ -22637,22 +21244,16 @@ Swig properly.")
   (#.(lispify "btTranslationalLimitMotor_solveLinearAxis" 'function) (ff-pointer self) timeStep jacDiagABInv body1 pointInA body2 pointInB limit_index axis_normal_on_a anchorPos))
 
 
-(defklass #.(lispify "bt-generic6-dof-constraint" 'classname)(#.(lispify "btTypedConstraint" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) sizeInBytes)
   (#.(lispify "btGeneric6DofConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) ptr)
   (#.(lispify "btGeneric6DofConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) arg1 ptr)
   (#.(lispify "btGeneric6DofConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) arg1 arg2)
   (#.(lispify "btGeneric6DofConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -22792,33 +21393,23 @@ Swig properly.")
 (defmethod #.(lispify "set-use-frame-offset" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) (frameOffsetOnOff t))
   (#.(lispify "btGeneric6DofConstraint_setUseFrameOffset" 'function) (ff-pointer self) frameOffsetOnOff))
 
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) (num integer) (value number) (axis integer))
-  (#.(lispify "btGeneric6DofConstraint_setParam" 'function) (ff-pointer self) num value axis))
-
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) (num integer) (value number))
-  (#.(lispify "btGeneric6DofConstraint_setParam" 'function) (ff-pointer self) num value))
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) (num integer) (axis integer))
-  (#.(lispify "btGeneric6DofConstraint_getParam" 'function) (ff-pointer self) num axis))
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) (num integer))
-  (#.(lispify "btGeneric6DofConstraint_getParam" 'function) (ff-pointer self) num))
 (defmethod #.(lispify "set-axis" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) (axis1 #.(lispify "bt-vector3" 'classname)) (axis2 #.(lispify "bt-vector3" 'classname)))
   (#.(lispify "btGeneric6DofConstraint_setAxis" 'function) (ff-pointer self) axis1 axis2))
 (defmethod #.(lispify "calculate-serialize-buffer-size" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)))
   (#.(lispify "btGeneric6DofConstraint_calculateSerializeBufferSize" 'function) (ff-pointer self)))
 (defmethod #.(lispify "serialize" 'method) ((self #.(lispify "bt-generic6-dof-constraint" 'classname)) dataBuffer (serializer #.(lispify "bt-serializer" 'classname)))
   (#.(lispify "btGeneric6DofConstraint_serialize" 'function) (ff-pointer self) dataBuffer serializer))
-(defklass #.(lispify "bt-slider-constraint" 'classname)(#.(lispify "btTypedConstraint" 'classname))
-  ((ff-pointer :reader ff-pointer)))
-(shadow "new")
+
+
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)) sizeInBytes)
   (#.(lispify "btSliderConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
-(shadow "delete")
+
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)) ptr)
   (#.(lispify "btSliderConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
-(shadow "new")
+
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)) arg1 ptr)
   (#.(lispify "btSliderConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
-(shadow "delete")
+
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)) arg1 arg2)
   (#.(lispify "btSliderConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 (shadow "new[]")
@@ -23082,18 +21673,6 @@ Swig properly.")
 (defmethod #.(lispify "set-frames" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)) (frameA #.(lispify "bt-transform" 'classname)) (frameB #.(lispify "bt-transform" 'classname)))
   (#.(lispify "btSliderConstraint_setFrames" 'function) (ff-pointer self) frameA frameB))
 
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)) (num integer) (value number) (axis integer))
-  (#.(lispify "btSliderConstraint_setParam" 'function) (ff-pointer self) num value axis))
-
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)) (num integer) (value number))
-  (#.(lispify "btSliderConstraint_setParam" 'function) (ff-pointer self) num value))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)) (num integer) (axis integer))
-  (#.(lispify "btSliderConstraint_getParam" 'function) (ff-pointer self) num axis))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)) (num integer))
-  (#.(lispify "btSliderConstraint_getParam" 'function) (ff-pointer self) num))
-
 (defmethod #.(lispify "calculate-serialize-buffer-size" 'method) ((self #.(lispify "bt-slider-constraint" 'classname)))
   (#.(lispify "btSliderConstraint_calculateSerializeBufferSize" 'function) (ff-pointer self)))
 
@@ -23101,18 +21680,16 @@ Swig properly.")
   (#.(lispify "btSliderConstraint_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-generic6-dof-spring-constraint" 'classname)(#.(lispify "btGeneric6DofConstraint" 'classname))  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-generic6-dof-spring-constraint" 'classname)) sizeInBytes)
   (#.(lispify "btGeneric6DofSpringConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
-(shadow "delete")
+
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-generic6-dof-spring-constraint" 'classname)) ptr)
   (#.(lispify "btGeneric6DofSpringConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
-(shadow "new")
+
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-generic6-dof-spring-constraint" 'classname)) arg1 ptr)
   (#.(lispify "btGeneric6DofSpringConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
-(shadow "delete")
+
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-generic6-dof-spring-constraint" 'classname)) arg1 arg2)
   (#.(lispify "btGeneric6DofSpringConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 (shadow "new[]")
@@ -23154,22 +21731,16 @@ Swig properly.")
   (#.(lispify "btGeneric6DofSpringConstraint_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-universal-constraint" 'classname)(#.(lispify "btGeneric6DofConstraint" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-universal-constraint" 'classname)) sizeInBytes)
   (#.(lispify "btUniversalConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-universal-constraint" 'classname)) ptr)
   (#.(lispify "btUniversalConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-universal-constraint" 'classname)) arg1 ptr)
   (#.(lispify "btUniversalConstraint_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-universal-constraint" 'classname)) arg1 arg2)
   (#.(lispify "btUniversalConstraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -23220,22 +21791,16 @@ Swig properly.")
   (#.(lispify "btUniversalConstraint_setAxis" 'function) (ff-pointer self) axis1 axis2))
 
 
-(defklass #.(lispify "bt-hinge2-constraint" 'classname)(#.(lispify "btGeneric6DofSpringConstraint" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-hinge2-constraint" 'classname)) sizeInBytes)
   (#.(lispify "btHinge2Constraint_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-hinge2-constraint" 'classname)) ptr)
   (#.(lispify "btHinge2Constraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-hinge2-constraint" 'classname)) arg1 ptr)
   (#.(lispify "btHinge2Constraint_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-hinge2-constraint" 'classname)) arg1 arg2)
   (#.(lispify "btHinge2Constraint_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -23283,8 +21848,6 @@ Swig properly.")
   (#.(lispify "btHinge2Constraint_setLowerLimit" 'function) (ff-pointer self) ang1min))
 
 
-(defklass #.(lispify "bt-gear-constraint" 'classname)(#.(lispify "btTypedConstraint" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-gear-constraint" 'class)) &key (rbA #.(lispify "bt-rigid-body" 'classname)) (rbB #.(lispify "bt-rigid-body" 'classname)) (axisInA #.(lispify "bt-vector3" 'classname)) (axisInB #.(lispify "bt-vector3" 'classname)) (ratio number))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btGearConstraint" 'function) rbA rbB axisInA axisInB ratio)))
@@ -23316,18 +21879,6 @@ Swig properly.")
 (defmethod #.(lispify "get-ratio" 'method) ((self #.(lispify "bt-gear-constraint" 'classname)))
   (#.(lispify "btGearConstraint_getRatio" 'function) (ff-pointer self)))
 
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-gear-constraint" 'classname)) (num integer) (value number) (axis integer))
-  (#.(lispify "btGearConstraint_setParam" 'function) (ff-pointer self) num value axis))
-
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-gear-constraint" 'classname)) (num integer) (value number))
-  (#.(lispify "btGearConstraint_setParam" 'function) (ff-pointer self) num value))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-gear-constraint" 'classname)) (num integer) (axis integer))
-  (#.(lispify "btGearConstraint_getParam" 'function) (ff-pointer self) num axis))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-gear-constraint" 'classname)) (num integer))
-  (#.(lispify "btGearConstraint_getParam" 'function) (ff-pointer self) num))
-
 (defmethod #.(lispify "calculate-serialize-buffer-size" 'method) ((self #.(lispify "bt-gear-constraint" 'classname)))
   (#.(lispify "btGearConstraint_calculateSerializeBufferSize" 'function) (ff-pointer self)))
 
@@ -23335,8 +21886,6 @@ Swig properly.")
   (#.(lispify "btGearConstraint_serialize" 'function) (ff-pointer self) dataBuffer serializer))
 
 
-(defklass #.(lispify "bt-fixed-constraint" 'classname)(#.(lispify "btTypedConstraint" 'classname))
-  ((ff-pointer :reader ff-pointer)))
 
 (defmethod initialize-instance :after ((obj #.(lispify "bt-fixed-constraint" 'class)) &key (rbA #.(lispify "bt-rigid-body" 'classname)) (rbB #.(lispify "bt-rigid-body" 'classname)) (frameInA #.(lispify "bt-transform" 'classname)) (frameInB #.(lispify "bt-transform" 'classname)))
   (setf (slot-value obj 'ff-pointer) (#.(lispify "new_btFixedConstraint" 'function) rbA rbB frameInA frameInB)))
@@ -23347,35 +21896,17 @@ Swig properly.")
 (defmethod #.(lispify "get-info2" 'method) ((self #.(lispify "bt-fixed-constraint" 'classname)) info)
            (#.(lispify "btFixedConstraint_getInfo2" 'function) (ff-pointer self) info))
 
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-fixed-constraint" 'classname)) (num integer) (value number) (axis integer))
-  (#.(lispify "btFixedConstraint_setParam" 'function) (ff-pointer self) num value axis))
-
-(defmethod #.(lispify "set-param" 'method) ((self #.(lispify "bt-fixed-constraint" 'classname)) (num integer) (value number))
-  (#.(lispify "btFixedConstraint_setParam" 'function) (ff-pointer self) num value))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-fixed-constraint" 'classname)) (num integer) &optional (axis integer))
-  (#.(lispify "btFixedConstraint_getParam" 'function) (ff-pointer self) num axis))
-
-(defmethod #.(lispify "get-param" 'method) ((self #.(lispify "bt-fixed-constraint" 'classname)) (num integer))
-  (#.(lispify "btFixedConstraint_getParam" 'function) (ff-pointer self) num))
 
 
-(defklass #.(lispify "bt-sequential-impulse-constraint-solver" 'classname)()
-  ((ff-pointer :reader ff-pointer)))
-
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-sequential-impulse-constraint-solver" 'classname)) sizeInBytes)
   (#.(lispify "btSequentialImpulseConstraintSolver_makeCPlusPlusInstance" 'function) (ff-pointer self) sizeInBytes))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-sequential-impulse-constraint-solver" 'classname)) ptr)
   (#.(lispify "btSequentialImpulseConstraintSolver_deleteCPlusPlusInstance" 'function) (ff-pointer self) ptr))
 
-(shadow "new")
 (defmethod #.(lispify "new" 'method) ((self #.(lispify "bt-sequential-impulse-constraint-solver" 'classname)) arg1 ptr)
   (#.(lispify "btSequentialImpulseConstraintSolver_makeCPlusPlusInstance" 'function) (ff-pointer self) arg1 ptr))
 
-(shadow "delete")
 (defmethod #.(lispify "delete" 'method) ((self #.(lispify "bt-sequential-impulse-constraint-solver" 'classname)) arg1 arg2)
   (#.(lispify "btSequentialImpulseConstraintSolver_deleteCPlusPlusInstance" 'function) (ff-pointer self) arg1 arg2))
 
@@ -23418,12 +21949,6 @@ Swig properly.")
 
 (defmethod #.(lispify "get-solver-type" 'method) ((self #.(lispify "bt-sequential-impulse-constraint-solver" 'classname)))
            (#.(lispify "btSequentialImpulseConstraintSolver_getSolverType" 'function) (ff-pointer self)))
-
-
-
-
-
-
 
 (format *trace-output* "~&Loading Bullet Physics C libraries: ")
 (mapcar (lambda (n)
