@@ -5,7 +5,7 @@
 OSNAME=$(shell uname -s)
 CPU=$(shell uname -m | sed -e 's,_,-,g')
 
-BUILDDIR=$(shell if [ "x$$BUILDDIR" != "x" ] ; then echo "$$BUILDDIR"; else build/$(OSNAME)-$(CPU); fi)
+BUILDDIR=$(shell if [ "x$$BUILDDIR" != "x" ] ; then echo "$$BUILDDIR"; else echo build/$(OSNAME)-$(CPU); fi)
 FASLDIR=$(BUILDDIR)/fasls
 LIBDIR=$(BUILDDIR)/lib
 BINDIR=$(BUILDDIR)/bin
