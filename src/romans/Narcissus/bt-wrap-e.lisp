@@ -363,6 +363,7 @@
 
 (cffi:defcfun ("_wrap_btGeneric6DofConstraint_getInfo1"
                GENERIC-6-DOF-CONSTRAINT/GET-INFO-1) :void
+  (self :pointer)
   (info :pointer))
 
 (declaim (inline GENERIC-6-DOF-CONSTRAINT/GET-INFO-1-NON-VIRTUAL))
@@ -789,7 +790,8 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setLowerLinLimit"
                SLIDER-CONSTRAINT/SET-LOWER-LIN-LIMIT) :void
-  (lowerLimit :float))
+  (self :pointer)
+  (lower-Limit :float))
 
 (declaim (inline SLIDER-CONSTRAINT/GET-UPPER-LIN-LIMIT))
 
@@ -812,6 +814,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setLowerAngLimit"
                SLIDER-CONSTRAINT/SET-LOWER-ANG-LIMIT) :void
+  (self :pointer)
   (lowerLimit :float))
 
 (declaim (inline SLIDER-CONSTRAINT/GET-UPPER-ANG-LIMIT))
@@ -823,6 +826,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setUpperAngLimit"
                SLIDER-CONSTRAINT/SET-UPPER-ANG-LIMIT) :void
+  (self :pointer)
   (upperLimit :float))
 
 (declaim (inline SLIDER-CONSTRAINT/GET-USE-LINEAR-REFERENCE-FRAME-A))
@@ -939,6 +943,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setSoftnessDirLin"
                SLIDER-CONSTRAINT/SET-SOFTNESS-DIR-LIN) :void
+  (self :pointer)
   (softnessDirLin :float))
 
 (declaim (inline SLIDER-CONSTRAINT/SET-RESTITUTION-DIR-LIN))
@@ -994,18 +999,21 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setDampingLimLin"
                SLIDER-CONSTRAINT/SET-DAMPING-LIM-LIN) :void
+  (self :pointer)
   (dampingLimLin :float))
 
 (declaim (inline SLIDER-CONSTRAINT/SET-SOFTNESS-LIM-ANG))
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setSoftnessLimAng"
                SLIDER-CONSTRAINT/SET-SOFTNESS-LIM-ANG) :void
+  (self :pointer)
   (softnessLimAng :float))
 
 (declaim (inline SLIDER-CONSTRAINT/SET-RESTITUTION-LIM-ANG))
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setRestitutionLimAng"
                SLIDER-CONSTRAINT/SET-RESTITUTION-LIM-ANG) :void
+  (self :pointer)
   (restitutionLimAng :float))
 
 (declaim (inline SLIDER-CONSTRAINT/SET-DAMPING-LIM-ANG))
@@ -1019,6 +1027,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setSoftnessOrthoLin"
                SLIDER-CONSTRAINT/SET-SOFTNESS-ORTHO-LIN) :void
+  (self :pointer)
   (softnessOrthoLin :float))
 
 (declaim (inline SLIDER-CONSTRAINT/SET-RESTITUTION-ORTHO-LIN))
@@ -1072,6 +1081,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setTargetLinMotorVelocity"
                SLIDER-CONSTRAINT/SET-TARGET-LIN-MOTOR-VELOCITY) :void
+  (self :pointer)
   (targetLinMotorVelocity :float))
 
 (declaim (inline SLIDER-CONSTRAINT/GET-TARGET-LIN-MOTOR-VELOCITY))
@@ -1095,6 +1105,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setPoweredAngMotor"
                SLIDER-CONSTRAINT/SET-POWERED-ANG-MOTOR) :void
+  (self :pointer)
   (onOff :pointer))
 
 (declaim (inline SLIDER-CONSTRAINT/GET-POWERED-ANG-MOTOR))
@@ -1106,6 +1117,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setTargetAngMotorVelocity"
                SLIDER-CONSTRAINT/SET-TARGET-ANG-MOTOR-VELOCITY) :void
+  (self :pointer)
   (targetAngMotorVelocity :float))
 
 (declaim (inline SLIDER-CONSTRAINT/GET-TARGET-ANG-MOTOR-VELOCITY))
@@ -1118,6 +1130,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setMaxAngMotorForce"
                SLIDER-CONSTRAINT/SET-MAX-ANG-MOTOR-FORCE) :void
+  (self :pointer)
   (maxAngMotorForce :float))
 
 (declaim (inline SLIDER-CONSTRAINT/GET-MAX-ANG-MOTOR-FORCE))
@@ -1162,6 +1175,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_calculateTransforms"
                SLIDER-CONSTRAINT/CALCULATE-TRANSFORMS) :void
+  (self :pointer)
   (transA :pointer)
   (transB :pointer))
 
@@ -1202,6 +1216,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_setFrames"
                SLIDER-CONSTRAINT/SET-FRAMES) :void
+  (self :pointer)
   (frameA :pointer)
   (frameB :pointer))
 
@@ -1214,6 +1229,7 @@
 
 (cffi:defcfun ("_wrap_btSliderConstraint_serialize"
                SLIDER-CONSTRAINT/SERIALIZE) :string
+  (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
@@ -1290,7 +1306,7 @@
 (declaim (inline MAKE-GENERIC-6-DOF-SPRING-CONSTRAINT))
 
 (cffi:defcfun ("_wrap_new_btGeneric6DofSpringConstraint__SWIG_0"
-               MAKE-GENERIC-6-DOF-SPRING-CONSTRAINT) :pointer
+               MAKE-GENERIC-6-DOF-SPRING-CONSTRAINT/with-a&b&use-a) :pointer
   (rbA :pointer)
   (rbB :pointer)
   (frameInA :pointer)
@@ -1310,6 +1326,7 @@
 
 (cffi:defcfun ("_wrap_btGeneric6DofSpringConstraint_enableSpring"
                GENERIC-6-DOF-SPRING-CONSTRAINT/ENABLE-SPRING) :void
+  (self :pointer)
   (index :int)
   (onOff :pointer))
 
@@ -1317,6 +1334,7 @@
 
 (cffi:defcfun ("_wrap_btGeneric6DofSpringConstraint_setStiffness"
                GENERIC-6-DOF-SPRING-CONSTRAINT/SET-STIFFNESS) :void
+  (self :pointer)
   (index :int)
   (stiffness :float))
 
@@ -1337,14 +1355,16 @@
 (declaim (inline GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT))
 
 (cffi:defcfun ("_wrap_btGeneric6DofSpringConstraint_setEquilibriumPoint__SWIG_1"
-               GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT/int-index) :void
+               GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT/with-index) :void
   (self :pointer)
   (index :int))
 
 (declaim (inline GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT))
 
 (cffi:defcfun ("_wrap_btGeneric6DofSpringConstraint_setEquilibriumPoint__SWIG_2"
-               GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT/float-val) :void
+               GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT/with-index&float)
+    :void
+  (self :pointer)
   (index :int)
   (val :float))
 
@@ -1352,6 +1372,7 @@
 
 (cffi:defcfun ("_wrap_btGeneric6DofSpringConstraint_setAxis"
                GENERIC-6-DOF-SPRING-CONSTRAINT/SET-AXIS) :void
+  (self :pointer)
   (axis1 :pointer)
   (axis2 :pointer))
 
@@ -1508,6 +1529,7 @@
 
 (cffi:defcfun ("_wrap_btUniversalConstraint_setAxis"
                UNIVERSAL-CONSTRAINT/SET-AXIS) :void
+  (self :pointer)
   (axis1 :pointer)
   (axis2 :pointer))
 
@@ -1908,10 +1930,10 @@
   (TRANSFORM/GET-ROTATION (ff-pointer self)))
 
 (defmethod (SETF FROM-OPENGL-MATRIX) ( m (self TRANSFORM))
-  (TRANSFORM/SET-FROM-OPEN-GLMATRIX (ff-pointer self) m))
+  (TRANSFORM/SET-FROM-OPENGL-MATRIX (ff-pointer self) m))
 
 (defmethod OPENGL-MATRIX-m ((self TRANSFORM) m)
-  (TRANSFORM/GET-OPEN-GLMATRIX (ff-pointer self) m))
+  (TRANSFORM/GET-OPENGL-MATRIX (ff-pointer self) m))
 
 (defmethod (SETF ORIGIN) ( (origin VECTOR3) (self TRANSFORM))
   (TRANSFORM/SET-ORIGIN (ff-pointer self) origin))

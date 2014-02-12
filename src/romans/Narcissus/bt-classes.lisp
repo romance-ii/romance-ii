@@ -181,6 +181,10 @@
 (defclass hinge-constraint (typed-constraint)
   ((ff-pointer :reader ff-pointer)))
 
+(warn "Guessing at HINGE-2-CONSTRAINT")
+(defclass hinge-2-constraint (hinge-constraint)
+  ((ff-pointer :reader ff-pointer)))
+
 (defclass cone-twist-constraint (typed-constraint)
   ((ff-pointer :reader ff-pointer)))
 

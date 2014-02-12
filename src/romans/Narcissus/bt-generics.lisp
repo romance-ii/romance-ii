@@ -15,8 +15,8 @@
 (defgeneric (setf debug-drawer) (drawer world))
 (defgeneric (setf dispatcher) (dispatcher self))
 (defgeneric (setf force-update-all-aabbs) (force-p world))
-(defgeneric (setf frames) (frame-a&b constraint))
-(defgeneric (setf gravity) (world gravity))
+(defgeneric (setf frames) (constraint frame-a frame-b))
+(defgeneric (setf gravity) (gravity world))
 (defgeneric (setf interpolation-angular-velocity) (transform thing))
 (defgeneric (setf interpolation-linear-velocity) (transform thing))
 (defgeneric (setf interpolation-world-transform) (transform thing))
@@ -70,6 +70,7 @@
 (defgeneric gravity (world))
 (defgeneric half-extents-with-margin (shape))
 (defgeneric half-extents-without-margin (shape))
+(defgeneric info-2-non-virtual (constraint info a b))
 (defgeneric insidep (shape point tolerance))
 (defgeneric inv-xform (transform vector)) ; ??
 (defgeneric latency-motion-state-interpolation-p (world))
@@ -248,4 +249,12 @@ void* worldUserInfo=0,bool isPreTick=false);
 (defgeneric vertex (thing i vertex))
 (defgeneric world-type (world))
 (defgeneric world-transform (thing))
+
+
+(defgeneric angular-motor-enabled-p (thing))
+(defgeneric motor-target-velocity (thing))
+(defgeneric max-motor-impulse (thing))
+(defgeneric use-frame-offset (thing))
+(defgeneric (setf use-frame-offset) (value thing))
+
 

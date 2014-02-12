@@ -666,7 +666,7 @@
   (arg2 :pointer))
 (declaim (inline MAKE-HINGE-CONSTRAINT))
 (cffi:defcfun ("_wrap_new_btHingeConstraint__SWIG_0"
-               MAKE-HINGE-CONSTRAINT) :pointer
+               MAKE-HINGE-CONSTRAINT/with-a&b&use-a) :pointer
   (rbA :pointer)
   (rbB :pointer)
   (pivotInA :pointer)
@@ -674,11 +674,8 @@
   (axisInA :pointer)
   (axisInB :pointer)
   (useReferenceFrameA :pointer))
-#+ (or)
-(progn
-  (declaim (inline MAKE-HINGE-CONSTRAINT))
   (cffi:defcfun ("_wrap_new_btHingeConstraint__SWIG_1"
-                 MAKE-HINGE-CONSTRAINT) :pointer
+                 MAKE-HINGE-CONSTRAINT/with-a&b) :pointer
     (rbA :pointer)
     (rbB :pointer)
     (pivotInA :pointer)
@@ -687,7 +684,7 @@
     (axisInB :pointer))
   (declaim (inline MAKE-HINGE-CONSTRAINT))
   (cffi:defcfun ("_wrap_new_btHingeConstraint__SWIG_2"
-                 MAKE-HINGE-CONSTRAINT) :pointer
+                 MAKE-HINGE-CONSTRAINT/with-use-a) :pointer
     (rbA :pointer)
     (pivotInA :pointer)
     (axisInA :pointer)
@@ -700,7 +697,7 @@
     (axisInA :pointer))
   (declaim (inline MAKE-HINGE-CONSTRAINT))
   (cffi:defcfun ("_wrap_new_btHingeConstraint__SWIG_4"
-                 MAKE-HINGE-CONSTRAINT) :pointer
+                 MAKE-HINGE-CONSTRAINT/with-frame-a&b&use-a) :pointer
     (rbA :pointer)
     (rbB :pointer)
     (rbAFrame :pointer)
@@ -708,23 +705,22 @@
     (useReferenceFrameA :pointer))
   (declaim (inline MAKE-HINGE-CONSTRAINT))
   (cffi:defcfun ("_wrap_new_btHingeConstraint__SWIG_5"
-                 MAKE-HINGE-CONSTRAINT) :pointer
+                 MAKE-HINGE-CONSTRAINT/with-frame-a&b) :pointer
     (rbA :pointer)
     (rbB :pointer)
     (rbAFrame :pointer)
     (rbBFrame :pointer))
   (declaim (inline MAKE-HINGE-CONSTRAINT))
   (cffi:defcfun ("_wrap_new_btHingeConstraint__SWIG_6"
-                 MAKE-HINGE-CONSTRAINT) :pointer
+                 MAKE-HINGE-CONSTRAINT/with-frame-a&use-a) :pointer
     (rbA :pointer)
     (rbAFrame :pointer)
     (useReferenceFrameA :pointer))
   (declaim (inline MAKE-HINGE-CONSTRAINT))
   (cffi:defcfun ("_wrap_new_btHingeConstraint__SWIG_7"
-                 MAKE-HINGE-CONSTRAINT) :pointer
+                 MAKE-HINGE-CONSTRAINT/with-frame-a) :pointer
     (rbA :pointer)
     (rbAFrame :pointer))
-  )
 (declaim (inline HINGE-CONSTRAINT/BUILD-JACOBIAN))
 (cffi:defcfun ("_wrap_btHingeConstraint_buildJacobian"
                HINGE-CONSTRAINT/BUILD-JACOBIAN) :void
@@ -843,33 +839,33 @@
   (self :pointer)
   (targetAngle :float)
   (dt :float))
-(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/softness&bias&relaxation))
+(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/with-softness&bias&relaxation))
 (cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_0"
-               HINGE-CONSTRAINT/SET-LIMIT/softness&bias&relaxation) :void
+               HINGE-CONSTRAINT/SET-LIMIT/with-softness&bias&relaxation) :void
   (self :pointer)
   (low :float)
   (high :float)
   (_softness :float)
   (_biasFactor :float)
   (_relaxationFactor :float))
-(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/softness&bias))
+(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/with-softness&bias))
 (cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_1"
-               HINGE-CONSTRAINT/SET-LIMIT/softness&bias) :void
+               HINGE-CONSTRAINT/SET-LIMIT/with-softness&bias) :void
   (self :pointer)
   (low :float)
   (high :float)
   (_softness :float)
   (_biasFactor :float))
-(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/softness))
+(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/with-softness))
 (cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_2"
-               HINGE-CONSTRAINT/SET-LIMIT/softness) :void
+               HINGE-CONSTRAINT/SET-LIMIT/with-softness) :void
   (self :pointer)
   (low :float)
   (high :float)
   (_softness :float))
-(declaim (inline HINGE-CONSTRAINT/SET-LIMIT/naked))
+(declaim (inline HINGE-CONSTRAINT/SET-LIMIT))
 (cffi:defcfun ("_wrap_btHingeConstraint_setLimit__SWIG_3"
-               HINGE-CONSTRAINT/SET-LIMIT/naked) :void
+               HINGE-CONSTRAINT/SET-LIMIT) :void
   (self :pointer)
   (low :float)
   (high :float))
@@ -1081,17 +1077,16 @@
                cONE-TWIST-CONSTRAINT/SET-ANGULAR-ONLY) :void
   (self :pointer)
   (angularOnly :pointer))
-#+ (or)
-(progn
-  (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
+(declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT/elt))
   (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_0"
-                 cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+                 cONE-TWIST-CONSTRAINT/SET-LIMIT/elt) :void
     (self :pointer)
     (limitIndex :int)
     (limitValue :float))
   (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
   (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_1"
-                 cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+                 cONE-TWIST-CONSTRAINT/SET-LIMIT/with-swing&twist&softness&bias&relaxation) 
+      :void
     (self :pointer)
     (_swingSpan1 :float)
     (_swingSpan2 :float)
@@ -1101,7 +1096,7 @@
     (_relaxationFactor :float))
   (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
   (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_2"
-                 cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+                 CONE-TWIST-CONSTRAINT/SET-LIMIT/with-swing&twist&softness&bias) :void
     (self :pointer)
     (_swingSpan1 :float)
     (_swingSpan2 :float)
@@ -1110,7 +1105,7 @@
     (_biasFactor :float))
   (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
   (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_3"
-                 cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+                 CONE-TWIST-CONSTRAINT/SET-LIMIT/with-swing&twist&softness) :void
     (self :pointer)
     (_swingSpan1 :float)
     (_swingSpan2 :float)
@@ -1118,12 +1113,11 @@
     (_softness :float))
   (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
   (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_4"
-                 cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+                 CONE-TWIST-CONSTRAINT/SET-LIMIT/with-swing&twist) :void
     (self :pointer)
     (_swingSpan1 :float)
     (_swingSpan2 :float)
     (_twistSpan :float))
-  )
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-AFRAME))
 (cffi:defcfun ("_wrap_btConeTwistConstraint_getAFrame"
                cONE-TWIST-CONSTRAINT/GET-AFRAME) :pointer
@@ -1227,14 +1221,12 @@
   (self :pointer)
   (frameA :pointer)
   (frameB :pointer))
-(defmethod (setf frames) (frame-a&b (self CONE-TWIST-CONSTRAINT))
-  (check-type frame-a&b cons)
-  (destructuring-bind (frame-a frame-b) frame-a&b
-    (check-type frame-a transform)
-    (check-type frame-b transform)
-    (CONE-TWIST-CONSTRAINT/SET-FRAMES (ff-pointer self) 
-                                      (ff-pointer frame-A)
-                                      (ff-pointer frame-B))))
+(defmethod (setf frames) ((self CONE-TWIST-CONSTRAINT)
+                          (frame-a transform)
+                          (frame-b transform))
+  (CONE-TWIST-CONSTRAINT/SET-FRAMES (ff-pointer self) 
+                                    (ff-pointer frame-A)
+                                    (ff-pointer frame-B)))
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-A))
 (cffi:defcfun ("_wrap_btConeTwistConstraint_getFrameOffsetA"
                cONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-A) :pointer
