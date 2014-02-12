@@ -1,14 +1,14 @@
 (in-package :bullet-physics)
 
-;;(defmethod BULLET/DELETE ((self BOX-SHAPE) ptr)
+;;#+(or) (defmethod bullet/delete ((self BOX-SHAPE) ptr)
 
 
 (cffi:defcfun ("_wrap_new_btFixedConstraint"
                MAKE-FIXED-CONSTRAINT) :pointer
-  (rbA :pointer)
-  (rbB :pointer)
+  (rigid-body-a :pointer)
+  (rigid-body-b :pointer)
   (frameInA :pointer)
-  (frameInB :pointer))
+  (frame-in-b :pointer))
 
 (defmethod GRAVITY ((self DISCRETE-DYNAMICS-WORLD))
   (DISCRETE-DYNAMICS-WORLD/GET-GRAVITY (ff-pointer self)))
@@ -183,22 +183,22 @@
 
 #+ (or) (defmethod NEW ((self TYPED-CONSTRAINT) sizeInBytes)
           (TYPED-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
-#+ (or) (defmethod BULLET/DELETE ((self TYPED-CONSTRAINT) ptr)
+#+ (or) #+(or) (defmethod bullet/delete ((self TYPED-CONSTRAINT) ptr)
           (TYPED-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 #+ (or) (defmethod NEW ((self TYPED-CONSTRAINT) arg1 ptr)
           (TYPED-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
-#+ (or) (defmethod BULLET/DELETE ((self TYPED-CONSTRAINT) arg1 arg2)
+#+ (or) #+(or) (defmethod bullet/delete ((self TYPED-CONSTRAINT) arg1 arg2)
           (TYPED-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 #+ (or) (shadow "new[]")
 #+ (or) (defmethod NEW[] ((self TYPED-CONSTRAINT) sizeInBytes)
           (TYPED-CONSTRAINT/MAKE-c++-ARRAY (ff-pointer self) sizeInBytes))
 #+ (or) (shadow "delete[]")
-#+ (or) (defmethod DELETE[] ((self TYPED-CONSTRAINT) ptr)
+#+ (or) #+(or) (defmethod delete[] ((self TYPED-CONSTRAINT) ptr)
           (TYPED-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) ptr))
 #+ (or) (shadow "new[]")
 #+ (or) (defmethod NEW[] ((self TYPED-CONSTRAINT) arg1 ptr)
           (TYPED-CONSTRAINT/MAKE-c++-ARRAY (ff-pointer self) arg1 ptr))
-#+ (or) (defmethod DELETE[] ((self TYPED-CONSTRAINT) arg1 arg2)
+#+ (or) #+(or) (defmethod delete[] ((self TYPED-CONSTRAINT) arg1 arg2)
           (TYPED-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
 (defmethod OVERRIDE-NUM-SOLVER-ITERATIONS ((self TYPED-CONSTRAINT))
@@ -311,14 +311,14 @@
 (defmethod initialize-instance :after ((obj ANGULAR-LIMIT) &key)
   (setf (slot-value obj 'ff-pointer) (MAKE-ANGULAR-LIMIT)))
 
-(defmethod angular-limit-set-all ((self ANGULAR-LIMIT) (low number) (high number) (_softness number) (_biasFactor number) (_relaxationFactor number))
-  (ANGULAR-LIMIT/SET (ff-pointer self) low high _softness _biasFactor _relaxationFactor))
+(defmethod angular-limit-set-all ((self ANGULAR-LIMIT) (low number) (high number) (softness number) (bias-factor number) (_relaxationFactor number))
+  (ANGULAR-LIMIT/SET (ff-pointer self) low high softness bias-factor _relaxationFactor))
 
-#+TODO (defmethod BULLET/SET ((self ANGULAR-LIMIT) (low number) (high number) (_softness number) (_biasFactor number))
-  (ANGULAR-LIMIT/SET (ff-pointer self) low high _softness _biasFactor))
+#+TODO (defmethod BULLET/SET ((self ANGULAR-LIMIT) (low number) (high number) (softness number) (bias-factor number))
+  (ANGULAR-LIMIT/SET (ff-pointer self) low high softness bias-factor))
 
-#+TODO (defmethod BULLET/SET ((self ANGULAR-LIMIT) (low number) (high number) (_softness number))
-  (ANGULAR-LIMIT/SET (ff-pointer self) low high _softness))
+#+TODO (defmethod BULLET/SET ((self ANGULAR-LIMIT) (low number) (high number) (softness number))
+  (ANGULAR-LIMIT/SET (ff-pointer self) low high softness))
 
 #+TODO (defmethod BULLET/SET ((self ANGULAR-LIMIT) (low number) (high number))
   (ANGULAR-LIMIT/SET (ff-pointer self) low high))
@@ -363,13 +363,13 @@
 #+ (or) (defmethod NEW ((self POINT->POINT-CONSTRAINT) sizeInBytes)
         (POINT->POINT-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
 
-#+ (or) (defmethod BULLET/DELETE ((self POINT->POINT-CONSTRAINT) ptr)
+#+ (or) #+(or) (defmethod bullet/delete ((self POINT->POINT-CONSTRAINT) ptr)
   (POINT->POINT-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 
 #+ (or) (defmethod NEW ((self POINT->POINT-CONSTRAINT) arg1 ptr)
   (POINT->POINT-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
 
-#+ (or) (defmethod BULLET/DELETE ((self POINT->POINT-CONSTRAINT) arg1 arg2)
+#+ (or) #+(or) (defmethod bullet/delete ((self POINT->POINT-CONSTRAINT) arg1 arg2)
   (POINT->POINT-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 
 #+ (or) (shadow "new[]")
@@ -379,7 +379,7 @@
 
 #+ (or) (shadow "delete[]")
 
-#+ (or) (defmethod DELETE[] ((self POINT->POINT-CONSTRAINT) ptr)
+#+ (or) #+(or) (defmethod delete[] ((self POINT->POINT-CONSTRAINT) ptr)
   (POINT->POINT-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) ptr))
 
 #+ (or) (shadow "new[]")
@@ -389,7 +389,7 @@
 
 #+ (or) (shadow "delete[]")
 
-#+ (or) (defmethod DELETE[] ((self POINT->POINT-CONSTRAINT) arg1 arg2)
+#+ (or) #+(or) (defmethod delete[] ((self POINT->POINT-CONSTRAINT) arg1 arg2)
   (POINT->POINT-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
 (defmethod (setf USE-SOLVE-CONSTRAINT-OBSOLETE) ( (obj POINT->POINT-CONSTRAINT) arg0)
@@ -404,11 +404,22 @@
 (defmethod SETTING ((obj POINT->POINT-CONSTRAINT))
   (POINT->POINT-CONSTRAINT/SETTING/GET (ff-pointer obj)))
 
-(defmethod initialize-instance :after ((obj POINT->POINT-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (pivotInA VECTOR3) (pivotInB VECTOR3))
-  (setf (slot-value obj 'ff-pointer) (MAKE-POINT->POINT-CONSTRAINT rbA rbB pivotInA pivotInB)))
-
-(defmethod initialize-instance :after ((obj POINT->POINT-CONSTRAINT) &key (rbA RIGID-BODY) (pivotInA VECTOR3))
-  (setf (slot-value obj 'ff-pointer) (MAKE-POINT->POINT-CONSTRAINT rbA pivotInA)))
+(defmethod initialize-instance :after ((obj POINT->POINT-CONSTRAINT) 
+                                       &key rigid-body-a rigid-body-b
+                                         pivot-in-a pivot-in-b)
+  (check-type rigid-body-a RIGID-BODY) 
+  (check-type pivot-In-A VECTOR3)
+  (setf (slot-value obj 'ff-pointer)
+        (cond
+          ((or rigid-body-b pivot-in-b)
+           (check-type rigid-body-b RIGID-BODY)
+           (check-type pivot-In-B VECTOR3)
+           (MAKE-POINT->POINT-CONSTRAINT (ff-pointer rigid-body-a)
+                                         (ff-pointer rigid-body-b)
+                                         (ff-pointer pivot-in-A) 
+                                         (ff-pointer pivot-in-B)))
+          (t (MAKE-POINT->POINT-CONSTRAINT/with-rigid-body-a&pivot-in-a 
+              rigid-body-a pivot-in-A)))))
 
 (defmethod BUILD-JACOBIAN ((self POINT->POINT-CONSTRAINT))
   (POINT->POINT-CONSTRAINT/BUILD-JACOBIAN (ff-pointer self)))
@@ -445,19 +456,20 @@
 
 (defmethod ->serial ((self POINT->POINT-CONSTRAINT)&key data-buffer serializer &allow-other-keys)
     (check-type serializer serializer)
-    (POINT->POINT-CONSTRAINT/SERIALIZE (ff-pointer self) data-buffer serializer))
+    (POINT->POINT-CONSTRAINT/SERIALIZE (ff-pointer self) data-buffer
+                                       (ff-pointer serializer)))
 
 
 #+ (or) (defmethod NEW ((self HINGE-CONSTRAINT) sizeInBytes)
   (HINGE-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
 
-#+ (or) (defmethod BULLET/DELETE ((self HINGE-CONSTRAINT) ptr)
+#+ (or) #+(or) (defmethod bullet/delete ((self HINGE-CONSTRAINT) ptr)
   (HINGE-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 
 #+ (or) (defmethod NEW ((self HINGE-CONSTRAINT) arg1 ptr)
   (HINGE-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
 
-#+ (or) (defmethod BULLET/DELETE ((self HINGE-CONSTRAINT) arg1 arg2)
+#+ (or) #+(or) (defmethod bullet/delete ((self HINGE-CONSTRAINT) arg1 arg2)
   (HINGE-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 
 #+ (or) (shadow "new[]")
@@ -467,7 +479,7 @@
 
 #+ (or) (shadow "delete[]")
 
-#+ (or) (defmethod DELETE[] ((self HINGE-CONSTRAINT) ptr)
+#+ (or) #+(or) (defmethod delete[] ((self HINGE-CONSTRAINT) ptr)
   (HINGE-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) ptr))
 
 #+ (or) (shadow "new[]")
@@ -477,33 +489,61 @@
 
 #+ (or) (shadow "delete[]")
 
-#+ (or) (defmethod DELETE[] ((self HINGE-CONSTRAINT) arg1 arg2)
-  (HINGE-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
+#+(or) (defmethod delete[] ((self HINGE-CONSTRAINT) arg1 arg2)
+           (HINGE-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
 
-(defmethod initialize-instance :after ((obj HINGE-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (pivotInA VECTOR3) (pivotInB VECTOR3) (axisInA VECTOR3) (axisInB VECTOR3) (useReferenceFrameA t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-HINGE-CONSTRAINT rbA rbB pivotInA pivotInB axisInA axisInB useReferenceFrameA)))
+(defmethod initialize-instance :after ((obj HINGE-CONSTRAINT) 
+                                       &key 
+                                         rigid-body-a rigid-body-b
+                                         pivot-in-a pivot-in-b
+                                         axis-in-a axis-in-b
+                                         rigid-body-a-frame rigid-body-b-frame
+                                         (use-reference-frame-a-p nil use-a?))
+  (when axis-in-a
+    (check-type rigid-body-a RIGID-BODY)
+   (check-type pivot-in-A VECTOR3) 
+   (check-type axis-in-a VECTOR3))
+  (when axis-in-b
+   (check-type rigid-body-b RIGID-BODY) 
+   (check-type pivot-in-B VECTOR3)
+   (check-type axis-in-b VECTOR3))
+  (check-type rigid-body-a-frame (or null TRANSFORM)) 
+  (check-type rigid-body-b-frame (or null TRANSFORM))
+  (setf (slot-value obj 'ff-pointer) 
+        (cond
+          ((and use-a? axis-in-b)
+           (MAKE-HINGE-CONSTRAINT/with-b&use-reference-frame-a rigid-body-a rigid-body-b
+                                                               pivot-in-A pivot-in-B
+                                                               axis-in-a axis-in-b 
+                                                               use-Reference-Frame-A-P)
+           ((and axis-in-b)
+            (MAKE-HINGE-CONSTRAINT/with-b rigid-body-a rigid-body-b 
+                                          pivot-in-A pivot-in-B
+                                          axis-in-a axis-in-b))
+           ((and use-a? frame-b frame-a)
+            (MAKE-HINGE-CONSTRAINT/with-frame-a&b&use-reference-frame-a
+             rigid-body-a rigid-body-b
+             rigid-body-a-frame rigid-body-b-frame
+             use-reference-frame-a-p))
+           ((and frame-b frame-a)
+            (MAKE-HINGE-CONSTRAINT/with-frame-a&b rigid-body-a rigid-body-b
+                                                  rigid-body-a-frame rigid-body-b-frame))
+           ((and use-a? frame-a)
+            (MAKE-HINGE-CONSTRAINT/with-frame-a&use-reference-frame-a
+             rigid-body-a rigid-body-a-frame 
+             use-reference-frame-a-p))
+           (frame-a
+            (MAKE-HINGE-CONSTRAINT/with-frame-a&use-reference-frame-a
+             rigid-body-a rigid-body-a-frame))
+           (use-a?
+            (MAKE-HINGE-CONSTRAINT/with-use-reference-frame-a rigid-body-a 
+                                                              pivot-in-A 
+                                                              axis-in-a
+                                                              use-Reference-Frame-AP))
+           (t (MAKE-HINGE-CONSTRAINT rigid-body-a pivot-in-A axis-in-a))))))
 
-(defmethod initialize-instance :after ((obj HINGE-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (pivotInA VECTOR3) (pivotInB VECTOR3) (axisInA VECTOR3) (axisInB VECTOR3))
-  (setf (slot-value obj 'ff-pointer) (MAKE-HINGE-CONSTRAINT rbA rbB pivotInA pivotInB axisInA axisInB)))
 
-(defmethod initialize-instance :after ((obj HINGE-CONSTRAINT) &key (rbA RIGID-BODY) (pivotInA VECTOR3) (axisInA VECTOR3) (useReferenceFrameA t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-HINGE-CONSTRAINT rbA pivotInA axisInA useReferenceFrameA)))
-
-(defmethod initialize-instance :after ((obj HINGE-CONSTRAINT) &key (rbA RIGID-BODY) (pivotInA VECTOR3) (axisInA VECTOR3))
-  (setf (slot-value obj 'ff-pointer) (MAKE-HINGE-CONSTRAINT rbA pivotInA axisInA)))
-
-(defmethod initialize-instance :after ((obj HINGE-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (rbAFrame TRANSFORM) (rbBFrame TRANSFORM) (useReferenceFrameA t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-HINGE-CONSTRAINT rbA rbB rbAFrame rbBFrame useReferenceFrameA)))
-
-(defmethod initialize-instance :after ((obj HINGE-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (rbAFrame TRANSFORM) (rbBFrame TRANSFORM))
-  (setf (slot-value obj 'ff-pointer) (MAKE-HINGE-CONSTRAINT rbA rbB rbAFrame rbBFrame)))
-
-(defmethod initialize-instance :after ((obj HINGE-CONSTRAINT) &key (rbA RIGID-BODY) (rbAFrame TRANSFORM) (useReferenceFrameA t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-HINGE-CONSTRAINT rbA rbAFrame useReferenceFrameA)))
-
-(defmethod initialize-instance :after ((obj HINGE-CONSTRAINT) &key (rbA RIGID-BODY) (rbAFrame TRANSFORM))
-  (setf (slot-value obj 'ff-pointer) (MAKE-HINGE-CONSTRAINT rbA rbAFrame)))
 
 (defmethod BUILD-JACOBIAN ((self HINGE-CONSTRAINT))
   (HINGE-CONSTRAINT/BUILD-JACOBIAN (ff-pointer self)))
@@ -568,20 +608,23 @@
 (defmethod (SETF MOTOR-TARGET) ( (targetAngle number) (self HINGE-CONSTRAINT) (dt number))
   (HINGE-CONSTRAINT/SET-MOTOR-TARGET (ff-pointer self) targetAngle dt))
 
-(defmethod (SETF LIMIT) ( (low number) (self HINGE-CONSTRAINT) (high number) (_softness number) (_biasFactor number) (_relaxationFactor number))
-  (HINGE-CONSTRAINT/SET-LIMIT (ff-pointer self) low high _softness _biasFactor _relaxationFactor))
+(defmethod (SETF LIMITS) ((self HINGE-CONSTRAINT) (low number) (high number)
+                          (softness number) (bias-factor number) (relaxation-Factor number))
+  (HINGE-CONSTRAINT/SET-LIMIT/with-softness&bias&relaxation
+   (ff-pointer self) low high softness bias-factor relaxation-Factor))
 
-(defmethod (SETF LIMIT) ( (low number) (self HINGE-CONSTRAINT) (high number) (_softness number) (_biasFactor number))
-  (HINGE-CONSTRAINT/SET-LIMIT (ff-pointer self) low high _softness _biasFactor))
+(defmethod (SETF LIMITS) ((self HINGE-CONSTRAINT) (low number) (high number) (softness number) (bias-factor number) (relax null))
+  (HINGE-CONSTRAINT/SET-LIMIT/with-softness&bias (ff-pointer self)
+                                                 low high softness bias-factor))
 
-(defmethod (SETF LIMIT) ( (low number) (self HINGE-CONSTRAINT) (high number) (_softness number))
-  (HINGE-CONSTRAINT/SET-LIMIT (ff-pointer self) low high _softness))
+(defmethod (SETF LIMITs) ( (self HINGE-CONSTRAINT) (low number) (high number) (softness number) (bias null) (relax null))
+  (HINGE-CONSTRAINT/SET-LIMIT/with-softness (ff-pointer self) low high softness))
 
-(defmethod (SETF LIMIT) ( (low number) (self HINGE-CONSTRAINT) (high number))
+(defmethod (SETF LIMITS) ((self HINGE-CONSTRAINT) (low number) (high number) (softness null) (bias null))
   (HINGE-CONSTRAINT/SET-LIMIT (ff-pointer self) low high))
 
-(defmethod (SETF AXIS) ( (axisInA VECTOR3) (self HINGE-CONSTRAINT))
-  (HINGE-CONSTRAINT/SET-AXIS (ff-pointer self) axisInA))
+(defmethod (SETF AXIS) ( (axis-in-a VECTOR3) (self HINGE-CONSTRAINT))
+  (HINGE-CONSTRAINT/SET-AXIS (ff-pointer self) axis-in-a))
 
 (defmethod LOWER-LIMIT ((self HINGE-CONSTRAINT))
   (HINGE-CONSTRAINT/GET-LOWER-LIMIT (ff-pointer self)))
@@ -593,7 +636,7 @@
   (HINGE-CONSTRAINT/GET-HINGE-ANGLE (ff-pointer self)))
 
 (defmethod HINGE-ANGLE ((self HINGE-CONSTRAINT) (transA TRANSFORM) (transB TRANSFORM))
-  (HINGE-CONSTRAINT/GET-HINGE-ANGLE (ff-pointer self) transA transB))
+  (HINGE-CONSTRAINT/GET-HINGE-ANGLE/with-transa&b (ff-pointer self) transA transB))
 
 (defmethod TEST-LIMIT ((self HINGE-CONSTRAINT) (transA TRANSFORM) (transB TRANSFORM))
   (HINGE-CONSTRAINT/TEST-LIMIT (ff-pointer self) transA transB))
@@ -637,7 +680,7 @@
 (defmethod CALCULATE-SERIALIZE-BUFFER-SIZE ((self HINGE-CONSTRAINT))
   (HINGE-CONSTRAINT/CALCULATE-SERIALIZE-BUFFER-SIZE (ff-pointer self)))
 
-(defmethod ->serial ((self HINGE-CONSTRAINT)&key data-buffer serializer &allow-other-keys)
+(defmethod ->serial ((self HINGE-CONSTRAINT) &key data-buffer serializer &allow-other-keys)
     (check-type serializer serializer)
     (HINGE-CONSTRAINT/SERIALIZE (ff-pointer self) data-buffer serializer))
 
@@ -645,40 +688,51 @@
 (defmethod NEW ((self CONE-TWIST-CONSTRAINT) sizeInBytes)
   (CONE-TWIST-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
 
-(defmethod BULLET/DELETE ((self CONE-TWIST-CONSTRAINT) ptr)
+#+(or) (defmethod bullet/delete ((self CONE-TWIST-CONSTRAINT) ptr)
   (CONE-TWIST-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 
-(defmethod NEW ((self CONE-TWIST-CONSTRAINT) arg1 ptr)
-  (CONE-TWIST-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
+#+ (or) (defmethod NEW ((self CONE-TWIST-CONSTRAINT) arg1 ptr)
+        (CONE-TWIST-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
 
-(defmethod BULLET/DELETE ((self CONE-TWIST-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod bullet/delete ((self CONE-TWIST-CONSTRAINT) arg1 arg2)
   (CONE-TWIST-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 
-(shadow "new[]")
+#+ (or)(shadow "new[]")
 
-(defmethod NEW[] ((self CONE-TWIST-CONSTRAINT) sizeInBytes)
+#+ (or)(defmethod NEW[] ((self CONE-TWIST-CONSTRAINT) sizeInBytes)
   (CONE-TWIST-CONSTRAINT/MAKE-c++-ARRAY (ff-pointer self) sizeInBytes))
 
-(shadow "delete[]")
+#+ (or)(shadow "delete[]")
 
-(defmethod DELETE[] ((self CONE-TWIST-CONSTRAINT) ptr)
+#+(or) (defmethod delete[] ((self CONE-TWIST-CONSTRAINT) ptr)
   (CONE-TWIST-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) ptr))
 
-(shadow "new[]")
+#+ (or)(shadow "new[]")
 
-(defmethod NEW[] ((self CONE-TWIST-CONSTRAINT) arg1 ptr)
+#+ (or)(defmethod NEW[] ((self CONE-TWIST-CONSTRAINT) arg1 ptr)
   (CONE-TWIST-CONSTRAINT/MAKE-c++-ARRAY (ff-pointer self) arg1 ptr))
 
-(shadow "delete[]")
+#+ (or)(shadow "delete[]")
 
-(defmethod DELETE[] ((self CONE-TWIST-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod delete[] ((self CONE-TWIST-CONSTRAINT) arg1 arg2)
   (CONE-TWIST-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
-(defmethod initialize-instance :after ((obj CONE-TWIST-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (rbAFrame TRANSFORM) (rbBFrame TRANSFORM))
-  (setf (slot-value obj 'ff-pointer) (MAKE-CONE-TWIST-CONSTRAINT rbA rbB rbAFrame rbBFrame)))
-
-(defmethod initialize-instance :after ((obj CONE-TWIST-CONSTRAINT) &key (rbA RIGID-BODY) (rbAFrame TRANSFORM))
-  (setf (slot-value obj 'ff-pointer) (MAKE-CONE-TWIST-CONSTRAINT rbA rbAFrame)))
+(defmethod initialize-instance :after ((obj CONE-TWIST-CONSTRAINT)
+                                       &key rigid-body-a rigid-body-b
+                                         rigid-body-a-frame rigid-body-b-frame)
+  (check-type rigid-body-a RIGID-BODY)
+  (check-type rigid-body-a-frame TRANSFORM)
+  (setf (slot-value obj 'ff-pointer) 
+        (cond
+          (rigid-body-b
+           (check-type rigid-body-b RIGID-BODY)
+           (check-type rigid-body-b-frame TRANSFORM)
+           (MAKE-CONE-TWIST-CONSTRAINT/with-b (ff-pointer rigid-body-a)
+                                              (ff-pointer rigid-body-b) 
+                                              (ff-pointer rigid-body-a-frame)
+                                              (ff-pointer rigid-body-b-frame)))
+          (t (MAKE-CONE-TWIST-CONSTRAINT (ff-pointer rigid-body-a) 
+                                         (ff-pointer rigid-body-a-frame))))))
 
 (defmethod BUILD-JACOBIAN ((self CONE-TWIST-CONSTRAINT))
   (CONE-TWIST-CONSTRAINT/BUILD-JACOBIAN (ff-pointer self)))
@@ -692,10 +746,14 @@
 (defmethod INFO-2 ((self CONE-TWIST-CONSTRAINT) info)
   (CONE-TWIST-CONSTRAINT/GET-INFO-2 (ff-pointer self) info))
 
-(defmethod INFO-2-NON-VIRTUAL ((self CONE-TWIST-CONSTRAINT) info (transA TRANSFORM) (transB TRANSFORM) (invInertiaWorldA MATRIX-3X3) (invInertiaWorldB MATRIX-3X3))
+(defmethod INFO-2-NON-VIRTUAL ((self CONE-TWIST-CONSTRAINT) info
+                               (transA TRANSFORM) (transB TRANSFORM)
+                               (invInertiaWorldA MATRIX-3X3)
+                               (invInertiaWorldB MATRIX-3X3))
   (CONE-TWIST-CONSTRAINT/GET-INFO-2-NON-VIRTUAL (ff-pointer self) info transA transB invInertiaWorldA invInertiaWorldB))
 
-(defmethod SOLVE-CONSTRAINT-OBSOLETE ((self CONE-TWIST-CONSTRAINT) bodyA bodyB (time-step number))
+(defmethod SOLVE-CONSTRAINT-OBSOLETE ((self CONE-TWIST-CONSTRAINT)
+                                      bodyA bodyB (time-step number))
   (CONE-TWIST-CONSTRAINT/SOLVE-CONSTRAINT-OBSOLETE (ff-pointer self) bodyA bodyB time-step))
 
 (defmethod UPDATE-RHS ((self CONE-TWIST-CONSTRAINT) (time-step number))
@@ -710,20 +768,29 @@
 (defmethod (SETF ANGULAR-ONLY) ( (angularOnly t) (self CONE-TWIST-CONSTRAINT))
   (CONE-TWIST-CONSTRAINT/SET-ANGULAR-ONLY (ff-pointer self) angularOnly))
 
-(defmethod (SETF LIMIT) ( (limitIndex integer) (self CONE-TWIST-CONSTRAINT) (limitValue number))
-  (CONE-TWIST-CONSTRAINT/SET-LIMIT (ff-pointer self) limitIndex limitValue))
+(defmethod (SETF LIMIT-ELT) ((limit-Value number)
+                             (self CONE-TWIST-CONSTRAINT) (limit-Index integer))
+  (CONE-TWIST-CONSTRAINT/SET-LIMIT/elt (ff-pointer self) limit-Index limit-Value))
 
-(defmethod (SETF LIMIT) ( (_swingSpan1 number) (self CONE-TWIST-CONSTRAINT) (_swingSpan2 number) (_twistSpan number) (_softness number) (_biasFactor number) (_relaxationFactor number))
-  (CONE-TWIST-CONSTRAINT/SET-LIMIT (ff-pointer self) _swingSpan1 _swingSpan2 _twistSpan _softness _biasFactor _relaxationFactor))
+(defmethod (SETF LIMITS) ((self CONE-TWIST-CONSTRAINT)
+                          (swing-Span-1 number)  (swing-Span-2 number)
+                          (twist-Span number) (softness number)
+                          (bias-factor number) (_relaxationFactor number))
+  (CONE-TWIST-CONSTRAINT/SET-LIMIT/with-bias&relax (ff-pointer self) swing-Span-1 swing-Span-2
+                                   twist-Span softness bias-factor _relaxationFactor))
 
-(defmethod (SETF LIMIT) ( (_swingSpan1 number) (self CONE-TWIST-CONSTRAINT) (_swingSpan2 number) (_twistSpan number) (_softness number) (_biasFactor number))
-  (CONE-TWIST-CONSTRAINT/SET-LIMIT (ff-pointer self) _swingSpan1 _swingSpan2 _twistSpan _softness _biasFactor))
+(defmethod (SETF LIMITS) ((self CONE-TWIST-CONSTRAINT)
+                          (swing-Span-1 number)  (swing-Span-2 number)
+                          (twist-Span number) (softness number)
+                          (bias-factor number) (relax null))
+  (CONE-TWIST-CONSTRAINT/SET-LIMIT/with-bias (ff-pointer self) swing-Span-1 swing-Span-2
+                                   twist-Span softness bias-factor))
 
-(defmethod (SETF LIMIT) ( (_swingSpan1 number) (self CONE-TWIST-CONSTRAINT) (_swingSpan2 number) (_twistSpan number) (_softness number))
-  (CONE-TWIST-CONSTRAINT/SET-LIMIT (ff-pointer self) _swingSpan1 _swingSpan2 _twistSpan _softness))
+(defmethod (SETF LIMITS) ((self CONE-TWIST-CONSTRAINT) (swing-Span-1 number) (swing-Span-2 number) (twist-Span number) (softness number))
+  (CONE-TWIST-CONSTRAINT/SET-LIMIT (ff-pointer self) swing-Span-1 swing-Span-2 twist-Span softness))
 
-(defmethod (SETF LIMIT) ( (_swingSpan1 number) (self CONE-TWIST-CONSTRAINT) (_swingSpan2 number) (_twistSpan number))
-  (CONE-TWIST-CONSTRAINT/SET-LIMIT (ff-pointer self) _swingSpan1 _swingSpan2 _twistSpan))
+(defmethod (SETF LIMITS) ((self CONE-TWIST-CONSTRAINT) (swing-Span-1 number)  (swing-Span-2 number) (twist-Span number))
+  (CONE-TWIST-CONSTRAINT/SET-LIMIT (ff-pointer self) swing-Span-1 swing-Span-2 twist-Span))
 
 (defmethod AFRAME ((self CONE-TWIST-CONSTRAINT))
   (CONE-TWIST-CONSTRAINT/GET-AFRAME (ff-pointer self)))
@@ -1029,13 +1096,13 @@
 (defmethod NEW ((self GENERIC-6-DOF-CONSTRAINT) sizeInBytes)
   (GENERIC-6-DOF-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
 
-(defmethod BULLET/DELETE ((self GENERIC-6-DOF-CONSTRAINT) ptr)
+#+(or) (defmethod bullet/delete ((self GENERIC-6-DOF-CONSTRAINT) ptr)
   (GENERIC-6-DOF-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 
 (defmethod NEW ((self GENERIC-6-DOF-CONSTRAINT) arg1 ptr)
   (GENERIC-6-DOF-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
 
-(defmethod BULLET/DELETE ((self GENERIC-6-DOF-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod bullet/delete ((self GENERIC-6-DOF-CONSTRAINT) arg1 arg2)
   (GENERIC-6-DOF-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 
 (shadow "new[]")
@@ -1045,7 +1112,7 @@
 
 (shadow "delete[]")
 
-(defmethod DELETE[] ((self GENERIC-6-DOF-CONSTRAINT) ptr)
+#+(or) (defmethod delete[] ((self GENERIC-6-DOF-CONSTRAINT) ptr)
   (GENERIC-6-DOF-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) ptr))
 
 (shadow "new[]")
@@ -1055,7 +1122,7 @@
 
 (shadow "delete[]")
 
-(defmethod DELETE[] ((self GENERIC-6-DOF-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod delete[] ((self GENERIC-6-DOF-CONSTRAINT) arg1 arg2)
   (GENERIC-6-DOF-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
 (defmethod (setf USE-SOLVE-CONSTRAINT-OBSOLETE) ( (obj GENERIC-6-DOF-CONSTRAINT) arg0)
@@ -1064,11 +1131,11 @@
 (defmethod USE-SOLVE-CONSTRAINT-OBSOLETE ((obj GENERIC-6-DOF-CONSTRAINT))
   (GENERIC-6-DOF-CONSTRAINT/USE-SOLVE-CONSTRAINT-OBSOLETE/GET (ff-pointer obj)))
 
-(defmethod initialize-instance :after ((obj GENERIC-6-DOF-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (frameInA TRANSFORM) (frameInB TRANSFORM) (useLinearReferenceFrameA t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-GENERIC-6-DOF-CONSTRAINT rbA rbB frameInA frameInB useLinearReferenceFrameA)))
+(defmethod initialize-instance :after ((obj GENERIC-6-DOF-CONSTRAINT) &key (rigid-body-a RIGID-BODY) (rigid-body-b RIGID-BODY) (frameInA TRANSFORM) (frame-in-b TRANSFORM) (USE-LINEAR-REFERENCE-FRAME-A-P t))
+  (setf (slot-value obj 'ff-pointer) (MAKE-GENERIC-6-DOF-CONSTRAINT rigid-body-a rigid-body-b frameInA frame-in-b USE-LINEAR-REFERENCE-FRAME-A-P)))
 
-(defmethod initialize-instance :after ((obj GENERIC-6-DOF-CONSTRAINT) &key (rbB RIGID-BODY) (frameInB TRANSFORM) (useLinearReferenceFrameB t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-GENERIC-6-DOF-CONSTRAINT rbB frameInB useLinearReferenceFrameB)))
+(defmethod initialize-instance :after ((obj GENERIC-6-DOF-CONSTRAINT) &key (rigid-body-b RIGID-BODY) (frame-in-b TRANSFORM) (USE-LINEAR-REFERENCE-FRAME-B-P t))
+  (setf (slot-value obj 'ff-pointer) (MAKE-GENERIC-6-DOF-CONSTRAINT rigid-body-b frame-in-b USE-LINEAR-REFERENCE-FRAME-B-P)))
 
 (defmethod CALCULATE-TRANSFORMS ((self GENERIC-6-DOF-CONSTRAINT) (transA TRANSFORM) (transB TRANSFORM))
   (GENERIC-6-DOF-CONSTRAINT/CALCULATE-TRANSFORMS (ff-pointer self) transA transB))
@@ -1192,13 +1259,13 @@
 (defmethod NEW ((self SLIDER-CONSTRAINT) sizeInBytes)
   (SLIDER-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
 
-(defmethod BULLET/DELETE ((self SLIDER-CONSTRAINT) ptr)
+#+(or) (defmethod bullet/delete ((self SLIDER-CONSTRAINT) ptr)
   (SLIDER-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 
 (defmethod NEW ((self SLIDER-CONSTRAINT) arg1 ptr)
   (SLIDER-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
 
-(defmethod BULLET/DELETE ((self SLIDER-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod bullet/delete ((self SLIDER-CONSTRAINT) arg1 arg2)
   (SLIDER-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 
 (shadow "new[]")
@@ -1208,7 +1275,7 @@
 
 (shadow "delete[]")
 
-(defmethod DELETE[] ((self SLIDER-CONSTRAINT) ptr)
+#+(or) (defmethod delete[] ((self SLIDER-CONSTRAINT) ptr)
   (SLIDER-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) ptr))
 
 (shadow "new[]")
@@ -1218,14 +1285,14 @@
 
 (shadow "delete[]")
 
-(defmethod DELETE[] ((self SLIDER-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod delete[] ((self SLIDER-CONSTRAINT) arg1 arg2)
   (SLIDER-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
-(defmethod initialize-instance :after ((obj SLIDER-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (frameInA TRANSFORM) (frameInB TRANSFORM) (useLinearReferenceFrameA t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-SLIDER-CONSTRAINT rbA rbB frameInA frameInB useLinearReferenceFrameA)))
+(defmethod initialize-instance :after ((obj SLIDER-CONSTRAINT) &key (rigid-body-a RIGID-BODY) (rigid-body-b RIGID-BODY) (frameInA TRANSFORM) (frame-in-b TRANSFORM) (USE-LINEAR-REFERENCE-FRAME-A-P t))
+  (setf (slot-value obj 'ff-pointer) (MAKE-SLIDER-CONSTRAINT rigid-body-a rigid-body-b frameInA frame-in-b USE-LINEAR-REFERENCE-FRAME-A-P)))
 
-(defmethod initialize-instance :after ((obj SLIDER-CONSTRAINT) &key (rbB RIGID-BODY) (frameInB TRANSFORM) (useLinearReferenceFrameA t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-SLIDER-CONSTRAINT rbB frameInB useLinearReferenceFrameA)))
+(defmethod initialize-instance :after ((obj SLIDER-CONSTRAINT) &key (rigid-body-b RIGID-BODY) (frame-in-b TRANSFORM) (USE-LINEAR-REFERENCE-FRAME-A-P t))
+  (setf (slot-value obj 'ff-pointer) (MAKE-SLIDER-CONSTRAINT rigid-body-b frame-in-b USE-LINEAR-REFERENCE-FRAME-A-P)))
 
 (defmethod INFO-1 ((self SLIDER-CONSTRAINT) info)
   (SLIDER-CONSTRAINT/GET-INFO-1 (ff-pointer self) info))
@@ -1236,8 +1303,8 @@
 (defmethod INFO-2 ((self SLIDER-CONSTRAINT) info)
   (SLIDER-CONSTRAINT/GET-INFO-2 (ff-pointer self) info))
 
-(defmethod INFO-2-NON-VIRTUAL ((self SLIDER-CONSTRAINT) info (transA TRANSFORM) (transB TRANSFORM) (linVelA VECTOR3) (linVelB VECTOR3) (rbAinvMass number) (rbBinvMass number))
-  (SLIDER-CONSTRAINT/GET-INFO-2-NON-VIRTUAL (ff-pointer self) info transA transB linVelA linVelB rbAinvMass rbBinvMass))
+(defmethod INFO-2-NON-VIRTUAL ((self SLIDER-CONSTRAINT) info (transA TRANSFORM) (transB TRANSFORM) (linVelA VECTOR3) (linVelB VECTOR3) (rigid-body-ainvMass number) (rigid-body-binvMass number))
+  (SLIDER-CONSTRAINT/GET-INFO-2-NON-VIRTUAL (ff-pointer self) info transA transB linVelA linVelB rigid-body-ainvMass rigid-body-binvMass))
 
 (defmethod RIGID-BODY-A ((self SLIDER-CONSTRAINT))
   (SLIDER-CONSTRAINT/GET-RIGID-BODY-A (ff-pointer self)))
@@ -1287,8 +1354,8 @@
 (defmethod (SETF UPPER-ANG-LIMIT) ( (upperLimit number) (self SLIDER-CONSTRAINT))
   (SLIDER-CONSTRAINT/SET-UPPER-ANG-LIMIT (ff-pointer self) upperLimit))
 
-(defmethod USE-LINEAR-REFERENCE-FRAME-A ((self SLIDER-CONSTRAINT))
-  (SLIDER-CONSTRAINT/GET-USE-LINEAR-REFERENCE-FRAME-A (ff-pointer self)))
+(defmethod USE-LINEAR-REFERENCE-FRAME-A-P ((self SLIDER-CONSTRAINT))
+  (SLIDER-CONSTRAINT/GET-USE-LINEAR-REFERENCE-FRAME-A-P (ff-pointer self)))
 
 (defmethod SOFTNESS-DIR-LIN ((self SLIDER-CONSTRAINT))
   (SLIDER-CONSTRAINT/GET-SOFTNESS-DIR-LIN (ff-pointer self)))
@@ -1487,13 +1554,13 @@
 (defmethod NEW ((self GENERIC-6-DOF-SPRING-CONSTRAINT) sizeInBytes)
   (GENERIC-6-DOF-SPRING-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
 
-(defmethod BULLET/DELETE ((self GENERIC-6-DOF-SPRING-CONSTRAINT) ptr)
+#+(or) (defmethod bullet/delete ((self GENERIC-6-DOF-SPRING-CONSTRAINT) ptr)
   (GENERIC-6-DOF-SPRING-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 
 (defmethod NEW ((self GENERIC-6-DOF-SPRING-CONSTRAINT) arg1 ptr)
   (GENERIC-6-DOF-SPRING-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
 
-(defmethod BULLET/DELETE ((self GENERIC-6-DOF-SPRING-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod bullet/delete ((self GENERIC-6-DOF-SPRING-CONSTRAINT) arg1 arg2)
   (GENERIC-6-DOF-SPRING-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 
 (shadow "new[]")
@@ -1503,7 +1570,7 @@
 
 (shadow "delete[]")
 
-(defmethod DELETE[] ((self GENERIC-6-DOF-SPRING-CONSTRAINT) ptr)
+#+(or) (defmethod delete[] ((self GENERIC-6-DOF-SPRING-CONSTRAINT) ptr)
   (GENERIC-6-DOF-SPRING-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) ptr))
 
 (shadow "new[]")
@@ -1513,34 +1580,42 @@
 
 (shadow "delete[]")
 
-(defmethod DELETE[] ((self GENERIC-6-DOF-SPRING-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod delete[] ((self GENERIC-6-DOF-SPRING-CONSTRAINT) arg1 arg2)
   (GENERIC-6-DOF-SPRING-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
-(defmethod initialize-instance :after ((obj GENERIC-6-DOF-SPRING-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (frameInA TRANSFORM) (frameInB TRANSFORM) (useLinearReferenceFrameA t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-GENERIC-6-DOF-SPRING-CONSTRAINT rbA rbB frameInA frameInB useLinearReferenceFrameA)))
+(defmethod initialize-instance :after ((obj GENERIC-6-DOF-SPRING-CONSTRAINT) &key (rigid-body-a RIGID-BODY) (rigid-body-b RIGID-BODY) (frameInA TRANSFORM) (frame-in-b TRANSFORM) (USE-LINEAR-REFERENCE-FRAME-A-P t))
+  (setf (slot-value obj 'ff-pointer) (MAKE-GENERIC-6-DOF-SPRING-CONSTRAINT rigid-body-a rigid-body-b frameInA frame-in-b USE-LINEAR-REFERENCE-FRAME-A-P)))
 
-(defmethod initialize-instance :after ((obj GENERIC-6-DOF-SPRING-CONSTRAINT) &key (rbB RIGID-BODY) (frameInB TRANSFORM) (useLinearReferenceFrameB t))
-  (setf (slot-value obj 'ff-pointer) (MAKE-GENERIC-6-DOF-SPRING-CONSTRAINT rbB frameInB useLinearReferenceFrameB)))
+(defmethod initialize-instance :after ((obj GENERIC-6-DOF-SPRING-CONSTRAINT)
+                                       &key (rigid-body-b RIGID-BODY) (frame-in-b TRANSFORM) (USE-LINEAR-REFERENCE-FRAME-B-P t))
+  (setf (slot-value obj 'ff-pointer) (MAKE-GENERIC-6-DOF-SPRING-CONSTRAINT rigid-body-b frame-in-b USE-LINEAR-REFERENCE-FRAME-B-P)))
 
-(defmethod ENABLE-SPRING ((self GENERIC-6-DOF-SPRING-CONSTRAINT) (index integer) (onOff t))
-  (GENERIC-6-DOF-SPRING-CONSTRAINT/ENABLE-SPRING (ff-pointer self) index onOff))
+(defmethod ENABLE-SPRING ((self GENERIC-6-DOF-SPRING-CONSTRAINT) (index integer) 
+                          (enablep t))
+  (GENERIC-6-DOF-SPRING-CONSTRAINT/ENABLE-SPRING (ff-pointer self) index enablep))
 
-(defmethod (SETF STIFFNESS) ( (index integer) (self GENERIC-6-DOF-SPRING-CONSTRAINT) (stiffness number))
+(defmethod (SETF STIFFNESS) ((self GENERIC-6-DOF-SPRING-CONSTRAINT)
+                             (index integer)  (stiffness number))
   (GENERIC-6-DOF-SPRING-CONSTRAINT/SET-STIFFNESS (ff-pointer self) index stiffness))
 
 (defmethod (SETF DAMPING) ( (index integer) (self GENERIC-6-DOF-SPRING-CONSTRAINT) (damping number))
   (GENERIC-6-DOF-SPRING-CONSTRAINT/SET-DAMPING (ff-pointer self) index damping))
 
-(defmethod (SETF EQUILIBRIUM-POINT) () (self GENERIC-6-DOF-SPRING-CONSTRAINT)
+(defmethod (SETF EQUILIBRIUM-POINT) ((self GENERIC-6-DOF-SPRING-CONSTRAINT)
+                                     (index null) (val null))
            (GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT (ff-pointer self)))
 
-(defmethod (SETF EQUILIBRIUM-POINT) ( (index integer) (self GENERIC-6-DOF-SPRING-CONSTRAINT))
-  (GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT (ff-pointer self) index))
+(defmethod (SETF EQUILIBRIUM-POINT) ((self GENERIC-6-DOF-SPRING-CONSTRAINT)
+                                     (index integer) (val null))
+  (GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT/with-index (ff-pointer self) index))
 
-(defmethod (SETF EQUILIBRIUM-POINT) ( (index integer) (self GENERIC-6-DOF-SPRING-CONSTRAINT) (val number))
-  (GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT (ff-pointer self) index val))
+(defmethod (SETF EQUILIBRIUM-POINT) ((self GENERIC-6-DOF-SPRING-CONSTRAINT)
+                                     (index integer) (val number))
+  (GENERIC-6-DOF-SPRING-CONSTRAINT/SET-EQUILIBRIUM-POINT/with-index&number
+   (ff-pointer self) index val))
 
-(defmethod (SETF AXIS) ( (axis1 VECTOR3) (self GENERIC-6-DOF-SPRING-CONSTRAINT) (axis2 VECTOR3))
+(defmethod (SETF AXES) ((self GENERIC-6-DOF-SPRING-CONSTRAINT)
+                        (axis1 VECTOR3) (axis2 VECTOR3))
   (GENERIC-6-DOF-SPRING-CONSTRAINT/SET-AXIS (ff-pointer self) axis1 axis2))
 
 (defmethod INFO-2 ((self GENERIC-6-DOF-SPRING-CONSTRAINT) info)
@@ -1551,34 +1626,47 @@
 
 (defmethod ->serial ((self GENERIC-6-DOF-SPRING-CONSTRAINT)&key data-buffer serializer &allow-other-keys)
     (check-type serializer serializer)
-    (GENERIC-6-DOF-SPRING-CONSTRAINT/SERIALIZE (ff-pointer self) data-buffer serializer))
+    (GENERIC-6-DOF-SPRING-CONSTRAINT/SERIALIZE (ff-pointer self) data-buffer 
+                                               (ff-pointer serializer)))
 
 (defmethod NEW ((self UNIVERSAL-CONSTRAINT) sizeInBytes)
   (UNIVERSAL-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
 
-(defmethod BULLET/DELETE ((self UNIVERSAL-CONSTRAINT) ptr)
+#+(or) (defmethod bullet/delete ((self UNIVERSAL-CONSTRAINT) ptr)
   (UNIVERSAL-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 
 (defmethod NEW ((self UNIVERSAL-CONSTRAINT) arg1 ptr)
   (UNIVERSAL-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
 
-(defmethod BULLET/DELETE ((self UNIVERSAL-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod bullet/delete ((self UNIVERSAL-CONSTRAINT) arg1 arg2)
   (UNIVERSAL-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 
 (defmethod NEW[] ((self UNIVERSAL-CONSTRAINT) sizeInBytes)
   (UNIVERSAL-CONSTRAINT/MAKE-c++-ARRAY (ff-pointer self) sizeInBytes))
 
-(defmethod DELETE[] ((self UNIVERSAL-CONSTRAINT) ptr)
+#+(or) (defmethod delete[] ((self UNIVERSAL-CONSTRAINT) ptr)
   (UNIVERSAL-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) ptr))
 
 (defmethod NEW[] ((self UNIVERSAL-CONSTRAINT) arg1 ptr)
   (UNIVERSAL-CONSTRAINT/MAKE-c++-ARRAY (ff-pointer self) arg1 ptr))
 
-(defmethod DELETE[] ((self UNIVERSAL-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod delete[] ((self UNIVERSAL-CONSTRAINT) arg1 arg2)
   (UNIVERSAL-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
-(defmethod initialize-instance :after ((obj UNIVERSAL-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (anchor VECTOR3) (axis1 VECTOR3) (axis2 VECTOR3))
-  (setf (slot-value obj 'ff-pointer) (MAKE-UNIVERSAL-CONSTRAINT rbA rbB anchor axis1 axis2)))
+(defmethod initialize-instance :after ((obj UNIVERSAL-CONSTRAINT)
+                                       &key rigid-body-a rigid-body-b
+                                         anchor
+                                         axis1 axis2)
+  (check-type rigid-body-a RIGID-BODY) 
+  (check-type rigid-body-b RIGID-BODY) 
+  (check-type anchor VECTOR3) 
+  (check-type axis1 VECTOR3) 
+  (check-type axis2 VECTOR3)
+  (setf (slot-value obj 'ff-pointer)
+        (MAKE-UNIVERSAL-CONSTRAINT (ff-pointer rigid-body-a) 
+                                   (ff-pointer rigid-body-b) 
+                                   (ff-pointer anchor) 
+                                   (ff-pointer axis1) (ff-pointer axis2))))
 
 (defmethod ANCHOR ((self UNIVERSAL-CONSTRAINT))
   (UNIVERSAL-CONSTRAINT/GET-ANCHOR (ff-pointer self)))
@@ -1586,11 +1674,19 @@
 (defmethod ANCHOR-2 ((self UNIVERSAL-CONSTRAINT))
   (UNIVERSAL-CONSTRAINT/GET-ANCHOR-2 (ff-pointer self)))
 
+(defmethod ANCHORS ((self UNIVERSAL-CONSTRAINT))
+  (values (UNIVERSAL-CONSTRAINT/GET-ANCHOR (ff-pointer self))
+          (UNIVERSAL-CONSTRAINT/GET-ANCHOR2 (ff-pointer self))))
+
 (defmethod AXIS-1 ((self UNIVERSAL-CONSTRAINT))
   (UNIVERSAL-CONSTRAINT/GET-AXIS-1 (ff-pointer self)))
 
 (defmethod AXIS-2 ((self UNIVERSAL-CONSTRAINT))
   (UNIVERSAL-CONSTRAINT/GET-AXIS-2 (ff-pointer self)))
+
+(defmethod axes ((self universal-constraint))
+  (values (UNIVERSAL-CONSTRAINT/GET-AXIS-1 (ff-pointer self))
+          (UNIVERSAL-CONSTRAINT/GET-AXIS-2 (ff-pointer self))))
 
 (defmethod ANGLE-1 ((self UNIVERSAL-CONSTRAINT))
   (UNIVERSAL-CONSTRAINT/GET-ANGLE-1 (ff-pointer self)))
@@ -1598,43 +1694,53 @@
 (defmethod ANGLE-2 ((self UNIVERSAL-CONSTRAINT))
   (UNIVERSAL-CONSTRAINT/GET-ANGLE-2 (ff-pointer self)))
 
-(defmethod (SETF UPPER-LIMIT) ( (ang1max number) (self UNIVERSAL-CONSTRAINT)
-                               (ang2max number))
+(defmethod ANGLES ((self UNIVERSAL-CONSTRAINT))
+  (values (UNIVERSAL-CONSTRAINT/GET-ANGLE-1 (ff-pointer self))
+          (UNIVERSAL-CONSTRAINT/GET-ANGLE-2 (ff-pointer self))))
+
+(defmethod (SETF UPPER-LIMITS) ((self UNIVERSAL-CONSTRAINT)
+                                (ang1max number) (ang2max number))
   (UNIVERSAL-CONSTRAINT/SET-UPPER-LIMIT (ff-pointer self) ang1max ang2max))
 
-(defmethod (SETF LOWER-LIMIT) ( (ang1min number) (self UNIVERSAL-CONSTRAINT)
-                               (ang2min number))
-  (UNIVERSAL-CONSTRAINT/SET-LOWER-LIMIT (ff-pointer self) ang1min ang2min))
+(defmethod (SETF LOWER-LIMITS) ((self UNIVERSAL-CONSTRAINT)
+                                (angle-1-min number)
+                                (angle-2-min number))
+  (UNIVERSAL-CONSTRAINT/SET-LOWER-LIMIT (ff-pointer self) angle-1-min angle-2-min))
 
-(defmethod (SETF AXIS) ( (axis1 VECTOR3) (self UNIVERSAL-CONSTRAINT) (axis2 VECTOR3))
+(defmethod (SETF AXES) ( (self UNIVERSAL-CONSTRAINT) (axis1 VECTOR3) (axis2 VECTOR3))
   (UNIVERSAL-CONSTRAINT/SET-AXIS (ff-pointer self) axis1 axis2))
 
-(defmethod NEW ((self HINGE-2-CONSTRAINT) sizeInBytes)
-  (HINGE-2-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
+#+ (or) (defmethod NEW ((self HINGE-2-CONSTRAINT) sizeInBytes)
+        (HINGE-2-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
 
-(defmethod BULLET/DELETE ((self HINGE-2-CONSTRAINT) ptr)
+#+(or) (defmethod bullet/delete ((self HINGE-2-CONSTRAINT) ptr)
   (HINGE-2-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 
-(defmethod NEW ((self HINGE-2-CONSTRAINT) arg1 ptr)
-  (HINGE-2-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
+#+ (or) (defmethod NEW ((self HINGE-2-CONSTRAINT) arg1 ptr)
+        (HINGE-2-CONSTRAINT/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
 
-(defmethod BULLET/DELETE ((self HINGE-2-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod bullet/delete ((self HINGE-2-CONSTRAINT) arg1 arg2)
   (HINGE-2-CONSTRAINT/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 
-(defmethod NEW[] ((self HINGE-2-CONSTRAINT) sizeInBytes)
+#+ (or) (defmethod NEW[] ((self HINGE-2-CONSTRAINT) sizeInBytes)
   (HINGE-2-CONSTRAINT/MAKE-c++-ARRAY (ff-pointer self) sizeInBytes))
 
-(defmethod DELETE[] ((self HINGE-2-CONSTRAINT) ptr)
+#+(or) (defmethod delete[] ((self HINGE-2-CONSTRAINT) ptr)
   (HINGE-2-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) ptr))
 
-(defmethod NEW[] ((self HINGE-2-CONSTRAINT) arg1 ptr)
-  (HINGE-2-CONSTRAINT/MAKE-c++-ARRAY (ff-pointer self) arg1 ptr))
+#+ (or) (defmethod NEW[] ((self HINGE-2-CONSTRAINT) arg1 ptr)
+        (HINGE-2-CONSTRAINT/MAKE-c++-ARRAY (ff-pointer self) arg1 ptr))
 
-(defmethod DELETE[] ((self HINGE-2-CONSTRAINT) arg1 arg2)
+#+(or) (defmethod delete[] ((self HINGE-2-CONSTRAINT) arg1 arg2)
   (HINGE-2-CONSTRAINT/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
-(defmethod initialize-instance :after ((obj HINGE-2-CONSTRAINT) &key (rbA RIGID-BODY) (rbB RIGID-BODY) (anchor VECTOR3) (axis1 VECTOR3) (axis2 VECTOR3))
-  (setf (slot-value obj 'ff-pointer) (MAKE-HINGE-2-CONSTRAINT rbA rbB anchor axis1 axis2)))
+(defmethod initialize-instance :after ((obj HINGE-2-CONSTRAINT)
+                                       &key (rigid-body-a RIGID-BODY) 
+                                         (rigid-body-b RIGID-BODY)
+                                         (anchor VECTOR3)
+                                         (axis1 VECTOR3) (axis2 VECTOR3))
+  (setf (slot-value obj 'ff-pointer) 
+        (MAKE-HINGE-2-CONSTRAINT rigid-body-a rigid-body-b anchor axis1 axis2)))
 
 (defmethod ANCHOR ((self HINGE-2-CONSTRAINT))
   (HINGE-2-CONSTRAINT/GET-ANCHOR (ff-pointer self)))
@@ -1654,25 +1760,25 @@
 (defmethod ANGLE-2 ((self HINGE-2-CONSTRAINT))
   (HINGE-2-CONSTRAINT/GET-ANGLE-2 (ff-pointer self)))
 
-(defmethod (SETF UPPER-LIMIT) ( (ang1max number) (self HINGE-2-CONSTRAINT))
-  (HINGE-2-CONSTRAINT/SET-UPPER-LIMIT (ff-pointer self) ang1max))
+(defmethod (SETF UPPER-LIMIT) ( (angle-1-max number) (self HINGE-2-CONSTRAINT))
+  (HINGE-2-CONSTRAINT/SET-UPPER-LIMIT (ff-pointer self) angle-1-max))
 
-(defmethod (SETF LOWER-LIMIT) ( (ang1min number) (self HINGE-2-CONSTRAINT))
-  (HINGE-2-CONSTRAINT/SET-LOWER-LIMIT (ff-pointer self) ang1min))
+(defmethod (SETF LOWER-LIMIT) ( (angle-1-min number) (self HINGE-2-CONSTRAINT))
+  (HINGE-2-CONSTRAINT/SET-LOWER-LIMIT (ff-pointer self) angle-1-min))
 
 (defmethod initialize-instance :after ((obj GEAR-CONSTRAINT)
-                                       &key rb-A rb-B
+                                       &key rigid-body-a rigid-body-b
                                          axis-In-A axis-In-B
                                          ratio)
-  (check-type rb-A RIGID-BODY) (check-type rb-B RIGID-BODY)
+  (check-type rigid-body-a RIGID-BODY) (check-type rigid-body-b RIGID-BODY)
   (check-type axis-In-A VECTOR3) (check-type axis-In-B VECTOR3)
   (check-type ratio (or null number))
   (setf (slot-value obj 'ff-pointer)
         (if ratio
             (MAKE-GEAR-CONSTRAINT/with-ratio 
-             (ff-pointer rb-A) (ff-pointer rb-B) 
+             (ff-pointer rigid-body-a) (ff-pointer rigid-body-b) 
              (ff-pointer axis-In-A) (ff-pointer axis-In-B) ratio)
-            (MAKE-GEAR-CONSTRAINT (ff-pointer rb-A) (ff-pointer rb-B) 
+            (MAKE-GEAR-CONSTRAINT (ff-pointer rigid-body-a) (ff-pointer rigid-body-b) 
                                   (ff-pointer axis-In-A) (ff-pointer axis-In-B)))))
 
 (defmethod INFO-1 ((self GEAR-CONSTRAINT) info)
@@ -1707,12 +1813,12 @@
     (GEAR-CONSTRAINT/SERIALIZE (ff-pointer self) data-buffer (ff-pointer serializer)))
 
 (defmethod initialize-instance :after ((obj FIXED-CONSTRAINT)
-                                       &key rb-a rb-b frame-in-a frame-in-b)
-  (check-type rb-A RIGID-BODY) (check-type rb-B RIGID-BODY)
+                                       &key rigid-body-a rigid-body-b frame-in-a frame-in-b)
+  (check-type rigid-body-a RIGID-BODY) (check-type rigid-body-b RIGID-BODY)
   (check-type frame-in-A TRANSFORM) (check-type frame-in-B TRANSFORM)
   (setf (slot-value obj 'ff-pointer)
-        (MAKE-FIXED-CONSTRAINT (ff-pointer rb-A) 
-                               (ff-pointer rb-B) 
+        (MAKE-FIXED-CONSTRAINT (ff-pointer rigid-body-a) 
+                               (ff-pointer rigid-body-b) 
                                (ff-pointer frame-in-A) 
                                (ff-pointer frame-in-B))))
 
@@ -1722,28 +1828,28 @@
 (defmethod INFO-2 ((self FIXED-CONSTRAINT) info)
   (FIXED-CONSTRAINT/GET-INFO-2 (ff-pointer self) info))
 
-(defmethod NEW ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) sizeInBytes)
+#+(or) (defmethod new ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) sizeInBytes)
   (SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER/MAKE-c++-INSTANCE (ff-pointer self) sizeInBytes))
 
-(defmethod BULLET/DELETE ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) ptr)
+#+(or) (defmethod bullet/delete ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) ptr)
   (SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER/DELETE-c++-INSTANCE (ff-pointer self) ptr))
 
-(defmethod NEW ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) arg1 ptr)
+#+(or) (defmethod new ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) arg1 ptr)
   (SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER/MAKE-c++-INSTANCE (ff-pointer self) arg1 ptr))
 
-(defmethod BULLET/DELETE ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) arg1 arg2)
+#+(or) (defmethod bullet/delete ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) arg1 arg2)
   (SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER/DELETE-c++-INSTANCE (ff-pointer self) arg1 arg2))
 
-(defmethod NEW[] ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) sizeInBytes)
+#+(or) (defmethod new[] ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) sizeInBytes)
   (SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER/MAKE-c++-ARRAY (ff-pointer self) sizeInBytes))
 
-(defmethod DELETE[] ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) ptr)
+#+(or) (defmethod delete[] ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) ptr)
   (SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER/DELETE-c++-ARRAY (ff-pointer self) ptr))
 
-(defmethod NEW[] ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) arg1 ptr)
+#+(or) (defmethod new[] ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) arg1 ptr)
   (SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER/MAKE-c++-ARRAY (ff-pointer self) arg1 ptr))
 
-(defmethod DELETE[] ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) arg1 arg2)
+#+(or) (defmethod delete[] ((self SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) arg1 arg2)
   (SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER/DELETE-c++-ARRAY (ff-pointer self) arg1 arg2))
 
 (defmethod initialize-instance :after ((obj SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER) &key)

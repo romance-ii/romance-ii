@@ -142,386 +142,12 @@
 (cffi:defcvar ("gDisableDeactivation"
                *DISABLE-DEACTIVATION*)
     :pointer)
-(define-constant +RIGID-BODY-DATA-NAME+ "btRigidBodyFloatData"
-  :test 'equal)
-(cffi:defcenum RIGID-BODY-FLAGS
-  (:DISABLE-WORLD-GRAVITY 1)
-  (:ENABLE-GYROPSCOPIC-FORCE 2))
-(declaim (inline MAKE-RIGID-BODY))
-(cffi:defcfun ("_wrap_new_btRigidBody__SWIG_0"
-               MAKE-RIGID-BODY) :pointer
-  (constructionInfo :pointer))
-(declaim (inline MAKE-RIGID-BODY))
-(cffi:defcfun ("_wrap_new_btRigidBody__SWIG_1"
-               MAKE-RIGID-BODY/with-motion-state&collision-shape&local-inertia) :pointer
-  (mass :float)
-  (motionState :pointer)
-  (collisionShape :pointer)
-  (localInertia :pointer))
-(declaim (inline MAKE-RIGID-BODY))
-(cffi:defcfun ("_wrap_new_btRigidBody__SWIG_2"
-               MAKE-RIGID-BODY/with-motion-state&collision-shape) :pointer
-  (mass :float)
-  (motionState :pointer)
-  (collisionShape :pointer))
-(declaim (inline DELETE/BT-RIGID-BODY))
-(cffi:defcfun ("_wrap_delete_btRigidBody"
-               DELETE/BT-RIGID-BODY) :void
-  (self :pointer))
-(declaim (inline RIGID-BODY/PROCEED-TO-TRANSFORM))
-(cffi:defcfun ("_wrap_btRigidBody_proceedToTransform"
-               RIGID-BODY/PROCEED-TO-TRANSFORM) :void
-  (self :pointer)
-  (newTrans :pointer))
-(declaim (inline RIGID-BODY/UPCAST))
-(cffi:defcfun ("_wrap_btRigidBody_upcast__SWIG_0"
-               RIGID-BODY/UPCAST) :pointer
-  (colObj :pointer))
-#+ (or)
-(cffi:defcfun ("_wrap_btRigidBody_upcast__SWIG_1"
-               RIGID-BODY/UPCAST) :pointer
-  (colObj :pointer))
-(declaim (inline RIGID-BODY/PREDICT-INTEGRATED-TRANSFORM))
-(cffi:defcfun ("_wrap_btRigidBody_predictIntegratedTransform"
-               RIGID-BODY/PREDICT-INTEGRATED-TRANSFORM) :void
-  (self :pointer)
-  (step :float)
-  (predictedTransform :pointer))
-(declaim (inline RIGID-BODY/SAVE-KINEMATIC-STATE))
-(cffi:defcfun ("_wrap_btRigidBody_saveKinematicState"
-               RIGID-BODY/SAVE-KINEMATIC-STATE) :void
-  (self :pointer)
-  (step :float))
-(declaim (inline RIGID-BODY/APPLY-GRAVITY))
-(cffi:defcfun ("_wrap_btRigidBody_applyGravity"
-               RIGID-BODY/APPLY-GRAVITY) :void
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-GRAVITY))
-(cffi:defcfun ("_wrap_btRigidBody_setGravity"
-               RIGID-BODY/SET-GRAVITY) :void
-  (self :pointer)
-  (acceleration :pointer))
-(declaim (inline RIGID-BODY/GET-GRAVITY))
-(cffi:defcfun ("_wrap_btRigidBody_getGravity"
-               RIGID-BODY/GET-GRAVITY) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-DAMPING))
-(cffi:defcfun ("_wrap_btRigidBody_setDamping"
-               RIGID-BODY/SET-DAMPING) :void
-  (self :pointer)
-  (lin_damping :float)
-  (ang_damping :float))
-(declaim (inline RIGID-BODY/GET-LINEAR-DAMPING))
-(cffi:defcfun ("_wrap_btRigidBody_getLinearDamping"
-               RIGID-BODY/GET-LINEAR-DAMPING) :float
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-ANGULAR-DAMPING))
-(cffi:defcfun ("_wrap_btRigidBody_getAngularDamping"
-               RIGID-BODY/GET-ANGULAR-DAMPING) :float
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-LINEAR-SLEEPING-THRESHOLD))
-(cffi:defcfun ("_wrap_btRigidBody_getLinearSleepingThreshold"
-               RIGID-BODY/GET-LINEAR-SLEEPING-THRESHOLD) :float
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-ANGULAR-SLEEPING-THRESHOLD))
-(cffi:defcfun ("_wrap_btRigidBody_getAngularSleepingThreshold"
-               RIGID-BODY/GET-ANGULAR-SLEEPING-THRESHOLD) :float
-  (self :pointer))
-(declaim (inline RIGID-BODY/APPLY-DAMPING))
-(cffi:defcfun ("_wrap_btRigidBody_applyDamping"
-               RIGID-BODY/APPLY-DAMPING) :void
-  (self :pointer)
-  (timeStep :float))
-(declaim (inline RIGID-BODY/GET-COLLISION-SHAPE))
-(cffi:defcfun ("_wrap_btRigidBody_getCollisionShape__SWIG_0"
-               RIGID-BODY/GET-COLLISION-SHAPE) :pointer
-  (self :pointer))
-#+ (or)
-(cffi:defcfun ("_wrap_btRigidBody_getCollisionShape__SWIG_1"
-               RIGID-BODY/GET-COLLISION-SHAPE) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-MASS-PROPS))
-(cffi:defcfun ("_wrap_btRigidBody_setMassProps"
-               RIGID-BODY/SET-MASS-PROPS) :void
-  (self :pointer)
-  (mass :float)
-  (inertia :pointer))
-(declaim (inline RIGID-BODY/GET-LINEAR-FACTOR))
-(cffi:defcfun ("_wrap_btRigidBody_getLinearFactor"
-               RIGID-BODY/GET-LINEAR-FACTOR) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-LINEAR-FACTOR))
-(cffi:defcfun ("_wrap_btRigidBody_setLinearFactor"
-               RIGID-BODY/SET-LINEAR-FACTOR) :void
-  (self :pointer)
-  (linearFactor :pointer))
-(declaim (inline RIGID-BODY/GET-INV-MASS))
-(cffi:defcfun ("_wrap_btRigidBody_getInvMass"
-               RIGID-BODY/GET-INV-MASS) :float
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-INV-INERTIA-TENSOR-WORLD))
-(cffi:defcfun ("_wrap_btRigidBody_getInvInertiaTensorWorld"
-               RIGID-BODY/GET-INV-INERTIA-TENSOR-WORLD) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/INTEGRATE-VELOCITIES))
-(cffi:defcfun ("_wrap_btRigidBody_integrateVelocities"
-               RIGID-BODY/INTEGRATE-VELOCITIES) :void
-  (self :pointer)
-  (step :float))
-(declaim (inline RIGID-BODY/SET-CENTER-OF-MASS-TRANSFORM))
-(cffi:defcfun ("_wrap_btRigidBody_setCenterOfMassTransform"
-               RIGID-BODY/SET-CENTER-OF-MASS-TRANSFORM) :void
-  (self :pointer)
-  (xform :pointer))
-(declaim (inline RIGID-BODY/APPLY-CENTRAL-FORCE))
-(cffi:defcfun ("_wrap_btRigidBody_applyCentralForce"
-               RIGID-BODY/APPLY-CENTRAL-FORCE) :void
-  (self :pointer)
-  (force :pointer))
-(declaim (inline RIGID-BODY/GET-TOTAL-FORCE))
-(cffi:defcfun ("_wrap_btRigidBody_getTotalForce"
-               RIGID-BODY/GET-TOTAL-FORCE) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-TOTAL-TORQUE))
-(cffi:defcfun ("_wrap_btRigidBody_getTotalTorque"
-               RIGID-BODY/GET-TOTAL-TORQUE) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-INV-INERTIA-DIAG-LOCAL))
-(cffi:defcfun ("_wrap_btRigidBody_getInvInertiaDiagLocal"
-               RIGID-BODY/GET-INV-INERTIA-DIAG-LOCAL) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-INV-INERTIA-DIAG-LOCAL))
-(cffi:defcfun ("_wrap_btRigidBody_setInvInertiaDiagLocal"
-               RIGID-BODY/SET-INV-INERTIA-DIAG-LOCAL) :void
-  (self :pointer)
-  (diagInvInertia :pointer))
-(declaim (inline RIGID-BODY/SET-SLEEPING-THRESHOLDS))
-(cffi:defcfun ("_wrap_btRigidBody_setSleepingThresholds"
-               RIGID-BODY/SET-SLEEPING-THRESHOLDS) :void
-  (self :pointer)
-  (linear :float)
-  (angular :float))
-(declaim (inline RIGID-BODY/APPLY-TORQUE))
-(cffi:defcfun ("_wrap_btRigidBody_applyTorque"
-               RIGID-BODY/APPLY-TORQUE) :void
-  (self :pointer)
-  (torque :pointer))
-(declaim (inline RIGID-BODY/APPLY-FORCE))
-(cffi:defcfun ("_wrap_btRigidBody_applyForce"
-               RIGID-BODY/APPLY-FORCE) :void
-  (self :pointer)
-  (force :pointer)
-  (rel_pos :pointer))
-(declaim (inline RIGID-BODY/APPLY-CENTRAL-IMPULSE))
-(cffi:defcfun ("_wrap_btRigidBody_applyCentralImpulse"
-               RIGID-BODY/APPLY-CENTRAL-IMPULSE) :void
-  (self :pointer)
-  (impulse :pointer))
-(declaim (inline RIGID-BODY/APPLY-TORQUE-IMPULSE))
-(cffi:defcfun ("_wrap_btRigidBody_applyTorqueImpulse"
-               RIGID-BODY/APPLY-TORQUE-IMPULSE) :void
-  (self :pointer)
-  (torque :pointer))
-(declaim (inline RIGID-BODY/APPLY-IMPULSE))
-(cffi:defcfun ("_wrap_btRigidBody_applyImpulse"
-               RIGID-BODY/APPLY-IMPULSE) :void
-  (self :pointer)
-  (impulse :pointer)
-  (rel_pos :pointer))
-(declaim (inline RIGID-BODY/CLEAR-FORCES))
-(cffi:defcfun ("_wrap_btRigidBody_clearForces"
-               RIGID-BODY/CLEAR-FORCES) :void
-  (self :pointer))
-(declaim (inline RIGID-BODY/UPDATE-INERTIA-TENSOR))
-(cffi:defcfun ("_wrap_btRigidBody_updateInertiaTensor"
-               RIGID-BODY/UPDATE-INERTIA-TENSOR) :void
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-CENTER-OF-MASS-POSITION))
-(cffi:defcfun ("_wrap_btRigidBody_getCenterOfMassPosition"
-               RIGID-BODY/GET-CENTER-OF-MASS-POSITION) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-ORIENTATION))
-(cffi:defcfun ("_wrap_btRigidBody_getOrientation"
-               RIGID-BODY/GET-ORIENTATION) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-CENTER-OF-MASS-TRANSFORM))
-(cffi:defcfun ("_wrap_btRigidBody_getCenterOfMassTransform"
-               RIGID-BODY/GET-CENTER-OF-MASS-TRANSFORM) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-LINEAR-VELOCITY))
-(cffi:defcfun ("_wrap_btRigidBody_getLinearVelocity"
-               RIGID-BODY/GET-LINEAR-VELOCITY) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-ANGULAR-VELOCITY))
-(cffi:defcfun ("_wrap_btRigidBody_getAngularVelocity"
-               RIGID-BODY/GET-ANGULAR-VELOCITY) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-LINEAR-VELOCITY))
-(cffi:defcfun ("_wrap_btRigidBody_setLinearVelocity"
-               RIGID-BODY/SET-LINEAR-VELOCITY) :void
-  (self :pointer)
-  (lin_vel :pointer))
-(declaim (inline RIGID-BODY/SET-ANGULAR-VELOCITY))
-(cffi:defcfun ("_wrap_btRigidBody_setAngularVelocity"
-               RIGID-BODY/SET-ANGULAR-VELOCITY) :void
-  (self :pointer)
-  (ang_vel :pointer))
-(declaim (inline RIGID-BODY/GET-VELOCITY-IN-LOCAL-POINT))
-(cffi:defcfun ("_wrap_btRigidBody_getVelocityInLocalPoint"
-               RIGID-BODY/GET-VELOCITY-IN-LOCAL-POINT) :pointer
-  (self :pointer)
-  (rel_pos :pointer))
-(declaim (inline RIGID-BODY/TRANSLATE))
-(cffi:defcfun ("_wrap_btRigidBody_translate"
-               RIGID-BODY/TRANSLATE) :void
-  (self :pointer)
-  (v :pointer))
-(declaim (inline RIGID-BODY/GET-AABB))
-(cffi:defcfun ("_wrap_btRigidBody_getAabb"
-               RIGID-BODY/GET-AABB) :void
-  (self :pointer)
-  (aabbMin :pointer)
-  (aabbMax :pointer))
-(declaim (inline RIGID-BODY/COMPUTE-IMPULSE-DENOMINATOR))
-(cffi:defcfun ("_wrap_btRigidBody_computeImpulseDenominator"
-               RIGID-BODY/COMPUTE-IMPULSE-DENOMINATOR) :float
-  (self :pointer)
-  (pos :pointer)
-  (normal :pointer))
-(declaim (inline RIGID-BODY/COMPUTE-ANGULAR-IMPULSE-DENOMINATOR))
-(cffi:defcfun ("_wrap_btRigidBody_computeAngularImpulseDenominator"
-               RIGID-BODY/COMPUTE-ANGULAR-IMPULSE-DENOMINATOR) :float
-  (self :pointer)
-  (axis :pointer))
-(declaim (inline RIGID-BODY/UPDATE-DEACTIVATION))
-(cffi:defcfun ("_wrap_btRigidBody_updateDeactivation"
-               RIGID-BODY/UPDATE-DEACTIVATION) :void
-  (self :pointer)
-  (timeStep :float))
-(declaim (inline RIGID-BODY/WANTS-SLEEPING))
-(cffi:defcfun ("_wrap_btRigidBody_wantsSleeping"
-               RIGID-BODY/WANTS-SLEEPING) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/GET-BROADPHASE-PROXY))
-(cffi:defcfun ("_wrap_btRigidBody_getBroadphaseProxy__SWIG_0"
-               RIGID-BODY/GET-BROADPHASE-PROXY) :pointer
-  (self :pointer))
-#+ (or)
-(cffi:defcfun ("_wrap_btRigidBody_getBroadphaseProxy__SWIG_1"
-               RIGID-BODY/GET-BROADPHASE-PROXY) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-NEW-BROADPHASE-PROXY))
-(cffi:defcfun ("_wrap_btRigidBody_setNewBroadphaseProxy"
-               RIGID-BODY/SET-NEW-BROADPHASE-PROXY) :void
-  (self :pointer)
-  (broadphaseProxy :pointer))
-(declaim (inline RIGID-BODY/GET-MOTION-STATE))
-(cffi:defcfun ("_wrap_btRigidBody_getMotionState__SWIG_0"
-               RIGID-BODY/GET-MOTION-STATE) :pointer
-  (self :pointer))
-#+ (or)
-(cffi:defcfun ("_wrap_btRigidBody_getMotionState__SWIG_1"
-               RIGID-BODY/GET-MOTION-STATE) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-MOTION-STATE))
-(cffi:defcfun ("_wrap_btRigidBody_setMotionState"
-               RIGID-BODY/SET-MOTION-STATE) :void
-  (self :pointer)
-  (motionState :pointer))
-(declaim (inline RIGID-BODY/M/CONTACT-SOLVER-TYPE/SET))
-(cffi:defcfun ("_wrap_btRigidBody_m_contactSolverType_set"
-               RIGID-BODY/M/CONTACT-SOLVER-TYPE/SET) :void
-  (self :pointer)
-  (m_contactSolverType :int))
-(declaim (inline RIGID-BODY/M/CONTACT-SOLVER-TYPE/GET))
-(cffi:defcfun ("_wrap_btRigidBody_m_contactSolverType_get"
-               RIGID-BODY/M/CONTACT-SOLVER-TYPE/GET) :int
-  (self :pointer))
-(declaim (inline RIGID-BODY/M/FRICTION-SOLVER-TYPE/SET))
-(cffi:defcfun ("_wrap_btRigidBody_m_frictionSolverType_set"
-               RIGID-BODY/M/FRICTION-SOLVER-TYPE/SET) :void
-  (self :pointer)
-  (m_frictionSolverType :int))
-(declaim (inline RIGID-BODY/M/FRICTION-SOLVER-TYPE/GET))
-(cffi:defcfun ("_wrap_btRigidBody_m_frictionSolverType_get"
-               RIGID-BODY/M/FRICTION-SOLVER-TYPE/GET) :int
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-ANGULAR-FACTOR))
-(cffi:defcfun ("_wrap_btRigidBody_setAngularFactor__SWIG_0"
-               RIGID-BODY/SET-ANGULAR-FACTOR/vector3) :void
-  (self :pointer)
-  (angFac :pointer))
-(cffi:defcfun ("_wrap_btRigidBody_setAngularFactor__SWIG_1"
-               RIGID-BODY/SET-ANGULAR-FACTOR/float) :void
-  (self :pointer)
-  (angFac :float))
-(declaim (inline RIGID-BODY/GET-ANGULAR-FACTOR))
-(cffi:defcfun ("_wrap_btRigidBody_getAngularFactor"
-               RIGID-BODY/GET-ANGULAR-FACTOR) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/IS-IN-WORLD))
-(cffi:defcfun ("_wrap_btRigidBody_isInWorld"
-               RIGID-BODY/IS-IN-WORLD) :pointer
-  (self :pointer))
-(declaim (inline RIGID-BODY/CHECK-COLLIDE-WITH-OVERRIDE))
-(cffi:defcfun ("_wrap_btRigidBody_checkCollideWithOverride"
-               RIGID-BODY/CHECK-COLLIDE-WITH-OVERRIDE) :pointer
-  (self :pointer)
-  (co :pointer))
-(declaim (inline RIGID-BODY/ADD-CONSTRAINT-REF))
-(cffi:defcfun ("_wrap_btRigidBody_addConstraintRef"
-               RIGID-BODY/ADD-CONSTRAINT-REF) :void
-  (self :pointer)
-  (c :pointer))
-(declaim (inline RIGID-BODY/REMOVE-CONSTRAINT-REF))
-(cffi:defcfun ("_wrap_btRigidBody_removeConstraintRef"
-               RIGID-BODY/REMOVE-CONSTRAINT-REF) :void
-  (self :pointer)
-  (c :pointer))
-(declaim (inline RIGID-BODY/GET-CONSTRAINT-REF))
-(cffi:defcfun ("_wrap_btRigidBody_getConstraintRef"
-               RIGID-BODY/GET-CONSTRAINT-REF) :pointer
-  (self :pointer)
-  (index :int))
-(declaim (inline RIGID-BODY/GET-NUM-CONSTRAINT-REFS))
-(cffi:defcfun ("_wrap_btRigidBody_getNumConstraintRefs"
-               RIGID-BODY/GET-NUM-CONSTRAINT-REFS) :int
-  (self :pointer))
-(declaim (inline RIGID-BODY/SET-FLAGS))
-(cffi:defcfun ("_wrap_btRigidBody_setFlags"
-               RIGID-BODY/SET-FLAGS) :void
-  (self :pointer)
-  (flags :int))
-(declaim (inline RIGID-BODY/GET-FLAGS))
-(cffi:defcfun ("_wrap_btRigidBody_getFlags"
-               RIGID-BODY/GET-FLAGS) :int
-  (self :pointer))
-(declaim (inline RIGID-BODY/COMPUTE-GYROSCOPIC-FORCE))
-(cffi:defcfun ("_wrap_btRigidBody_computeGyroscopicForce"
-               RIGID-BODY/COMPUTE-GYROSCOPIC-FORCE) :pointer
-  (self :pointer)
-  (maxGyroscopicForce :float))
-(declaim (inline RIGID-BODY/CALCULATE-SERIALIZE-BUFFER-SIZE))
-(cffi:defcfun ("_wrap_btRigidBody_calculateSerializeBufferSize"
-               RIGID-BODY/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
-  (self :pointer))
-(declaim (inline RIGID-BODY/SERIALIZE))
-(cffi:defcfun ("_wrap_btRigidBody_serialize"
-               RIGID-BODY/SERIALIZE) :string
-  (self :pointer)
-  (dataBuffer :pointer)
-  (serializer :pointer))
-(declaim (inline RIGID-BODY/SERIALIZE-SINGLE-OBJECT))
-(cffi:defcfun ("_wrap_btRigidBody_serializeSingleObject"
-               RIGID-BODY/SERIALIZE-SINGLE-OBJECT) :void
-  (self :pointer)
-  (serializer :pointer))
 
 
 (define-constant +TYPED-CONSTRAINT-DATA-NAME+ "btTypedConstraintFloatData"
   :test 'equal)
 (cffi:defcenum TYPED-CONSTRAINT-TYPE
-  (:POINT-2-POINT-CONSTRAINT-TYPE #.3)
+  (:POINT->POINT-CONSTRAINT-TYPE #.3)
   :HINGE-CONSTRAINT-TYPE
   :CONETWIST-CONSTRAINT-TYPE
   :D-6-CONSTRAINT-TYPE
@@ -844,148 +470,148 @@
 (cffi:defcfun ("_wrap_delete_btAngularLimit"
                DELETE/BT-ANGULAR-LIMIT) :void
   (self :pointer))
-(define-constant +POINT-2-POINT-CONSTRAINT-DATA-NAME+ "btPoint2PointConstraintFloatData"
+(define-constant +POINT->POINT-CONSTRAINT-DATA-NAME+ "btPoint2PointConstraintFloatData"
   :test 'equal)
 
-(cffi:defcenum POINT-2-POINT-FLAGS
+(cffi:defcenum POINT->POINT-FLAGS
   (:P-2-P-FLAGS-ERP 1)
   (:P-2-P-FLAGS-CFM 2))
-(declaim (inline POINT-2-POINT-CONSTRAINT/MAKE-c++-INSTANCE))
+(declaim (inline POINT->POINT-CONSTRAINT/MAKE-c++-INSTANCE))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_makeCPlusPlusInstance__SWIG_0"
-               POINT-2-POINT-CONSTRAINT/MAKE-c++-INSTANCE) :pointer
+               POINT->POINT-CONSTRAINT/MAKE-c++-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/DELETE-c++-INSTANCE))
+(declaim (inline POINT->POINT-CONSTRAINT/DELETE-c++-INSTANCE))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_deleteCPlusPlusInstance__SWIG_0"
-               POINT-2-POINT-CONSTRAINT/DELETE-c++-INSTANCE) :void
+               POINT->POINT-CONSTRAINT/DELETE-c++-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/MAKE-c++-INSTANCE))
+(declaim (inline POINT->POINT-CONSTRAINT/MAKE-c++-INSTANCE))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_makeCPlusPlusInstance__SWIG_1"
-               POINT-2-POINT-CONSTRAINT/MAKE-c++-INSTANCE/with-arg1&ptr) :pointer
+               POINT->POINT-CONSTRAINT/MAKE-c++-INSTANCE/with-arg1&ptr) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/DELETE-c++-INSTANCE))
+(declaim (inline POINT->POINT-CONSTRAINT/DELETE-c++-INSTANCE))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_deleteCPlusPlusInstance__SWIG_1"
-               POINT-2-POINT-CONSTRAINT/DELETE-c++-INSTANCE/with-arg1&2) :void
+               POINT->POINT-CONSTRAINT/DELETE-c++-INSTANCE/with-arg1&2) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/MAKE-c++-ARRAY))
+(declaim (inline POINT->POINT-CONSTRAINT/MAKE-c++-ARRAY))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_makeCPlusArray__SWIG_0"
-               POINT-2-POINT-CONSTRAINT/MAKE-c++-ARRAY) :pointer
+               POINT->POINT-CONSTRAINT/MAKE-c++-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/DELETE-c++-ARRAY))
+(declaim (inline POINT->POINT-CONSTRAINT/DELETE-c++-ARRAY))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_deleteCPlusArray__SWIG_0"
-               POINT-2-POINT-CONSTRAINT/DELETE-c++-ARRAY) :void
+               POINT->POINT-CONSTRAINT/DELETE-c++-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/MAKE-c++-ARRAY))
+(declaim (inline POINT->POINT-CONSTRAINT/MAKE-c++-ARRAY))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_makeCPlusArray__SWIG_1"
-               POINT-2-POINT-CONSTRAINT/MAKE-c++-ARRAY/with-arg1&ptr) :pointer
+               POINT->POINT-CONSTRAINT/MAKE-c++-ARRAY/with-arg1&ptr) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/DELETE-c++-ARRAY))
+(declaim (inline POINT->POINT-CONSTRAINT/DELETE-c++-ARRAY))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_deleteCPlusArray__SWIG_1"
-               POINT-2-POINT-CONSTRAINT/DELETE-c++-ARRAY/with-arg1&2) :void
+               POINT->POINT-CONSTRAINT/DELETE-c++-ARRAY/with-arg1&2) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/M/USE-SOLVE-CONSTRAINT-OBSOLETE/SET))
+(declaim (inline POINT->POINT-CONSTRAINT/USE-SOLVE-CONSTRAINT-OBSOLETE/SET))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_m_useSolveConstraintObsolete_set"
-               POINT-2-POINT-CONSTRAINT/M/USE-SOLVE-CONSTRAINT-OBSOLETE/SET) :void
+               POINT->POINT-CONSTRAINT/USE-SOLVE-CONSTRAINT-OBSOLETE/SET) :void
   (self :pointer)
   (m_useSolveConstraintObsolete :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/M/USE-SOLVE-CONSTRAINT-OBSOLETE/GET))
+(declaim (inline POINT->POINT-CONSTRAINT/USE-SOLVE-CONSTRAINT-OBSOLETE/GET))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_m_useSolveConstraintObsolete_get"
-               POINT-2-POINT-CONSTRAINT/M/USE-SOLVE-CONSTRAINT-OBSOLETE/GET) :pointer
+               POINT->POINT-CONSTRAINT/USE-SOLVE-CONSTRAINT-OBSOLETE/GET) :pointer
   (self :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/M/SETTING/SET))
+(declaim (inline POINT->POINT-CONSTRAINT/SETTING/SET))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_m_setting_set"
-               POINT-2-POINT-CONSTRAINT/M/SETTING/SET) :void
+               POINT->POINT-CONSTRAINT/SETTING/SET) :void
   (self :pointer)
   (m_setting :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/M/SETTING/GET))
+(declaim (inline POINT->POINT-CONSTRAINT/SETTING/GET))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_m_setting_get"
-               POINT-2-POINT-CONSTRAINT/M/SETTING/GET) :pointer
+               POINT->POINT-CONSTRAINT/SETTING/GET) :pointer
   (self :pointer))
-(declaim (inline MAKE-POINT-2-POINT-CONSTRAINT))
+(declaim (inline MAKE-POINT->POINT-CONSTRAINT))
 (cffi:defcfun ("_wrap_new_btPoint2PointConstraint__SWIG_0"
-               MAKE-POINT-2-POINT-CONSTRAINT) :pointer
+               MAKE-POINT->POINT-CONSTRAINT) :pointer
   (rbA :pointer)
   (rbB :pointer)
   (pivotInA :pointer)
   (pivotInB :pointer))
-(declaim (inline MAKE-POINT-2-POINT-CONSTRAINT))
+(declaim (inline MAKE-POINT->POINT-CONSTRAINT))
 (cffi:defcfun ("_wrap_new_btPoint2PointConstraint__SWIG_1"
-               MAKE-POINT-2-POINT-CONSTRAINT/with-rb-a&pivot-in-a) :pointer
+               MAKE-POINT->POINT-CONSTRAINT/with-rigid-body-a&pivot-in-a) :pointer
   (rbA :pointer)
   (pivotInA :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/BUILD-JACOBIAN))
+(declaim (inline POINT->POINT-CONSTRAINT/BUILD-JACOBIAN))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_buildJacobian"
-               POINT-2-POINT-CONSTRAINT/BUILD-JACOBIAN) :void
+               POINT->POINT-CONSTRAINT/BUILD-JACOBIAN) :void
   (self :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/GET-INFO-1))
+(declaim (inline POINT->POINT-CONSTRAINT/GET-INFO-1))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_getInfo1"
-               POINT-2-POINT-CONSTRAINT/GET-INFO-1) :void
+               POINT->POINT-CONSTRAINT/GET-INFO-1) :void
   (self :pointer)
   (info :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/GET-INFO-1-NON-VIRTUAL))
+(declaim (inline POINT->POINT-CONSTRAINT/GET-INFO-1-NON-VIRTUAL))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_getInfo1NonVirtual"
-               POINT-2-POINT-CONSTRAINT/GET-INFO-1-NON-VIRTUAL) :void
+               POINT->POINT-CONSTRAINT/GET-INFO-1-NON-VIRTUAL) :void
   (self :pointer)
   (info :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/GET-INFO-2))
+(declaim (inline POINT->POINT-CONSTRAINT/GET-INFO-2))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_getInfo2"
-               POINT-2-POINT-CONSTRAINT/GET-INFO-2) :void
+               POINT->POINT-CONSTRAINT/GET-INFO-2) :void
   (self :pointer)
   (info :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/GET-INFO-2-NON-VIRTUAL))
+(declaim (inline POINT->POINT-CONSTRAINT/GET-INFO-2-NON-VIRTUAL))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_getInfo2NonVirtual"
-               POINT-2-POINT-CONSTRAINT/GET-INFO-2-NON-VIRTUAL) :void
+               POINT->POINT-CONSTRAINT/GET-INFO-2-NON-VIRTUAL) :void
   (self :pointer)
   (info :pointer)
   (body0_trans :pointer)
   (body1_trans :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/UPDATE-RHS))
+(declaim (inline POINT->POINT-CONSTRAINT/UPDATE-RHS))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_updateRHS"
-               POINT-2-POINT-CONSTRAINT/UPDATE-RHS) :void
+               POINT->POINT-CONSTRAINT/UPDATE-RHS) :void
   (self :pointer)
   (timeStep :float))
-(declaim (inline POINT-2-POINT-CONSTRAINT/SET-PIVOT-A))
+(declaim (inline POINT->POINT-CONSTRAINT/SET-PIVOT-A))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_setPivotA"
-               POINT-2-POINT-CONSTRAINT/SET-PIVOT-A) :void
+               POINT->POINT-CONSTRAINT/SET-PIVOT-A) :void
   (self :pointer)
   (pivotA :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/SET-PIVOT-B))
+(declaim (inline POINT->POINT-CONSTRAINT/SET-PIVOT-B))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_setPivotB"
-               POINT-2-POINT-CONSTRAINT/SET-PIVOT-B) :void
+               POINT->POINT-CONSTRAINT/SET-PIVOT-B) :void
   (self :pointer)
   (pivotB :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/GET-PIVOT-IN-A))
+(declaim (inline POINT->POINT-CONSTRAINT/GET-PIVOT-IN-A))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_getPivotInA"
-               POINT-2-POINT-CONSTRAINT/GET-PIVOT-IN-A) :pointer
+               POINT->POINT-CONSTRAINT/GET-PIVOT-IN-A) :pointer
   (self :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/GET-PIVOT-IN-B))
+(declaim (inline POINT->POINT-CONSTRAINT/GET-PIVOT-IN-B))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_getPivotInB"
-               POINT-2-POINT-CONSTRAINT/GET-PIVOT-IN-B) :pointer
+               POINT->POINT-CONSTRAINT/GET-PIVOT-IN-B) :pointer
   (self :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/CALCULATE-SERIALIZE-BUFFER-SIZE))
+(declaim (inline POINT->POINT-CONSTRAINT/CALCULATE-SERIALIZE-BUFFER-SIZE))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_calculateSerializeBufferSize"
-               POINT-2-POINT-CONSTRAINT/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
+               POINT->POINT-CONSTRAINT/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
-(declaim (inline POINT-2-POINT-CONSTRAINT/SERIALIZE))
+(declaim (inline POINT->POINT-CONSTRAINT/SERIALIZE))
 (cffi:defcfun ("_wrap_btPoint2PointConstraint_serialize"
-               POINT-2-POINT-CONSTRAINT/SERIALIZE) :string
+               POINT->POINT-CONSTRAINT/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
-(declaim (inline DELETE/BT-POINT-2-POINT-CONSTRAINT))
+(declaim (inline DELETE/BT-POINT->POINT-CONSTRAINT))
 (cffi:defcfun ("_wrap_delete_btPoint2PointConstraint"
-               DELETE/BT-POINT-2-POINT-CONSTRAINT) :void
+               DELETE/BT-POINT->POINT-CONSTRAINT) :void
   (self :pointer))
 (define-constant +-BT-USE-CENTER-LIMIT-+ 1)
 (define-constant +HINGE-CONSTRAINT-DATA-NAME+ "btHingeConstraintFloatData"
@@ -1392,14 +1018,14 @@
   (arg2 :pointer))
 (declaim (inline MAKE-CONE-TWIST-CONSTRAINT))
 (cffi:defcfun ("_wrap_new_btConeTwistConstraint__SWIG_0"
-               MAKE-CONE-TWIST-CONSTRAINT) :pointer
+               MAKE-CONE-TWIST-CONSTRAINT/with-b) :pointer
   (rbA :pointer)
   (rbB :pointer)
   (rbAFrame :pointer)
   (rbBFrame :pointer))
 (declaim (inline MAKE-CONE-TWIST-CONSTRAINT))
 (cffi:defcfun ("_wrap_new_btConeTwistConstraint__SWIG_1"
-               make-cone-twist-constraint/without-b) :pointer
+               make-cone-twist-constraint) :pointer
   (rbA :pointer)
   (rbAFrame :pointer))
 (declaim (inline CONE-TWIST-CONSTRAINT/BUILD-JACOBIAN))
@@ -1634,149 +1260,149 @@
 
 (define-constant +GENERIC-6-DOF-CONSTRAINT-DATA-NAME+ "btGeneric6DofConstraintData"
   :test 'equal)
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/LO-LIMIT/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/LO-LIMIT/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_loLimit_set"
-               ROTATIONAL-LIMIT-MOTOR/M/LO-LIMIT/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/LO-LIMIT/SET) :void
   (self :pointer)
   (m_loLimit :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/LO-LIMIT/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/LO-LIMIT/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_loLimit_get"
-               ROTATIONAL-LIMIT-MOTOR/M/LO-LIMIT/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/LO-LIMIT/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/HI-LIMIT/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/HI-LIMIT/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_hiLimit_set"
-               ROTATIONAL-LIMIT-MOTOR/M/HI-LIMIT/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/HI-LIMIT/SET) :void
   (self :pointer)
   (m_hiLimit :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/HI-LIMIT/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/HI-LIMIT/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_hiLimit_get"
-               ROTATIONAL-LIMIT-MOTOR/M/HI-LIMIT/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/HI-LIMIT/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/TARGET-VELOCITY/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/TARGET-VELOCITY/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_targetVelocity_set"
-               ROTATIONAL-LIMIT-MOTOR/M/TARGET-VELOCITY/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/TARGET-VELOCITY/SET) :void
   (self :pointer)
   (m_targetVelocity :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/TARGET-VELOCITY/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/TARGET-VELOCITY/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_targetVelocity_get"
-               ROTATIONAL-LIMIT-MOTOR/M/TARGET-VELOCITY/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/TARGET-VELOCITY/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/MAX-MOTOR-FORCE/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/MAX-MOTOR-FORCE/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_maxMotorForce_set"
-               ROTATIONAL-LIMIT-MOTOR/M/MAX-MOTOR-FORCE/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/MAX-MOTOR-FORCE/SET) :void
   (self :pointer)
   (m_maxMotorForce :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/MAX-MOTOR-FORCE/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/MAX-MOTOR-FORCE/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_maxMotorForce_get"
-               ROTATIONAL-LIMIT-MOTOR/M/MAX-MOTOR-FORCE/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/MAX-MOTOR-FORCE/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/MAX-LIMIT-FORCE/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/MAX-LIMIT-FORCE/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_maxLimitForce_set"
-               ROTATIONAL-LIMIT-MOTOR/M/MAX-LIMIT-FORCE/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/MAX-LIMIT-FORCE/SET) :void
   (self :pointer)
   (m_maxLimitForce :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/MAX-LIMIT-FORCE/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/MAX-LIMIT-FORCE/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_maxLimitForce_get"
-               ROTATIONAL-LIMIT-MOTOR/M/MAX-LIMIT-FORCE/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/MAX-LIMIT-FORCE/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/DAMPING/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/DAMPING/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_damping_set"
-               ROTATIONAL-LIMIT-MOTOR/M/DAMPING/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/DAMPING/SET) :void
   (self :pointer)
   (m_damping :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/DAMPING/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/DAMPING/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_damping_get"
-               ROTATIONAL-LIMIT-MOTOR/M/DAMPING/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/DAMPING/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/LIMIT-SOFTNESS/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/LIMIT-SOFTNESS/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_limitSoftness_set"
-               ROTATIONAL-LIMIT-MOTOR/M/LIMIT-SOFTNESS/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/LIMIT-SOFTNESS/SET) :void
   (self :pointer)
   (m_limitSoftness :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/LIMIT-SOFTNESS/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/LIMIT-SOFTNESS/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_limitSoftness_get"
-               ROTATIONAL-LIMIT-MOTOR/M/LIMIT-SOFTNESS/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/LIMIT-SOFTNESS/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/NORMAL-CFM/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/NORMAL-CFM/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_normalCFM_set"
-               ROTATIONAL-LIMIT-MOTOR/M/NORMAL-CFM/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/NORMAL-CFM/SET) :void
   (self :pointer)
   (m_normalCFM :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/NORMAL-CFM/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/NORMAL-CFM/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_normalCFM_get"
-               ROTATIONAL-LIMIT-MOTOR/M/NORMAL-CFM/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/NORMAL-CFM/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/STOP-ERP/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/STOP-ERP/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_stopERP_set"
-               ROTATIONAL-LIMIT-MOTOR/M/STOP-ERP/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/STOP-ERP/SET) :void
   (self :pointer)
   (m_stopERP :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/STOP-ERP/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/STOP-ERP/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_stopERP_get"
-               ROTATIONAL-LIMIT-MOTOR/M/STOP-ERP/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/STOP-ERP/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/STOP-CFM/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/STOP-CFM/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_stopCFM_set"
-               ROTATIONAL-LIMIT-MOTOR/M/STOP-CFM/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/STOP-CFM/SET) :void
   (self :pointer)
   (m_stopCFM :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/STOP-CFM/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/STOP-CFM/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_stopCFM_get"
-               ROTATIONAL-LIMIT-MOTOR/M/STOP-CFM/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/STOP-CFM/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/BOUNCE/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/BOUNCE/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_bounce_set"
-               ROTATIONAL-LIMIT-MOTOR/M/BOUNCE/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/BOUNCE/SET) :void
   (self :pointer)
   (m_bounce :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/BOUNCE/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/BOUNCE/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_bounce_get"
-               ROTATIONAL-LIMIT-MOTOR/M/BOUNCE/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/BOUNCE/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/ENABLE-MOTOR/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/ENABLE-MOTOR/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_enableMotor_set"
-               ROTATIONAL-LIMIT-MOTOR/M/ENABLE-MOTOR/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/ENABLE-MOTOR/SET) :void
   (self :pointer)
   (m_enableMotor :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/ENABLE-MOTOR/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/ENABLE-MOTOR/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_enableMotor_get"
-               ROTATIONAL-LIMIT-MOTOR/M/ENABLE-MOTOR/GET) :pointer
+               ROTATIONAL-LIMIT-MOTOR/ENABLE-MOTOR/GET) :pointer
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/CURRENT-LIMIT-ERROR/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/CURRENT-LIMIT-ERROR/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_currentLimitError_set"
-               ROTATIONAL-LIMIT-MOTOR/M/CURRENT-LIMIT-ERROR/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/CURRENT-LIMIT-ERROR/SET) :void
   (self :pointer)
   (m_currentLimitError :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/CURRENT-LIMIT-ERROR/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/CURRENT-LIMIT-ERROR/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_currentLimitError_get"
-               ROTATIONAL-LIMIT-MOTOR/M/CURRENT-LIMIT-ERROR/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/CURRENT-LIMIT-ERROR/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/CURRENT-POSITION/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/CURRENT-POSITION/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_currentPosition_set"
-               ROTATIONAL-LIMIT-MOTOR/M/CURRENT-POSITION/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/CURRENT-POSITION/SET) :void
   (self :pointer)
   (m_currentPosition :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/CURRENT-POSITION/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/CURRENT-POSITION/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_currentPosition_get"
-               ROTATIONAL-LIMIT-MOTOR/M/CURRENT-POSITION/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/CURRENT-POSITION/GET) :float
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/CURRENT-LIMIT/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/CURRENT-LIMIT/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_currentLimit_set"
-               ROTATIONAL-LIMIT-MOTOR/M/CURRENT-LIMIT/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/CURRENT-LIMIT/SET) :void
   (self :pointer)
   (m_currentLimit :int))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/CURRENT-LIMIT/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/CURRENT-LIMIT/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_currentLimit_get"
-               ROTATIONAL-LIMIT-MOTOR/M/CURRENT-LIMIT/GET) :int
+               ROTATIONAL-LIMIT-MOTOR/CURRENT-LIMIT/GET) :int
   (self :pointer))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/ACCUMULATED-IMPULSE/SET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/ACCUMULATED-IMPULSE/SET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_accumulatedImpulse_set"
-               ROTATIONAL-LIMIT-MOTOR/M/ACCUMULATED-IMPULSE/SET) :void
+               ROTATIONAL-LIMIT-MOTOR/ACCUMULATED-IMPULSE/SET) :void
   (self :pointer)
   (m_accumulatedImpulse :float))
-(declaim (inline ROTATIONAL-LIMIT-MOTOR/M/ACCUMULATED-IMPULSE/GET))
+(declaim (inline ROTATIONAL-LIMIT-MOTOR/ACCUMULATED-IMPULSE/GET))
 (cffi:defcfun ("_wrap_btRotationalLimitMotor_m_accumulatedImpulse_get"
-               ROTATIONAL-LIMIT-MOTOR/M/ACCUMULATED-IMPULSE/GET) :float
+               ROTATIONAL-LIMIT-MOTOR/ACCUMULATED-IMPULSE/GET) :float
   (self :pointer))
 (declaim (inline MAKE-ROTATIONAL-LIMIT-MOTOR))
 (cffi:defcfun ("_wrap_new_btRotationalLimitMotor__SWIG_0"
@@ -1811,31 +1437,31 @@
 (cffi:defcfun ("_wrap_delete_btRotationalLimitMotor"
                DELETE/BT-ROTATIONAL-LIMIT-MOTOR) :void
   (self :pointer))
-(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/M/LOWER-LIMIT/SET))
+(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/LOWER-LIMIT/SET))
 (cffi:defcfun ("_wrap_btTranslationalLimitMotor_m_lowerLimit_set"
-               TRANSLATIONAL-LIMIT-MOTOR/M/LOWER-LIMIT/SET) :void
+               TRANSLATIONAL-LIMIT-MOTOR/LOWER-LIMIT/SET) :void
   (self :pointer)
   (m_lowerLimit :pointer))
-(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/M/LOWER-LIMIT/GET))
+(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/LOWER-LIMIT/GET))
 (cffi:defcfun ("_wrap_btTranslationalLimitMotor_m_lowerLimit_get"
-               TRANSLATIONAL-LIMIT-MOTOR/M/LOWER-LIMIT/GET) :pointer
+               TRANSLATIONAL-LIMIT-MOTOR/LOWER-LIMIT/GET) :pointer
   (self :pointer))
-(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/M/UPPER-LIMIT/SET))
+(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/UPPER-LIMIT/SET))
 (cffi:defcfun ("_wrap_btTranslationalLimitMotor_m_upperLimit_set"
-               TRANSLATIONAL-LIMIT-MOTOR/M/UPPER-LIMIT/SET) :void
+               TRANSLATIONAL-LIMIT-MOTOR/UPPER-LIMIT/SET) :void
   (self :pointer)
   (m_upperLimit :pointer))
-(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/M/UPPER-LIMIT/GET))
+(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/UPPER-LIMIT/GET))
 (cffi:defcfun ("_wrap_btTranslationalLimitMotor_m_upperLimit_get"
-               TRANSLATIONAL-LIMIT-MOTOR/M/UPPER-LIMIT/GET) :pointer
+               TRANSLATIONAL-LIMIT-MOTOR/UPPER-LIMIT/GET) :pointer
   (self :pointer))
-(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/M/ACCUMULATED-IMPULSE/SET))
+(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/ACCUMULATED-IMPULSE/SET))
 (cffi:defcfun ("_wrap_btTranslationalLimitMotor_m_accumulatedImpulse_set"
-               TRANSLATIONAL-LIMIT-MOTOR/M/ACCUMULATED-IMPULSE/SET) :void
+               TRANSLATIONAL-LIMIT-MOTOR/ACCUMULATED-IMPULSE/SET) :void
   (self :pointer)
   (m_accumulatedImpulse :pointer))
-(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/M/ACCUMULATED-IMPULSE/GET))
+(declaim (inline TRANSLATIONAL-LIMIT-MOTOR/ACCUMULATED-IMPULSE/GET))
 (cffi:defcfun ("_wrap_btTranslationalLimitMotor_m_accumulatedImpulse_get"
-               TRANSLATIONAL-LIMIT-MOTOR/M/ACCUMULATED-IMPULSE/GET) :pointer
+               TRANSLATIONAL-LIMIT-MOTOR/ACCUMULATED-IMPULSE/GET) :pointer
   (self :pointer))
 

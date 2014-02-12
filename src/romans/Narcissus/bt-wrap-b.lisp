@@ -1145,14 +1145,14 @@
                DELETE/BT-CONVEX-HULL-SHAPE) :void
   (self :pointer))
 
-(declaim (inline TRIANGLE-MESH/M/WELDING-THRESHOLD/SET))
+(declaim (inline TRIANGLE-MESH/WELDING-THRESHOLD/SET))
 (cffi:defcfun ("_wrap_btTriangleMesh_m_weldingThreshold_set"
-               TRIANGLE-MESH/M/WELDING-THRESHOLD/SET) :void
+               TRIANGLE-MESH/WELDING-THRESHOLD/SET) :void
   (self :pointer)
   (m_weldingThreshold :float))
-(declaim (inline TRIANGLE-MESH/M/WELDING-THRESHOLD/GET))
+(declaim (inline TRIANGLE-MESH/WELDING-THRESHOLD/GET))
 (cffi:defcfun ("_wrap_btTriangleMesh_m_weldingThreshold_get"
-               TRIANGLE-MESH/M/WELDING-THRESHOLD/GET) :float
+               TRIANGLE-MESH/WELDING-THRESHOLD/GET) :float
   (self :pointer))
 (declaim (inline MAKE-TRIANGLE-MESH))
 (cffi:defcfun ("_wrap_new_btTriangleMesh__SWIG_0"

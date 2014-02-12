@@ -64,9 +64,9 @@
                MATRIX-3X3/DECREMENT) :pointer
   (self :pointer)
   (m :pointer))
-(declaim (inline MATRIX-3X3/SET-FROM-OPEN-GLSUB-MATRIX))
+(declaim (inline MATRIX-3X3/SET-FROM-OPENGL-SUB-MATRIX))
 (cffi:defcfun ("_wrap_btMatrix3x3_setFromOpenGLSubMatrix"
-               MATRIX-3X3/SET-FROM-OPEN-GLSUB-MATRIX) :void
+               MATRIX-3X3/SET-FROM-OPENGL-SUB-MATRIX) :void
   (self :pointer)
   (m :pointer))
 (declaim (inline MATRIX-3X3/SET-VALUE))
@@ -108,9 +108,9 @@
 (declaim (inline MATRIX-3X3/GET-IDENTITY))
 (cffi:defcfun ("_wrap_btMatrix3x3_getIdentity"
                MATRIX-3X3/GET-IDENTITY) :pointer)
-(declaim (inline MATRIX-3X3/GET-OPEN-GLSUB-MATRIX))
+(declaim (inline MATRIX-3X3/GET-OPENGL-SUB-MATRIX))
 (cffi:defcfun ("_wrap_btMatrix3x3_getOpenGLSubMatrix"
-               MATRIX-3X3/GET-OPEN-GLSUB-MATRIX) :void
+               MATRIX-3X3/GET-OPENGL-SUB-MATRIX) :void
   (self :pointer)
   (m :pointer))
 (declaim (inline MATRIX-3X3/GET-ROTATION))
@@ -286,7 +286,7 @@
 (defmethod n- ((self MATRIX-3X3) (m MATRIX-3X3))
   (MATRIX-3X3/DECREMENT (ff-pointer self) (ff-pointer m)))
 (defmethod (SETF OPENGL-SUBMATRIX) ((self MATRIX-3X3) m)
-  (MATRIX-3X3/SET-FROM-OPEN-GLSUB-MATRIX (ff-pointer self) m))
+  (MATRIX-3X3/SET-FROM-OPENGL-SUB-MATRIX (ff-pointer self) m))
 (defmethod (SETF VALUE) ((self MATRIX-3X3) xx xy xz yx yy yz zx zy zz)
   (MATRIX-3X3/SET-VALUE (ff-pointer self) xx xy xz yx yy yz zx zy zz))
 (defmethod (SETF ROTATION) ((self MATRIX-3X3) (q QUATERNION))
@@ -299,7 +299,7 @@
 (defmethod SET-IDENTITY ((self MATRIX-3X3))
   (MATRIX-3X3/SET-IDENTITY (ff-pointer self)))
 (defmethod OPENGL-SUBMATRIX ((self MATRIX-3X3) m)
-  (MATRIX-3X3/GET-OPEN-GLSUB-MATRIX (ff-pointer self) m))
+  (MATRIX-3X3/GET-OPENGL-SUB-MATRIX (ff-pointer self) m))
 (defmethod ROTATION ((self MATRIX-3X3) (q QUATERNION))
   (MATRIX-3X3/GET-ROTATION (ff-pointer self) q))
 (defmethod EULER-YPR ((self MATRIX-3X3) yaw pitch roll &optional solution-number)

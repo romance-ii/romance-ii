@@ -552,10 +552,10 @@
   (CONVEX-HULL-SHAPE/SERIALIZE (ff-pointer self) data-buffer serializer))
 
 (defmethod (setf WELDING-THRESHOLD) ( (obj TRIANGLE-MESH) arg0)
-  (TRIANGLE-MESH/M/WELDING-THRESHOLD/SET (ff-pointer obj) arg0))
+  (TRIANGLE-MESH/WELDING-THRESHOLD/SET (ff-pointer obj) arg0))
 
 (defmethod WELDING-THRESHOLD ((obj TRIANGLE-MESH))
-  (TRIANGLE-MESH/M/WELDING-THRESHOLD/GET (ff-pointer obj)))
+  (TRIANGLE-MESH/WELDING-THRESHOLD/GET (ff-pointer obj)))
 
 (defmethod initialize-instance :after ((obj TRIANGLE-MESH)
                                        &key (use-32-bit-Indices t bits?)

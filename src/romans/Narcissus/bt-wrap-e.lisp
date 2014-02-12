@@ -1494,14 +1494,14 @@
 
 (cffi:defcfun ("_wrap_btUniversalConstraint_setUpperLimit"
                UNIVERSAL-CONSTRAINT/SET-UPPER-LIMIT) :void
-  (ang1max :float)
+  (self :pointer)  (ang1max :float)
   (ang2max :float))
 
 (declaim (inline UNIVERSAL-CONSTRAINT/SET-LOWER-LIMIT))
 
 (cffi:defcfun ("_wrap_btUniversalConstraint_setLowerLimit"
                UNIVERSAL-CONSTRAINT/SET-LOWER-LIMIT) :void
-  (ang1min :float)
+  (self :pointer) (ang1min :float)
   (ang2min :float))
 
 (declaim (inline UNIVERSAL-CONSTRAINT/SET-AXIS))
@@ -1618,13 +1618,13 @@
 
 (cffi:defcfun ("_wrap_btHinge2Constraint_setUpperLimit"
                HINGE-2-CONSTRAINT/SET-UPPER-LIMIT) :void
-  (ang1max :float))
+  (self :pointer)  (ang1max :float))
 
 (declaim (inline HINGE-2-CONSTRAINT/SET-LOWER-LIMIT))
 
 (cffi:defcfun ("_wrap_btHinge2Constraint_setLowerLimit"
                HINGE-2-CONSTRAINT/SET-LOWER-LIMIT) :void
-  (ang1min :float))
+  (self :pointer)(ang1min :float))
 
 (declaim (inline DELETE/BT-HINGE-2-CONSTRAINT))
 
@@ -1663,7 +1663,7 @@
 
 (cffi:defcfun ("_wrap_btGearConstraint_getInfo1"
                GEAR-CONSTRAINT/GET-INFO-1) :void
-  (info :pointer))
+  (self :pointer)(info :pointer))
 
 (declaim (inline GEAR-CONSTRAINT/GET-INFO-2))
 
@@ -1718,6 +1718,7 @@
 
 (cffi:defcfun ("_wrap_btGearConstraint_serialize"
                GEAR-CONSTRAINT/SERIALIZE) :string
+  (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
 
@@ -1813,6 +1814,7 @@
 
 (cffi:defcfun ("_wrap_btSequentialImpulseConstraintSolver_solveGroup"
                SEQUENTIAL-IMPULSE-CONSTRAINT-SOLVER/SOLVE-GROUP) :float
+  (self :pointer)
   (bodies :pointer)
   (numBodies :int)
   (manifold :pointer)

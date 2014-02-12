@@ -88,7 +88,7 @@
 (defgeneric preferred-penetration-direction (shape i penetration-vector))
 (defgeneric plane (shape plane-normal plane-support i))
 (defgeneric plane-equation (shape plane i))
-(defgeneric ray-test (self ray-from-world ray-to-world result-callback
+(defgeneric ray-test (self ray<-world ray->world result-callback
                       &optional aabb-min aabb-max))
 (defgeneric remove-action (world action))
 (defgeneric remove-character (world character))

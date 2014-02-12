@@ -82,6 +82,7 @@
                          (:file "Marcus-Vitruvius-Pollio"
                                 :depends-on ("package"))))
    (:module "Narcissus"
+            :serial t
             :depends-on ("setup" "common")
             :components ((:file "package")
                          (:file "bullet-package")
@@ -101,6 +102,8 @@
                          (:file "bt-vector34"
                                 :depends-on ("bt-generics"))
                          (:file "bt-dynamics-world"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-rigid-body"
                                 :depends-on ("bt-generics"))
                          (:file "bt-shapes"
                                 :depends-on ("bt-generics"))

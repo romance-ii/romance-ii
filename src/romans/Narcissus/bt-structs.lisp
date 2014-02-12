@@ -267,16 +267,16 @@
   (add-single-result :pointer))
 
 (cffi:defcstruct closest-ray-result-callback
-  (ray-from-world :pointer)
-  (ray-to-world :pointer)
+  (ray<-world :pointer)
+  (ray->world :pointer)
   (hit-normal-world :pointer)
   (hit-point-world :pointer)
   (add-single-result :pointer))
 
 (cffi:defcstruct all-hits-ray-result-callback
   (collision-objects :pointer)
-  (ray-from-world :pointer)
-  (ray-to-world :pointer)
+  (ray<-world :pointer)
+  (ray->world :pointer)
   (hit-normal-world :pointer)
   (hit-point-world :pointer)
   (hit-fractions :pointer)
@@ -302,8 +302,8 @@
   (get-object-type :pointer))
 
 (cffi:defcstruct closest-convex-result-callback
-  (convex-from-world :pointer)
-  (convex-to-world :pointer)
+  (convex<-world :pointer)
+  (convex->world :pointer)
   (hit-normal-world :pointer)
   (hit-point-world :pointer)
   (hit-collision-object :pointer)

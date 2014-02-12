@@ -1608,50 +1608,50 @@
 (cffi:defcfun ("_wrap_btStrLen"
                STR-LEN) :int
   (str :string))
-(declaim (inline CHUNK/M/CHUNK-CODE/SET))
+(declaim (inline CHUNK/CHUNK-CODE/SET))
 (cffi:defcfun ("_wrap_btChunk_m_chunkCode_set"
-               cHUNK/M/CHUNK-CODE/SET) :void
+               cHUNK/CHUNK-CODE/SET) :void
   (self :pointer)
   (m_chunkCode :int))
-(declaim (inline CHUNK/M/CHUNK-CODE/GET))
+(declaim (inline CHUNK/CHUNK-CODE/GET))
 (cffi:defcfun ("_wrap_btChunk_m_chunkCode_get"
-               cHUNK/M/CHUNK-CODE/GET) :int
+               cHUNK/CHUNK-CODE/GET) :int
   (self :pointer))
-(declaim (inline CHUNK/M/LENGTH/SET))
+(declaim (inline CHUNK/LENGTH/SET))
 (cffi:defcfun ("_wrap_btChunk_m_length_set"
-               cHUNK/M/LENGTH/SET) :void
+               cHUNK/LENGTH/SET) :void
   (self :pointer)
   (m_length :int))
-(declaim (inline CHUNK/M/LENGTH/GET))
+(declaim (inline CHUNK/LENGTH/GET))
 (cffi:defcfun ("_wrap_btChunk_m_length_get"
-               cHUNK/M/LENGTH/GET) :int
+               cHUNK/LENGTH/GET) :int
   (self :pointer))
-(declaim (inline CHUNK/M/OLD-PTR/SET))
+(declaim (inline CHUNK/OLD-PTR/SET))
 (cffi:defcfun ("_wrap_btChunk_m_oldPtr_set"
-               cHUNK/M/OLD-PTR/SET) :void
+               cHUNK/OLD-PTR/SET) :void
   (self :pointer)
   (m_oldPtr :pointer))
-(declaim (inline CHUNK/M/OLD-PTR/GET))
+(declaim (inline CHUNK/OLD-PTR/GET))
 (cffi:defcfun ("_wrap_btChunk_m_oldPtr_get"
-               cHUNK/M/OLD-PTR/GET) :pointer
+               cHUNK/OLD-PTR/GET) :pointer
   (self :pointer))
-(declaim (inline CHUNK/M/DNA/NR/SET))
+(declaim (inline CHUNK/DNA/NR/SET))
 (cffi:defcfun ("_wrap_btChunk_m_dna_nr_set"
-               cHUNK/M/DNA/NR/SET) :void
+               cHUNK/DNA/NR/SET) :void
   (self :pointer)
   (m_dna_nr :int))
-(declaim (inline CHUNK/M/DNA/NR/GET))
+(declaim (inline CHUNK/DNA/NR/GET))
 (cffi:defcfun ("_wrap_btChunk_m_dna_nr_get"
-               cHUNK/M/DNA/NR/GET) :int
+               cHUNK/DNA/NR/GET) :int
   (self :pointer))
-(declaim (inline CHUNK/M/NUMBER/SET))
+(declaim (inline CHUNK/NUMBER/SET))
 (cffi:defcfun ("_wrap_btChunk_m_number_set"
-               cHUNK/M/NUMBER/SET) :void
+               cHUNK/NUMBER/SET) :void
   (self :pointer)
   (m_number :int))
-(declaim (inline CHUNK/M/NUMBER/GET))
+(declaim (inline CHUNK/NUMBER/GET))
 (cffi:defcfun ("_wrap_btChunk_m_number_get"
-               cHUNK/M/NUMBER/GET) :int
+               cHUNK/NUMBER/GET) :int
   (self :pointer))
 (declaim (inline MAKE-CHUNK))
 (cffi:defcfun ("_wrap_new_btChunk"
@@ -1948,14 +1948,14 @@
 (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_getGravity"
                DISCRETE-DYNAMICS-WORLD/GET-GRAVITY) :pointer
   (self :pointer))
-(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT/with-filter-group&mask))
 (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCollisionObject__SWIG_0"
                DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT/with-filter-group&mask) :void
   (self :pointer)
   (collisionObject :pointer)
   (collisionFilterGroup :short)
   (collisionFilterMask :short))
-(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT))
+(declaim (inline DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT/with-filter-group))
 (cffi:defcfun ("_wrap_btDiscreteDynamicsWorld_addCollisionObject__SWIG_1"
                DISCRETE-DYNAMICS-WORLD/ADD-COLLISION-OBJECT/with-filter-group) :void
   (self :pointer)

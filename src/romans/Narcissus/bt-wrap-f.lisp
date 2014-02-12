@@ -899,34 +899,34 @@
   (IDEBUG-DRAW/DRAW-PLANE (ff-pointer self) planeNormal planeConst transform color))
 
 (defmethod (setf CHUNK-CODE) ( (obj CHUNK) arg0)
-  (CHUNK/M/CHUNK-CODE/SET (ff-pointer obj) arg0))
+  (CHUNK/CHUNK-CODE/SET (ff-pointer obj) arg0))
 
 (defmethod CHUNK-CODE ((obj CHUNK))
-  (CHUNK/M/CHUNK-CODE/GET (ff-pointer obj)))
+  (CHUNK/CHUNK-CODE/GET (ff-pointer obj)))
 
 (defmethod (setf BULLET/LENGTH) ( (obj CHUNK) arg0)
-  (CHUNK/M/LENGTH/SET (ff-pointer obj) arg0))
+  (CHUNK/LENGTH/SET (ff-pointer obj) arg0))
 
 (defmethod BULLET/LENGTH ((obj CHUNK))
-  (CHUNK/M/LENGTH/GET (ff-pointer obj)))
+  (CHUNK/LENGTH/GET (ff-pointer obj)))
 
 (defmethod (setf OLD-PTR) ( (obj CHUNK) arg0)
-  (CHUNK/M/OLD-PTR/SET (ff-pointer obj) arg0))
+  (CHUNK/OLD-PTR/SET (ff-pointer obj) arg0))
 
 (defmethod OLD-PTR ((obj CHUNK))
-  (CHUNK/M/OLD-PTR/GET (ff-pointer obj)))
+  (CHUNK/OLD-PTR/GET (ff-pointer obj)))
 
 (defmethod (setf DNA/NR) ( (obj CHUNK) arg0)
-  (CHUNK/M/DNA/NR/SET (ff-pointer obj) arg0))
+  (CHUNK/DNA/NR/SET (ff-pointer obj) arg0))
 
 (defmethod DNA/NR ((obj CHUNK))
-  (CHUNK/M/DNA/NR/GET (ff-pointer obj)))
+  (CHUNK/DNA/NR/GET (ff-pointer obj)))
 
 (defmethod (setf BULLET/NUMBER) ( (obj CHUNK) arg0)
-  (CHUNK/M/NUMBER/SET (ff-pointer obj) arg0))
+  (CHUNK/NUMBER/SET (ff-pointer obj) arg0))
 
 (defmethod BULLET/NUMBER ((obj CHUNK))
-  (CHUNK/M/NUMBER/GET (ff-pointer obj)))
+  (CHUNK/NUMBER/GET (ff-pointer obj)))
 
 (defmethod initialize-instance :after ((obj CHUNK) &key)
   (setf (slot-value obj 'ff-pointer) (MAKE-CHUNK)))
