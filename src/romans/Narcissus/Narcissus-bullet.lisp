@@ -12,9 +12,6 @@
     (dotimes (i 10000)
       (eval-lispify))))
 
-
-
-
 (defmethod (setf frames) ((self CONE-TWIST-CONSTRAINT) (frameA transform) (frameB transform))
   (CONE-TWIST-CONSTRAINT/SET-FRAMES (ff-pointer self) frameA frameB))
 
@@ -387,531 +384,62 @@
   "btCollisionObjectFloatData" :test 'equal)
 
 (cffi:defcenum COLLISION-FLAGS
-  (:CF-STATIC-OBJECT #.1)
-  (:CF-KINEMATIC-OBJECT #.2)
-  (:CF-NO-CONTACT-RESPONSE #.4)
-  (:CF-CUSTOM-MATERIAL-CALLBACK #.8)
-  (:CF-CHARACTER-OBJECT #.16)
-  (:CF-DISABLE-VISUALIZE-OBJECT #.32)
-  (:CF-DISABLE-SPU-COLLISION-PROCESSING #.64))
+  (:STATIC-OBJECT 1)
+  (:KINEMATIC-OBJECT 2)
+  (:NO-CONTACT-RESPONSE 4)
+  (:CUSTOM-MATERIAL-CALLBACK 8)
+  (:CHARACTER-OBJECT 16)
+  (:DISABLE-VISUALIZE-OBJECT 32)
+  (:DISABLE-SPU-COLLISION-PROCESSING 64))
 
 (cffi:defcenum COLLISION-OBJECT-TYPES
-  (:CO-COLLISION-OBJECT #.1)
-  (:CO-RIGID-BODY #.2)
-  (:CO-GHOST-OBJECT #.4)
-  (:CO-SOFT-BODY #.8)
-  (:CO-HF-FLUID #.16)
-  (:CO-USER-TYPE #.32)
-  (:CO-FEATHERSTONE-LINK #.64))
+  (:COLLISION-OBJECT 1)
+  (:RIGID-BODY 2)
+  (:GHOST-OBJECT 4)
+  (:SOFT-BODY 8)
+  (:HF-FLUID 16)
+  (:USER-TYPE 32)
+  (:FEATHERSTONE-LINK 64))
 
 (cffi:defcenum ANISOTROPIC-FRICTION-FLAGS
-  (:CF-ANISOTROPIC-FRICTION-DISABLED #.0)
-  (:CF-ANISOTROPIC-FRICTION #.1)
-  (:CF-ANISOTROPIC-ROLLING-FRICTION #.2))
+  (:ANISOTROPIC-FRICTION-DISABLED 0)
+  (:ANISOTROPIC-FRICTION 1)
+  (:ANISOTROPIC-ROLLING-FRICTION 2))
 
-(declaim (inline COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_mergesSimulationIslands" COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getAnisotropicFriction" COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/with-mode))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setAnisotropicFriction__SWIG_0"
-               COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/with-mode) :void
-  (self :pointer)
-  (anisotropicFriction :pointer)
-  (frictionMode :int))
-
-(declaim (inline COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/without-mode))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setAnisotropicFriction__SWIG_1"
-               COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/without-mode) :void
-  (self :pointer)
-  (anisotropicFriction :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-ANISOTROPIC-FRICTIONn))
-
-(defun COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION
-    (self anisotropic-friction &key (friction-mode nil friction-mode-?))
-  (if friction-mode-?
-      (COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/with-mode
-       self anisotropic-friction friction-mode)
-      (COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/without-mode
-       self anisotropic-friction)))
-
-(declaim (inline COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/with-mode))
-
-(cffi:defcfun ("_wrap_btCollisionObject_hasAnisotropicFriction__SWIG_0" 
-               COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/with-mode) :pointer
-  (self :pointer)
-  (frictionMode :int))
-
-(declaim (inline COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/without-mode))
-
-(cffi:defcfun ("_wrap_btCollisionObject_hasAnisotropicFriction__SWIG_1"
-               COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/without-mode) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION))
-
-(defun COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION
-    (self &key (friction-mode nil friction-mode-?))
-  (if friction-mode-?
-      (COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/with-mode
-       self friction-mode)
-      (COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/without-mode self)))
-
-(declaim (inline COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setContactProcessingThreshold" COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD) :void
-  (self :pointer)
-  (contactProcessingThreshold :float))
-
-(declaim (inline COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getContactProcessingThreshold" COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD) :float
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/IS-STATIC-OBJECT))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isStaticObject" COLLISION-OBJECT/IS-STATIC-OBJECT) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/IS-KINEMATIC-OBJECT))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isKinematicObject" COLLISION-OBJECT/IS-KINEMATIC-OBJECT) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isStaticOrKinematicObject" BULLET> ) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT))
-
-(cffi:defcfun ("_wrap_btCollisionObject_hasContactResponse" COLLISION-OBJECT/HAS-CONTACT-RESPONSE) :pointer
-  (self :pointer))
-
-(declaim (inline MAKE-COLLISION-OBJECT))
-
-(cffi:defcfun ("_wrap_new_btCollisionObject" MAKE-COLLISION-OBJECT) :pointer)
-
-(declaim (inline DELETE/BT-COLLISION-OBJECT))
-
-(cffi:defcfun ("_wrap_delete_btCollisionObject" DELETE/BT-COLLISION-OBJECT) :void
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-COLLISION-SHAPE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCollisionShape" COLLISION-OBJECT/SET-COLLISION-SHAPE) :void
-  (self :pointer)
-  (collisionShape :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-COLLISION-SHAPE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_0" COLLISION-OBJECT/GET-COLLISION-SHAPE) :pointer
-  (self :pointer))
-
-#+ (or)
-(progn 
-  (declaim (inline COLLISION-OBJECT/GET-COLLISION-SHAPE))
-
-  (cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_1" COLLISION-OBJECT/GET-COLLISION-SHAPE) :pointer
-   (self :pointer))
-
- )
-
-(declaim (inline COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER))
-
-(cffi:defcfun ("_wrap_btCollisionObject_internalGetExtensionPointer" COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER))
-
-(cffi:defcfun ("_wrap_btCollisionObject_internalSetExtensionPointer" COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER) :void
-  (self :pointer)
-  (pointer :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-ACTIVATION-STATE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getActivationState" COLLISION-OBJECT/GET-ACTIVATION-STATE) :int
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-ACTIVATION-STATE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setActivationState" COLLISION-OBJECT/SET-ACTIVATION-STATE) :void
-  (self :pointer)
-  (newState :int))
-
-(declaim (inline COLLISION-OBJECT/SET-DEACTIVATION-TIME))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setDeactivationTime" COLLISION-OBJECT/SET-DEACTIVATION-TIME) :void
-  (self :pointer)
-  (time :float))
-
-(declaim (inline COLLISION-OBJECT/GET-DEACTIVATION-TIME))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getDeactivationTime" COLLISION-OBJECT/GET-DEACTIVATION-TIME) :float
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/FORCE-ACTIVATION-STATE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_forceActivationState" COLLISION-OBJECT/FORCE-ACTIVATION-STATE) :void
-  (self :pointer)
-  (newState :int))
-
-(declaim (inline COLLISION-OBJECT/ACTIVATE/force))
-
-(cffi:defcfun ("_wrap_btCollisionObject_activate__SWIG_0"
-               COLLISION-OBJECT/ACTIVATE/force) :void
-  (self :pointer)
-  (forceActivation :pointer))
-
-(declaim (inline COLLISION-OBJECT/ACTIVATE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_activate__SWIG_1"
-               COLLISION-OBJECT/ACTIVATE) :void
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/IS-ACTIVE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isActive" COLLISION-OBJECT/IS-ACTIVE) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-RESTITUTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setRestitution" COLLISION-OBJECT/SET-RESTITUTION) :void
-  (self :pointer)
-  (rest :float))
-
-(declaim (inline COLLISION-OBJECT/GET-RESTITUTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getRestitution" COLLISION-OBJECT/GET-RESTITUTION) :float
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setFriction" COLLISION-OBJECT/SET-FRICTION) :void
-  (self :pointer)
-  (frict :float))
-
-(declaim (inline COLLISION-OBJECT/GET-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getFriction" COLLISION-OBJECT/GET-FRICTION) :float
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-ROLLING-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setRollingFriction" COLLISION-OBJECT/SET-ROLLING-FRICTION) :void
-  (self :pointer)
-  (frict :float))
-
-(declaim (inline COLLISION-OBJECT/GET-ROLLING-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getRollingFriction" COLLISION-OBJECT/GET-ROLLING-FRICTION) :float
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-INTERNAL-TYPE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInternalType" COLLISION-OBJECT/GET-INTERNAL-TYPE) :int
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_0" COLLISION-OBJECT/GET-WORLD-TRANSFORM) :pointer
-  (self :pointer))
-
-#+ (or)
-(progn
-  (declaim (inline COLLISION-OBJECT/GET-WORLD-TRANSFORM))
-
-  (cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_1" COLLISION-OBJECT/GET-WORLD-TRANSFORM) :pointer
-   (self :pointer))
-
- )
-
-(declaim (inline COLLISION-OBJECT/SET-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setWorldTransform" COLLISION-OBJECT/SET-WORLD-TRANSFORM) :void
-  (self :pointer)
-  (worldTrans :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-BROADPHASE-HANDLE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_0" COLLISION-OBJECT/GET-BROADPHASE-HANDLE) :pointer
-  (self :pointer))
-
-#+ (or)
-(progn 
-  (declaim (inline COLLISION-OBJECT/GET-BROADPHASE-HANDLE))
-
-  (cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_1" COLLISION-OBJECT/GET-BROADPHASE-HANDLE) :pointer
-   (self :pointer))
-
- )
-
-(declaim (inline COLLISION-OBJECT/SET-BROADPHASE-HANDLE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setBroadphaseHandle" COLLISION-OBJECT/SET-BROADPHASE-HANDLE) :void
-  (self :pointer)
-  (handle :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_0" COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM) :pointer
-  (self :pointer))
-
-#+ (or)
-(progn 
-  (declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM))
-
-  (cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_1" COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM) :pointer
-   (self :pointer))
-
- )
-
-(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationWorldTransform" COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM) :void
-  (self :pointer)
-  (trans :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationLinearVelocity" COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY) :void
-  (self :pointer)
-  (linvel :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationAngularVelocity" COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY) :void
-  (self :pointer)
-  (angvel :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationLinearVelocity" COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationAngularVelocity" COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-ISLAND-TAG))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getIslandTag" COLLISION-OBJECT/GET-ISLAND-TAG) :int
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-ISLAND-TAG))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setIslandTag" COLLISION-OBJECT/SET-ISLAND-TAG) :void
-  (self :pointer)
-  (tag :int))
-
-(declaim (inline COLLISION-OBJECT/GET-COMPANION-ID))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCompanionId" COLLISION-OBJECT/GET-COMPANION-ID) :int
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-COMPANION-ID))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCompanionId" COLLISION-OBJECT/SET-COMPANION-ID) :void
-  (self :pointer)
-  (id :int))
-
-(declaim (inline COLLISION-OBJECT/GET-HIT-FRACTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getHitFraction" COLLISION-OBJECT/GET-HIT-FRACTION) :float
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-HIT-FRACTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setHitFraction" COLLISION-OBJECT/SET-HIT-FRACTION) :void
-  (self :pointer)
-  (hitFraction :float))
-
-(declaim (inline COLLISION-OBJECT/GET-COLLISION-FLAGS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionFlags" COLLISION-OBJECT/GET-COLLISION-FLAGS) :int
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-COLLISION-FLAGS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCollisionFlags" COLLISION-OBJECT/SET-COLLISION-FLAGS) :void
-  (self :pointer)
-  (flags :int))
-
-(declaim (inline COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdSweptSphereRadius" COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS) :float
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCcdSweptSphereRadius" COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS) :void
-  (self :pointer)
-  (radius :float))
-
-(declaim (inline COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdMotionThreshold" COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD) :float
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdSquareMotionThreshold" COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD) :float
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCcdMotionThreshold" COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD) :void
-  (self :pointer)
-  (ccdMotionThreshold :float))
-
-(declaim (inline COLLISION-OBJECT/GET-USER-POINTER))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getUserPointer" COLLISION-OBJECT/GET-USER-POINTER) :pointer
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/GET-USER-INDEX))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getUserIndex" COLLISION-OBJECT/GET-USER-INDEX) :int
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-USER-POINTER))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setUserPointer" COLLISION-OBJECT/SET-USER-POINTER) :void
-  (self :pointer)
-  (userPointer :pointer))
-
-(declaim (inline COLLISION-OBJECT/SET-USER-INDEX))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setUserIndex" COLLISION-OBJECT/SET-USER-INDEX) :void
-  (self :pointer)
-  (index :int))
-
-(declaim (inline COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getUpdateRevisionInternal" COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL) :int
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/CHECK-COLLIDE-WITH))
-
-(cffi:defcfun ("_wrap_btCollisionObject_checkCollideWith" COLLISION-OBJECT/CHECK-COLLIDE-WITH) :pointer
-  (self :pointer)
-  (co :pointer))
-
-(declaim (inline COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_calculateSerializeBufferSize" COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
-  (self :pointer))
-
-(declaim (inline COLLISION-OBJECT/SERIALIZE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_serialize" COLLISION-OBJECT/SERIALIZE) :string
-  (self :pointer)
-  (dataBuffer :pointer)
-  (serializer :pointer))
-
-(declaim (inline COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT))
-
-(cffi:defcfun ("_wrap_btCollisionObject_serializeSingleObject" COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT) :void
-  (self :pointer)
-  (serializer :pointer))
-
-(cffi:defcstruct COLLISION-OBJECT-DOUBLE-DATA
-  (BROADPHASE-HANDLE :pointer)
-  (COLLISION-SHAPE :pointer)
-  (ROOT-COLLISION-SHAPE :pointer)
-  (NAME :string)
-  (WORLD-TRANSFORM :pointer)
-  (INTERPOLATION-WORLD-TRANSFORM :pointer)
-  (INTERPOLATION-LINEAR-VELOCITY :pointer)
-  (INTERPOLATION-ANGULAR-VELOCITY :pointer)
-  (ANISOTROPIC-FRICTION :pointer)
-  (CONTACT-PROCESSING-THRESHOLD :double)
-  (DEACTIVATION-TIME :double)
-  (FRICTION :double)
-  (ROLLING-FRICTION :double)
-  (RESTITUTION :double)
-  (HIT-FRACTION :double)
-  (CCD-SWEPT-SPHERE-RADIUS :double)
-  (CCD-MOTION-THRESHOLD :double)
-  (HAS-ANISOTROPIC-FRICTION :int)
-  (COLLISION-FLAGS :int)
-  (ISLAND-TAG-1 :int)
-  (COMPANION-ID :int)
-  (ACTIVATION-STATE-1 :int)
-  (INTERNAL-TYPE :int)
-  (CHECK-COLLIDE-WITH :int)
-  (PADDING :pointer))
-
-(cffi:defcstruct COLLISION-OBJECT-FLOAT-DATA
-  (BROADPHASE-HANDLE :pointer)
-  (COLLISION-SHAPE :pointer)
-  (ROOT-COLLISION-SHAPE :pointer)
-  (NAME :string)
-  (WORLD-TRANSFORM :pointer)
-  (INTERPOLATION-WORLD-TRANSFORM :pointer)
-  (INTERPOLATION-LINEAR-VELOCITY :pointer)
-  (INTERPOLATION-ANGULAR-VELOCITY :pointer)
-  (ANISOTROPIC-FRICTION :pointer)
-  (CONTACT-PROCESSING-THRESHOLD :float)
-  (DEACTIVATION-TIME :float)
-  (FRICTION :float)
-  (ROLLING-FRICTION :float)
-  (RESTITUTION :float)
-  (HIT-FRACTION :float)
-  (CCD-SWEPT-SPHERE-RADIUS :float)
-  (CCD-MOTION-THRESHOLD :float)
-  (HAS-ANISOTROPIC-FRICTION :int)
-  (COLLISION-FLAGS :int)
-  (ISLAND-TAG-1 :int)
-  (COMPANION-ID :int)
-  (ACTIVATION-STATE-1 :int)
-  (INTERNAL-TYPE :int)
-  (CHECK-COLLIDE-WITH :int)
-  (PADDING :pointer))
 
 (cffi:defcenum DISPATCHER-FLAGS
-  (:CD-STATIC-STATIC-REPORTED #.1)
-  (:CD-USE-RELATIVE-CONTACT-BREAKING-THRESHOLD #.2)
-  (:CD-DISABLE-CONTACTPOOL-DYNAMIC-ALLOCATION #.4))
+  (:STATIC-STATIC-REPORTED 1)
+  (:USE-RELATIVE-CONTACT-BREAKING-THRESHOLD 2)
+  (:DISABLE-CONTACTPOOL-DYNAMIC-ALLOCATION 4))
 
 (define-anonymous-enum
-  (DYNAMIC-SET #.0)
-  (FIXED-SET #.1)
-  (STAGECOUNT #.2))
+  (DYNAMIC-SET 0)
+  (FIXED-SET 1)
+  (STAGECOUNT 2))
 
 (cffi:defcenum DEBUG-DRAW-MODES
-  (:DBG-NO-DEBUG #.0)
-  (:DBG-DRAW-WIREFRAME #.1)
-  (:DBG-DRAW-AABB #.2)
-  (:DBG-DRAW-FEATURES-TEXT #.4)
-  (:DBG-DRAW-CONTACT-POINTS #.8)
-  (:DBG-NO-DEACTIVATION #.16)
-  (:DBG-NO-HELP-TEXT #.32)
-  (:DBG-DRAW-TEXT #.64)
-  (:DBG-PROFILE-TIMINGS #.128)
-  (:DBG-ENABLE-SAT-COMPARISON #.256)
-  (:DBG-DISABLE-BULLET-LCP #.512)
-  (:DBG-ENABLE-CCD #.1024)
-  (:DBG-DRAW-CONSTRAINTS #.(ash 1 11))
-  (:DBG-DRAW-CONSTRAINT-LIMITS #.(ash 1 12))
-  (:DBG-FAST-WIREFRAME #.(ash 1 13))
-  (:DBG-DRAW-NORMALS #.(ash 1 14))
-  :DBG-MAX-DEBUG-DRAW-MODE)
+  (:NO-DEBUG 0)
+  (:DRAW-WIREFRAME 1)
+  (:DRAW-AABB 2)
+  (:DRAW-FEATURES-TEXT 4)
+  (:DRAW-CONTACT-POINTS 8)
+  (:NO-DEACTIVATION 16)
+  (:NO-HELP-TEXT #.32)
+  (:DRAW-TEXT #.64)
+  (:PROFILE-TIMINGS 128)
+  (:ENABLE-SAT-COMPARISON 256)
+  (:DISABLE-BULLET-LCP #.512)
+  (:ENABLE-CCD 1024)
+  (:DRAW-CONSTRAINTS #.(ash 1 11))
+  (:DRAW-CONSTRAINT-LIMITS #.(ash 1 12))
+  (:FAST-WIREFRAME #.(ash 1 13))
+  (:DRAW-NORMALS #.(ash 1 14))
+  :MAX-DEBUG-DRAW-MODE)
 
 (cffi:defcenum SERIALIZATION-FLAGS
-  (:SERIALIZE-NO-BVH #.1)
-  (:SERIALIZE-NO-TRIANGLEINFOMAP #.2)
-  (:SERIALIZE-NO-DUPLICATE-ASSERT #.4))
+  (:NO-BVH 1)
+  (:NO-TRIANGLEINFOMAP 2)
+  (:NO-DUPLICATE-ASSERT 4))
 
 (declaim (inline MAKE-DISCRETE-DYNAMICS-WORLD))
 
@@ -1348,27 +876,27 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (self :pointer))
 
 (cffi:defcenum RIGID-BODY-FLAGS
-  (:DISABLE-WORLD-GRAVITY #.1)
-  (:ENABLE-GYROPSCOPIC-FORCE #.2))
+  (:DISABLE-WORLD-GRAVITY 1)
+  (:ENABLE-GYROPSCOPIC-FORCE 2))
 
 (cffi:defcenum POINT-2-POINT-FLAGS
-  (:P-2-P-FLAGS-ERP #.1)
-  (:P-2-P-FLAGS-CFM #.2))
+  (:P-2-P-FLAGS-ERP 1)
+  (:P-2-P-FLAGS-CFM 2))
 
 (cffi:defcenum HINGE-FLAGS
-  (:HINGE-FLAGS-CFM-STOP #.1)
-  (:HINGE-FLAGS-ERP-STOP #.2)
-  (:HINGE-FLAGS-CFM-NORM #.4))
+  (:HINGE-FLAGS-CFM-STOP 1)
+  (:HINGE-FLAGS-ERP-STOP 2)
+  (:HINGE-FLAGS-CFM-NORM 4))
 
 (cffi:defcenum CONE-TWIST-FLAGS
-  (:CONETWIST-FLAGS-LIN-CFM #.1)
-  (:CONETWIST-FLAGS-LIN-ERP #.2)
-  (:CONETWIST-FLAGS-ANG-CFM #.4))
+  (:CONETWIST-FLAGS-LIN-CFM 1)
+  (:CONETWIST-FLAGS-LIN-ERP 2)
+  (:CONETWIST-FLAGS-ANG-CFM 4))
 
 (cffi:defcenum 6-DOF-FLAGS
-  (:6-DOF-FLAGS-CFM-NORM #.1)
-  (:6-DOF-FLAGS-CFM-STOP #.2)
-  (:6-DOF-FLAGS-ERP-STOP #.4))
+  (:6-DOF-FLAGS-CFM-NORM 1)
+  (:6-DOF-FLAGS-CFM-STOP 2)
+  (:6-DOF-FLAGS-ERP-STOP 4))
 
 (cffi:defcenum SLIDER-FLAGS
   (:SLIDER-FLAGS-CFM-DIRLIN #.(ash 1 0))
@@ -1508,224 +1036,6 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod serialize ((self collision-world) &key serializer &allow-other-keys)
   (COLLISION-WORLD/SERIALIZE (ff-pointer self) serializer))
 
-
-
-(defmethod MERGES-SIMULATION-ISLANDS ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS (ff-pointer self)))
-
-(defmethod ANISOTROPIC-FRICTION ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION (ff-pointer self)))
-
-(defmethod (SETF ANISOTROPIC-FRICTION)
-    ((self COLLISION-OBJECT) 
-   anisotropicFriction (frictionMode integer))
-           (COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/WITH-MODE
-            (ff-pointer self) anisotropicFriction
-            frictionMode))
-
-(defmethod (SETF ANISOTROPIC-FRICTION)
-    ((self COLLISION-OBJECT)
-   anisotropicFriction (friction-mode null))
-  (COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION/WITHOUT-MODE
-     (ff-pointer self) anisotropicFriction))
-
-(defmethod HAS-ANISOTROPIC-FRICTION-P
-    ((self COLLISION-OBJECT) (frictionMode integer))
-  (COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/WITH-MODE
-   (ff-pointer self) frictionMode))
-
-(defmethod HAS-ANISOTROPIC-FRICTION-P
-    ((self COLLISION-OBJECT) (friction-mode null))
-  (COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION/WITHOUT-MODE
-     (ff-pointer self)))
-
-(defmethod (SETF CONTACT-PROCESSING-THRESHOLD)
-    ((self COLLISION-OBJECT)
-   (contactProcessingThreshold number))
-  (COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD
-     (ff-pointer self) contactProcessingThreshold))
-
-(defmethod CONTACT-PROCESSING-THRESHOLD ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD (ff-pointer self)))
-
-(defmethod STATIC-OBJECT-P ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/IS-STATIC-OBJECT (ff-pointer self)))
-
-(defmethod KINEMATIC-OBJECT-P ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/IS-KINEMATIC-OBJECT (ff-pointer self)))
-
-(defmethod STATIC-OR-KINEMATIC-OBJECT-P ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT (ff-pointer self)))
-
-(defmethod HAS-CONTACT-RESPONSE-P ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/HAS-CONTACT-RESPONSE (ff-pointer self)))
-
-(defmethod initialize-instance :after ((obj COLLISION-OBJECT)
-                                       &key)
-  (setf (slot-value obj 'ff-pointer) (MAKE-COLLISION-OBJECT)))
-
-(defmethod (SETF COLLISION-SHAPE) ((self COLLISION-OBJECT) collisionShape)
-  (COLLISION-OBJECT/SET-COLLISION-SHAPE (ff-pointer self) collisionShape))
-
-(defmethod COLLISION-SHAPE ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-COLLISION-SHAPE (ff-pointer self)))
-
-(defmethod COLLISION-SHAPE ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-COLLISION-SHAPE (ff-pointer self)))
-
-(defmethod INTERNAL-GET-EXTENSION-POINTER ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER (ff-pointer self)))
-
-(defmethod INTERNAL-SET-EXTENSION-POINTER ((self COLLISION-OBJECT) pointer)
-  (COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER (ff-pointer self) pointer))
-
-(defmethod ACTIVATION-STATE ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-ACTIVATION-STATE (ff-pointer self)))
-
-(defmethod (SETF ACTIVATION-STATE) ((self COLLISION-OBJECT) (newState integer))
-  (COLLISION-OBJECT/SET-ACTIVATION-STATE (ff-pointer self) newState))
-
-(defmethod (SETF DEACTIVATION-TIME) ((self COLLISION-OBJECT) (time number))
-  (COLLISION-OBJECT/SET-DEACTIVATION-TIME (ff-pointer self) time))
-
-(defmethod DEACTIVATION-TIME ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-DEACTIVATION-TIME (ff-pointer self)))
-
-(defmethod FORCE-ACTIVATION-STATE ((self COLLISION-OBJECT) (newState integer))
-  (COLLISION-OBJECT/FORCE-ACTIVATION-STATE (ff-pointer self) newState))
-
-(defmethod activate ((self collision-object)
-                     &key (force-activation nil force-?))
-  (if force-?
-      (collision-object/activate/force (ff-pointer self) force-activation)
-      (collision-object/activate (ff-pointer self))))
-
-(defmethod ACTIVEP ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/IS-ACTIVE (ff-pointer self)))
-
-(defmethod (SETF RESTITUTION) ((self COLLISION-OBJECT) (rest number))
-  (COLLISION-OBJECT/SET-RESTITUTION (ff-pointer self) rest))
-
-(defmethod RESTITUTION ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-RESTITUTION (ff-pointer self)))
-
-(defmethod (SETF FRICTION) ((self COLLISION-OBJECT) (frict number))
-  (COLLISION-OBJECT/SET-FRICTION (ff-pointer self) frict))
-
-(defmethod FRICTION ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-FRICTION (ff-pointer self)))
-
-(defmethod (SETF ROLLING-FRICTION) ((self COLLISION-OBJECT) (frict number))
-  (COLLISION-OBJECT/SET-ROLLING-FRICTION (ff-pointer self) frict))
-
-(defmethod ROLLING-FRICTION ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-ROLLING-FRICTION (ff-pointer self)))
-
-(defmethod INTERNAL-TYPE ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-INTERNAL-TYPE (ff-pointer self)))
-
-(defmethod WORLD-TRANSFORM ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-WORLD-TRANSFORM (ff-pointer self)))
-
-(defmethod WORLD-TRANSFORM ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-WORLD-TRANSFORM (ff-pointer self)))
-
-(defmethod (SETF WORLD-TRANSFORM) ((self COLLISION-OBJECT) worldTrans)
-  (COLLISION-OBJECT/SET-WORLD-TRANSFORM (ff-pointer self) worldTrans))
-
-(defmethod GET-BROADPHASE-HANDLE ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-BROADPHASE-HANDLE (ff-pointer self)))
-
-(defmethod (SETF BROADPHASE-HANDLE) ((self COLLISION-OBJECT) handle)
-  (COLLISION-OBJECT/SET-BROADPHASE-HANDLE (ff-pointer self) handle))
-
-(defmethod INTERPOLATION-WORLD-TRANSFORM ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM (ff-pointer self)))
-
-(defmethod INTERPOLATION-WORLD-TRANSFORM ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM (ff-pointer self)))
-
-(defmethod (SETF INTERPOLATION-WORLD-TRANSFORM) ((self COLLISION-OBJECT) trans)
-  (COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM (ff-pointer self) trans))
-
-(defmethod (SETF INTERPOLATION-LINEAR-VELOCITY) ((self COLLISION-OBJECT) linvel)
-  (COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY (ff-pointer self) linvel))
-
-(defmethod (SETF INTERPOLATION-ANGULAR-VELOCITY) ((self COLLISION-OBJECT) angvel)
-  (COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY (ff-pointer self) angvel))
-
-(defmethod INTERPOLATION-LINEAR-VELOCITY ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY (ff-pointer self)))
-
-(defmethod INTERPOLATION-ANGULAR-VELOCITY ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY (ff-pointer self)))
-
-(defmethod ISLAND-TAG ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-ISLAND-TAG (ff-pointer self)))
-
-(defmethod (SETF ISLAND-TAG) ((self COLLISION-OBJECT) (tag integer))
-  (COLLISION-OBJECT/SET-ISLAND-TAG (ff-pointer self) tag))
-
-(defmethod COMPANION-ID ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-COMPANION-ID (ff-pointer self)))
-
-(defmethod (SETF COMPANION-ID) ((self COLLISION-OBJECT) (id integer))
-  (COLLISION-OBJECT/SET-COMPANION-ID (ff-pointer self) id))
-
-(defmethod HIT-FRACTION ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-HIT-FRACTION (ff-pointer self)))
-
-(defmethod (SETF HIT-FRACTION) ((self COLLISION-OBJECT) (hitFraction number))
-  (COLLISION-OBJECT/SET-HIT-FRACTION (ff-pointer self) hitFraction))
-
-(defmethod COLLISION-FLAGS ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-COLLISION-FLAGS (ff-pointer self)))
-
-(defmethod (SETF COLLISION-FLAGS) ((self COLLISION-OBJECT) (flags integer))
-  (COLLISION-OBJECT/SET-COLLISION-FLAGS (ff-pointer self) flags))
-
-(defmethod CCD-SWEPT-SPHERE-RADIUS ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS (ff-pointer self)))
-
-(defmethod (SETF CCD-SWEPT-SPHERE-RADIUS) ((self COLLISION-OBJECT) (radius number))
-  (COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS (ff-pointer self) radius))
-
-(defmethod CCD-MOTION-THRESHOLD ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD (ff-pointer self)))
-
-(defmethod CCD-SQUARE-MOTION-THRESHOLD ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD (ff-pointer self)))
-
-(defmethod (SETF CCD-MOTION-THRESHOLD) ((self COLLISION-OBJECT) (ccdMotionThreshold number))
-  (COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD (ff-pointer self) ccdMotionThreshold))
-
-(defmethod USER-POINTER ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-USER-POINTER (ff-pointer self)))
-
-(defmethod USER-INDEX ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-USER-INDEX (ff-pointer self)))
-
-(defmethod (SETF USER-POINTER) ((self COLLISION-OBJECT) userPointer)
-  (COLLISION-OBJECT/SET-USER-POINTER (ff-pointer self) userPointer))
-
-(defmethod (SETF USER-INDEX) ((self COLLISION-OBJECT) (index integer))
-  (COLLISION-OBJECT/SET-USER-INDEX (ff-pointer self) index))
-
-(defmethod UPDATE-REVISION-INTERNAL ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL (ff-pointer self)))
-
-(defmethod CHECK-COLLIDE-WITH ((self COLLISION-OBJECT) (co COLLISION-OBJECT))
-  (COLLISION-OBJECT/CHECK-COLLIDE-WITH (ff-pointer self) (ff-pointer co)))
-
-(defmethod CALCULATE-SERIALIZE-BUFFER-SIZE ((self COLLISION-OBJECT))
-  (COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE (ff-pointer self)))
-
-(defmethod serialize ((self collision-object) &key data-Buffer serializer
-                                                &allow-other-keys)
-  (collision-object/serialize (ff-pointer self) data-Buffer serializer))
-
-(defmethod SERIALIZE-SINGLE-OBJECT ((self COLLISION-OBJECT) serializer)
-  (COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT (ff-pointer self) serializer))
 
 
 
@@ -1989,7 +1299,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline cosine))
 
-(cffi:defcfun ("_wrap_btCos" cosine) :float
+(cffi:defcfun ("_wrap_btCos"
+cosine) :float
   (x :float))
 
 (export 'cosine)
@@ -2861,7 +2172,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CROSS))
 
-(cffi:defcfun ("_wrap_btCross" CROSS) :pointer
+(cffi:defcfun ("_wrap_btCross"
+cROSS) :pointer
   (v1 :pointer)
   (v2 :pointer))
 
@@ -3391,13 +2703,13 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export 'matrix-3x3/get-column)
 
-(declaim (inline MATRIX-3X-3/GET-ROW))
+(declaim (inline MATRIX-3X3/GET-ROW))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getRow" MATRIX-3X-3/GET-ROW) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_getRow" MATRIX-3X3/GET-ROW) :pointer
   (self :pointer)
   (i :int))
 
-(export 'MATRIX-3X-3/GET-ROW)
+(export 'MATRIX-3X3/GET-ROW)
 
 (declaim (inline matrix-3x3/aref))
 
@@ -3416,41 +2728,41 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
  (export 'matrix-3x3/aref))
 
-(declaim (inline MATRIX-3X-3/MULTIPLY-AND-ASSIGN))
+(declaim (inline MATRIX-3X3/MULTIPLY-AND-ASSIGN))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_multiplyAndAssign" MATRIX-3X-3/MULTIPLY-AND-ASSIGN) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_multiplyAndAssign" MATRIX-3X3/MULTIPLY-AND-ASSIGN) :pointer
   (self :pointer)
   (m :pointer))
 
-(export 'MATRIX-3X-3/MULTIPLY-AND-ASSIGN)
+(export 'MATRIX-3X3/MULTIPLY-AND-ASSIGN)
 
-(declaim (inline MATRIX-3X-3/INCREMENT))
+(declaim (inline MATRIX-3X3/INCREMENT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_increment" MATRIX-3X-3/INCREMENT) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_increment" MATRIX-3X3/INCREMENT) :pointer
   (self :pointer)
   (m :pointer))
 
-(export 'MATRIX-3X-3/INCREMENT)
+(export 'MATRIX-3X3/INCREMENT)
 
-(declaim (inline MATRIX-3X-3/DECREMENT))
+(declaim (inline MATRIX-3X3/DECREMENT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_decrement" MATRIX-3X-3/DECREMENT) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_decrement" MATRIX-3X3/DECREMENT) :pointer
   (self :pointer)
   (m :pointer))
 
-(export 'MATRIX-3X-3/DECREMENT)
+(export 'MATRIX-3X3/DECREMENT)
 
-(declaim (inline MATRIX-3X-3/SET-FROM-OPEN-GLSUB-MATRIX))
+(declaim (inline MATRIX-3X3/SET-FROM-OPEN-GLSUB-MATRIX))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setFromOpenGLSubMatrix" MATRIX-3X-3/SET-FROM-OPEN-GLSUB-MATRIX) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setFromOpenGLSubMatrix" MATRIX-3X3/SET-FROM-OPEN-GLSUB-MATRIX) :void
   (self :pointer)
   (m :pointer))
 
-(export 'MATRIX-3X-3/SET-FROM-OPEN-GLSUB-MATRIX)
+(export 'MATRIX-3X3/SET-FROM-OPEN-GLSUB-MATRIX)
 
-(declaim (inline MATRIX-3X-3/SET-VALUE))
+(declaim (inline MATRIX-3X3/SET-VALUE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setValue" MATRIX-3X-3/SET-VALUE) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setValue" MATRIX-3X3/SET-VALUE) :void
   (self :pointer)
   (xx :pointer)
   (xy :pointer)
@@ -3462,254 +2774,254 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (zy :pointer)
   (zz :pointer))
 
-(export 'MATRIX-3X-3/SET-VALUE)
+(export 'MATRIX-3X3/SET-VALUE)
 
-(declaim (inline MATRIX-3X-3/SET-ROTATION))
+(declaim (inline MATRIX-3X3/SET-ROTATION))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setRotation" MATRIX-3X-3/SET-ROTATION) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setRotation" MATRIX-3X3/SET-ROTATION) :void
   (self :pointer)
   (q :pointer))
 
-(export 'MATRIX-3X-3/SET-ROTATION)
+(export 'MATRIX-3X3/SET-ROTATION)
 
-(declaim (inline MATRIX-3X-3/SET-EULER-YPR))
+(declaim (inline MATRIX-3X3/SET-EULER-YPR))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setEulerYPR" MATRIX-3X-3/SET-EULER-YPR) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setEulerYPR" MATRIX-3X3/SET-EULER-YPR) :void
   (self :pointer)
   (yaw :pointer)
   (pitch :pointer)
   (roll :pointer))
 
-(export 'MATRIX-3X-3/SET-EULER-YPR)
+(export 'MATRIX-3X3/SET-EULER-YPR)
 
-(declaim (inline MATRIX-3X-3/SET-EULER-ZYX))
+(declaim (inline MATRIX-3X3/SET-EULER-ZYX))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setEulerZYX" MATRIX-3X-3/SET-EULER-ZYX) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setEulerZYX" MATRIX-3X3/SET-EULER-ZYX) :void
   (self :pointer)
   (eulerX :float)
   (eulerY :float)
   (eulerZ :float))
 
-(export 'MATRIX-3X-3/SET-EULER-ZYX)
+(export 'MATRIX-3X3/SET-EULER-ZYX)
 
-(declaim (inline MATRIX-3X-3/SET-IDENTITY))
+(declaim (inline MATRIX-3X3/SET-IDENTITY))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_setIdentity" MATRIX-3X-3/SET-IDENTITY) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_setIdentity" MATRIX-3X3/SET-IDENTITY) :void
   (self :pointer))
 
-(export 'MATRIX-3X-3/SET-IDENTITY)
+(export 'MATRIX-3X3/SET-IDENTITY)
 
-(declaim (inline MATRIX-3X-3/GET-IDENTITY))
+(declaim (inline MATRIX-3X3/GET-IDENTITY))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getIdentity" MATRIX-3X-3/GET-IDENTITY) :pointer)
+(cffi:defcfun ("_wrap_btMatrix3x3_getIdentity" MATRIX-3X3/GET-IDENTITY) :pointer)
 
-(export 'MATRIX-3X-3/GET-IDENTITY)
+(export 'MATRIX-3X3/GET-IDENTITY)
 
-(declaim (inline MATRIX-3X-3/GET-OPEN-GLSUB-MATRIX))
+(declaim (inline MATRIX-3X3/GET-OPEN-GLSUB-MATRIX))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getOpenGLSubMatrix" MATRIX-3X-3/GET-OPEN-GLSUB-MATRIX) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_getOpenGLSubMatrix" MATRIX-3X3/GET-OPEN-GLSUB-MATRIX) :void
   (self :pointer)
   (m :pointer))
 
-(export 'MATRIX-3X-3/GET-OPEN-GLSUB-MATRIX)
+(export 'MATRIX-3X3/GET-OPEN-GLSUB-MATRIX)
 
-(declaim (inline MATRIX-3X-3/GET-ROTATION))
+(declaim (inline MATRIX-3X3/GET-ROTATION))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getRotation" MATRIX-3X-3/GET-ROTATION) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_getRotation" MATRIX-3X3/GET-ROTATION) :void
   (self :pointer)
   (q :pointer))
 
-(export 'MATRIX-3X-3/GET-ROTATION)
+(export 'MATRIX-3X3/GET-ROTATION)
 
-(declaim (inline MATRIX-3X-3/GET-EULER-YPR))
+(declaim (inline MATRIX-3X3/GET-EULER-YPR))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_getEulerYPR" MATRIX-3X-3/GET-EULER-YPR) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_getEulerYPR" MATRIX-3X3/GET-EULER-YPR) :void
   (self :pointer)
   (yaw :pointer)
   (pitch :pointer)
   (roll :pointer))
 
-(export 'MATRIX-3X-3/GET-EULER-YPR)
+(export 'MATRIX-3X3/GET-EULER-YPR)
 
-(declaim (inline MATRIX-3X-3/GET-EULER-ZYX/WITH-SOLUTION#))
+(declaim (inline MATRIX-3X3/GET-EULER-ZYX/WITH-SOLUTION#))
 
 (cffi:defcfun ("_wrap_btMatrix3x3_getEulerZYX__SWIG_0" 
-               MATRIX-3X-3/GET-EULER-ZYX/WITH-SOLUTION#) :void
+               MATRIX-3X3/GET-EULER-ZYX/WITH-SOLUTION#) :void
   (self :pointer)
   (yaw :pointer)
   (pitch :pointer)
   (roll :pointer)
   (solution_number :unsigned-int))
 
-(declaim (inline MATRIX-3X-3/GET-EULER-ZYX/WITHOUT-SOLUTION#))
+(declaim (inline MATRIX-3X3/GET-EULER-ZYX/WITHOUT-SOLUTION#))
 
 (cffi:defcfun ("_wrap_btMatrix3x3_getEulerZYX__SWIG_1" 
-               MATRIX-3X-3/GET-EULER-ZYX/WITHOUT-SOLUTION#) :void
+               MATRIX-3X3/GET-EULER-ZYX/WITHOUT-SOLUTION#) :void
   (self :pointer)
   (yaw :pointer)
   (pitch :pointer)
   (roll :pointer))
 
-(declaim (inline MATRIX-3X-3/GET-EULER-ZYX))
+(declaim (inline MATRIX-3X3/GET-EULER-ZYX))
 
-(defun MATRIX-3X-3/GET-EULER-ZYX (self yaw pitch roll
+(defun MATRIX-3X3/GET-EULER-ZYX (self yaw pitch roll
                                   &optional solution#)
   (if solution#
-      (MATRIX-3X-3/GET-EULER-ZYX/WITH-SOLUTION# self yaw pitch roll solution#)
-      (MATRIX-3X-3/GET-EULER-ZYX/WITHOUT-SOLUTION# self yaw pitch roll)))
+      (MATRIX-3X3/GET-EULER-ZYX/WITH-SOLUTION# self yaw pitch roll solution#)
+      (MATRIX-3X3/GET-EULER-ZYX/WITHOUT-SOLUTION# self yaw pitch roll)))
 
-(export 'MATRIX-3X-3/GET-EULER-ZYX)
+(export 'MATRIX-3X3/GET-EULER-ZYX)
 
-(declaim (inline MATRIX-3X-3/SCALED))
+(declaim (inline MATRIX-3X3/SCALED))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_scaled" MATRIX-3X-3/SCALED) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_scaled" MATRIX-3X3/SCALED) :pointer
   (self :pointer)
   (s :pointer))
 
-(export 'MATRIX-3X-3/SCALED)
+(export 'MATRIX-3X3/SCALED)
 
-(declaim (inline MATRIX-3X-3/DETERMINANT))
+(declaim (inline MATRIX-3X3/DETERMINANT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_determinant" MATRIX-3X-3/DETERMINANT) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_determinant" MATRIX-3X3/DETERMINANT) :float
   (self :pointer))
 
-(export 'MATRIX-3X-3/DETERMINANT)
+(export 'MATRIX-3X3/DETERMINANT)
 
-(declaim (inline MATRIX-3X-3/ADJOINT))
+(declaim (inline MATRIX-3X3/ADJOINT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_adjoint" MATRIX-3X-3/ADJOINT) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_adjoint" MATRIX-3X3/ADJOINT) :pointer
   (self :pointer))
 
-(export 'MATRIX-3X-3/ADJOINT)
+(export 'MATRIX-3X3/ADJOINT)
 
-(declaim (inline MATRIX-3X-3/ABSOLUTE))
+(declaim (inline MATRIX-3X3/ABSOLUTE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_absolute" MATRIX-3X-3/ABSOLUTE) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_absolute" MATRIX-3X3/ABSOLUTE) :pointer
   (self :pointer))
 
-(export 'MATRIX-3X-3/ABSOLUTE)
+(export 'MATRIX-3X3/ABSOLUTE)
 
-(declaim (inline MATRIX-3X-3/TRANSPOSE))
+(declaim (inline MATRIX-3X3/TRANSPOSE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_transpose" MATRIX-3X-3/TRANSPOSE) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_transpose" MATRIX-3X3/TRANSPOSE) :pointer
   (self :pointer))
 
-(export 'MATRIX-3X-3/TRANSPOSE)
+(export 'MATRIX-3X3/TRANSPOSE)
 
-(declaim (inline MATRIX-3X-3/INVERSE))
+(declaim (inline MATRIX-3X3/INVERSE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_inverse" MATRIX-3X-3/INVERSE) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_inverse" MATRIX-3X3/INVERSE) :pointer
   (self :pointer))
 
-(export 'MATRIX-3X-3/INVERSE)
+(export 'MATRIX-3X3/INVERSE)
 
-(declaim (inline MATRIX-3X-3/TRANSPOSE-TIMES))
+(declaim (inline MATRIX-3X3/TRANSPOSE-TIMES))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_transposeTimes" MATRIX-3X-3/TRANSPOSE-TIMES) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_transposeTimes" MATRIX-3X3/TRANSPOSE-TIMES) :pointer
   (self :pointer)
   (m :pointer))
 
-(export 'MATRIX-3X-3/TRANSPOSE-TIMES)
+(export 'MATRIX-3X3/TRANSPOSE-TIMES)
 
-(declaim (inline MATRIX-3X-3/TIMES-TRANSPOSE))
+(declaim (inline MATRIX-3X3/TIMES-TRANSPOSE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_timesTranspose" MATRIX-3X-3/TIMES-TRANSPOSE) :pointer
+(cffi:defcfun ("_wrap_btMatrix3x3_timesTranspose" MATRIX-3X3/TIMES-TRANSPOSE) :pointer
   (self :pointer)
   (m :pointer))
 
-(export 'MATRIX-3X-3/TIMES-TRANSPOSE)
+(export 'MATRIX-3X3/TIMES-TRANSPOSE)
 
-(declaim (inline MATRIX-3X-3/TDOTX))
+(declaim (inline MATRIX-3X3/TDOTX))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_tdotx" MATRIX-3X-3/TDOTX) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_tdotx" MATRIX-3X3/TDOTX) :float
   (self :pointer)
   (v :pointer))
 
-(export 'MATRIX-3X-3/TDOTX)
+(export 'MATRIX-3X3/TDOTX)
 
-(declaim (inline MATRIX-3X-3/TDOTY))
+(declaim (inline MATRIX-3X3/TDOTY))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_tdoty" MATRIX-3X-3/TDOTY) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_tdoty" MATRIX-3X3/TDOTY) :float
   (self :pointer)
   (v :pointer))
 
-(export 'MATRIX-3X-3/TDOTY)
+(export 'MATRIX-3X3/TDOTY)
 
-(declaim (inline MATRIX-3X-3/TDOTZ))
+(declaim (inline MATRIX-3X3/TDOTZ))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_tdotz" MATRIX-3X-3/TDOTZ) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_tdotz" MATRIX-3X3/TDOTZ) :float
   (self :pointer)
   (v :pointer))
 
-(export 'MATRIX-3X-3/TDOTZ)
+(export 'MATRIX-3X3/TDOTZ)
 
-(declaim (inline MATRIX-3X-3/DIAGONALIZE))
+(declaim (inline MATRIX-3X3/DIAGONALIZE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_diagonalize" MATRIX-3X-3/DIAGONALIZE) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_diagonalize" MATRIX-3X3/DIAGONALIZE) :void
   (self :pointer)
   (rot :pointer)
   (threshold :float)
   (maxSteps :int))
 
-(export 'MATRIX-3X-3/DIAGONALIZE)
+(export 'MATRIX-3X3/DIAGONALIZE)
 
-(declaim (inline MATRIX-3X-3/COFAC))
+(declaim (inline MATRIX-3X3/COFAC))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_cofac" MATRIX-3X-3/COFAC) :float
+(cffi:defcfun ("_wrap_btMatrix3x3_cofac" MATRIX-3X3/COFAC) :float
   (self :pointer)
   (r1 :int)
   (c1 :int)
   (r2 :int)
   (c2 :int))
 
-(export 'MATRIX-3X-3/COFAC)
+(export 'MATRIX-3X3/COFAC)
 
-(declaim (inline MATRIX-3X-3/SERIALIZE))
+(declaim (inline MATRIX-3X3/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_serialize" MATRIX-3X-3/SERIALIZE) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_serialize" MATRIX-3X3/SERIALIZE) :void
   (self :pointer)
   (dataOut :pointer))
 
-(export 'MATRIX-3X-3/SERIALIZE)
+(export 'MATRIX-3X3/SERIALIZE)
 
-(declaim (inline MATRIX-3X-3/SERIALIZE-FLOAT))
+(declaim (inline MATRIX-3X3/SERIALIZE-FLOAT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_serializeFloat" MATRIX-3X-3/SERIALIZE-FLOAT) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_serializeFloat" MATRIX-3X3/SERIALIZE-FLOAT) :void
   (self :pointer)
   (dataOut :pointer))
 
-(export 'MATRIX-3X-3/SERIALIZE-FLOAT)
+(export 'MATRIX-3X3/SERIALIZE-FLOAT)
 
-(declaim (inline MATRIX-3X-3/DE-SERIALIZE))
+(declaim (inline MATRIX-3X3/DE-SERIALIZE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_deSerialize" MATRIX-3X-3/DE-SERIALIZE) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_deSerialize" MATRIX-3X3/DE-SERIALIZE) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export 'MATRIX-3X-3/DE-SERIALIZE)
+(export 'MATRIX-3X3/DE-SERIALIZE)
 
-(declaim (inline MATRIX-3X-3/DE-SERIALIZE-FLOAT))
+(declaim (inline MATRIX-3X3/DE-SERIALIZE-FLOAT))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_deSerializeFloat" MATRIX-3X-3/DE-SERIALIZE-FLOAT) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_deSerializeFloat" MATRIX-3X3/DE-SERIALIZE-FLOAT) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export 'MATRIX-3X-3/DE-SERIALIZE-FLOAT)
+(export 'MATRIX-3X3/DE-SERIALIZE-FLOAT)
 
-(declaim (inline MATRIX-3X-3/DE-SERIALIZE-DOUBLE))
+(declaim (inline MATRIX-3X3/DE-SERIALIZE-DOUBLE))
 
-(cffi:defcfun ("_wrap_btMatrix3x3_deSerializeDouble" MATRIX-3X-3/DE-SERIALIZE-DOUBLE) :void
+(cffi:defcfun ("_wrap_btMatrix3x3_deSerializeDouble" MATRIX-3X3/DE-SERIALIZE-DOUBLE) :void
   (self :pointer)
   (dataIn :pointer))
 
-(export 'MATRIX-3X-3/DE-SERIALIZE-DOUBLE)
+(export 'MATRIX-3X3/DE-SERIALIZE-DOUBLE)
 
-(declaim (inline DELETE/BT-MATRIX-3X-3))
+(declaim (inline DELETE/BT-MATRIX-3X3))
 
-(cffi:defcfun ("_wrap_delete_btMatrix3x3" DELETE/BT-MATRIX-3X-3) :void
+(cffi:defcfun ("_wrap_delete_btMatrix3x3" DELETE/BT-MATRIX-3X3) :void
   (self :pointer))
 
-(export 'DELETE/BT-MATRIX-3X-3)
+(export 'DELETE/BT-MATRIX-3X3)
 
 (cffi:defcstruct matrix-3x3-float-data
                  (el :pointer))
@@ -3718,53 +3030,76 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export 'el)
 
-(cffi:defcstruct MATRIX-3X-3-DOUBLE-DATA
+(cffi:defcstruct MATRIX-3X3-DOUBLE-DATA
                  (el :pointer))
 
-(export 'MATRIX-3X-3-DOUBLE-DATA)
+(export 'MATRIX-3X3-DOUBLE-DATA)
 
 (export 'el)
 
-(declaim (inline MAKE-TRANSFORM))
+(declaim (inline MAKE-TRANSFORM/naked))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_0" MAKE-TRANSFORM) :pointer)
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_0" MAKE-TRANSFORM/naked) :pointer)
 
-(export 'MAKE-TRANSFORM)
+(export 'MAKE-TRANSFORM/naked)
 
-(declaim (inline MAKE-TRANSFORM))
+(declaim (inline MAKE-TRANSFORM/with-q&c))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_1" MAKE-TRANSFORM) :pointer
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_1" MAKE-TRANSFORM/with-q&c) :pointer
   (q :pointer)
   (c :pointer))
 
-(export 'MAKE-TRANSFORM)
+(export 'MAKE-TRANSFORM/with-q&c)
 
-(declaim (inline MAKE-TRANSFORM))
+(declaim (inline MAKE-TRANSFORM/with-q))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_2" MAKE-TRANSFORM) :pointer
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_2" MAKE-TRANSFORM/with-q) :pointer
   (q :pointer))
 
-(export 'MAKE-TRANSFORM)
+(export 'MAKE-TRANSFORM/with-q)
 
-(declaim (inline MAKE-TRANSFORM))
+(declaim (inline MAKE-TRANSFORM/with-b&c))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_3" MAKE-TRANSFORM) :pointer
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_3" MAKE-TRANSFORM)/with-b&c :pointer
   (b :pointer)
   (c :pointer))
 
-(export 'MAKE-TRANSFORM)
+(export 'MAKE-TRANSFORM/with-b&c)
 
-(declaim (inline MAKE-TRANSFORM))
+(declaim (inline MAKE-TRANSFORM/with-b))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_4" MAKE-TRANSFORM) :pointer
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_4" MAKE-TRANSFORM/with-b) :pointer
   (b :pointer))
 
-(export 'MAKE-TRANSFORM)
+(export 'MAKE-TRANSFORM/with-b)
+
+(declaim (inline MAKE-TRANSFORM/with-other))
+
+(cffi:defcfun ("_wrap_new_btTransform__SWIG_5" MAKE-TRANSFORM/with-other) :pointer
+  (other :pointer))
+
+(export 'MAKE-TRANSFORM/with-other)
 
 (declaim (inline MAKE-TRANSFORM))
 
-(cffi:defcfun ("_wrap_new_btTransform__SWIG_5" MAKE-TRANSFORM) :pointer
-  (other :pointer))
+(defun make-transform (&key (b nil b?) (c nil c?)
+                         (q nil q?) (other nil other?))
+  (cond
+    ((and b? c? 
+          (not (or q? other?))) (make-transform/with-b&c b c))
+    ((and q? c?
+          (not (or b? other?))) (make-transform/with-q&c q c))
+    ((and q?
+          (not (or c? b? other?))) (make-transform/with-q q))
+    ((and b?
+          (not (or c? q? other?))) (make-transform/with-b b))
+    ((and other?
+          (not (or b? c? q?))) (make-transform/with-other other))
+    ((or b? c? q? other?) 
+     (error
+      "MAKE-TRANSFORM can be called with any of these
+ combinations \(only): \(B C) (Q C) (Q) (B) (OTHER) ()"))
+    (t (make-transform/naked))))
 
 (export 'MAKE-TRANSFORM)
 
@@ -4000,7 +3335,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export 'ORIGIN)
 
 (cffi:defcstruct TRANSFORM-DOUBLE-DATA
-  (BASIS MATRIX-3X-3-DOUBLE-DATA)
+  (BASIS MATRIX-3X3-DOUBLE-DATA)
   (ORIGIN VECTOR-3-DOUBLE-DATA))
 
 (export 'TRANSFORM-DOUBLE-DATA)
@@ -4052,7 +3387,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/SET-BROADPHASE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_setBroadphase" COLLISION-WORLD/SET-BROADPHASE) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_setBroadphase"
+cOLLISION-WORLD/SET-BROADPHASE) :void
   (self :pointer)
   (pairCache :pointer))
 
@@ -4060,42 +3396,48 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/GET-BROADPHASE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_0" COLLISION-WORLD/GET-BROADPHASE) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_0"
+cOLLISION-WORLD/GET-BROADPHASE) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-BROADPHASE)
 
 (declaim (inline COLLISION-WORLD/GET-BROADPHASE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_1" COLLISION-WORLD/GET-BROADPHASE) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getBroadphase__SWIG_1"
+cOLLISION-WORLD/GET-BROADPHASE) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-BROADPHASE)
 
 (declaim (inline COLLISION-WORLD/GET-PAIR-CACHE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getPairCache" COLLISION-WORLD/GET-PAIR-CACHE) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getPairCache"
+cOLLISION-WORLD/GET-PAIR-CACHE) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-PAIR-CACHE)
 
 (declaim (inline COLLISION-WORLD/GET-DISPATCHER))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_0" COLLISION-WORLD/GET-DISPATCHER) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_0"
+cOLLISION-WORLD/GET-DISPATCHER) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-DISPATCHER)
 
 (declaim (inline COLLISION-WORLD/GET-DISPATCHER))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_1" COLLISION-WORLD/GET-DISPATCHER) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatcher__SWIG_1"
+cOLLISION-WORLD/GET-DISPATCHER) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-DISPATCHER)
 
 (declaim (inline COLLISION-WORLD/UPDATE-SINGLE-AABB))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_updateSingleAabb" COLLISION-WORLD/UPDATE-SINGLE-AABB) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_updateSingleAabb"
+cOLLISION-WORLD/UPDATE-SINGLE-AABB) :void
   (self :pointer)
   (colObj :pointer))
 
@@ -4103,21 +3445,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/UPDATE-AABBS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_updateAabbs" COLLISION-WORLD/UPDATE-AABBS) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_updateAabbs"
+cOLLISION-WORLD/UPDATE-AABBS) :void
   (self :pointer))
 
 (export 'COLLISION-WORLD/UPDATE-AABBS)
 
 (declaim (inline COLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_computeOverlappingPairs" COLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_computeOverlappingPairs"
+cOLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS) :void
   (self :pointer))
 
 (export 'COLLISION-WORLD/COMPUTE-OVERLAPPING-PAIRS)
 
 (declaim (inline COLLISION-WORLD/SET-DEBUG-DRAWER))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_setDebugDrawer" COLLISION-WORLD/SET-DEBUG-DRAWER) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_setDebugDrawer"
+cOLLISION-WORLD/SET-DEBUG-DRAWER) :void
   (self :pointer)
   (debugDrawer :pointer))
 
@@ -4125,21 +3470,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/GET-DEBUG-DRAWER))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDebugDrawer" COLLISION-WORLD/GET-DEBUG-DRAWER) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDebugDrawer"
+cOLLISION-WORLD/GET-DEBUG-DRAWER) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-DEBUG-DRAWER)
 
 (declaim (inline COLLISION-WORLD/DEBUG-DRAW-WORLD))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawWorld" COLLISION-WORLD/DEBUG-DRAW-WORLD) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawWorld"
+cOLLISION-WORLD/DEBUG-DRAW-WORLD) :void
   (self :pointer))
 
 (export 'COLLISION-WORLD/DEBUG-DRAW-WORLD)
 
 (declaim (inline COLLISION-WORLD/DEBUG-DRAW-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawObject" COLLISION-WORLD/DEBUG-DRAW-OBJECT) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_debugDrawObject"
+cOLLISION-WORLD/DEBUG-DRAW-OBJECT) :void
   (self :pointer)
   (worldTransform :pointer)
   (shape :pointer)
@@ -4149,14 +3497,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/GET-NUM-COLLISION-OBJECTS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getNumCollisionObjects" COLLISION-WORLD/GET-NUM-COLLISION-OBJECTS) :int
+(cffi:defcfun ("_wrap_btCollisionWorld_getNumCollisionObjects"
+cOLLISION-WORLD/GET-NUM-COLLISION-OBJECTS) :int
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-NUM-COLLISION-OBJECTS)
 
 (declaim (inline COLLISION-WORLD/RAY-TEST))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_rayTest" COLLISION-WORLD/RAY-TEST) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_rayTest"
+cOLLISION-WORLD/RAY-TEST) :void
   (self :pointer)
   (rayFromWorld :pointer)
   (rayToWorld :pointer)
@@ -4167,7 +3517,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (declaim (inline COLLISION-WORLD/CONVEX-SWEEP-TEST))
 
 
-(cffi:defcfun ("_wrap_btCollisionWorld_convexSweepTest__SWIG_0" COLLISION-WORLD/CONVEX-SWEEP-TEST) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_convexSweepTest__SWIG_0"
+cOLLISION-WORLD/CONVEX-SWEEP-TEST) :void
   (self :pointer)
   (castShape :pointer)
   (from :pointer)
@@ -4179,7 +3530,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/CONVEX-SWEEP-TEST))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_convexSweepTest__SWIG_1" COLLISION-WORLD/CONVEX-SWEEP-TEST) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_convexSweepTest__SWIG_1"
+cOLLISION-WORLD/CONVEX-SWEEP-TEST) :void
   (self :pointer)
   (castShape :pointer)
   (from :pointer)
@@ -4190,7 +3542,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/CONTACT-TEST))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_contactTest" COLLISION-WORLD/CONTACT-TEST) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_contactTest"
+cOLLISION-WORLD/CONTACT-TEST) :void
   (self :pointer)
   (colObj :pointer)
   (resultCallback :pointer))
@@ -4199,7 +3552,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/CONTACT-PAIR-TEST))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_contactPairTest" COLLISION-WORLD/CONTACT-PAIR-TEST) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_contactPairTest"
+cOLLISION-WORLD/CONTACT-PAIR-TEST) :void
   (self :pointer)
   (colObjA :pointer)
   (colObjB :pointer)
@@ -4209,7 +3563,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/RAY-TEST-SINGLE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingle" COLLISION-WORLD/RAY-TEST-SINGLE) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingle"
+cOLLISION-WORLD/RAY-TEST-SINGLE) :void
   (rayFromTrans :pointer)
   (rayToTrans :pointer)
   (collisionObject :pointer)
@@ -4221,7 +3576,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/RAY-TEST-SINGLE-INTERNAL))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingleInternal" COLLISION-WORLD/RAY-TEST-SINGLE-INTERNAL) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_rayTestSingleInternal"
+cOLLISION-WORLD/RAY-TEST-SINGLE-INTERNAL) :void
   (rayFromTrans :pointer)
   (rayToTrans :pointer)
   (collisionObjectWrap :pointer)
@@ -4231,7 +3587,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/OBJECT-QUERY-SINGLE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingle" COLLISION-WORLD/OBJECT-QUERY-SINGLE) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingle"
+cOLLISION-WORLD/OBJECT-QUERY-SINGLE) :void
   (castShape :pointer)
   (rayFromTrans :pointer)
   (rayToTrans :pointer)
@@ -4245,7 +3602,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/OBJECT-QUERY-SINGLE-INTERNAL))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingleInternal" COLLISION-WORLD/OBJECT-QUERY-SINGLE-INTERNAL) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_objectQuerySingleInternal"
+cOLLISION-WORLD/OBJECT-QUERY-SINGLE-INTERNAL) :void
   (castShape :pointer)
   (convexFromTrans :pointer)
   (convexToTrans :pointer)
@@ -4257,7 +3615,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/ADD-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_0" COLLISION-WORLD/ADD-COLLISION-OBJECT) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_0"
+cOLLISION-WORLD/ADD-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer)
   (collisionFilterGroup :short)
@@ -4267,7 +3626,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/ADD-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_1" COLLISION-WORLD/ADD-COLLISION-OBJECT) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_1"
+cOLLISION-WORLD/ADD-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer)
   (collisionFilterGroup :short))
@@ -4276,7 +3636,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/ADD-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_2" COLLISION-WORLD/ADD-COLLISION-OBJECT) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_addCollisionObject__SWIG_2"
+cOLLISION-WORLD/ADD-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer))
 
@@ -4284,21 +3645,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getCollisionObjectArray__SWIG_0" COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getCollisionObjectArray__SWIG_0"
+cOLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY)
 
 (declaim (inline COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getCollisionObjectArray__SWIG_1" COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getCollisionObjectArray__SWIG_1"
+cOLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-COLLISION-OBJECT-ARRAY)
 
 (declaim (inline COLLISION-WORLD/REMOVE-COLLISION-OBJECT))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_removeCollisionObject" COLLISION-WORLD/REMOVE-COLLISION-OBJECT) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_removeCollisionObject"
+cOLLISION-WORLD/REMOVE-COLLISION-OBJECT) :void
   (self :pointer)
   (collisionObject :pointer))
 
@@ -4306,35 +3670,40 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_performDiscreteCollisionDetection" COLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_performDiscreteCollisionDetection"
+cOLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION) :void
   (self :pointer))
 
 (export 'COLLISION-WORLD/PERFORM-DISCRETE-COLLISION-DETECTION)
 
 (declaim (inline COLLISION-WORLD/GET-DISPATCH-INFO))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_0" COLLISION-WORLD/GET-DISPATCH-INFO) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_0"
+cOLLISION-WORLD/GET-DISPATCH-INFO) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-DISPATCH-INFO)
 
 (declaim (inline COLLISION-WORLD/GET-DISPATCH-INFO))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_1" COLLISION-WORLD/GET-DISPATCH-INFO) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getDispatchInfo__SWIG_1"
+cOLLISION-WORLD/GET-DISPATCH-INFO) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-DISPATCH-INFO)
 
 (declaim (inline COLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_getForceUpdateAllAabbs" COLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS) :pointer
+(cffi:defcfun ("_wrap_btCollisionWorld_getForceUpdateAllAabbs"
+cOLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS) :pointer
   (self :pointer))
 
 (export 'COLLISION-WORLD/GET-FORCE-UPDATE-ALL-AABBS)
 
 (declaim (inline COLLISION-WORLD/SET-FORCE-UPDATE-ALL-AABBS))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_setForceUpdateAllAabbs" COLLISION-WORLD/SET-FORCE-UPDATE-ALL-AABBS) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_setForceUpdateAllAabbs"
+cOLLISION-WORLD/SET-FORCE-UPDATE-ALL-AABBS) :void
   (self :pointer)
   (forceUpdateAllAabbs :pointer))
 
@@ -4342,7 +3711,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-WORLD/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btCollisionWorld_serialize" COLLISION-WORLD/SERIALIZE) :void
+(cffi:defcfun ("_wrap_btCollisionWorld_serialize"
+cOLLISION-WORLD/SERIALIZE) :void
   (self :pointer)
   (serializer :pointer))
 
@@ -4368,777 +3738,28 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export '+DISABLE-SIMULATION+)
 
-(define-constant +COLLISION-OBJECT-DATA-NAME+ "btCollisionObjectFloatData"  :test 'equal)
 
-(export '+COLLISION-OBJECT-DATA-NAME+)
-
-(declaim (inline COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusPlusInstance__SWIG_0" COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE) :pointer
-  (self :pointer)
-  (sizeInBytes :pointer))
-
-(export 'COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE)
-
-(declaim (inline COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusPlusInstance__SWIG_0" COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE) :void
-  (self :pointer)
-  (ptr :pointer))
-
-(export 'COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE)
-
-(declaim (inline COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusPlusInstance__SWIG_1" COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE) :pointer
-  (self :pointer)
-  (arg1 :pointer)
-  (ptr :pointer))
-
-(export 'COLLISION-OBJECT/MAKE-CPLUS-PLUS-INSTANCE)
-
-(declaim (inline COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusPlusInstance__SWIG_1" COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE) :void
-  (self :pointer)
-  (arg1 :pointer)
-  (arg2 :pointer))
-
-(export 'COLLISION-OBJECT/DELETE-CPLUS-PLUS-INSTANCE)
-
-(declaim (inline COLLISION-OBJECT/MAKE-CPLUS-ARRAY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusArray__SWIG_0" COLLISION-OBJECT/MAKE-CPLUS-ARRAY) :pointer
-  (self :pointer)
-  (sizeInBytes :pointer))
-
-(export 'COLLISION-OBJECT/MAKE-CPLUS-ARRAY)
-
-(declaim (inline COLLISION-OBJECT/DELETE-CPLUS-ARRAY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusArray__SWIG_0" COLLISION-OBJECT/DELETE-CPLUS-ARRAY) :void
-  (self :pointer)
-  (ptr :pointer))
-
-(export 'COLLISION-OBJECT/DELETE-CPLUS-ARRAY)
-
-(declaim (inline COLLISION-OBJECT/MAKE-CPLUS-ARRAY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_makeCPlusArray__SWIG_1" COLLISION-OBJECT/MAKE-CPLUS-ARRAY) :pointer
-  (self :pointer)
-  (arg1 :pointer)
-  (ptr :pointer))
-
-(export 'COLLISION-OBJECT/MAKE-CPLUS-ARRAY)
-
-(declaim (inline COLLISION-OBJECT/DELETE-CPLUS-ARRAY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_deleteCPlusArray__SWIG_1" COLLISION-OBJECT/DELETE-CPLUS-ARRAY) :void
-  (self :pointer)
-  (arg1 :pointer)
-  (arg2 :pointer))
-
-(export 'COLLISION-OBJECT/DELETE-CPLUS-ARRAY)
 
 (cffi:defcenum COLLISION-FLAGS
-  (:CF-STATIC-OBJECT #.1)
-  (:CF-KINEMATIC-OBJECT #.2)
-  (:CF-NO-CONTACT-RESPONSE #.4)
-  (:CF-CUSTOM-MATERIAL-CALLBACK #.8)
-  (:CF-CHARACTER-OBJECT #.16)
-  (:CF-DISABLE-VISUALIZE-OBJECT #.32)
-  (:CF-DISABLE-SPU-COLLISION-PROCESSING #.64))
+  (:STATIC-OBJECT 1)
+  (:KINEMATIC-OBJECT 2)
+  (:NO-CONTACT-RESPONSE 4)
+  (:CUSTOM-MATERIAL-CALLBACK 8)
+  (:CHARACTER-OBJECT 16)
+  (:DISABLE-VISUALIZE-OBJECT #.32)
+  (:DISABLE-SPU-COLLISION-PROCESSING #.64))
 
 (export 'COLLISION-FLAGS)
 
-(cffi:defcenum COLLISION-OBJECT-TYPES
-  (:CO-COLLISION-OBJECT #.1)
-  (:CO-RIGID-BODY #.2)
-  (:CO-GHOST-OBJECT #.4)
-  (:CO-SOFT-BODY #.8)
-  (:CO-HF-FLUID #.16)
-  (:CO-USER-TYPE #.32)
-  (:CO-FEATHERSTONE-LINK #.64))
 
-(export 'COLLISION-OBJECT-TYPES)
 
 (cffi:defcenum ANISOTROPIC-FRICTION-FLAGS
-  (:CF-ANISOTROPIC-FRICTION-DISABLED #.0)
-  (:CF-ANISOTROPIC-FRICTION #.1)
-  (:CF-ANISOTROPIC-ROLLING-FRICTION #.2))
+  (:ANISOTROPIC-FRICTION-DISABLED 0)
+  (:ANISOTROPIC-FRICTION 1)
+  (:ANISOTROPIC-ROLLING-FRICTION 2))
 
 (export 'ANISOTROPIC-FRICTION-FLAGS)
 
-(declaim (inline COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_mergesSimulationIslands" COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/MERGES-SIMULATION-ISLANDS)
-
-(declaim (inline COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getAnisotropicFriction" COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-ANISOTROPIC-FRICTION)
-
-(declaim (inline COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setAnisotropicFriction__SWIG_0" COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION) :void
-  (self :pointer)
-  (anisotropicFriction :pointer)
-  (frictionMode :int))
-
-(export 'COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION)
-
-(declaim (inline COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setAnisotropicFriction__SWIG_1" COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION) :void
-  (self :pointer)
-  (anisotropicFriction :pointer))
-
-(export 'COLLISION-OBJECT/SET-ANISOTROPIC-FRICTION)
-
-(declaim (inline COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_hasAnisotropicFriction__SWIG_0" COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION) :pointer
-  (self :pointer)
-  (frictionMode :int))
-
-(export 'COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION)
-
-(declaim (inline COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_hasAnisotropicFriction__SWIG_1" COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/HAS-ANISOTROPIC-FRICTION)
-
-(declaim (inline COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setContactProcessingThreshold" COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD) :void
-  (self :pointer)
-  (contactProcessingThreshold :float))
-
-(export 'COLLISION-OBJECT/SET-CONTACT-PROCESSING-THRESHOLD)
-
-(declaim (inline COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getContactProcessingThreshold" COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD) :float
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-CONTACT-PROCESSING-THRESHOLD)
-
-(declaim (inline COLLISION-OBJECT/IS-STATIC-OBJECT))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isStaticObject" COLLISION-OBJECT/IS-STATIC-OBJECT) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/IS-STATIC-OBJECT)
-
-(declaim (inline COLLISION-OBJECT/IS-KINEMATIC-OBJECT))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isKinematicObject" COLLISION-OBJECT/IS-KINEMATIC-OBJECT) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/IS-KINEMATIC-OBJECT)
-
-(declaim (inline COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isStaticOrKinematicObject" COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/IS-STATIC-OR-KINEMATIC-OBJECT)
-
-(declaim (inline COLLISION-OBJECT/HAS-CONTACT-RESPONSE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_hasContactResponse" COLLISION-OBJECT/HAS-CONTACT-RESPONSE) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/HAS-CONTACT-RESPONSE)
-
-(declaim (inline MAKE-COLLISION-OBJECT))
-
-(cffi:defcfun ("_wrap_new_btCollisionObject" MAKE-COLLISION-OBJECT) :pointer)
-
-(export 'MAKE-COLLISION-OBJECT)
-
-(declaim (inline DELETE/BT-COLLISION-OBJECT))
-
-(cffi:defcfun ("_wrap_delete_btCollisionObject" DELETE/BT-COLLISION-OBJECT) :void
-  (self :pointer))
-
-(export 'DELETE/BT-COLLISION-OBJECT)
-
-(declaim (inline COLLISION-OBJECT/SET-COLLISION-SHAPE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCollisionShape" COLLISION-OBJECT/SET-COLLISION-SHAPE) :void
-  (self :pointer)
-  (collisionShape :pointer))
-
-(export 'COLLISION-OBJECT/SET-COLLISION-SHAPE)
-
-(declaim (inline COLLISION-OBJECT/GET-COLLISION-SHAPE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_0" COLLISION-OBJECT/GET-COLLISION-SHAPE) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-COLLISION-SHAPE)
-
-(declaim (inline COLLISION-OBJECT/GET-COLLISION-SHAPE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionShape__SWIG_1" COLLISION-OBJECT/GET-COLLISION-SHAPE) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-COLLISION-SHAPE)
-
-(declaim (inline COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER))
-
-(cffi:defcfun ("_wrap_btCollisionObject_internalGetExtensionPointer" COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/INTERNAL-GET-EXTENSION-POINTER)
-
-(declaim (inline COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER))
-
-(cffi:defcfun ("_wrap_btCollisionObject_internalSetExtensionPointer" COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER) :void
-  (self :pointer)
-  (pointer :pointer))
-
-(export 'COLLISION-OBJECT/INTERNAL-SET-EXTENSION-POINTER)
-
-(declaim (inline COLLISION-OBJECT/GET-ACTIVATION-STATE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getActivationState" COLLISION-OBJECT/GET-ACTIVATION-STATE) :int
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-ACTIVATION-STATE)
-
-(declaim (inline COLLISION-OBJECT/SET-ACTIVATION-STATE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setActivationState" COLLISION-OBJECT/SET-ACTIVATION-STATE) :void
-  (self :pointer)
-  (newState :int))
-
-(export 'COLLISION-OBJECT/SET-ACTIVATION-STATE)
-
-(declaim (inline COLLISION-OBJECT/SET-DEACTIVATION-TIME))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setDeactivationTime" COLLISION-OBJECT/SET-DEACTIVATION-TIME) :void
-  (self :pointer)
-  (time :float))
-
-(export 'COLLISION-OBJECT/SET-DEACTIVATION-TIME)
-
-(declaim (inline COLLISION-OBJECT/GET-DEACTIVATION-TIME))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getDeactivationTime" COLLISION-OBJECT/GET-DEACTIVATION-TIME) :float
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-DEACTIVATION-TIME)
-
-(declaim (inline COLLISION-OBJECT/FORCE-ACTIVATION-STATE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_forceActivationState" COLLISION-OBJECT/FORCE-ACTIVATION-STATE) :void
-  (self :pointer)
-  (newState :int))
-
-(export 'COLLISION-OBJECT/FORCE-ACTIVATION-STATE)
-
-(declaim (inline COLLISION-OBJECT/ACTIVATE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_activate__SWIG_0" COLLISION-OBJECT/ACTIVATE) :void
-  (self :pointer)
-  (forceActivation :pointer))
-
-(export 'COLLISION-OBJECT/ACTIVATE)
-
-(declaim (inline COLLISION-OBJECT/ACTIVATE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_activate__SWIG_1" COLLISION-OBJECT/ACTIVATE) :void
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/ACTIVATE)
-
-(declaim (inline COLLISION-OBJECT/IS-ACTIVE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_isActive" COLLISION-OBJECT/IS-ACTIVE) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/IS-ACTIVE)
-
-(declaim (inline COLLISION-OBJECT/SET-RESTITUTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setRestitution" COLLISION-OBJECT/SET-RESTITUTION) :void
-  (self :pointer)
-  (rest :float))
-
-(export 'COLLISION-OBJECT/SET-RESTITUTION)
-
-(declaim (inline COLLISION-OBJECT/GET-RESTITUTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getRestitution" COLLISION-OBJECT/GET-RESTITUTION) :float
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-RESTITUTION)
-
-(declaim (inline COLLISION-OBJECT/SET-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setFriction" COLLISION-OBJECT/SET-FRICTION) :void
-  (self :pointer)
-  (frict :float))
-
-(export 'COLLISION-OBJECT/SET-FRICTION)
-
-(declaim (inline COLLISION-OBJECT/GET-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getFriction" COLLISION-OBJECT/GET-FRICTION) :float
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-FRICTION)
-
-(declaim (inline COLLISION-OBJECT/SET-ROLLING-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setRollingFriction" COLLISION-OBJECT/SET-ROLLING-FRICTION) :void
-  (self :pointer)
-  (frict :float))
-
-(export 'COLLISION-OBJECT/SET-ROLLING-FRICTION)
-
-(declaim (inline COLLISION-OBJECT/GET-ROLLING-FRICTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getRollingFriction" COLLISION-OBJECT/GET-ROLLING-FRICTION) :float
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-ROLLING-FRICTION)
-
-(declaim (inline COLLISION-OBJECT/GET-INTERNAL-TYPE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInternalType" COLLISION-OBJECT/GET-INTERNAL-TYPE) :int
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-INTERNAL-TYPE)
-
-(declaim (inline COLLISION-OBJECT/GET-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_0" COLLISION-OBJECT/GET-WORLD-TRANSFORM) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-WORLD-TRANSFORM)
-
-(declaim (inline COLLISION-OBJECT/GET-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getWorldTransform__SWIG_1" COLLISION-OBJECT/GET-WORLD-TRANSFORM) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-WORLD-TRANSFORM)
-
-(declaim (inline COLLISION-OBJECT/SET-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setWorldTransform" COLLISION-OBJECT/SET-WORLD-TRANSFORM) :void
-  (self :pointer)
-  (worldTrans :pointer))
-
-(export 'COLLISION-OBJECT/SET-WORLD-TRANSFORM)
-
-(declaim (inline COLLISION-OBJECT/GET-BROADPHASE-HANDLE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_0" COLLISION-OBJECT/GET-BROADPHASE-HANDLE) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-BROADPHASE-HANDLE)
-
-(declaim (inline COLLISION-OBJECT/GET-BROADPHASE-HANDLE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getBroadphaseHandle__SWIG_1" COLLISION-OBJECT/GET-BROADPHASE-HANDLE) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-BROADPHASE-HANDLE)
-
-(declaim (inline COLLISION-OBJECT/SET-BROADPHASE-HANDLE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setBroadphaseHandle" COLLISION-OBJECT/SET-BROADPHASE-HANDLE) :void
-  (self :pointer)
-  (handle :pointer))
-
-(export 'COLLISION-OBJECT/SET-BROADPHASE-HANDLE)
-
-(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_0" COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM)
-
-(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationWorldTransform__SWIG_1" COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-INTERPOLATION-WORLD-TRANSFORM)
-
-(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationWorldTransform" COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM) :void
-  (self :pointer)
-  (trans :pointer))
-
-(export 'COLLISION-OBJECT/SET-INTERPOLATION-WORLD-TRANSFORM)
-
-(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationLinearVelocity" COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY) :void
-  (self :pointer)
-  (linvel :pointer))
-
-(export 'COLLISION-OBJECT/SET-INTERPOLATION-LINEAR-VELOCITY)
-
-(declaim (inline COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setInterpolationAngularVelocity" COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY) :void
-  (self :pointer)
-  (angvel :pointer))
-
-(export 'COLLISION-OBJECT/SET-INTERPOLATION-ANGULAR-VELOCITY)
-
-(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationLinearVelocity" COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-INTERPOLATION-LINEAR-VELOCITY)
-
-(declaim (inline COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getInterpolationAngularVelocity" COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-INTERPOLATION-ANGULAR-VELOCITY)
-
-(declaim (inline COLLISION-OBJECT/GET-ISLAND-TAG))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getIslandTag" COLLISION-OBJECT/GET-ISLAND-TAG) :int
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-ISLAND-TAG)
-
-(declaim (inline COLLISION-OBJECT/SET-ISLAND-TAG))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setIslandTag" COLLISION-OBJECT/SET-ISLAND-TAG) :void
-  (self :pointer)
-  (tag :int))
-
-(export 'COLLISION-OBJECT/SET-ISLAND-TAG)
-
-(declaim (inline COLLISION-OBJECT/GET-COMPANION-ID))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCompanionId" COLLISION-OBJECT/GET-COMPANION-ID) :int
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-COMPANION-ID)
-
-(declaim (inline COLLISION-OBJECT/SET-COMPANION-ID))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCompanionId" COLLISION-OBJECT/SET-COMPANION-ID) :void
-  (self :pointer)
-  (id :int))
-
-(export 'COLLISION-OBJECT/SET-COMPANION-ID)
-
-(declaim (inline COLLISION-OBJECT/GET-HIT-FRACTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getHitFraction" COLLISION-OBJECT/GET-HIT-FRACTION) :float
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-HIT-FRACTION)
-
-(declaim (inline COLLISION-OBJECT/SET-HIT-FRACTION))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setHitFraction" COLLISION-OBJECT/SET-HIT-FRACTION) :void
-  (self :pointer)
-  (hitFraction :float))
-
-(export 'COLLISION-OBJECT/SET-HIT-FRACTION)
-
-(declaim (inline COLLISION-OBJECT/GET-COLLISION-FLAGS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCollisionFlags" COLLISION-OBJECT/GET-COLLISION-FLAGS) :int
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-COLLISION-FLAGS)
-
-(declaim (inline COLLISION-OBJECT/SET-COLLISION-FLAGS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCollisionFlags" COLLISION-OBJECT/SET-COLLISION-FLAGS) :void
-  (self :pointer)
-  (flags :int))
-
-(export 'COLLISION-OBJECT/SET-COLLISION-FLAGS)
-
-(declaim (inline COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdSweptSphereRadius" COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS) :float
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-CCD-SWEPT-SPHERE-RADIUS)
-
-(declaim (inline COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCcdSweptSphereRadius" COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS) :void
-  (self :pointer)
-  (radius :float))
-
-(export 'COLLISION-OBJECT/SET-CCD-SWEPT-SPHERE-RADIUS)
-
-(declaim (inline COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdMotionThreshold" COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD) :float
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-CCD-MOTION-THRESHOLD)
-
-(declaim (inline COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getCcdSquareMotionThreshold" COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD) :float
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-CCD-SQUARE-MOTION-THRESHOLD)
-
-(declaim (inline COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setCcdMotionThreshold" COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD) :void
-  (self :pointer)
-  (ccdMotionThreshold :float))
-
-(export 'COLLISION-OBJECT/SET-CCD-MOTION-THRESHOLD)
-
-(declaim (inline COLLISION-OBJECT/GET-USER-POINTER))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getUserPointer" COLLISION-OBJECT/GET-USER-POINTER) :pointer
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-USER-POINTER)
-
-(declaim (inline COLLISION-OBJECT/GET-USER-INDEX))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getUserIndex" COLLISION-OBJECT/GET-USER-INDEX) :int
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-USER-INDEX)
-
-(declaim (inline COLLISION-OBJECT/SET-USER-POINTER))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setUserPointer" COLLISION-OBJECT/SET-USER-POINTER) :void
-  (self :pointer)
-  (userPointer :pointer))
-
-(export 'COLLISION-OBJECT/SET-USER-POINTER)
-
-(declaim (inline COLLISION-OBJECT/SET-USER-INDEX))
-
-(cffi:defcfun ("_wrap_btCollisionObject_setUserIndex" COLLISION-OBJECT/SET-USER-INDEX) :void
-  (self :pointer)
-  (index :int))
-
-(export 'COLLISION-OBJECT/SET-USER-INDEX)
-
-(declaim (inline COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL))
-
-(cffi:defcfun ("_wrap_btCollisionObject_getUpdateRevisionInternal" COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL) :int
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/GET-UPDATE-REVISION-INTERNAL)
-
-(declaim (inline COLLISION-OBJECT/CHECK-COLLIDE-WITH))
-
-(cffi:defcfun ("_wrap_btCollisionObject_checkCollideWith" COLLISION-OBJECT/CHECK-COLLIDE-WITH) :pointer
-  (self :pointer)
-  (co :pointer))
-
-(export 'COLLISION-OBJECT/CHECK-COLLIDE-WITH)
-
-(declaim (inline COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_calculateSerializeBufferSize" COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
-  (self :pointer))
-
-(export 'COLLISION-OBJECT/CALCULATE-SERIALIZE-BUFFER-SIZE)
-
-(declaim (inline COLLISION-OBJECT/SERIALIZE))
-
-(cffi:defcfun ("_wrap_btCollisionObject_serialize" COLLISION-OBJECT/SERIALIZE) :string
-  (self :pointer)
-  (dataBuffer :pointer)
-  (serializer :pointer))
-
-(export 'COLLISION-OBJECT/SERIALIZE)
-
-(declaim (inline COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT))
-
-(cffi:defcfun ("_wrap_btCollisionObject_serializeSingleObject" COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT) :void
-  (self :pointer)
-  (serializer :pointer))
-
-(export 'COLLISION-OBJECT/SERIALIZE-SINGLE-OBJECT)
-
-(cffi:defcstruct COLLISION-OBJECT-DOUBLE-DATA
-  (BROADPHASE-HANDLE :pointer)
-  (COLLISION-SHAPE :pointer)
-  (ROOT-COLLISION-SHAPE :pointer)
-  (NAME :string)
-  (WORLD-TRANSFORM TRANSFORM-DOUBLE-DATA)
-  (INTERPOLATION-WORLD-TRANSFORM TRANSFORM-DOUBLE-DATA)
-  (INTERPOLATION-LINEAR-VELOCITY VECTOR-3-DOUBLE-DATA)
-  (INTERPOLATION-ANGULAR-VELOCITY VECTOR-3-DOUBLE-DATA)
-  (ANISOTROPIC-FRICTION VECTOR-3-DOUBLE-DATA)
-  (CONTACT-PROCESSING-THRESHOLD :double)
-  (DEACTIVATION-TIME :double)
-  (FRICTION :double)
-  (ROLLING-FRICTION :double)
-  (RESTITUTION :double)
-  (HIT-FRACTION :double)
-  (CCD-SWEPT-SPHERE-RADIUS :double)
-  (CCD-MOTION-THRESHOLD :double)
-  (HAS-ANISOTROPIC-FRICTION :int)
-  (COLLISION-FLAGS :int)
-  (ISLAND-TAG-1 :int)
-  (COMPANION-ID :int)
-  (ACTIVATION-STATE-1 :int)
-  (INTERNAL-TYPE :int)
-  (CHECK-COLLIDE-WITH :int)
-  (PADDING :pointer))
-
-(export 'COLLISION-OBJECT-DOUBLE-DATA)
-
-(export 'BROADPHASE-HANDLE)
-
-(export 'COLLISION-SHAPE)
-
-(export 'ROOT-COLLISION-SHAPE)
-
-(export 'NAME)
-
-(export 'WORLD-TRANSFORM)
-
-(export 'INTERPOLATION-WORLD-TRANSFORM)
-
-(export 'INTERPOLATION-LINEAR-VELOCITY)
-
-(export 'INTERPOLATION-ANGULAR-VELOCITY)
-
-(export 'ANISOTROPIC-FRICTION)
-
-(export 'CONTACT-PROCESSING-THRESHOLD)
-
-(export 'DEACTIVATION-TIME)
-
-(export 'FRICTION)
-
-(export 'ROLLING-FRICTION)
-
-(export 'RESTITUTION)
-
-(export 'HIT-FRACTION)
-
-(export 'CCD-SWEPT-SPHERE-RADIUS)
-
-(export 'CCD-MOTION-THRESHOLD)
-
-(export 'HAS-ANISOTROPIC-FRICTION)
-
-(export 'COLLISION-FLAGS)
-
-(export 'ISLAND-TAG-1)
-
-(export 'COMPANION-ID)
-
-(export 'ACTIVATION-STATE-1)
-
-(export 'INTERNAL-TYPE)
-
-(export 'CHECK-COLLIDE-WITH)
-
-(export 'PADDING)
-
-(cffi:defcstruct COLLISION-OBJECT-FLOAT-DATA
-  (BROADPHASE-HANDLE :pointer)
-  (COLLISION-SHAPE :pointer)
-  (ROOT-COLLISION-SHAPE :pointer)
-  (NAME :string)
-  (WORLD-TRANSFORM TRANSFORM-FLOAT-DATA)
-  (INTERPOLATION-WORLD-TRANSFORM TRANSFORM-FLOAT-DATA)
-  (INTERPOLATION-LINEAR-VELOCITY VECTOR-3-FLOAT-DATA)
-  (INTERPOLATION-ANGULAR-VELOCITY VECTOR-3-FLOAT-DATA)
-  (ANISOTROPIC-FRICTION VECTOR-3-FLOAT-DATA)
-  (CONTACT-PROCESSING-THRESHOLD :float)
-  (DEACTIVATION-TIME :float)
-  (FRICTION :float)
-  (ROLLING-FRICTION :float)
-  (RESTITUTION :float)
-  (HIT-FRACTION :float)
-  (CCD-SWEPT-SPHERE-RADIUS :float)
-  (CCD-MOTION-THRESHOLD :float)
-  (HAS-ANISOTROPIC-FRICTION :int)
-  (COLLISION-FLAGS :int)
-  (ISLAND-TAG-1 :int)
-  (COMPANION-ID :int)
-  (ACTIVATION-STATE-1 :int)
-  (INTERNAL-TYPE :int)
-  (CHECK-COLLIDE-WITH :int)
-  (PADDING :pointer))
-
-(export 'COLLISION-OBJECT-FLOAT-DATA)
-
-(export 'BROADPHASE-HANDLE)
-
-(export 'COLLISION-SHAPE)
-
-(export 'ROOT-COLLISION-SHAPE)
-
-(export 'NAME)
-
-(export 'WORLD-TRANSFORM)
-
-(export 'INTERPOLATION-WORLD-TRANSFORM)
-
-(export 'INTERPOLATION-LINEAR-VELOCITY)
-
-(export 'INTERPOLATION-ANGULAR-VELOCITY)
-
-(export 'ANISOTROPIC-FRICTION)
-
-(export 'CONTACT-PROCESSING-THRESHOLD)
-
-(export 'DEACTIVATION-TIME)
-
-(export 'FRICTION)
-
-(export 'ROLLING-FRICTION)
-
-(export 'RESTITUTION)
-
-(export 'HIT-FRACTION)
-
-(export 'CCD-SWEPT-SPHERE-RADIUS)
-
-(export 'CCD-MOTION-THRESHOLD)
-
-(export 'HAS-ANISOTROPIC-FRICTION)
-
-(export 'COLLISION-FLAGS)
-
-(export 'ISLAND-TAG-1)
-
-(export 'COMPANION-ID)
-
-(export 'ACTIVATION-STATE-1)
-
-(export 'INTERNAL-TYPE)
-
-(export 'CHECK-COLLIDE-WITH)
-
-(export 'PADDING)
 
 (declaim (inline BOX-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
@@ -5554,7 +4175,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusPlusInstance__SWIG_0" CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusPlusInstance__SWIG_0"
+cAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -5562,7 +4184,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusPlusInstance__SWIG_0" CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusPlusInstance__SWIG_0"
+cAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -5570,7 +4193,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusPlusInstance__SWIG_1" CAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusPlusInstance__SWIG_1"
+cAPSULE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -5579,7 +4203,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusPlusInstance__SWIG_1" CAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusPlusInstance__SWIG_1"
+cAPSULE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -5588,7 +4213,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusArray__SWIG_0" CAPSULE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusArray__SWIG_0"
+cAPSULE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -5596,7 +4222,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusArray__SWIG_0" CAPSULE-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusArray__SWIG_0"
+cAPSULE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -5604,7 +4231,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusArray__SWIG_1" CAPSULE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_makeCPlusArray__SWIG_1"
+cAPSULE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -5613,7 +4241,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusArray__SWIG_1" CAPSULE-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_deleteCPlusArray__SWIG_1"
+cAPSULE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -5630,7 +4259,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_calculateLocalInertia" CAPSULE-SHAPE/CALCULATE-LOCAL-INERTIA) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_calculateLocalInertia"
+cAPSULE-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
@@ -5639,7 +4269,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_localGetSupportingVertexWithoutMargin" CAPSULE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_localGetSupportingVertexWithoutMargin"
+cAPSULE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -5647,7 +4278,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CAPSULE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_batchedUnitVectorGetSupportingVertexWithoutMargin"
+cAPSULE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
@@ -5657,7 +4289,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/SET-MARGIN))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_setMargin" CAPSULE-SHAPE/SET-MARGIN) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_setMargin"
+cAPSULE-SHAPE/SET-MARGIN) :void
   (self :pointer)
   (collisionMargin :float))
 
@@ -5665,7 +4298,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getAabb" CAPSULE-SHAPE/GET-AABB) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_getAabb"
+cAPSULE-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
@@ -5675,35 +4309,40 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getName" CAPSULE-SHAPE/GET-NAME) :string
+(cffi:defcfun ("_wrap_btCapsuleShape_getName"
+cAPSULE-SHAPE/GET-NAME) :string
   (self :pointer))
 
 (export 'CAPSULE-SHAPE/GET-NAME)
 
 (declaim (inline CAPSULE-SHAPE/GET-UP-AXIS))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getUpAxis" CAPSULE-SHAPE/GET-UP-AXIS) :int
+(cffi:defcfun ("_wrap_btCapsuleShape_getUpAxis"
+cAPSULE-SHAPE/GET-UP-AXIS) :int
   (self :pointer))
 
 (export 'CAPSULE-SHAPE/GET-UP-AXIS)
 
 (declaim (inline CAPSULE-SHAPE/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getRadius" CAPSULE-SHAPE/GET-RADIUS) :float
+(cffi:defcfun ("_wrap_btCapsuleShape_getRadius"
+cAPSULE-SHAPE/GET-RADIUS) :float
   (self :pointer))
 
 (export 'CAPSULE-SHAPE/GET-RADIUS)
 
 (declaim (inline CAPSULE-SHAPE/GET-HALF-HEIGHT))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getHalfHeight" CAPSULE-SHAPE/GET-HALF-HEIGHT) :float
+(cffi:defcfun ("_wrap_btCapsuleShape_getHalfHeight"
+cAPSULE-SHAPE/GET-HALF-HEIGHT) :float
   (self :pointer))
 
 (export 'CAPSULE-SHAPE/GET-HALF-HEIGHT)
 
 (declaim (inline CAPSULE-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_setLocalScaling" CAPSULE-SHAPE/SET-LOCAL-SCALING) :void
+(cffi:defcfun ("_wrap_btCapsuleShape_setLocalScaling"
+cAPSULE-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
@@ -5711,21 +4350,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_getAnisotropicRollingFrictionDirection" CAPSULE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
+(cffi:defcfun ("_wrap_btCapsuleShape_getAnisotropicRollingFrictionDirection"
+cAPSULE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
 (export 'CAPSULE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
 (declaim (inline CAPSULE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_calculateSerializeBufferSize" CAPSULE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
+(cffi:defcfun ("_wrap_btCapsuleShape_calculateSerializeBufferSize"
+cAPSULE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
 (export 'CAPSULE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
 (declaim (inline CAPSULE-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btCapsuleShape_serialize" CAPSULE-SHAPE/SERIALIZE) :string
+(cffi:defcfun ("_wrap_btCapsuleShape_serialize"
+cAPSULE-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
@@ -5749,7 +4391,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE-X/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCapsuleShapeX_getName" CAPSULE-SHAPE-X/GET-NAME) :string
+(cffi:defcfun ("_wrap_btCapsuleShapeX_getName"
+cAPSULE-SHAPE-X/GET-NAME) :string
   (self :pointer))
 
 (export 'CAPSULE-SHAPE-X/GET-NAME)
@@ -5771,7 +4414,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CAPSULE-SHAPE-Z/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCapsuleShapeZ_getName" CAPSULE-SHAPE-Z/GET-NAME) :string
+(cffi:defcfun ("_wrap_btCapsuleShapeZ_getName"
+cAPSULE-SHAPE-Z/GET-NAME) :string
   (self :pointer))
 
 (export 'CAPSULE-SHAPE-Z/GET-NAME)
@@ -5798,7 +4442,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusPlusInstance__SWIG_0"
+cYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -5806,7 +4451,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusPlusInstance__SWIG_0"
+cYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -5814,7 +4460,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusPlusInstance__SWIG_1"
+cYLINDER-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -5823,7 +4470,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusPlusInstance__SWIG_1"
+cYLINDER-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -5832,7 +4480,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusArray__SWIG_0" CYLINDER-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusArray__SWIG_0"
+cYLINDER-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -5840,7 +4489,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusArray__SWIG_0" CYLINDER-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusArray__SWIG_0"
+cYLINDER-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -5848,7 +4498,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusArray__SWIG_1" CYLINDER-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_makeCPlusArray__SWIG_1"
+cYLINDER-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -5857,7 +4508,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusArray__SWIG_1" CYLINDER-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCylinderShape_deleteCPlusArray__SWIG_1"
+cYLINDER-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -5866,14 +4518,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getHalfExtentsWithMargin" CYLINDER-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_getHalfExtentsWithMargin"
+cYLINDER-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN) :pointer
   (self :pointer))
 
 (export 'CYLINDER-SHAPE/GET-HALF-EXTENTS-WITH-MARGIN)
 
 (declaim (inline CYLINDER-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getHalfExtentsWithoutMargin" CYLINDER-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_getHalfExtentsWithoutMargin"
+cYLINDER-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN) :pointer
   (self :pointer))
 
 (export 'CYLINDER-SHAPE/GET-HALF-EXTENTS-WITHOUT-MARGIN)
@@ -5887,7 +4541,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getAabb" CYLINDER-SHAPE/GET-AABB) :void
+(cffi:defcfun ("_wrap_btCylinderShape_getAabb"
+cYLINDER-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
@@ -5897,7 +4552,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btCylinderShape_calculateLocalInertia" CYLINDER-SHAPE/CALCULATE-LOCAL-INERTIA) :void
+(cffi:defcfun ("_wrap_btCylinderShape_calculateLocalInertia"
+cYLINDER-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
@@ -5906,7 +4562,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_localGetSupportingVertexWithoutMargin" CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_localGetSupportingVertexWithoutMargin"
+cYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -5914,7 +4571,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CYLINDER-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
+(cffi:defcfun ("_wrap_btCylinderShape_batchedUnitVectorGetSupportingVertexWithoutMargin"
+cYLINDER-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
@@ -5924,7 +4582,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/SET-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShape_setMargin" CYLINDER-SHAPE/SET-MARGIN) :void
+(cffi:defcfun ("_wrap_btCylinderShape_setMargin"
+cYLINDER-SHAPE/SET-MARGIN) :void
   (self :pointer)
   (collisionMargin :float))
 
@@ -5932,7 +4591,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btCylinderShape_localGetSupportingVertex" CYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_localGetSupportingVertex"
+cYLINDER-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -5940,28 +4600,32 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/GET-UP-AXIS))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getUpAxis" CYLINDER-SHAPE/GET-UP-AXIS) :int
+(cffi:defcfun ("_wrap_btCylinderShape_getUpAxis"
+cYLINDER-SHAPE/GET-UP-AXIS) :int
   (self :pointer))
 
 (export 'CYLINDER-SHAPE/GET-UP-AXIS)
 
 (declaim (inline CYLINDER-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getAnisotropicRollingFrictionDirection" CYLINDER-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
+(cffi:defcfun ("_wrap_btCylinderShape_getAnisotropicRollingFrictionDirection"
+cYLINDER-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
 (export 'CYLINDER-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
 (declaim (inline CYLINDER-SHAPE/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getRadius" CYLINDER-SHAPE/GET-RADIUS) :float
+(cffi:defcfun ("_wrap_btCylinderShape_getRadius"
+cYLINDER-SHAPE/GET-RADIUS) :float
   (self :pointer))
 
 (export 'CYLINDER-SHAPE/GET-RADIUS)
 
 (declaim (inline CYLINDER-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btCylinderShape_setLocalScaling" CYLINDER-SHAPE/SET-LOCAL-SCALING) :void
+(cffi:defcfun ("_wrap_btCylinderShape_setLocalScaling"
+cYLINDER-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
@@ -5969,21 +4633,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCylinderShape_getName" CYLINDER-SHAPE/GET-NAME) :string
+(cffi:defcfun ("_wrap_btCylinderShape_getName"
+cYLINDER-SHAPE/GET-NAME) :string
   (self :pointer))
 
 (export 'CYLINDER-SHAPE/GET-NAME)
 
 (declaim (inline CYLINDER-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_calculateSerializeBufferSize" CYLINDER-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
+(cffi:defcfun ("_wrap_btCylinderShape_calculateSerializeBufferSize"
+cYLINDER-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
 (export 'CYLINDER-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
 (declaim (inline CYLINDER-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btCylinderShape_serialize" CYLINDER-SHAPE/SERIALIZE) :string
+(cffi:defcfun ("_wrap_btCylinderShape_serialize"
+cYLINDER-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
@@ -5999,7 +4666,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusPlusInstance__SWIG_0"
+cYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -6007,7 +4675,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusPlusInstance__SWIG_0"
+cYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -6015,7 +4684,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusPlusInstance__SWIG_1"
+cYLINDER-SHAPE-X/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -6024,7 +4694,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusPlusInstance__SWIG_1"
+cYLINDER-SHAPE-X/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -6033,7 +4704,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusArray__SWIG_0" CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusArray__SWIG_0"
+cYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -6041,7 +4713,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusArray__SWIG_0" CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusArray__SWIG_0"
+cYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -6049,7 +4722,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusArray__SWIG_1" CYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_makeCPlusArray__SWIG_1"
+cYLINDER-SHAPE-X/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -6058,7 +4732,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusArray__SWIG_1" CYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_deleteCPlusArray__SWIG_1"
+cYLINDER-SHAPE-X/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -6074,7 +4749,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_localGetSupportingVertexWithoutMargin" CYLINDER-SHAPE-X/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeX_localGetSupportingVertexWithoutMargin"
+cYLINDER-SHAPE-X/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -6082,7 +4758,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_batchedUnitVectorGetSupportingVertexWithoutMargin" CYLINDER-SHAPE-X/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
+(cffi:defcfun ("_wrap_btCylinderShapeX_batchedUnitVectorGetSupportingVertexWithoutMargin"
+cYLINDER-SHAPE-X/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
@@ -6092,14 +4769,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-X/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_getName" CYLINDER-SHAPE-X/GET-NAME) :string
+(cffi:defcfun ("_wrap_btCylinderShapeX_getName"
+cYLINDER-SHAPE-X/GET-NAME) :string
   (self :pointer))
 
 (export 'CYLINDER-SHAPE-X/GET-NAME)
 
 (declaim (inline CYLINDER-SHAPE-X/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btCylinderShapeX_getRadius" CYLINDER-SHAPE-X/GET-RADIUS) :float
+(cffi:defcfun ("_wrap_btCylinderShapeX_getRadius"
+cYLINDER-SHAPE-X/GET-RADIUS) :float
   (self :pointer))
 
 (export 'CYLINDER-SHAPE-X/GET-RADIUS)
@@ -6113,7 +4792,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusPlusInstance__SWIG_0"
+cYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -6121,7 +4801,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusPlusInstance__SWIG_0" CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusPlusInstance__SWIG_0"
+cYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -6129,7 +4810,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusPlusInstance__SWIG_1"
+cYLINDER-SHAPE-Z/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -6138,7 +4820,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusPlusInstance__SWIG_1" CYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusPlusInstance__SWIG_1"
+cYLINDER-SHAPE-Z/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -6147,7 +4830,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusArray__SWIG_0" CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusArray__SWIG_0"
+cYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -6155,7 +4839,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusArray__SWIG_0" CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusArray__SWIG_0"
+cYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -6163,7 +4848,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusArray__SWIG_1" CYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_makeCPlusArray__SWIG_1"
+cYLINDER-SHAPE-Z/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -6172,7 +4858,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusArray__SWIG_1" CYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_deleteCPlusArray__SWIG_1"
+cYLINDER-SHAPE-Z/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -6188,7 +4875,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_localGetSupportingVertexWithoutMargin" CYLINDER-SHAPE-Z/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
+(cffi:defcfun ("_wrap_btCylinderShapeZ_localGetSupportingVertexWithoutMargin"
+cYLINDER-SHAPE-Z/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -6196,7 +4884,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_batchedUnitVectorGetSupportingVertexWithoutMargin" CYLINDER-SHAPE-Z/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
+(cffi:defcfun ("_wrap_btCylinderShapeZ_batchedUnitVectorGetSupportingVertexWithoutMargin"
+cYLINDER-SHAPE-Z/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
@@ -6206,14 +4895,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CYLINDER-SHAPE-Z/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_getName" CYLINDER-SHAPE-Z/GET-NAME) :string
+(cffi:defcfun ("_wrap_btCylinderShapeZ_getName"
+cYLINDER-SHAPE-Z/GET-NAME) :string
   (self :pointer))
 
 (export 'CYLINDER-SHAPE-Z/GET-NAME)
 
 (declaim (inline CYLINDER-SHAPE-Z/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btCylinderShapeZ_getRadius" CYLINDER-SHAPE-Z/GET-RADIUS) :float
+(cffi:defcfun ("_wrap_btCylinderShapeZ_getRadius"
+cYLINDER-SHAPE-Z/GET-RADIUS) :float
   (self :pointer))
 
 (export 'CYLINDER-SHAPE-Z/GET-RADIUS)
@@ -6240,7 +4931,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeShape_makeCPlusPlusInstance__SWIG_0" CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btConeShape_makeCPlusPlusInstance__SWIG_0"
+cONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -6248,7 +4940,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeShape_deleteCPlusPlusInstance__SWIG_0" CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btConeShape_deleteCPlusPlusInstance__SWIG_0"
+cONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -6256,7 +4949,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeShape_makeCPlusPlusInstance__SWIG_1" CONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btConeShape_makeCPlusPlusInstance__SWIG_1"
+cONE-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -6265,7 +4959,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeShape_deleteCPlusPlusInstance__SWIG_1" CONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btConeShape_deleteCPlusPlusInstance__SWIG_1"
+cONE-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -6274,7 +4969,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeShape_makeCPlusArray__SWIG_0" CONE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btConeShape_makeCPlusArray__SWIG_0"
+cONE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -6282,7 +4978,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeShape_deleteCPlusArray__SWIG_0" CONE-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btConeShape_deleteCPlusArray__SWIG_0"
+cONE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -6290,7 +4987,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeShape_makeCPlusArray__SWIG_1" CONE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btConeShape_makeCPlusArray__SWIG_1"
+cONE-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -6299,7 +4997,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeShape_deleteCPlusArray__SWIG_1" CONE-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btConeShape_deleteCPlusArray__SWIG_1"
+cONE-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -6316,7 +5015,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btConeShape_localGetSupportingVertex" CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
+(cffi:defcfun ("_wrap_btConeShape_localGetSupportingVertex"
+cONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -6324,7 +5024,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConeShape_localGetSupportingVertexWithoutMargin" CONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
+(cffi:defcfun ("_wrap_btConeShape_localGetSupportingVertexWithoutMargin"
+cONE-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -6332,7 +5033,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConeShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CONE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
+(cffi:defcfun ("_wrap_btConeShape_batchedUnitVectorGetSupportingVertexWithoutMargin"
+cONE-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
@@ -6342,21 +5044,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/GET-RADIUS))
 
-(cffi:defcfun ("_wrap_btConeShape_getRadius" CONE-SHAPE/GET-RADIUS) :float
+(cffi:defcfun ("_wrap_btConeShape_getRadius"
+cONE-SHAPE/GET-RADIUS) :float
   (self :pointer))
 
 (export 'CONE-SHAPE/GET-RADIUS)
 
 (declaim (inline CONE-SHAPE/GET-HEIGHT))
 
-(cffi:defcfun ("_wrap_btConeShape_getHeight" CONE-SHAPE/GET-HEIGHT) :float
+(cffi:defcfun ("_wrap_btConeShape_getHeight"
+cONE-SHAPE/GET-HEIGHT) :float
   (self :pointer))
 
 (export 'CONE-SHAPE/GET-HEIGHT)
 
 (declaim (inline CONE-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btConeShape_calculateLocalInertia" CONE-SHAPE/CALCULATE-LOCAL-INERTIA) :void
+(cffi:defcfun ("_wrap_btConeShape_calculateLocalInertia"
+cONE-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
@@ -6365,14 +5070,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConeShape_getName" CONE-SHAPE/GET-NAME) :string
+(cffi:defcfun ("_wrap_btConeShape_getName"
+cONE-SHAPE/GET-NAME) :string
   (self :pointer))
 
 (export 'CONE-SHAPE/GET-NAME)
 
 (declaim (inline CONE-SHAPE/SET-CONE-UP-INDEX))
 
-(cffi:defcfun ("_wrap_btConeShape_setConeUpIndex" CONE-SHAPE/SET-CONE-UP-INDEX) :void
+(cffi:defcfun ("_wrap_btConeShape_setConeUpIndex"
+cONE-SHAPE/SET-CONE-UP-INDEX) :void
   (self :pointer)
   (upIndex :int))
 
@@ -6380,21 +5087,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/GET-CONE-UP-INDEX))
 
-(cffi:defcfun ("_wrap_btConeShape_getConeUpIndex" CONE-SHAPE/GET-CONE-UP-INDEX) :int
+(cffi:defcfun ("_wrap_btConeShape_getConeUpIndex"
+cONE-SHAPE/GET-CONE-UP-INDEX) :int
   (self :pointer))
 
 (export 'CONE-SHAPE/GET-CONE-UP-INDEX)
 
 (declaim (inline CONE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btConeShape_getAnisotropicRollingFrictionDirection" CONE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
+(cffi:defcfun ("_wrap_btConeShape_getAnisotropicRollingFrictionDirection"
+cONE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
 (export 'CONE-SHAPE/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
 (declaim (inline CONE-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btConeShape_setLocalScaling" CONE-SHAPE/SET-LOCAL-SCALING) :void
+(cffi:defcfun ("_wrap_btConeShape_setLocalScaling"
+cONE-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
@@ -6402,14 +5112,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btConeShape_calculateSerializeBufferSize" CONE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
+(cffi:defcfun ("_wrap_btConeShape_calculateSerializeBufferSize"
+cONE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
 (export 'CONE-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
 (declaim (inline CONE-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btConeShape_serialize" CONE-SHAPE/SERIALIZE) :string
+(cffi:defcfun ("_wrap_btConeShape_serialize"
+cONE-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
@@ -6433,14 +5145,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE-X/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btConeShapeX_getAnisotropicRollingFrictionDirection" CONE-SHAPE-X/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
+(cffi:defcfun ("_wrap_btConeShapeX_getAnisotropicRollingFrictionDirection"
+cONE-SHAPE-X/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
 (export 'CONE-SHAPE-X/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
 (declaim (inline CONE-SHAPE-X/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConeShapeX_getName" CONE-SHAPE-X/GET-NAME) :string
+(cffi:defcfun ("_wrap_btConeShapeX_getName"
+cONE-SHAPE-X/GET-NAME) :string
   (self :pointer))
 
 (export 'CONE-SHAPE-X/GET-NAME)
@@ -6462,14 +5176,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-SHAPE-Z/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION))
 
-(cffi:defcfun ("_wrap_btConeShapeZ_getAnisotropicRollingFrictionDirection" CONE-SHAPE-Z/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
+(cffi:defcfun ("_wrap_btConeShapeZ_getAnisotropicRollingFrictionDirection"
+cONE-SHAPE-Z/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION) :pointer
   (self :pointer))
 
 (export 'CONE-SHAPE-Z/GET-ANISOTROPIC-ROLLING-FRICTION-DIRECTION)
 
 (declaim (inline CONE-SHAPE-Z/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConeShapeZ_getName" CONE-SHAPE-Z/GET-NAME) :string
+(cffi:defcfun ("_wrap_btConeShapeZ_getName"
+cONE-SHAPE-Z/GET-NAME) :string
   (self :pointer))
 
 (export 'CONE-SHAPE-Z/GET-NAME)
@@ -6679,7 +5395,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusPlusInstance__SWIG_0" CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusPlusInstance__SWIG_0"
+cONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -6687,7 +5404,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusPlusInstance__SWIG_0" CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusPlusInstance__SWIG_0"
+cONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -6695,7 +5413,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusPlusInstance__SWIG_1" CONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusPlusInstance__SWIG_1"
+cONVEX-HULL-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -6704,7 +5423,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusPlusInstance__SWIG_1" CONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusPlusInstance__SWIG_1"
+cONVEX-HULL-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -6713,7 +5433,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusArray__SWIG_0" CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusArray__SWIG_0"
+cONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -6721,7 +5442,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusArray__SWIG_0" CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusArray__SWIG_0"
+cONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -6729,7 +5451,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusArray__SWIG_1" CONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_makeCPlusArray__SWIG_1"
+cONVEX-HULL-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -6738,7 +5461,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusArray__SWIG_1" CONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_deleteCPlusArray__SWIG_1"
+cONVEX-HULL-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -6777,7 +5501,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/ADD-POINT))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_addPoint__SWIG_0" CONVEX-HULL-SHAPE/ADD-POINT) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_addPoint__SWIG_0"
+cONVEX-HULL-SHAPE/ADD-POINT) :void
   (self :pointer)
   (point :pointer)
   (recalculateLocalAabb :pointer))
@@ -6786,7 +5511,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/ADD-POINT))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_addPoint__SWIG_1" CONVEX-HULL-SHAPE/ADD-POINT) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_addPoint__SWIG_1"
+cONVEX-HULL-SHAPE/ADD-POINT) :void
   (self :pointer)
   (point :pointer))
 
@@ -6794,28 +5520,32 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getUnscaledPoints__SWIG_0" CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_getUnscaledPoints__SWIG_0"
+cONVEX-HULL-SHAPE/GET-UNSCALED-POINTS) :pointer
   (self :pointer))
 
 (export 'CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS)
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getUnscaledPoints__SWIG_1" CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_getUnscaledPoints__SWIG_1"
+cONVEX-HULL-SHAPE/GET-UNSCALED-POINTS) :pointer
   (self :pointer))
 
 (export 'CONVEX-HULL-SHAPE/GET-UNSCALED-POINTS)
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-POINTS))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getPoints" CONVEX-HULL-SHAPE/GET-POINTS) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_getPoints"
+cONVEX-HULL-SHAPE/GET-POINTS) :pointer
   (self :pointer))
 
 (export 'CONVEX-HULL-SHAPE/GET-POINTS)
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-SCALED-POINT))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getScaledPoint" CONVEX-HULL-SHAPE/GET-SCALED-POINT) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_getScaledPoint"
+cONVEX-HULL-SHAPE/GET-SCALED-POINT) :pointer
   (self :pointer)
   (i :int))
 
@@ -6823,14 +5553,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-NUM-POINTS))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getNumPoints" CONVEX-HULL-SHAPE/GET-NUM-POINTS) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_getNumPoints"
+cONVEX-HULL-SHAPE/GET-NUM-POINTS) :int
   (self :pointer))
 
 (export 'CONVEX-HULL-SHAPE/GET-NUM-POINTS)
 
 (declaim (inline CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_localGetSupportingVertex" CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_localGetSupportingVertex"
+cONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -6838,7 +5570,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_localGetSupportingVertexWithoutMargin" CONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_localGetSupportingVertexWithoutMargin"
+cONVEX-HULL-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -6846,7 +5579,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CONVEX-HULL-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_batchedUnitVectorGetSupportingVertexWithoutMargin"
+cONVEX-HULL-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
@@ -6856,7 +5590,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/PROJECT))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_project" CONVEX-HULL-SHAPE/PROJECT) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_project"
+cONVEX-HULL-SHAPE/PROJECT) :void
   (self :pointer)
   (trans :pointer)
   (dir :pointer)
@@ -6869,28 +5604,32 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getName" CONVEX-HULL-SHAPE/GET-NAME) :string
+(cffi:defcfun ("_wrap_btConvexHullShape_getName"
+cONVEX-HULL-SHAPE/GET-NAME) :string
   (self :pointer))
 
 (export 'CONVEX-HULL-SHAPE/GET-NAME)
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-NUM-VERTICES))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getNumVertices" CONVEX-HULL-SHAPE/GET-NUM-VERTICES) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_getNumVertices"
+cONVEX-HULL-SHAPE/GET-NUM-VERTICES) :int
   (self :pointer))
 
 (export 'CONVEX-HULL-SHAPE/GET-NUM-VERTICES)
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-NUM-EDGES))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getNumEdges" CONVEX-HULL-SHAPE/GET-NUM-EDGES) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_getNumEdges"
+cONVEX-HULL-SHAPE/GET-NUM-EDGES) :int
   (self :pointer))
 
 (export 'CONVEX-HULL-SHAPE/GET-NUM-EDGES)
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-EDGE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getEdge" CONVEX-HULL-SHAPE/GET-EDGE) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_getEdge"
+cONVEX-HULL-SHAPE/GET-EDGE) :void
   (self :pointer)
   (i :int)
   (pa :pointer)
@@ -6900,7 +5639,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-VERTEX))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getVertex" CONVEX-HULL-SHAPE/GET-VERTEX) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_getVertex"
+cONVEX-HULL-SHAPE/GET-VERTEX) :void
   (self :pointer)
   (i :int)
   (vtx :pointer))
@@ -6909,14 +5649,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-NUM-PLANES))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getNumPlanes" CONVEX-HULL-SHAPE/GET-NUM-PLANES) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_getNumPlanes"
+cONVEX-HULL-SHAPE/GET-NUM-PLANES) :int
   (self :pointer))
 
 (export 'CONVEX-HULL-SHAPE/GET-NUM-PLANES)
 
 (declaim (inline CONVEX-HULL-SHAPE/GET-PLANE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_getPlane" CONVEX-HULL-SHAPE/GET-PLANE) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_getPlane"
+cONVEX-HULL-SHAPE/GET-PLANE) :void
   (self :pointer)
   (planeNormal :pointer)
   (planeSupport :pointer)
@@ -6926,7 +5668,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/IS-INSIDE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_isInside" CONVEX-HULL-SHAPE/IS-INSIDE) :pointer
+(cffi:defcfun ("_wrap_btConvexHullShape_isInside"
+cONVEX-HULL-SHAPE/IS-INSIDE) :pointer
   (self :pointer)
   (pt :pointer)
   (tolerance :float))
@@ -6935,7 +5678,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_setLocalScaling" CONVEX-HULL-SHAPE/SET-LOCAL-SCALING) :void
+(cffi:defcfun ("_wrap_btConvexHullShape_setLocalScaling"
+cONVEX-HULL-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
@@ -6943,14 +5687,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-HULL-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_calculateSerializeBufferSize" CONVEX-HULL-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
+(cffi:defcfun ("_wrap_btConvexHullShape_calculateSerializeBufferSize"
+cONVEX-HULL-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
 (export 'CONVEX-HULL-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
 (declaim (inline CONVEX-HULL-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btConvexHullShape_serialize" CONVEX-HULL-SHAPE/SERIALIZE) :string
+(cffi:defcfun ("_wrap_btConvexHullShape_serialize"
+cONVEX-HULL-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
@@ -7103,7 +5849,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusPlusInstance__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusPlusInstance__SWIG_0"
+cONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -7111,7 +5858,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusPlusInstance__SWIG_0"
+cONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -7119,7 +5867,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusPlusInstance__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusPlusInstance__SWIG_1"
+cONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -7128,7 +5877,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusPlusInstance__SWIG_1"
+cONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -7137,7 +5887,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusArray__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusArray__SWIG_0"
+cONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -7145,7 +5896,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusArray__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusArray__SWIG_0"
+cONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -7153,7 +5905,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusArray__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_makeCPlusArray__SWIG_1"
+cONVEX-TRIANGLE-MESH-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -7162,7 +5915,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusArray__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_deleteCPlusArray__SWIG_1"
+cONVEX-TRIANGLE-MESH-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -7186,21 +5940,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getMeshInterface__SWIG_0" CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getMeshInterface__SWIG_0"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE) :pointer
   (self :pointer))
 
 (export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE)
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getMeshInterface__SWIG_1" CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getMeshInterface__SWIG_1"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE) :pointer
   (self :pointer))
 
 (export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-MESH-INTERFACE)
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_localGetSupportingVertex" CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_localGetSupportingVertex"
+cONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -7208,7 +5965,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_localGetSupportingVertexWithoutMargin" CONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_localGetSupportingVertexWithoutMargin"
+cONVEX-TRIANGLE-MESH-SHAPE/LOCAL-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :pointer
   (self :pointer)
   (vec :pointer))
 
@@ -7216,7 +5974,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_batchedUnitVectorGetSupportingVertexWithoutMargin" CONVEX-TRIANGLE-MESH-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_batchedUnitVectorGetSupportingVertexWithoutMargin"
+cONVEX-TRIANGLE-MESH-SHAPE/BATCHED-UNIT-VECTOR-GET-SUPPORTING-VERTEX-WITHOUT-MARGIN) :void
   (self :pointer)
   (vectors :pointer)
   (supportVerticesOut :pointer)
@@ -7226,28 +5985,32 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getName" CONVEX-TRIANGLE-MESH-SHAPE/GET-NAME) :string
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getName"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-NAME) :string
   (self :pointer))
 
 (export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-NAME)
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-VERTICES))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumVertices" CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-VERTICES) :int
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumVertices"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-VERTICES) :int
   (self :pointer))
 
 (export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-VERTICES)
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-EDGES))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumEdges" CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-EDGES) :int
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumEdges"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-EDGES) :int
   (self :pointer))
 
 (export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-EDGES)
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-EDGE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getEdge" CONVEX-TRIANGLE-MESH-SHAPE/GET-EDGE) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getEdge"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-EDGE) :void
   (self :pointer)
   (i :int)
   (pa :pointer)
@@ -7257,7 +6020,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-VERTEX))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getVertex" CONVEX-TRIANGLE-MESH-SHAPE/GET-VERTEX) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getVertex"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-VERTEX) :void
   (self :pointer)
   (i :int)
   (vtx :pointer))
@@ -7266,14 +6030,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-PLANES))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumPlanes" CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-PLANES) :int
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getNumPlanes"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-PLANES) :int
   (self :pointer))
 
 (export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-NUM-PLANES)
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-PLANE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getPlane" CONVEX-TRIANGLE-MESH-SHAPE/GET-PLANE) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getPlane"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-PLANE) :void
   (self :pointer)
   (planeNormal :pointer)
   (planeSupport :pointer)
@@ -7283,7 +6049,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/IS-INSIDE))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_isInside" CONVEX-TRIANGLE-MESH-SHAPE/IS-INSIDE) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_isInside"
+cONVEX-TRIANGLE-MESH-SHAPE/IS-INSIDE) :pointer
   (self :pointer)
   (pt :pointer)
   (tolerance :float))
@@ -7292,7 +6059,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_setLocalScaling" CONVEX-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_setLocalScaling"
+cONVEX-TRIANGLE-MESH-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
@@ -7300,14 +6068,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getLocalScaling" CONVEX-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING) :pointer
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_getLocalScaling"
+cONVEX-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING) :pointer
   (self :pointer))
 
 (export 'CONVEX-TRIANGLE-MESH-SHAPE/GET-LOCAL-SCALING)
 
 (declaim (inline CONVEX-TRIANGLE-MESH-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_calculatePrincipalAxisTransform" CONVEX-TRIANGLE-MESH-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM) :void
+(cffi:defcfun ("_wrap_btConvexTriangleMeshShape_calculatePrincipalAxisTransform"
+cONVEX-TRIANGLE-MESH-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM) :void
   (self :pointer)
   (principal :pointer)
   (inertia :pointer)
@@ -8322,7 +7092,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusPlusInstance__SWIG_0" COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusPlusInstance__SWIG_0"
+cOMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -8330,7 +7101,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusPlusInstance__SWIG_0" COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusPlusInstance__SWIG_0"
+cOMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -8338,7 +7110,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusPlusInstance__SWIG_1" COMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusPlusInstance__SWIG_1"
+cOMPOUND-SHAPE/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -8347,7 +7120,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusPlusInstance__SWIG_1" COMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusPlusInstance__SWIG_1"
+cOMPOUND-SHAPE/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -8356,7 +7130,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusArray__SWIG_0" COMPOUND-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusArray__SWIG_0"
+cOMPOUND-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -8364,7 +7139,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusArray__SWIG_0" COMPOUND-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusArray__SWIG_0"
+cOMPOUND-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -8372,7 +7148,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusArray__SWIG_1" COMPOUND-SHAPE/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_makeCPlusArray__SWIG_1"
+cOMPOUND-SHAPE/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (arg1 :pointer)
   (ptr :pointer))
@@ -8381,7 +7158,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusArray__SWIG_1" COMPOUND-SHAPE/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btCompoundShape_deleteCPlusArray__SWIG_1"
+cOMPOUND-SHAPE/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (arg1 :pointer)
   (arg2 :pointer))
@@ -8410,7 +7188,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/ADD-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_addChildShape" COMPOUND-SHAPE/ADD-CHILD-SHAPE) :void
+(cffi:defcfun ("_wrap_btCompoundShape_addChildShape"
+cOMPOUND-SHAPE/ADD-CHILD-SHAPE) :void
   (self :pointer)
   (localTransform :pointer)
   (shape :pointer))
@@ -8419,7 +7198,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/REMOVE-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_removeChildShape" COMPOUND-SHAPE/REMOVE-CHILD-SHAPE) :void
+(cffi:defcfun ("_wrap_btCompoundShape_removeChildShape"
+cOMPOUND-SHAPE/REMOVE-CHILD-SHAPE) :void
   (self :pointer)
   (shape :pointer))
 
@@ -8427,7 +7207,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/REMOVE-CHILD-SHAPE-BY-INDEX))
 
-(cffi:defcfun ("_wrap_btCompoundShape_removeChildShapeByIndex" COMPOUND-SHAPE/REMOVE-CHILD-SHAPE-BY-INDEX) :void
+(cffi:defcfun ("_wrap_btCompoundShape_removeChildShapeByIndex"
+cOMPOUND-SHAPE/REMOVE-CHILD-SHAPE-BY-INDEX) :void
   (self :pointer)
   (childShapeindex :int))
 
@@ -8435,14 +7216,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/GET-NUM-CHILD-SHAPES))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getNumChildShapes" COMPOUND-SHAPE/GET-NUM-CHILD-SHAPES) :int
+(cffi:defcfun ("_wrap_btCompoundShape_getNumChildShapes"
+cOMPOUND-SHAPE/GET-NUM-CHILD-SHAPES) :int
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/GET-NUM-CHILD-SHAPES)
 
 (declaim (inline COMPOUND-SHAPE/GET-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildShape__SWIG_0" COMPOUND-SHAPE/GET-CHILD-SHAPE) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildShape__SWIG_0"
+cOMPOUND-SHAPE/GET-CHILD-SHAPE) :pointer
   (self :pointer)
   (index :int))
 
@@ -8450,7 +7233,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/GET-CHILD-SHAPE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildShape__SWIG_1" COMPOUND-SHAPE/GET-CHILD-SHAPE) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildShape__SWIG_1"
+cOMPOUND-SHAPE/GET-CHILD-SHAPE) :pointer
   (self :pointer)
   (index :int))
 
@@ -8458,7 +7242,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/GET-CHILD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildTransform__SWIG_0" COMPOUND-SHAPE/GET-CHILD-TRANSFORM) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildTransform__SWIG_0"
+cOMPOUND-SHAPE/GET-CHILD-TRANSFORM) :pointer
   (self :pointer)
   (index :int))
 
@@ -8466,7 +7251,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/GET-CHILD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildTransform__SWIG_1" COMPOUND-SHAPE/GET-CHILD-TRANSFORM) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildTransform__SWIG_1"
+cOMPOUND-SHAPE/GET-CHILD-TRANSFORM) :pointer
   (self :pointer)
   (index :int))
 
@@ -8474,7 +7260,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_updateChildTransform__SWIG_0" COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM) :void
+(cffi:defcfun ("_wrap_btCompoundShape_updateChildTransform__SWIG_0"
+cOMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM) :void
   (self :pointer)
   (childIndex :int)
   (newChildTransform :pointer)
@@ -8484,7 +7271,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_updateChildTransform__SWIG_1" COMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM) :void
+(cffi:defcfun ("_wrap_btCompoundShape_updateChildTransform__SWIG_1"
+cOMPOUND-SHAPE/UPDATE-CHILD-TRANSFORM) :void
   (self :pointer)
   (childIndex :int)
   (newChildTransform :pointer))
@@ -8493,14 +7281,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/GET-CHILD-LIST))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getChildList" COMPOUND-SHAPE/GET-CHILD-LIST) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getChildList"
+cOMPOUND-SHAPE/GET-CHILD-LIST) :pointer
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/GET-CHILD-LIST)
 
 (declaim (inline COMPOUND-SHAPE/GET-AABB))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getAabb" COMPOUND-SHAPE/GET-AABB) :void
+(cffi:defcfun ("_wrap_btCompoundShape_getAabb"
+cOMPOUND-SHAPE/GET-AABB) :void
   (self :pointer)
   (t_arg1 :pointer)
   (aabbMin :pointer)
@@ -8510,14 +7300,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/RECALCULATE-LOCAL-AABB))
 
-(cffi:defcfun ("_wrap_btCompoundShape_recalculateLocalAabb" COMPOUND-SHAPE/RECALCULATE-LOCAL-AABB) :void
+(cffi:defcfun ("_wrap_btCompoundShape_recalculateLocalAabb"
+cOMPOUND-SHAPE/RECALCULATE-LOCAL-AABB) :void
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/RECALCULATE-LOCAL-AABB)
 
 (declaim (inline COMPOUND-SHAPE/SET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btCompoundShape_setLocalScaling" COMPOUND-SHAPE/SET-LOCAL-SCALING) :void
+(cffi:defcfun ("_wrap_btCompoundShape_setLocalScaling"
+cOMPOUND-SHAPE/SET-LOCAL-SCALING) :void
   (self :pointer)
   (scaling :pointer))
 
@@ -8525,14 +7317,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/GET-LOCAL-SCALING))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getLocalScaling" COMPOUND-SHAPE/GET-LOCAL-SCALING) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getLocalScaling"
+cOMPOUND-SHAPE/GET-LOCAL-SCALING) :pointer
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/GET-LOCAL-SCALING)
 
 (declaim (inline COMPOUND-SHAPE/CALCULATE-LOCAL-INERTIA))
 
-(cffi:defcfun ("_wrap_btCompoundShape_calculateLocalInertia" COMPOUND-SHAPE/CALCULATE-LOCAL-INERTIA) :void
+(cffi:defcfun ("_wrap_btCompoundShape_calculateLocalInertia"
+cOMPOUND-SHAPE/CALCULATE-LOCAL-INERTIA) :void
   (self :pointer)
   (mass :float)
   (inertia :pointer))
@@ -8541,7 +7335,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/SET-MARGIN))
 
-(cffi:defcfun ("_wrap_btCompoundShape_setMargin" COMPOUND-SHAPE/SET-MARGIN) :void
+(cffi:defcfun ("_wrap_btCompoundShape_setMargin"
+cOMPOUND-SHAPE/SET-MARGIN) :void
   (self :pointer)
   (margin :float))
 
@@ -8549,42 +7344,48 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/GET-MARGIN))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getMargin" COMPOUND-SHAPE/GET-MARGIN) :float
+(cffi:defcfun ("_wrap_btCompoundShape_getMargin"
+cOMPOUND-SHAPE/GET-MARGIN) :float
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/GET-MARGIN)
 
 (declaim (inline COMPOUND-SHAPE/GET-NAME))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getName" COMPOUND-SHAPE/GET-NAME) :string
+(cffi:defcfun ("_wrap_btCompoundShape_getName"
+cOMPOUND-SHAPE/GET-NAME) :string
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/GET-NAME)
 
 (declaim (inline COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getDynamicAabbTree__SWIG_0" COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getDynamicAabbTree__SWIG_0"
+cOMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE) :pointer
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE)
 
 (declaim (inline COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getDynamicAabbTree__SWIG_1" COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE) :pointer
+(cffi:defcfun ("_wrap_btCompoundShape_getDynamicAabbTree__SWIG_1"
+cOMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE) :pointer
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/GET-DYNAMIC-AABB-TREE)
 
 (declaim (inline COMPOUND-SHAPE/CREATE-AABB-TREE-FROM-CHILDREN))
 
-(cffi:defcfun ("_wrap_btCompoundShape_createAabbTreeFromChildren" COMPOUND-SHAPE/CREATE-AABB-TREE-FROM-CHILDREN) :void
+(cffi:defcfun ("_wrap_btCompoundShape_createAabbTreeFromChildren"
+cOMPOUND-SHAPE/CREATE-AABB-TREE-FROM-CHILDREN) :void
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/CREATE-AABB-TREE-FROM-CHILDREN)
 
 (declaim (inline COMPOUND-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM))
 
-(cffi:defcfun ("_wrap_btCompoundShape_calculatePrincipalAxisTransform" COMPOUND-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM) :void
+(cffi:defcfun ("_wrap_btCompoundShape_calculatePrincipalAxisTransform"
+cOMPOUND-SHAPE/CALCULATE-PRINCIPAL-AXIS-TRANSFORM) :void
   (self :pointer)
   (masses :pointer)
   (principal :pointer)
@@ -8594,21 +7395,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COMPOUND-SHAPE/GET-UPDATE-REVISION))
 
-(cffi:defcfun ("_wrap_btCompoundShape_getUpdateRevision" COMPOUND-SHAPE/GET-UPDATE-REVISION) :int
+(cffi:defcfun ("_wrap_btCompoundShape_getUpdateRevision"
+cOMPOUND-SHAPE/GET-UPDATE-REVISION) :int
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/GET-UPDATE-REVISION)
 
 (declaim (inline COMPOUND-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_calculateSerializeBufferSize" COMPOUND-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
+(cffi:defcfun ("_wrap_btCompoundShape_calculateSerializeBufferSize"
+cOMPOUND-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
 (export 'COMPOUND-SHAPE/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
 (declaim (inline COMPOUND-SHAPE/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btCompoundShape_serialize" COMPOUND-SHAPE/SERIALIZE) :string
+(cffi:defcfun ("_wrap_btCompoundShape_serialize"
+cOMPOUND-SHAPE/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
@@ -9567,22 +8371,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export '+USE-DISPATCH-REGISTRY-ARRAY+)
 
 (cffi:defcenum DISPATCHER-FLAGS
-  (:CD-STATIC-STATIC-REPORTED #.1)
-  (:CD-USE-RELATIVE-CONTACT-BREAKING-THRESHOLD #.2)
-  (:CD-DISABLE-CONTACTPOOL-DYNAMIC-ALLOCATION #.4))
+  (:CD-STATIC-STATIC-REPORTED 1)
+  (:CD-USE-RELATIVE-CONTACT-BREAKING-THRESHOLD 2)
+  (:CD-DISABLE-CONTACTPOOL-DYNAMIC-ALLOCATION 4))
 
 (export 'DISPATCHER-FLAGS)
 
 (declaim (inline COLLISION-DISPATCHER/GET-DISPATCHER-FLAGS))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getDispatcherFlags" COLLISION-DISPATCHER/GET-DISPATCHER-FLAGS) :int
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getDispatcherFlags"
+cOLLISION-DISPATCHER/GET-DISPATCHER-FLAGS) :int
   (self :pointer))
 
 (export 'COLLISION-DISPATCHER/GET-DISPATCHER-FLAGS)
 
 (declaim (inline COLLISION-DISPATCHER/SET-DISPATCHER-FLAGS))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_setDispatcherFlags" COLLISION-DISPATCHER/SET-DISPATCHER-FLAGS) :void
+(cffi:defcfun ("_wrap_btCollisionDispatcher_setDispatcherFlags"
+cOLLISION-DISPATCHER/SET-DISPATCHER-FLAGS) :void
   (self :pointer)
   (flags :int))
 
@@ -9590,7 +8396,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/REGISTER-COLLISION-CREATE-FUNC))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_registerCollisionCreateFunc" COLLISION-DISPATCHER/REGISTER-COLLISION-CREATE-FUNC) :void
+(cffi:defcfun ("_wrap_btCollisionDispatcher_registerCollisionCreateFunc"
+cOLLISION-DISPATCHER/REGISTER-COLLISION-CREATE-FUNC) :void
   (self :pointer)
   (proxyType0 :int)
   (proxyType1 :int)
@@ -9600,21 +8407,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/GET-NUM-MANIFOLDS))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getNumManifolds" COLLISION-DISPATCHER/GET-NUM-MANIFOLDS) :int
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getNumManifolds"
+cOLLISION-DISPATCHER/GET-NUM-MANIFOLDS) :int
   (self :pointer))
 
 (export 'COLLISION-DISPATCHER/GET-NUM-MANIFOLDS)
 
 (declaim (inline COLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POINTER))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getInternalManifoldPointer" COLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POINTER) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getInternalManifoldPointer"
+cOLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POINTER) :pointer
   (self :pointer))
 
 (export 'COLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POINTER)
 
 (declaim (inline COLLISION-DISPATCHER/GET-MANIFOLD-BY-INDEX-INTERNAL))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getManifoldByIndexInternal__SWIG_0" COLLISION-DISPATCHER/GET-MANIFOLD-BY-INDEX-INTERNAL) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getManifoldByIndexInternal__SWIG_0"
+cOLLISION-DISPATCHER/GET-MANIFOLD-BY-INDEX-INTERNAL) :pointer
   (self :pointer)
   (index :int))
 
@@ -9622,7 +8432,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/GET-MANIFOLD-BY-INDEX-INTERNAL))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getManifoldByIndexInternal__SWIG_1" COLLISION-DISPATCHER/GET-MANIFOLD-BY-INDEX-INTERNAL) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getManifoldByIndexInternal__SWIG_1"
+cOLLISION-DISPATCHER/GET-MANIFOLD-BY-INDEX-INTERNAL) :pointer
   (self :pointer)
   (index :int))
 
@@ -9644,7 +8455,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/GET-NEW-MANIFOLD))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getNewManifold" COLLISION-DISPATCHER/GET-NEW-MANIFOLD) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getNewManifold"
+cOLLISION-DISPATCHER/GET-NEW-MANIFOLD) :pointer
   (self :pointer)
   (b0 :pointer)
   (b1 :pointer))
@@ -9653,7 +8465,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/RELEASE-MANIFOLD))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_releaseManifold" COLLISION-DISPATCHER/RELEASE-MANIFOLD) :void
+(cffi:defcfun ("_wrap_btCollisionDispatcher_releaseManifold"
+cOLLISION-DISPATCHER/RELEASE-MANIFOLD) :void
   (self :pointer)
   (manifold :pointer))
 
@@ -9661,7 +8474,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/CLEAR-MANIFOLD))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_clearManifold" COLLISION-DISPATCHER/CLEAR-MANIFOLD) :void
+(cffi:defcfun ("_wrap_btCollisionDispatcher_clearManifold"
+cOLLISION-DISPATCHER/CLEAR-MANIFOLD) :void
   (self :pointer)
   (manifold :pointer))
 
@@ -9669,7 +8483,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/FIND-ALGORITHM))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_findAlgorithm__SWIG_0" COLLISION-DISPATCHER/FIND-ALGORITHM) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_findAlgorithm__SWIG_0"
+cOLLISION-DISPATCHER/FIND-ALGORITHM) :pointer
   (self :pointer)
   (body0Wrap :pointer)
   (body1Wrap :pointer)
@@ -9679,7 +8494,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/FIND-ALGORITHM))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_findAlgorithm__SWIG_1" COLLISION-DISPATCHER/FIND-ALGORITHM) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_findAlgorithm__SWIG_1"
+cOLLISION-DISPATCHER/FIND-ALGORITHM) :pointer
   (self :pointer)
   (body0Wrap :pointer)
   (body1Wrap :pointer))
@@ -9688,7 +8504,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/NEEDS-COLLISION))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_needsCollision" COLLISION-DISPATCHER/NEEDS-COLLISION) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_needsCollision"
+cOLLISION-DISPATCHER/NEEDS-COLLISION) :pointer
   (self :pointer)
   (body0 :pointer)
   (body1 :pointer))
@@ -9697,7 +8514,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/NEEDS-RESPONSE))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_needsResponse" COLLISION-DISPATCHER/NEEDS-RESPONSE) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_needsResponse"
+cOLLISION-DISPATCHER/NEEDS-RESPONSE) :pointer
   (self :pointer)
   (body0 :pointer)
   (body1 :pointer))
@@ -9706,7 +8524,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/DISPATCH-ALL-COLLISION-PAIRS))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_dispatchAllCollisionPairs" COLLISION-DISPATCHER/DISPATCH-ALL-COLLISION-PAIRS) :void
+(cffi:defcfun ("_wrap_btCollisionDispatcher_dispatchAllCollisionPairs"
+cOLLISION-DISPATCHER/DISPATCH-ALL-COLLISION-PAIRS) :void
   (self :pointer)
   (pairCache :pointer)
   (dispatchInfo :pointer)
@@ -9716,7 +8535,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/SET-NEAR-CALLBACK))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_setNearCallback" COLLISION-DISPATCHER/SET-NEAR-CALLBACK) :void
+(cffi:defcfun ("_wrap_btCollisionDispatcher_setNearCallback"
+cOLLISION-DISPATCHER/SET-NEAR-CALLBACK) :void
   (self :pointer)
   (nearCallback :pointer))
 
@@ -9724,14 +8544,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/GET-NEAR-CALLBACK))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getNearCallback" COLLISION-DISPATCHER/GET-NEAR-CALLBACK) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getNearCallback"
+cOLLISION-DISPATCHER/GET-NEAR-CALLBACK) :pointer
   (self :pointer))
 
 (export 'COLLISION-DISPATCHER/GET-NEAR-CALLBACK)
 
 (declaim (inline COLLISION-DISPATCHER/DEFAULT-NEAR-CALLBACK))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_defaultNearCallback" COLLISION-DISPATCHER/DEFAULT-NEAR-CALLBACK) :void
+(cffi:defcfun ("_wrap_btCollisionDispatcher_defaultNearCallback"
+cOLLISION-DISPATCHER/DEFAULT-NEAR-CALLBACK) :void
   (collisionPair :pointer)
   (dispatcher :pointer)
   (dispatchInfo :pointer))
@@ -9740,7 +8562,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/ALLOCATE-COLLISION-ALGORITHM))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_allocateCollisionAlgorithm" COLLISION-DISPATCHER/ALLOCATE-COLLISION-ALGORITHM) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_allocateCollisionAlgorithm"
+cOLLISION-DISPATCHER/ALLOCATE-COLLISION-ALGORITHM) :pointer
   (self :pointer)
   (size :int))
 
@@ -9748,7 +8571,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/FREE-COLLISION-ALGORITHM))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_freeCollisionAlgorithm" COLLISION-DISPATCHER/FREE-COLLISION-ALGORITHM) :void
+(cffi:defcfun ("_wrap_btCollisionDispatcher_freeCollisionAlgorithm"
+cOLLISION-DISPATCHER/FREE-COLLISION-ALGORITHM) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -9756,21 +8580,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/GET-COLLISION-CONFIGURATION))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getCollisionConfiguration__SWIG_0" COLLISION-DISPATCHER/GET-COLLISION-CONFIGURATION) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getCollisionConfiguration__SWIG_0"
+cOLLISION-DISPATCHER/GET-COLLISION-CONFIGURATION) :pointer
   (self :pointer))
 
 (export 'COLLISION-DISPATCHER/GET-COLLISION-CONFIGURATION)
 
 (declaim (inline COLLISION-DISPATCHER/GET-COLLISION-CONFIGURATION))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getCollisionConfiguration__SWIG_1" COLLISION-DISPATCHER/GET-COLLISION-CONFIGURATION) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getCollisionConfiguration__SWIG_1"
+cOLLISION-DISPATCHER/GET-COLLISION-CONFIGURATION) :pointer
   (self :pointer))
 
 (export 'COLLISION-DISPATCHER/GET-COLLISION-CONFIGURATION)
 
 (declaim (inline COLLISION-DISPATCHER/SET-COLLISION-CONFIGURATION))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_setCollisionConfiguration" COLLISION-DISPATCHER/SET-COLLISION-CONFIGURATION) :void
+(cffi:defcfun ("_wrap_btCollisionDispatcher_setCollisionConfiguration"
+cOLLISION-DISPATCHER/SET-COLLISION-CONFIGURATION) :void
   (self :pointer)
   (config :pointer))
 
@@ -9778,14 +8605,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline COLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POOL))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getInternalManifoldPool__SWIG_0" COLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POOL) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getInternalManifoldPool__SWIG_0"
+cOLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POOL) :pointer
   (self :pointer))
 
 (export 'COLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POOL)
 
 (declaim (inline COLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POOL))
 
-(cffi:defcfun ("_wrap_btCollisionDispatcher_getInternalManifoldPool__SWIG_1" COLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POOL) :pointer
+(cffi:defcfun ("_wrap_btCollisionDispatcher_getInternalManifoldPool__SWIG_1"
+cOLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POOL) :pointer
   (self :pointer))
 
 (export 'COLLISION-DISPATCHER/GET-INTERNAL-MANIFOLD-POOL)
@@ -10474,7 +9303,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CLOCK/ASSIGN-VALUE))
 
-(cffi:defcfun ("_wrap_btClock_assignValue" CLOCK/ASSIGN-VALUE) :pointer
+(cffi:defcfun ("_wrap_btClock_assignValue"
+cLOCK/ASSIGN-VALUE) :pointer
   (self :pointer)
   (other :pointer))
 
@@ -10489,21 +9319,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CLOCK/RESET))
 
-(cffi:defcfun ("_wrap_btClock_reset" CLOCK/RESET) :void
+(cffi:defcfun ("_wrap_btClock_reset"
+cLOCK/RESET) :void
   (self :pointer))
 
 (export 'CLOCK/RESET)
 
 (declaim (inline CLOCK/GET-TIME-MILLISECONDS))
 
-(cffi:defcfun ("_wrap_btClock_getTimeMilliseconds" CLOCK/GET-TIME-MILLISECONDS) :unsigned-long
+(cffi:defcfun ("_wrap_btClock_getTimeMilliseconds"
+cLOCK/GET-TIME-MILLISECONDS) :unsigned-long
   (self :pointer))
 
 (export 'CLOCK/GET-TIME-MILLISECONDS)
 
 (declaim (inline CLOCK/GET-TIME-MICROSECONDS))
 
-(cffi:defcfun ("_wrap_btClock_getTimeMicroseconds" CLOCK/GET-TIME-MICROSECONDS) :unsigned-long
+(cffi:defcfun ("_wrap_btClock_getTimeMicroseconds"
+cLOCK/GET-TIME-MICROSECONDS) :unsigned-long
   (self :pointer))
 
 (export 'CLOCK/GET-TIME-MICROSECONDS)
@@ -10525,7 +9358,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CPROFILE-NODE/GET/SUB/NODE))
 
-(cffi:defcfun ("_wrap_CProfileNode_Get_Sub_Node" CPROFILE-NODE/GET/SUB/NODE) :pointer
+(cffi:defcfun ("_wrap_CProfileNode_Get_Sub_Node"
+cPROFILE-NODE/GET/SUB/NODE) :pointer
   (self :pointer)
   (name :string))
 
@@ -10533,84 +9367,96 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CPROFILE-NODE/GET/PARENT))
 
-(cffi:defcfun ("_wrap_CProfileNode_Get_Parent" CPROFILE-NODE/GET/PARENT) :pointer
+(cffi:defcfun ("_wrap_CProfileNode_Get_Parent"
+cPROFILE-NODE/GET/PARENT) :pointer
   (self :pointer))
 
 (export 'CPROFILE-NODE/GET/PARENT)
 
 (declaim (inline CPROFILE-NODE/GET/SIBLING))
 
-(cffi:defcfun ("_wrap_CProfileNode_Get_Sibling" CPROFILE-NODE/GET/SIBLING) :pointer
+(cffi:defcfun ("_wrap_CProfileNode_Get_Sibling"
+cPROFILE-NODE/GET/SIBLING) :pointer
   (self :pointer))
 
 (export 'CPROFILE-NODE/GET/SIBLING)
 
 (declaim (inline CPROFILE-NODE/GET/CHILD))
 
-(cffi:defcfun ("_wrap_CProfileNode_Get_Child" CPROFILE-NODE/GET/CHILD) :pointer
+(cffi:defcfun ("_wrap_CProfileNode_Get_Child"
+cPROFILE-NODE/GET/CHILD) :pointer
   (self :pointer))
 
 (export 'CPROFILE-NODE/GET/CHILD)
 
 (declaim (inline CPROFILE-NODE/CLEANUP-MEMORY))
 
-(cffi:defcfun ("_wrap_CProfileNode_CleanupMemory" CPROFILE-NODE/CLEANUP-MEMORY) :void
+(cffi:defcfun ("_wrap_CProfileNode_CleanupMemory"
+cPROFILE-NODE/CLEANUP-MEMORY) :void
   (self :pointer))
 
 (export 'CPROFILE-NODE/CLEANUP-MEMORY)
 
 (declaim (inline CPROFILE-NODE/RESET))
 
-(cffi:defcfun ("_wrap_CProfileNode_Reset" CPROFILE-NODE/RESET) :void
+(cffi:defcfun ("_wrap_CProfileNode_Reset"
+cPROFILE-NODE/RESET) :void
   (self :pointer))
 
 (export 'CPROFILE-NODE/RESET)
 
 (declaim (inline CPROFILE-NODE/CALL))
 
-(cffi:defcfun ("_wrap_CProfileNode_Call" CPROFILE-NODE/CALL) :void
+(cffi:defcfun ("_wrap_CProfileNode_Call"
+cPROFILE-NODE/CALL) :void
   (self :pointer))
 
 (export 'CPROFILE-NODE/CALL)
 
 (declaim (inline CPROFILE-NODE/RETURN))
 
-(cffi:defcfun ("_wrap_CProfileNode_Return" CPROFILE-NODE/RETURN) :pointer
+(cffi:defcfun ("_wrap_CProfileNode_Return"
+cPROFILE-NODE/RETURN) :pointer
   (self :pointer))
 
 (export 'CPROFILE-NODE/RETURN)
 
 (declaim (inline CPROFILE-NODE/GET/NAME))
 
-(cffi:defcfun ("_wrap_CProfileNode_Get_Name" CPROFILE-NODE/GET/NAME) :string
+(cffi:defcfun ("_wrap_CProfileNode_Get_Name"
+cPROFILE-NODE/GET/NAME) :string
   (self :pointer))
 
 (export 'CPROFILE-NODE/GET/NAME)
 
 (declaim (inline CPROFILE-NODE/GET/TOTAL/CALLS))
 
-(cffi:defcfun ("_wrap_CProfileNode_Get_Total_Calls" CPROFILE-NODE/GET/TOTAL/CALLS) :int
+(cffi:defcfun ("_wrap_CProfileNode_Get_Total_Calls"
+cPROFILE-NODE/GET/TOTAL/CALLS) :int
   (self :pointer))
 
 (export 'CPROFILE-NODE/GET/TOTAL/CALLS)
 
 (declaim (inline CPROFILE-NODE/GET/TOTAL/TIME))
 
-(cffi:defcfun ("_wrap_CProfileNode_Get_Total_Time" CPROFILE-NODE/GET/TOTAL/TIME) :float
+(cffi:defcfun ("_wrap_CProfileNode_Get_Total_Time"
+cPROFILE-NODE/GET/TOTAL/TIME) :float
   (self :pointer))
 
 (export 'CPROFILE-NODE/GET/TOTAL/TIME)
 
 (declaim (inline CPROFILE-NODE/GET-USER-POINTER))
 
-(cffi:defcfun ("_wrap_CProfileNode_GetUserPointer" CPROFILE-NODE/GET-USER-POINTER) :pointer
+(cffi:defcfun ("_wrap_CProfileNode_GetUserPointer"
+cPROFILE-NODE/GET-USER-POINTER) :pointer
   (self :pointer))
 
 (export 'CPROFILE-NODE/GET-USER-POINTER)
 
 (declaim (inline CPROFILE-NODE/SET-USER-POINTER))
 
-(cffi:defcfun ("_wrap_CProfileNode_SetUserPointer" CPROFILE-NODE/SET-USER-POINTER) :void
+(cffi:defcfun ("_wrap_CProfileNode_SetUserPointer"
+cPROFILE-NODE/SET-USER-POINTER) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -10618,35 +9464,40 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CPROFILE-ITERATOR/FIRST))
 
-(cffi:defcfun ("_wrap_CProfileIterator_First" CPROFILE-ITERATOR/FIRST) :void
+(cffi:defcfun ("_wrap_CProfileIterator_First"
+cPROFILE-ITERATOR/FIRST) :void
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/FIRST)
 
 (declaim (inline CPROFILE-ITERATOR/NEXT))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Next" CPROFILE-ITERATOR/NEXT) :void
+(cffi:defcfun ("_wrap_CProfileIterator_Next"
+cPROFILE-ITERATOR/NEXT) :void
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/NEXT)
 
 (declaim (inline CPROFILE-ITERATOR/IS/DONE))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Is_Done" CPROFILE-ITERATOR/IS/DONE) :pointer
+(cffi:defcfun ("_wrap_CProfileIterator_Is_Done"
+cPROFILE-ITERATOR/IS/DONE) :pointer
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/IS/DONE)
 
 (declaim (inline CPROFILE-ITERATOR/IS/ROOT))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Is_Root" CPROFILE-ITERATOR/IS/ROOT) :pointer
+(cffi:defcfun ("_wrap_CProfileIterator_Is_Root"
+cPROFILE-ITERATOR/IS/ROOT) :pointer
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/IS/ROOT)
 
 (declaim (inline CPROFILE-ITERATOR/ENTER/CHILD))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Enter_Child" CPROFILE-ITERATOR/ENTER/CHILD) :void
+(cffi:defcfun ("_wrap_CProfileIterator_Enter_Child"
+cPROFILE-ITERATOR/ENTER/CHILD) :void
   (self :pointer)
   (index :int))
 
@@ -10654,49 +9505,56 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CPROFILE-ITERATOR/ENTER/LARGEST/CHILD))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Enter_Largest_Child" CPROFILE-ITERATOR/ENTER/LARGEST/CHILD) :void
+(cffi:defcfun ("_wrap_CProfileIterator_Enter_Largest_Child"
+cPROFILE-ITERATOR/ENTER/LARGEST/CHILD) :void
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/ENTER/LARGEST/CHILD)
 
 (declaim (inline CPROFILE-ITERATOR/ENTER/PARENT))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Enter_Parent" CPROFILE-ITERATOR/ENTER/PARENT) :void
+(cffi:defcfun ("_wrap_CProfileIterator_Enter_Parent"
+cPROFILE-ITERATOR/ENTER/PARENT) :void
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/ENTER/PARENT)
 
 (declaim (inline CPROFILE-ITERATOR/GET/CURRENT/NAME))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Name" CPROFILE-ITERATOR/GET/CURRENT/NAME) :string
+(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Name"
+cPROFILE-ITERATOR/GET/CURRENT/NAME) :string
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/GET/CURRENT/NAME)
 
 (declaim (inline CPROFILE-ITERATOR/GET/CURRENT/TOTAL/CALLS))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Total_Calls" CPROFILE-ITERATOR/GET/CURRENT/TOTAL/CALLS) :int
+(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Total_Calls"
+cPROFILE-ITERATOR/GET/CURRENT/TOTAL/CALLS) :int
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/GET/CURRENT/TOTAL/CALLS)
 
 (declaim (inline CPROFILE-ITERATOR/GET/CURRENT/TOTAL/TIME))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Total_Time" CPROFILE-ITERATOR/GET/CURRENT/TOTAL/TIME) :float
+(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Total_Time"
+cPROFILE-ITERATOR/GET/CURRENT/TOTAL/TIME) :float
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/GET/CURRENT/TOTAL/TIME)
 
 (declaim (inline CPROFILE-ITERATOR/GET/CURRENT/USER-POINTER))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_UserPointer" CPROFILE-ITERATOR/GET/CURRENT/USER-POINTER) :pointer
+(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_UserPointer"
+cPROFILE-ITERATOR/GET/CURRENT/USER-POINTER) :pointer
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/GET/CURRENT/USER-POINTER)
 
 (declaim (inline CPROFILE-ITERATOR/SET/CURRENT/USER-POINTER))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Set_Current_UserPointer" CPROFILE-ITERATOR/SET/CURRENT/USER-POINTER) :void
+(cffi:defcfun ("_wrap_CProfileIterator_Set_Current_UserPointer"
+cPROFILE-ITERATOR/SET/CURRENT/USER-POINTER) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -10704,21 +9562,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CPROFILE-ITERATOR/GET/CURRENT/PARENT/NAME))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Parent_Name" CPROFILE-ITERATOR/GET/CURRENT/PARENT/NAME) :string
+(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Parent_Name"
+cPROFILE-ITERATOR/GET/CURRENT/PARENT/NAME) :string
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/GET/CURRENT/PARENT/NAME)
 
 (declaim (inline CPROFILE-ITERATOR/GET/CURRENT/PARENT/TOTAL/CALLS))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Parent_Total_Calls" CPROFILE-ITERATOR/GET/CURRENT/PARENT/TOTAL/CALLS) :int
+(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Parent_Total_Calls"
+cPROFILE-ITERATOR/GET/CURRENT/PARENT/TOTAL/CALLS) :int
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/GET/CURRENT/PARENT/TOTAL/CALLS)
 
 (declaim (inline CPROFILE-ITERATOR/GET/CURRENT/PARENT/TOTAL/TIME))
 
-(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Parent_Total_Time" CPROFILE-ITERATOR/GET/CURRENT/PARENT/TOTAL/TIME) :float
+(cffi:defcfun ("_wrap_CProfileIterator_Get_Current_Parent_Total_Time"
+cPROFILE-ITERATOR/GET/CURRENT/PARENT/TOTAL/TIME) :float
   (self :pointer))
 
 (export 'CPROFILE-ITERATOR/GET/CURRENT/PARENT/TOTAL/TIME)
@@ -10732,63 +9593,73 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CPROFILE-MANAGER/START/PROFILE))
 
-(cffi:defcfun ("_wrap_CProfileManager_Start_Profile" CPROFILE-MANAGER/START/PROFILE) :void
+(cffi:defcfun ("_wrap_CProfileManager_Start_Profile"
+cPROFILE-MANAGER/START/PROFILE) :void
   (name :string))
 
 (export 'CPROFILE-MANAGER/START/PROFILE)
 
 (declaim (inline CPROFILE-MANAGER/STOP/PROFILE))
 
-(cffi:defcfun ("_wrap_CProfileManager_Stop_Profile" CPROFILE-MANAGER/STOP/PROFILE) :void)
+(cffi:defcfun ("_wrap_CProfileManager_Stop_Profile"
+cPROFILE-MANAGER/STOP/PROFILE) :void)
 
 (export 'CPROFILE-MANAGER/STOP/PROFILE)
 
 (declaim (inline CPROFILE-MANAGER/CLEANUP-MEMORY))
 
-(cffi:defcfun ("_wrap_CProfileManager_CleanupMemory" CPROFILE-MANAGER/CLEANUP-MEMORY) :void)
+(cffi:defcfun ("_wrap_CProfileManager_CleanupMemory"
+cPROFILE-MANAGER/CLEANUP-MEMORY) :void)
 
 (export 'CPROFILE-MANAGER/CLEANUP-MEMORY)
 
 (declaim (inline CPROFILE-MANAGER/RESET))
 
-(cffi:defcfun ("_wrap_CProfileManager_Reset" CPROFILE-MANAGER/RESET) :void)
+(cffi:defcfun ("_wrap_CProfileManager_Reset"
+cPROFILE-MANAGER/RESET) :void)
 
 (export 'CPROFILE-MANAGER/RESET)
 
 (declaim (inline CPROFILE-MANAGER/INCREMENT/FRAME/COUNTER))
 
-(cffi:defcfun ("_wrap_CProfileManager_Increment_Frame_Counter" CPROFILE-MANAGER/INCREMENT/FRAME/COUNTER) :void)
+(cffi:defcfun ("_wrap_CProfileManager_Increment_Frame_Counter"
+cPROFILE-MANAGER/INCREMENT/FRAME/COUNTER) :void)
 
 (export 'CPROFILE-MANAGER/INCREMENT/FRAME/COUNTER)
 
 (declaim (inline CPROFILE-MANAGER/GET/FRAME/COUNT/SINCE/RESET))
 
-(cffi:defcfun ("_wrap_CProfileManager_Get_Frame_Count_Since_Reset" CPROFILE-MANAGER/GET/FRAME/COUNT/SINCE/RESET) :int)
+(cffi:defcfun ("_wrap_CProfileManager_Get_Frame_Count_Since_Reset"
+cPROFILE-MANAGER/GET/FRAME/COUNT/SINCE/RESET) :int)
 
 (export 'CPROFILE-MANAGER/GET/FRAME/COUNT/SINCE/RESET)
 
 (declaim (inline CPROFILE-MANAGER/GET/TIME/SINCE/RESET))
 
-(cffi:defcfun ("_wrap_CProfileManager_Get_Time_Since_Reset" CPROFILE-MANAGER/GET/TIME/SINCE/RESET) :float)
+(cffi:defcfun ("_wrap_CProfileManager_Get_Time_Since_Reset"
+cPROFILE-MANAGER/GET/TIME/SINCE/RESET) :float)
 
 (export 'CPROFILE-MANAGER/GET/TIME/SINCE/RESET)
 
 (declaim (inline CPROFILE-MANAGER/GET/ITERATOR))
 
-(cffi:defcfun ("_wrap_CProfileManager_Get_Iterator" CPROFILE-MANAGER/GET/ITERATOR) :pointer)
+(cffi:defcfun ("_wrap_CProfileManager_Get_Iterator"
+cPROFILE-MANAGER/GET/ITERATOR) :pointer)
 
 (export 'CPROFILE-MANAGER/GET/ITERATOR)
 
 (declaim (inline CPROFILE-MANAGER/RELEASE/ITERATOR))
 
-(cffi:defcfun ("_wrap_CProfileManager_Release_Iterator" CPROFILE-MANAGER/RELEASE/ITERATOR) :void
+(cffi:defcfun ("_wrap_CProfileManager_Release_Iterator"
+cPROFILE-MANAGER/RELEASE/ITERATOR) :void
   (iterator :pointer))
 
 (export 'CPROFILE-MANAGER/RELEASE/ITERATOR)
 
 (declaim (inline CPROFILE-MANAGER/DUMP-RECURSIVE))
 
-(cffi:defcfun ("_wrap_CProfileManager_dumpRecursive" CPROFILE-MANAGER/DUMP-RECURSIVE) :void
+(cffi:defcfun ("_wrap_CProfileManager_dumpRecursive"
+cPROFILE-MANAGER/DUMP-RECURSIVE) :void
   (profileIterator :pointer)
   (spacing :int))
 
@@ -10796,7 +9667,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CPROFILE-MANAGER/DUMP-ALL))
 
-(cffi:defcfun ("_wrap_CProfileManager_dumpAll" CPROFILE-MANAGER/DUMP-ALL) :void)
+(cffi:defcfun ("_wrap_CProfileManager_dumpAll"
+cPROFILE-MANAGER/DUMP-ALL) :void)
 
 (export 'CPROFILE-MANAGER/DUMP-ALL)
 
@@ -10828,18 +9700,18 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export 'DELETE/CPROFILE-SAMPLE)
 
 (cffi:defcenum DEBUG-DRAW-MODES
-  (:DBG-NO-DEBUG #.0)
-  (:DBG-DRAW-WIREFRAME #.1)
-  (:DBG-DRAW-AABB #.2)
-  (:DBG-DRAW-FEATURES-TEXT #.4)
-  (:DBG-DRAW-CONTACT-POINTS #.8)
-  (:DBG-NO-DEACTIVATION #.16)
+  (:DBG-NO-DEBUG 0)
+  (:DBG-DRAW-WIREFRAME 1)
+  (:DBG-DRAW-AABB 2)
+  (:DBG-DRAW-FEATURES-TEXT 4)
+  (:DBG-DRAW-CONTACT-POINTS 8)
+  (:DBG-NO-DEACTIVATION 16)
   (:DBG-NO-HELP-TEXT #.32)
   (:DBG-DRAW-TEXT #.64)
-  (:DBG-PROFILE-TIMINGS #.128)
-  (:DBG-ENABLE-SAT-COMPARISON #.256)
+  (:DBG-PROFILE-TIMINGS 128)
+  (:DBG-ENABLE-SAT-COMPARISON 256)
   (:DBG-DISABLE-BULLET-LCP #.512)
-  (:DBG-ENABLE-CCD #.1024)
+  (:DBG-ENABLE-CCD 1024)
   (:DBG-DRAW-CONSTRAINTS #.(ash 1 11))
   (:DBG-DRAW-CONSTRAINT-LIMITS #.(ash 1 12))
   (:DBG-FAST-WIREFRAME #.(ash 1 13))
@@ -11167,7 +10039,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CHUNK/M/CHUNK-CODE/SET))
 
-(cffi:defcfun ("_wrap_btChunk_m_chunkCode_set" CHUNK/M/CHUNK-CODE/SET) :void
+(cffi:defcfun ("_wrap_btChunk_m_chunkCode_set"
+cHUNK/M/CHUNK-CODE/SET) :void
   (self :pointer)
   (m_chunkCode :int))
 
@@ -11175,14 +10048,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CHUNK/M/CHUNK-CODE/GET))
 
-(cffi:defcfun ("_wrap_btChunk_m_chunkCode_get" CHUNK/M/CHUNK-CODE/GET) :int
+(cffi:defcfun ("_wrap_btChunk_m_chunkCode_get"
+cHUNK/M/CHUNK-CODE/GET) :int
   (self :pointer))
 
 (export 'CHUNK/M/CHUNK-CODE/GET)
 
 (declaim (inline CHUNK/M/LENGTH/SET))
 
-(cffi:defcfun ("_wrap_btChunk_m_length_set" CHUNK/M/LENGTH/SET) :void
+(cffi:defcfun ("_wrap_btChunk_m_length_set"
+cHUNK/M/LENGTH/SET) :void
   (self :pointer)
   (m_length :int))
 
@@ -11190,14 +10065,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CHUNK/M/LENGTH/GET))
 
-(cffi:defcfun ("_wrap_btChunk_m_length_get" CHUNK/M/LENGTH/GET) :int
+(cffi:defcfun ("_wrap_btChunk_m_length_get"
+cHUNK/M/LENGTH/GET) :int
   (self :pointer))
 
 (export 'CHUNK/M/LENGTH/GET)
 
 (declaim (inline CHUNK/M/OLD-PTR/SET))
 
-(cffi:defcfun ("_wrap_btChunk_m_oldPtr_set" CHUNK/M/OLD-PTR/SET) :void
+(cffi:defcfun ("_wrap_btChunk_m_oldPtr_set"
+cHUNK/M/OLD-PTR/SET) :void
   (self :pointer)
   (m_oldPtr :pointer))
 
@@ -11205,14 +10082,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CHUNK/M/OLD-PTR/GET))
 
-(cffi:defcfun ("_wrap_btChunk_m_oldPtr_get" CHUNK/M/OLD-PTR/GET) :pointer
+(cffi:defcfun ("_wrap_btChunk_m_oldPtr_get"
+cHUNK/M/OLD-PTR/GET) :pointer
   (self :pointer))
 
 (export 'CHUNK/M/OLD-PTR/GET)
 
 (declaim (inline CHUNK/M/DNA/NR/SET))
 
-(cffi:defcfun ("_wrap_btChunk_m_dna_nr_set" CHUNK/M/DNA/NR/SET) :void
+(cffi:defcfun ("_wrap_btChunk_m_dna_nr_set"
+cHUNK/M/DNA/NR/SET) :void
   (self :pointer)
   (m_dna_nr :int))
 
@@ -11220,14 +10099,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CHUNK/M/DNA/NR/GET))
 
-(cffi:defcfun ("_wrap_btChunk_m_dna_nr_get" CHUNK/M/DNA/NR/GET) :int
+(cffi:defcfun ("_wrap_btChunk_m_dna_nr_get"
+cHUNK/M/DNA/NR/GET) :int
   (self :pointer))
 
 (export 'CHUNK/M/DNA/NR/GET)
 
 (declaim (inline CHUNK/M/NUMBER/SET))
 
-(cffi:defcfun ("_wrap_btChunk_m_number_set" CHUNK/M/NUMBER/SET) :void
+(cffi:defcfun ("_wrap_btChunk_m_number_set"
+cHUNK/M/NUMBER/SET) :void
   (self :pointer)
   (m_number :int))
 
@@ -11235,7 +10116,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CHUNK/M/NUMBER/GET))
 
-(cffi:defcfun ("_wrap_btChunk_m_number_get" CHUNK/M/NUMBER/GET) :int
+(cffi:defcfun ("_wrap_btChunk_m_number_get"
+cHUNK/M/NUMBER/GET) :int
   (self :pointer))
 
 (export 'CHUNK/M/NUMBER/GET)
@@ -11254,9 +10136,9 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export 'DELETE/BT-CHUNK)
 
 (cffi:defcenum SERIALIZATION-FLAGS
-  (:SERIALIZE-NO-BVH #.1)
-  (:SERIALIZE-NO-TRIANGLEINFOMAP #.2)
-  (:SERIALIZE-NO-DUPLICATE-ASSERT #.4))
+  (:SERIALIZE-NO-BVH 1)
+  (:SERIALIZE-NO-TRIANGLEINFOMAP 2)
+  (:SERIALIZE-NO-DUPLICATE-ASSERT 4))
 
 (export 'SERIALIZATION-FLAGS)
 
@@ -12125,8 +11007,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export '+RIGID-BODY-DATA-NAME+)
 
 (cffi:defcenum RIGID-BODY-FLAGS
-  (:DISABLE-WORLD-GRAVITY #.1)
-  (:ENABLE-GYROPSCOPIC-FORCE #.2))
+  (:DISABLE-WORLD-GRAVITY 1)
+  (:ENABLE-GYROPSCOPIC-FORCE 2))
 
 (export 'RIGID-BODY-FLAGS)
 
@@ -12806,7 +11688,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (cffi:defcstruct RIGID-BODY-DOUBLE-DATA
   (COLLISION-OBJECT-DATA COLLISION-OBJECT-DOUBLE-DATA)
-  (INV-INERTIA-TENSOR-WORLD MATRIX-3X-3-DOUBLE-DATA)
+  (INV-INERTIA-TENSOR-WORLD MATRIX-3X3-DOUBLE-DATA)
   (LINEAR-VELOCITY VECTOR-3-DOUBLE-DATA)
   (ANGULAR-VELOCITY VECTOR-3-DOUBLE-DATA)
   (ANGULAR-FACTOR VECTOR-3-DOUBLE-DATA)
@@ -12893,7 +11775,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export 'TYPED-CONSTRAINT-TYPE)
 
 (cffi:defcenum CONSTRAINT-PARAMS
-  (:CONSTRAINT-ERP #.1)
+  (:CONSTRAINT-ERP 1)
   :CONSTRAINT-STOP-ERP
   :CONSTRAINT-CFM
   :CONSTRAINT-STOP-CFM)
@@ -13563,8 +12445,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export 'IMPULSE-CLAMP)
 
 (cffi:defcenum POINT-2-POINT-FLAGS
-  (:P-2-P-FLAGS-ERP #.1)
-  (:P-2-P-FLAGS-CFM #.2))
+  (:P-2-P-FLAGS-ERP 1)
+  (:P-2-P-FLAGS-CFM 2))
 
 (export 'POINT-2-POINT-FLAGS)
 
@@ -13666,7 +12548,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export 'POINT-2-POINT-CONSTRAINT/M/SETTING/GET)
 
-(declaim (inline (lispify "new_btPoint2PointConstraint" 'function)))
+(declaim (inline MAKE-POINT-2-POINT-CONSTRAINT))
 
 (cffi:defcfun ("_wrap_new_btPoint2PointConstraint__SWIG_0" MAKE-POINT-2-POINT-CONSTRAINT) :pointer
   (rbA :pointer)
@@ -13829,14 +12711,14 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export '+-BT-USE-CENTER-LIMIT-+)
 
-(define-constant (lispify "btHingeConstraintDataName" 'constant) "btHingeConstraintFloatData" :test 'equal)
+(define-constant +HINGE-CONSTRAINT-DATA-NAME+ "btHingeConstraintFloatData" :test 'equal)
 
 (export '+HINGE-CONSTRAINT-DATA-NAME+)
 
 (cffi:defcenum HINGE-FLAGS
-  (:HINGE-FLAGS-CFM-STOP #.1)
-  (:HINGE-FLAGS-ERP-STOP #.2)
-  (:HINGE-FLAGS-CFM-NORM #.4))
+  (:HINGE-FLAGS-CFM-STOP 1)
+  (:HINGE-FLAGS-ERP-STOP 2)
+  (:HINGE-FLAGS-CFM-NORM 4))
 
 (export 'HINGE-FLAGS)
 
@@ -14237,7 +13119,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export 'HINGE-CONSTRAINT/GET-LOWER-LIMIT)
 
-(declaim (inline (lispify "btHingeConstraint_getUpperLimit" 'function)))
+(declaim (inline HINGE-CONSTRAINT/GET-UPPER-LIMIT))
 
 (cffi:defcfun ("_wrap_btHingeConstraint_getUpperLimit" HINGE-CONSTRAINT/GET-UPPER-LIMIT) :float
   (self :pointer))
@@ -14422,7 +13304,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export 'LOWER-LIMIT)
 
-(export '(lispify "m_upperLimit" 'slotname))
+(export 'UPPER-LIMIT)
 
 (export 'LIMIT-SOFTNESS)
 
@@ -14524,15 +13406,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export '+CONE-TWIST-CONSTRAINT-DATA-NAME+)
 
 (cffi:defcenum CONE-TWIST-FLAGS
-  (:CONETWIST-FLAGS-LIN-CFM #.1)
-  (:CONETWIST-FLAGS-LIN-ERP #.2)
-  (:CONETWIST-FLAGS-ANG-CFM #.4))
+  (:CONETWIST-FLAGS-LIN-CFM 1)
+  (:CONETWIST-FLAGS-LIN-ERP 2)
+  (:CONETWIST-FLAGS-ANG-CFM 4))
 
 (export 'CONE-TWIST-FLAGS)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/MAKE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_makeCPlusPlusInstance__SWIG_0" CONE-TWIST-CONSTRAINT/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_makeCPlusPlusInstance__SWIG_0"
+cONE-TWIST-CONSTRAINT/MAKE-CPLUS-PLUS-INSTANCE) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -14540,7 +13423,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/DELETE-CPLUS-PLUS-INSTANCE))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_deleteCPlusPlusInstance__SWIG_0" CONE-TWIST-CONSTRAINT/DELETE-CPLUS-PLUS-INSTANCE) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_deleteCPlusPlusInstance__SWIG_0"
+cONE-TWIST-CONSTRAINT/DELETE-CPLUS-PLUS-INSTANCE) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -14550,7 +13434,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (progn 
   (declaim (inline CONE-TWIST-CONSTRAINT/MAKE-CPLUS-PLUS-INSTANCE))
 
-  (cffi:defcfun ("_wrap_btConeTwistConstraint_makeCPlusPlusInstance__SWIG_1" CONE-TWIST-CONSTRAINT/MAKE-CPLUS-PLUS-INSTANCE) :pointer
+  (cffi:defcfun ("_wrap_btConeTwistConstraint_makeCPlusPlusInstance__SWIG_1"
+cONE-TWIST-CONSTRAINT/MAKE-CPLUS-PLUS-INSTANCE) :pointer
    (self :pointer)
    (arg1 :pointer)
    (ptr :pointer))
@@ -14559,7 +13444,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
   (declaim (inline CONE-TWIST-CONSTRAINT/DELETE-CPLUS-PLUS-INSTANCE))
 
-  (cffi:defcfun ("_wrap_btConeTwistConstraint_deleteCPlusPlusInstance__SWIG_1" CONE-TWIST-CONSTRAINT/DELETE-CPLUS-PLUS-INSTANCE) :void
+  (cffi:defcfun ("_wrap_btConeTwistConstraint_deleteCPlusPlusInstance__SWIG_1"
+cONE-TWIST-CONSTRAINT/DELETE-CPLUS-PLUS-INSTANCE) :void
    (self :pointer)
    (arg1 :pointer)
    (arg2 :pointer))
@@ -14568,7 +13454,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/MAKE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_makeCPlusArray__SWIG_0" CONE-TWIST-CONSTRAINT/MAKE-CPLUS-ARRAY) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_makeCPlusArray__SWIG_0"
+cONE-TWIST-CONSTRAINT/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
   (sizeInBytes :pointer))
 
@@ -14576,7 +13463,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/DELETE-CPLUS-ARRAY))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_deleteCPlusArray__SWIG_0" CONE-TWIST-CONSTRAINT/DELETE-CPLUS-ARRAY) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_deleteCPlusArray__SWIG_0"
+cONE-TWIST-CONSTRAINT/DELETE-CPLUS-ARRAY) :void
   (self :pointer)
   (ptr :pointer))
 
@@ -14586,7 +13474,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (progn
   (declaim (inline CONE-TWIST-CONSTRAINT/MAKE-CPLUS-ARRAY))
   
-  (cffi:defcfun ("_wrap_btConeTwistConstraint_makeCPlusArray__SWIG_1" CONE-TWIST-CONSTRAINT/MAKE-CPLUS-ARRAY) :pointer
+  (cffi:defcfun ("_wrap_btConeTwistConstraint_makeCPlusArray__SWIG_1"
+cONE-TWIST-CONSTRAINT/MAKE-CPLUS-ARRAY) :pointer
     (self :pointer)
     (arg1 :pointer)
     (ptr :pointer))
@@ -14595,7 +13484,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   
   (declaim (inline CONE-TWIST-CONSTRAINT/DELETE-CPLUS-ARRAY))
 
-  (cffi:defcfun ("_wrap_btConeTwistConstraint_deleteCPlusArray__SWIG_1" CONE-TWIST-CONSTRAINT/DELETE-CPLUS-ARRAY) :void
+  (cffi:defcfun ("_wrap_btConeTwistConstraint_deleteCPlusArray__SWIG_1"
+cONE-TWIST-CONSTRAINT/DELETE-CPLUS-ARRAY) :void
    (self :pointer)
    (arg1 :pointer)
    (arg2 :pointer))
@@ -14623,14 +13513,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/BUILD-JACOBIAN))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_buildJacobian" CONE-TWIST-CONSTRAINT/BUILD-JACOBIAN) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_buildJacobian"
+cONE-TWIST-CONSTRAINT/BUILD-JACOBIAN) :void
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/BUILD-JACOBIAN)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-INFO-1))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getInfo1" CONE-TWIST-CONSTRAINT/GET-INFO-1) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getInfo1"
+cONE-TWIST-CONSTRAINT/GET-INFO-1) :void
   (self :pointer)
   (info :pointer))
 
@@ -14638,7 +13530,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-INFO-1-NON-VIRTUAL))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getInfo1NonVirtual" CONE-TWIST-CONSTRAINT/GET-INFO-1-NON-VIRTUAL) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getInfo1NonVirtual"
+cONE-TWIST-CONSTRAINT/GET-INFO-1-NON-VIRTUAL) :void
   (self :pointer)
   (info :pointer))
 
@@ -14646,7 +13539,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-INFO-2))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getInfo2" CONE-TWIST-CONSTRAINT/GET-INFO-2) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getInfo2"
+cONE-TWIST-CONSTRAINT/GET-INFO-2) :void
   (self :pointer)
   (info :pointer))
 
@@ -14654,7 +13548,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-INFO-2-NON-VIRTUAL))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getInfo2NonVirtual" CONE-TWIST-CONSTRAINT/GET-INFO-2-NON-VIRTUAL) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getInfo2NonVirtual"
+cONE-TWIST-CONSTRAINT/GET-INFO-2-NON-VIRTUAL) :void
   (self :pointer)
   (info :pointer)
   (transA :pointer)
@@ -14666,7 +13561,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SOLVE-CONSTRAINT-OBSOLETE))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_solveConstraintObsolete" CONE-TWIST-CONSTRAINT/SOLVE-CONSTRAINT-OBSOLETE) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_solveConstraintObsolete"
+cONE-TWIST-CONSTRAINT/SOLVE-CONSTRAINT-OBSOLETE) :void
   (self :pointer)
   (bodyA :pointer)
   (bodyB :pointer)
@@ -14676,7 +13572,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/UPDATE-RHS))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_updateRHS" CONE-TWIST-CONSTRAINT/UPDATE-RHS) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_updateRHS"
+cONE-TWIST-CONSTRAINT/UPDATE-RHS) :void
   (self :pointer)
   (timeStep :float))
 
@@ -14684,21 +13581,24 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-RIGID-BODY-A))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getRigidBodyA" CONE-TWIST-CONSTRAINT/GET-RIGID-BODY-A) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getRigidBodyA"
+cONE-TWIST-CONSTRAINT/GET-RIGID-BODY-A) :pointer
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-RIGID-BODY-A)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-RIGID-BODY-B))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getRigidBodyB" CONE-TWIST-CONSTRAINT/GET-RIGID-BODY-B) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getRigidBodyB"
+cONE-TWIST-CONSTRAINT/GET-RIGID-BODY-B) :pointer
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-RIGID-BODY-B)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SET-ANGULAR-ONLY))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setAngularOnly" CONE-TWIST-CONSTRAINT/SET-ANGULAR-ONLY) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_setAngularOnly"
+cONE-TWIST-CONSTRAINT/SET-ANGULAR-ONLY) :void
   (self :pointer)
   (angularOnly :pointer))
 
@@ -14708,7 +13608,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (progn 
   (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
 
-  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_0" CONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_0"
+cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
    (self :pointer)
    (limitIndex :int)
    (limitValue :float))
@@ -14717,7 +13618,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
   (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
 
-  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_1" CONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_1"
+cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
    (self :pointer)
    (_swingSpan1 :float)
    (_swingSpan2 :float)
@@ -14730,7 +13632,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
   (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
 
-  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_2" CONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_2"
+cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
    (self :pointer)
    (_swingSpan1 :float)
    (_swingSpan2 :float)
@@ -14742,7 +13645,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
   (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
 
-  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_3" CONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_3"
+cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
    (self :pointer)
    (_swingSpan1 :float)
    (_swingSpan2 :float)
@@ -14753,7 +13657,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
   (declaim (inline CONE-TWIST-CONSTRAINT/SET-LIMIT))
 
-  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_4" CONE-TWIST-CONSTRAINT/SET-LIMIT) :void
+  (cffi:defcfun ("_wrap_btConeTwistConstraint_setLimit__SWIG_4"
+cONE-TWIST-CONSTRAINT/SET-LIMIT) :void
    (self :pointer)
    (_swingSpan1 :float)
    (_swingSpan2 :float)
@@ -14763,49 +13668,56 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
  )
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-AFRAME))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getAFrame" CONE-TWIST-CONSTRAINT/GET-AFRAME) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getAFrame"
+cONE-TWIST-CONSTRAINT/GET-AFRAME) :pointer
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-AFRAME)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-BFRAME))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getBFrame" CONE-TWIST-CONSTRAINT/GET-BFRAME) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getBFrame"
+cONE-TWIST-CONSTRAINT/GET-BFRAME) :pointer
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-BFRAME)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-SOLVE-TWIST-LIMIT))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getSolveTwistLimit" CONE-TWIST-CONSTRAINT/GET-SOLVE-TWIST-LIMIT) :int
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getSolveTwistLimit"
+cONE-TWIST-CONSTRAINT/GET-SOLVE-TWIST-LIMIT) :int
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-SOLVE-TWIST-LIMIT)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-SOLVE-SWING-LIMIT))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getSolveSwingLimit" CONE-TWIST-CONSTRAINT/GET-SOLVE-SWING-LIMIT) :int
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getSolveSwingLimit"
+cONE-TWIST-CONSTRAINT/GET-SOLVE-SWING-LIMIT) :int
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-SOLVE-SWING-LIMIT)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-TWIST-LIMIT-SIGN))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getTwistLimitSign" CONE-TWIST-CONSTRAINT/GET-TWIST-LIMIT-SIGN) :float
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getTwistLimitSign"
+cONE-TWIST-CONSTRAINT/GET-TWIST-LIMIT-SIGN) :float
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-TWIST-LIMIT-SIGN)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/CALC-ANGLE-INFO))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_calcAngleInfo" CONE-TWIST-CONSTRAINT/CALC-ANGLE-INFO) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_calcAngleInfo"
+cONE-TWIST-CONSTRAINT/CALC-ANGLE-INFO) :void
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/CALC-ANGLE-INFO)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/CALC-ANGLE-INFO-2))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_calcAngleInfo2" CONE-TWIST-CONSTRAINT/CALC-ANGLE-INFO-2) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_calcAngleInfo2"
+cONE-TWIST-CONSTRAINT/CALC-ANGLE-INFO-2) :void
   (self :pointer)
   (transA :pointer)
   (transB :pointer)
@@ -14816,42 +13728,48 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-SWING-SPAN-1))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getSwingSpan1" CONE-TWIST-CONSTRAINT/GET-SWING-SPAN-1) :float
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getSwingSpan1"
+cONE-TWIST-CONSTRAINT/GET-SWING-SPAN-1) :float
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-SWING-SPAN-1)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-SWING-SPAN-2))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getSwingSpan2" CONE-TWIST-CONSTRAINT/GET-SWING-SPAN-2) :float
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getSwingSpan2"
+cONE-TWIST-CONSTRAINT/GET-SWING-SPAN-2) :float
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-SWING-SPAN-2)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-TWIST-SPAN))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getTwistSpan" CONE-TWIST-CONSTRAINT/GET-TWIST-SPAN) :float
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getTwistSpan"
+cONE-TWIST-CONSTRAINT/GET-TWIST-SPAN) :float
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-TWIST-SPAN)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-TWIST-ANGLE))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getTwistAngle" CONE-TWIST-CONSTRAINT/GET-TWIST-ANGLE) :float
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getTwistAngle"
+cONE-TWIST-CONSTRAINT/GET-TWIST-ANGLE) :float
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-TWIST-ANGLE)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/IS-PAST-SWING-LIMIT))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_isPastSwingLimit" CONE-TWIST-CONSTRAINT/IS-PAST-SWING-LIMIT) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_isPastSwingLimit"
+cONE-TWIST-CONSTRAINT/IS-PAST-SWING-LIMIT) :pointer
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/IS-PAST-SWING-LIMIT)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SET-DAMPING))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setDamping" CONE-TWIST-CONSTRAINT/SET-DAMPING) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_setDamping"
+cONE-TWIST-CONSTRAINT/SET-DAMPING) :void
   (self :pointer)
   (damping :float))
 
@@ -14859,7 +13777,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/ENABLE-MOTOR))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_enableMotor" CONE-TWIST-CONSTRAINT/ENABLE-MOTOR) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_enableMotor"
+cONE-TWIST-CONSTRAINT/ENABLE-MOTOR) :void
   (self :pointer)
   (b :pointer))
 
@@ -14867,7 +13786,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SET-MAX-MOTOR-IMPULSE))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setMaxMotorImpulse" CONE-TWIST-CONSTRAINT/SET-MAX-MOTOR-IMPULSE) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_setMaxMotorImpulse"
+cONE-TWIST-CONSTRAINT/SET-MAX-MOTOR-IMPULSE) :void
   (self :pointer)
   (maxMotorImpulse :float))
 
@@ -14875,7 +13795,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SET-MAX-MOTOR-IMPULSE-NORMALIZED))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setMaxMotorImpulseNormalized" CONE-TWIST-CONSTRAINT/SET-MAX-MOTOR-IMPULSE-NORMALIZED) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_setMaxMotorImpulseNormalized"
+cONE-TWIST-CONSTRAINT/SET-MAX-MOTOR-IMPULSE-NORMALIZED) :void
   (self :pointer)
   (maxMotorImpulse :float))
 
@@ -14883,14 +13804,16 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-FIX-THRESH))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getFixThresh" CONE-TWIST-CONSTRAINT/GET-FIX-THRESH) :float
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getFixThresh"
+cONE-TWIST-CONSTRAINT/GET-FIX-THRESH) :float
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-FIX-THRESH)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SET-FIX-THRESH))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setFixThresh" CONE-TWIST-CONSTRAINT/SET-FIX-THRESH) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_setFixThresh"
+cONE-TWIST-CONSTRAINT/SET-FIX-THRESH) :void
   (self :pointer)
   (fixThresh :float))
 
@@ -14898,7 +13821,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SET-MOTOR-TARGET))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setMotorTarget" CONE-TWIST-CONSTRAINT/SET-MOTOR-TARGET) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_setMotorTarget"
+cONE-TWIST-CONSTRAINT/SET-MOTOR-TARGET) :void
   (self :pointer)
   (q :pointer))
 
@@ -14906,7 +13830,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SET-MOTOR-TARGET-IN-CONSTRAINT-SPACE))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setMotorTargetInConstraintSpace" CONE-TWIST-CONSTRAINT/SET-MOTOR-TARGET-IN-CONSTRAINT-SPACE) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_setMotorTargetInConstraintSpace"
+cONE-TWIST-CONSTRAINT/SET-MOTOR-TARGET-IN-CONSTRAINT-SPACE) :void
   (self :pointer)
   (q :pointer))
 
@@ -14914,7 +13839,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-POINT-FOR-ANGLE))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_GetPointForAngle" CONE-TWIST-CONSTRAINT/GET-POINT-FOR-ANGLE) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_GetPointForAngle"
+cONE-TWIST-CONSTRAINT/GET-POINT-FOR-ANGLE) :pointer
   (self :pointer)
   (fAngleInRadians :float)
   (fLength :float))
@@ -14923,7 +13849,8 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SET-FRAMES))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_setFrames" CONE-TWIST-CONSTRAINT/SET-FRAMES) :void
+(cffi:defcfun ("_wrap_btConeTwistConstraint_setFrames"
+cONE-TWIST-CONSTRAINT/SET-FRAMES) :void
   (self :pointer)
   (frameA :pointer)
   (frameB :pointer))
@@ -14932,28 +13859,32 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-A))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getFrameOffsetA" CONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-A) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getFrameOffsetA"
+cONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-A) :pointer
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-A)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-B))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_getFrameOffsetB" CONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-B) :pointer
+(cffi:defcfun ("_wrap_btConeTwistConstraint_getFrameOffsetB"
+cONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-B) :pointer
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/GET-FRAME-OFFSET-B)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/CALCULATE-SERIALIZE-BUFFER-SIZE))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_calculateSerializeBufferSize" CONE-TWIST-CONSTRAINT/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
+(cffi:defcfun ("_wrap_btConeTwistConstraint_calculateSerializeBufferSize"
+cONE-TWIST-CONSTRAINT/CALCULATE-SERIALIZE-BUFFER-SIZE) :int
   (self :pointer))
 
 (export 'CONE-TWIST-CONSTRAINT/CALCULATE-SERIALIZE-BUFFER-SIZE)
 
 (declaim (inline CONE-TWIST-CONSTRAINT/SERIALIZE))
 
-(cffi:defcfun ("_wrap_btConeTwistConstraint_serialize" CONE-TWIST-CONSTRAINT/SERIALIZE) :string
+(cffi:defcfun ("_wrap_btConeTwistConstraint_serialize"
+               cONE-TWIST-CONSTRAINT/SERIALIZE) :string
   (self :pointer)
   (dataBuffer :pointer)
   (serializer :pointer))
@@ -15368,7 +14299,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline TRANSLATIONAL-LIMIT-MOTOR/M/UPPER-LIMIT/GET))
 
-(cffi:defcfun ("_wrap_btTranslationalLimitMotor_m_upperLimit_get" (lispify "btTranslationalLimitMotor_m_upperLimit_get" 'function)) :pointer
+(cffi:defcfun ("_wrap_btTranslationalLimitMotor_m_upperLimit_get" TRANSLATIONAL-LIMIT-MOTOR/M/UPPER-LIMIT/GET) :pointer
   (self :pointer))
 
 (export 'TRANSLATIONAL-LIMIT-MOTOR/M/UPPER-LIMIT/GET)
@@ -15629,12 +14560,12 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (cffi:defcfun ("_wrap_delete_btTranslationalLimitMotor" DELETE/BT-TRANSLATIONAL-LIMIT-MOTOR) :void
   (self :pointer))
 
-(export '(lispify "delete_btTranslationalLimitMotor" 'function))
+(export 'DELETE/BT-TRANSLATIONAL-LIMIT-MOTOR)
 
 (cffi:defcenum 6-DOF-FLAGS
-  (:6-DOF-FLAGS-CFM-NORM #.1)
-  (:6-DOF-FLAGS-CFM-STOP #.2)
-  (:6-DOF-FLAGS-ERP-STOP #.4))
+  (:6-DOF-FLAGS-CFM-NORM 1)
+  (:6-DOF-FLAGS-CFM-STOP 2)
+  (:6-DOF-FLAGS-ERP-STOP 4))
 
 (export '6-DOF-FLAGS)
 
@@ -15678,7 +14609,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
   (export 'GENERIC-6-DOF-CONSTRAINT/DELETE-CPLUS-PLUS-INSTANCE))
 
-(declaim (inline (lispify "btGeneric6DofConstraint_makeCPlusArray" 'function)))
+(declaim (inline GENERIC-6-DOF-CONSTRAINT/MAKE-CPLUS-ARRAY))
 
 (cffi:defcfun ("_wrap_btGeneric6DofConstraint_makeCPlusArray__SWIG_0" GENERIC-6-DOF-CONSTRAINT/MAKE-CPLUS-ARRAY) :pointer
   (self :pointer)
@@ -15844,7 +14775,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
   (angVelA :pointer)
   (angVelB :pointer))
 
-(export '(lispify "btGeneric6DofConstraint_getInfo2NonVirtual" 'function))
+(export 'GENERIC-6-DOF-CONSTRAINT/GET-INFO-2-NON-VIRTUAL)
 
 (declaim (inline GENERIC-6-DOF-CONSTRAINT/UPDATE-RHS))
 
@@ -15897,7 +14828,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (declaim (inline GENERIC-6-DOF-CONSTRAINT/SET-LINEAR-LOWER-LIMIT))
 
-(cffi:defcfun ("_wrap_btGeneric6DofConstraint_setLinearLowerLimit" (lispify "btGeneric6DofConstraint_setLinearLowerLimit" 'function)) :void
+(cffi:defcfun ("_wrap_btGeneric6DofConstraint_setLinearLowerLimit" GENERIC-6-DOF-CONSTRAINT/SET-LINEAR-LOWER-LIMIT) :void
   (self :pointer)
   (linearLower :pointer))
 
@@ -15951,7 +14882,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export 'GENERIC-6-DOF-CONSTRAINT/SET-ANGULAR-UPPER-LIMIT)
 
-(declaim (inline (lispify "btGeneric6DofConstraint_getAngularUpperLimit" 'function)))
+(declaim (inline GENERIC-6-DOF-CONSTRAINT/GET-ANGULAR-UPPER-LIMIT))
 
 (cffi:defcfun ("_wrap_btGeneric6DofConstraint_getAngularUpperLimit" GENERIC-6-DOF-CONSTRAINT/GET-ANGULAR-UPPER-LIMIT) :void
   (self :pointer)
@@ -16011,7 +14942,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 (export 'GENERIC-6-DOF-CONSTRAINT/GET/LIMIT/MOTOR/INFO-2)
 
-(declaim (inline (lispify "btGeneric6DofConstraint_get_limit_motor_info2" 'function)))
+(declaim (inline GENERIC-6-DOF-CONSTRAINT/GET/LIMIT/MOTOR/INFO-2))
 
 (cffi:defcfun ("_wrap_btGeneric6DofConstraint_get_limit_motor_info2__SWIG_1"
                GENERIC-6-DOF-CONSTRAINT/GET-LIMIT-MOTOR-INFO-2*) :int
@@ -16665,7 +15596,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export 'USE-LINEAR-REFERENCE-FRAME-A)
 (export 'USE-OFFSET-FOR-CONSTRAINT-FRAME)
 (cffi:defcstruct SLIDER-CONSTRAINT-DOUBLE-DATA
-  (TYPE-CONSTRAINT-DATA (:pointer (:struct #. (lispify "btTypedConstraintDoubleData" 'classname))))
+  (TYPE-CONSTRAINT-DATA (:pointer (:struct TYPED-CONSTRAINT-DOUBLE-DATA)))
   (RB-AFRAME (:pointer (:struct transform-double-data)))
   (RB-BFRAME (:pointer (:struct transform-double-data)))
   (LINEAR-UPPER-LIMIT :double)
@@ -16817,7 +15748,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (export 'SPRING-DAMPING)
 (cffi:defcstruct GENERIC-6-DOF-SPRING-CONSTRAINT-DOUBLE-DATA-2
   (6DOF-DATA
-                    (:pointer (:struct #. (lispify "btGeneric6DofConstraintDoubleData2" 'classname))))
+   (:pointer (:struct GENERIC-6-DOF-CONSTRAINT-DOUBLE-DATA-2)))
   (SPRING-ENABLED :pointer)
   (EQUILIBRIUM-POINT :pointer)
   (SPRING-STIFFNESS :pointer)
@@ -17279,7 +16210,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod BULLET//= ((self VECTOR-3) s)
   (VECTOR-3/DIVIDE-AND-ASSIGN (ff-pointer self) s))
 
-(defmethod DOT ((self VECTOR-3) (v VECTOR-3))
+(defmethod DOT* ((self VECTOR-3) (v VECTOR-3))
   (VECTOR-3/DOT (ff-pointer self) (ff-pointer v)))
 
 (defmethod LENGTH-2 ((self VECTOR-3))
@@ -17492,23 +16423,23 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod (SETF EULER-ZYX) ((self QUATERNION) yaw pitch roll)
   (QUATERNION/SET-EULER-ZYX (ff-pointer self) yaw pitch roll))
 
-(shadow "+=")
+
 (defmethod += ((self QUATERNION) (q QUATERNION))
   (QUATERNION/INCREMENT (ff-pointer self) (ff-pointer q)))
 
-(shadow "-=")
+
 (defmethod -= ((self QUATERNION) (q QUATERNION))
   (QUATERNION/DECREMENT (ff-pointer self) (ff-pointer q)))
 
-(shadow "*=")
+
 (defmethod *= ((self QUATERNION) s)
   (QUATERNION/MULTIPLY-AND-ASSIGN (ff-pointer self) s))
 
-(shadow "*=")
+
 (defmethod *= ((self QUATERNION) (q QUATERNION))
   (QUATERNION/MULTIPLY-AND-ASSIGN (ff-pointer self) (ff-pointer q)))
 
-(defmethod DOT ((self QUATERNION) (q QUATERNION))
+(defmethod DOT* ((self QUATERNION) (q QUATERNION))
   (QUATERNION/DOT (ff-pointer self) (ff-pointer q)))
 
 (defmethod LENGTH-2 ((self QUATERNION))
@@ -17520,16 +16451,13 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod NORMALIZE ((self QUATERNION))
   (QUATERNION/NORMALIZE (ff-pointer self)))
 
-(shadow "*")
 (defmethod BULLET/* ((self QUATERNION) s)
   (QUATERNION/MULTIPLY (ff-pointer self) s))
 
-(shadow "/")
-(defmethod BULLET// ((self QUATERNION) s)
+(defmethod BULLET/divide ((self QUATERNION) s)
   (QUATERNION/DIVIDE (ff-pointer self) s))
 
-(shadow "/=")
-(defmethod BULLET//= ((self QUATERNION) s)
+(defmethod BULLET/divide-and-set ((self QUATERNION) s)
   (QUATERNION/DIVIDE-AND-ASSIGN (ff-pointer self) s))
 
 (defmethod NORMALIZED ((self QUATERNION))
@@ -17559,11 +16487,9 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod BULLET/+ ((self QUATERNION) (q2 QUATERNION))
   (QUATERNION/ADD (ff-pointer self) (ff-pointer q2)))
 
-(shadow "-")
 (defmethod BULLET/- ((self QUATERNION) (q2 QUATERNION))
   (QUATERNION/SUBTRACT (ff-pointer self) (ff-pointer q2)))
 
-(shadow "-")
 (defmethod BULLET/- ((self QUATERNION))
   (QUATERNION///NEG// (ff-pointer self)))
 
@@ -17581,134 +16507,136 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 
 
 
-(defmethod initialize-instance :after ((obj MATRIX-3X-3) &key)
-  (setf (slot-value obj 'ff-pointer) (MAKE-MATRIX-3X-3)))
+(defmethod initialize-instance :after ((obj MATRIX-3X3) &key)
+  (setf (slot-value obj 'ff-pointer) (MAKE-MATRIX-3X3)))
 
-(defmethod initialize-instance :after ((obj MATRIX-3X-3) &key (q QUATERNION))
-  (setf (slot-value obj 'ff-pointer) (MAKE-MATRIX-3X-3 q)))
+(defmethod initialize-instance :after ((obj MATRIX-3X3) &key (q QUATERNION))
+  (setf (slot-value obj 'ff-pointer) (MAKE-MATRIX-3X3 q)))
 
-(defmethod initialize-instance :after ((obj MATRIX-3X-3) &key xx xy xz yx yy yz zx zy zz)
-  (setf (slot-value obj 'ff-pointer) (MAKE-MATRIX-3X-3 xx xy xz yx yy yz zx zy zz)))
+(defmethod initialize-instance :after ((obj MATRIX-3X3) 
+                                       &key xx xy xz yx yy yz zx zy zz)
+  (setf (slot-value obj 'ff-pointer) (MAKE-MATRIX-3X3
+                                      xx xy xz yx yy yz zx zy zz)))
 
-(defmethod initialize-instance :after ((obj MATRIX-3X-3) &key (other MATRIX-3X-3))
-  (setf (slot-value obj 'ff-pointer) (MAKE-MATRIX-3X-3 (ff-pointer other))))
+(defmethod initialize-instance :after ((obj MATRIX-3X3) &key (other MATRIX-3X3))
+  (setf (slot-value obj 'ff-pointer) (MAKE-MATRIX-3X3 (ff-pointer other))))
 
 (shadow "=")
-(defmethod BULLET/= ((self MATRIX-3X-3) (other MATRIX-3X-3))
-  (MATRIX-3X-3/ASSIGN-VALUE (ff-pointer self) (ff-pointer other)))
+(defmethod BULLET/= ((self MATRIX-3X3) (other MATRIX-3X3))
+  (MATRIX-3X3/ASSIGN-VALUE (ff-pointer self) (ff-pointer other)))
 
-(defmethod COLUMN ((self MATRIX-3X-3) (i integer))
-  (MATRIX-3X-3/GET-COLUMN (ff-pointer self) i))
+(defmethod COLUMN ((self MATRIX-3X3) (i integer))
+  (MATRIX-3X3/GET-COLUMN (ff-pointer self) i))
 
-(defmethod ROW ((self MATRIX-3X-3) (i integer))
-  (MATRIX-3X-3/GET-ROW (ff-pointer self) i))
-
-(shadow "[]")
-(defmethod [] ((self MATRIX-3X-3) (i integer))
-  (MATRIX-3X-3///AREF// (ff-pointer self) i))
+(defmethod ROW ((self MATRIX-3X3) (i integer))
+  (MATRIX-3X3/GET-ROW (ff-pointer self) i))
 
 (shadow "[]")
-(defmethod [] ((self MATRIX-3X-3) (i integer))
-  (MATRIX-3X-3///AREF// (ff-pointer self) i))
+(defmethod [] ((self MATRIX-3X3) (i integer))
+  (MATRIX-3X3///AREF// (ff-pointer self) i))
+
+(shadow "[]")
+(defmethod [] ((self MATRIX-3X3) (i integer))
+  (MATRIX-3X3///AREF// (ff-pointer self) i))
 
 (shadow "*=")
-(defmethod *= ((self MATRIX-3X-3) (m MATRIX-3X-3))
-  (MATRIX-3X-3/MULTIPLY-AND-ASSIGN (ff-pointer self) (ff-pointer m)))
+(defmethod *= ((self MATRIX-3X3) (m MATRIX-3X3))
+  (MATRIX-3X3/MULTIPLY-AND-ASSIGN (ff-pointer self) (ff-pointer m)))
 
 (shadow "+=")
-(defmethod += ((self MATRIX-3X-3) (m MATRIX-3X-3))
-  (MATRIX-3X-3/INCREMENT (ff-pointer self) (ff-pointer m)))
+(defmethod += ((self MATRIX-3X3) (m MATRIX-3X3))
+  (MATRIX-3X3/INCREMENT (ff-pointer self) (ff-pointer m)))
 
 (shadow "-=")
-(defmethod -= ((self MATRIX-3X-3) (m MATRIX-3X-3))
-  (MATRIX-3X-3/DECREMENT (ff-pointer self) (ff-pointer m)))
+(defmethod -= ((self MATRIX-3X3) (m MATRIX-3X3))
+  (MATRIX-3X3/DECREMENT (ff-pointer self) (ff-pointer m)))
 
-(defmethod (SETF FROM-OPEN-GLSUB-MATRIX) ((self MATRIX-3X-3) m)
-  (MATRIX-3X-3/SET-FROM-OPEN-GLSUB-MATRIX (ff-pointer self) m))
+(defmethod (SETF FROM-OPEN-GLSUB-MATRIX) ((self MATRIX-3X3) m)
+  (MATRIX-3X3/SET-FROM-OPEN-GLSUB-MATRIX (ff-pointer self) m))
 
-(defmethod (SETF VALUE) ((self MATRIX-3X-3) xx xy xz yx yy yz zx zy zz)
-  (MATRIX-3X-3/SET-VALUE (ff-pointer self) xx xy xz yx yy yz zx zy zz))
+(defmethod (SETF VALUE) ((self MATRIX-3X3) xx xy xz yx yy yz zx zy zz)
+  (MATRIX-3X3/SET-VALUE (ff-pointer self) xx xy xz yx yy yz zx zy zz))
 
-(defmethod (SETF ROTATION) ((self MATRIX-3X-3) (q QUATERNION))
-  (MATRIX-3X-3/SET-ROTATION (ff-pointer self) q))
+(defmethod (SETF ROTATION) ((self MATRIX-3X3) (q QUATERNION))
+  (MATRIX-3X3/SET-ROTATION (ff-pointer self) q))
 
-(defmethod (SETF EULER-YPR) ((self MATRIX-3X-3) yaw pitch roll)
-  (MATRIX-3X-3/SET-EULER-YPR (ff-pointer self) yaw pitch roll))
+(defmethod (SETF EULER-YPR) ((self MATRIX-3X3) yaw pitch roll)
+  (MATRIX-3X3/SET-EULER-YPR (ff-pointer self) yaw pitch roll))
 
-(defmethod (SETF EULER-ZYX) ((self MATRIX-3X-3) (eulerX number) (eulerY number) (eulerZ number))
-  (MATRIX-3X-3/SET-EULER-ZYX (ff-pointer self) eulerX eulerY eulerZ))
+(defmethod (SETF EULER-ZYX) ((self MATRIX-3X3) (eulerX number) (eulerY number) (eulerZ number))
+  (MATRIX-3X3/SET-EULER-ZYX (ff-pointer self) eulerX eulerY eulerZ))
 
-(defmethod (SETF BULLET/IDENTITY) ((self MATRIX-3X-3))
-  (MATRIX-3X-3/SET-IDENTITY (ff-pointer self)))
+(defmethod (SETF BULLET/IDENTITY) ((self MATRIX-3X3))
+  (MATRIX-3X3/SET-IDENTITY (ff-pointer self)))
 
-(defmethod OPEN-GLSUB-MATRIX ((self MATRIX-3X-3) m)
-  (MATRIX-3X-3/GET-OPEN-GLSUB-MATRIX (ff-pointer self) m))
+(defmethod OPEN-GLSUB-MATRIX ((self MATRIX-3X3) m)
+  (MATRIX-3X3/GET-OPEN-GLSUB-MATRIX (ff-pointer self) m))
 
-(defmethod ROTATION ((self MATRIX-3X-3) (q QUATERNION))
-  (MATRIX-3X-3/GET-ROTATION (ff-pointer self) q))
+(defmethod ROTATION ((self MATRIX-3X3) (q QUATERNION))
+  (MATRIX-3X3/GET-ROTATION (ff-pointer self) q))
 
-(defmethod EULER-YPR ((self MATRIX-3X-3) yaw pitch roll)
-  (MATRIX-3X-3/GET-EULER-YPR (ff-pointer self) yaw pitch roll))
+(defmethod EULER-YPR ((self MATRIX-3X3) yaw pitch roll)
+  (MATRIX-3X3/GET-EULER-YPR (ff-pointer self) yaw pitch roll))
 
-(defmethod EULER-ZYX ((self MATRIX-3X-3) yaw pitch roll (solution_number integer))
-  (MATRIX-3X-3/GET-EULER-ZYX (ff-pointer self) yaw pitch roll solution_number))
+(defmethod EULER-ZYX ((self MATRIX-3X3) yaw pitch roll (solution_number integer))
+  (MATRIX-3X3/GET-EULER-ZYX (ff-pointer self) yaw pitch roll solution_number))
 
-(defmethod EULER-ZYX ((self MATRIX-3X-3) yaw pitch roll)
-  (MATRIX-3X-3/GET-EULER-ZYX (ff-pointer self) yaw pitch roll))
+(defmethod EULER-ZYX ((self MATRIX-3X3) yaw pitch roll)
+  (MATRIX-3X3/GET-EULER-ZYX (ff-pointer self) yaw pitch roll))
 
-(defmethod SCALED ((self MATRIX-3X-3) (s VECTOR-3))
-  (MATRIX-3X-3/SCALED (ff-pointer self) s))
+(defmethod SCALED ((self MATRIX-3X3) (s VECTOR-3))
+  (MATRIX-3X3/SCALED (ff-pointer self) s))
 
-(defmethod DETERMINANT ((self MATRIX-3X-3))
-  (MATRIX-3X-3/DETERMINANT (ff-pointer self)))
+(defmethod DETERMINANT ((self MATRIX-3X3))
+  (MATRIX-3X3/DETERMINANT (ff-pointer self)))
 
-(defmethod ADJOINT ((self MATRIX-3X-3))
-  (MATRIX-3X-3/ADJOINT (ff-pointer self)))
+(defmethod ADJOINT ((self MATRIX-3X3))
+  (MATRIX-3X3/ADJOINT (ff-pointer self)))
 
-(defmethod ABSOLUTE ((self MATRIX-3X-3))
-  (MATRIX-3X-3/ABSOLUTE (ff-pointer self)))
+(defmethod ABSOLUTE ((self MATRIX-3X3))
+  (MATRIX-3X3/ABSOLUTE (ff-pointer self)))
 
-(defmethod TRANSPOSE ((self MATRIX-3X-3))
-  (MATRIX-3X-3/TRANSPOSE (ff-pointer self)))
+(defmethod TRANSPOSE ((self MATRIX-3X3))
+  (MATRIX-3X3/TRANSPOSE (ff-pointer self)))
 
-(defmethod INVERSE ((self MATRIX-3X-3))
-  (MATRIX-3X-3/INVERSE (ff-pointer self)))
+(defmethod INVERSE ((self MATRIX-3X3))
+  (MATRIX-3X3/INVERSE (ff-pointer self)))
 
-(defmethod TRANSPOSE-TIMES ((self MATRIX-3X-3) (m MATRIX-3X-3))
-  (MATRIX-3X-3/TRANSPOSE-TIMES (ff-pointer self) (ff-pointer m)))
+(defmethod TRANSPOSE-TIMES ((self MATRIX-3X3) (m MATRIX-3X3))
+  (MATRIX-3X3/TRANSPOSE-TIMES (ff-pointer self) (ff-pointer m)))
 
-(defmethod TIMES-TRANSPOSE ((self MATRIX-3X-3) (m MATRIX-3X-3))
-  (MATRIX-3X-3/TIMES-TRANSPOSE (ff-pointer self) (ff-pointer m)))
+(defmethod TIMES-TRANSPOSE ((self MATRIX-3X3) (m MATRIX-3X3))
+  (MATRIX-3X3/TIMES-TRANSPOSE (ff-pointer self) (ff-pointer m)))
 
-(defmethod TDOTX ((self MATRIX-3X-3) (v VECTOR-3))
-  (MATRIX-3X-3/TDOTX (ff-pointer self) v))
+(defmethod TDOTX ((self MATRIX-3X3) (v VECTOR-3))
+  (MATRIX-3X3/TDOTX (ff-pointer self) v))
 
-(defmethod TDOTY ((self MATRIX-3X-3) (v VECTOR-3))
-  (MATRIX-3X-3/TDOTY (ff-pointer self) v))
+(defmethod TDOTY ((self MATRIX-3X3) (v VECTOR-3))
+  (MATRIX-3X3/TDOTY (ff-pointer self) v))
 
-(defmethod TDOTZ ((self MATRIX-3X-3) (v VECTOR-3))
-  (MATRIX-3X-3/TDOTZ (ff-pointer self) v))
+(defmethod TDOTZ ((self MATRIX-3X3) (v VECTOR-3))
+  (MATRIX-3X3/TDOTZ (ff-pointer self) v))
 
-(defmethod DIAGONALIZE ((self MATRIX-3X-3) (rot MATRIX-3X-3) (threshold number) (maxSteps integer))
-  (MATRIX-3X-3/DIAGONALIZE (ff-pointer self) (ff-pointer rot) threshold maxSteps))
+(defmethod DIAGONALIZE ((self MATRIX-3X3) (rot MATRIX-3X3) (threshold number) (maxSteps integer))
+  (MATRIX-3X3/DIAGONALIZE (ff-pointer self) (ff-pointer rot) threshold maxSteps))
 
-(defmethod COFAC ((self MATRIX-3X-3) (r1 integer) (c1 integer) (r2 integer) (c2 integer))
-  (MATRIX-3X-3/COFAC (ff-pointer self) r1 c1 r2 c2))
+(defmethod COFAC ((self MATRIX-3X3) (r1 integer) (c1 integer) (r2 integer) (c2 integer))
+  (MATRIX-3X3/COFAC (ff-pointer self) r1 c1 r2 c2))
 
-(defmethod SERIALIZE ((self MATRIX-3X-3) dataOut)
-  (MATRIX-3X-3/SERIALIZE (ff-pointer self) dataOut))
+(defmethod SERIALIZE ((self MATRIX-3X3) dataOut)
+  (MATRIX-3X3/SERIALIZE (ff-pointer self) dataOut))
 
-(defmethod SERIALIZE-FLOAT ((self MATRIX-3X-3) dataOut)
-  (MATRIX-3X-3/SERIALIZE-FLOAT (ff-pointer self) dataOut))
+(defmethod SERIALIZE-FLOAT ((self MATRIX-3X3) dataOut)
+  (MATRIX-3X3/SERIALIZE-FLOAT (ff-pointer self) dataOut))
 
-(defmethod DE-SERIALIZE ((self MATRIX-3X-3) dataIn)
-  (MATRIX-3X-3/DE-SERIALIZE (ff-pointer self) dataIn))
+(defmethod DE-SERIALIZE ((self MATRIX-3X3) dataIn)
+  (MATRIX-3X3/DE-SERIALIZE (ff-pointer self) dataIn))
 
-(defmethod DE-SERIALIZE-FLOAT ((self MATRIX-3X-3) dataIn)
-  (MATRIX-3X-3/DE-SERIALIZE-FLOAT (ff-pointer self) dataIn))
+(defmethod DE-SERIALIZE-FLOAT ((self MATRIX-3X3) dataIn)
+  (MATRIX-3X3/DE-SERIALIZE-FLOAT (ff-pointer self) dataIn))
 
-(defmethod DE-SERIALIZE-DOUBLE ((self MATRIX-3X-3) dataIn)
-  (MATRIX-3X-3/DE-SERIALIZE-DOUBLE (ff-pointer self) dataIn))
+(defmethod DE-SERIALIZE-DOUBLE ((self MATRIX-3X3) dataIn)
+  (MATRIX-3X3/DE-SERIALIZE-DOUBLE (ff-pointer self) dataIn))
 
 
 
@@ -17721,10 +16649,10 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod initialize-instance :after ((obj TRANSFORM) &key (q QUATERNION))
   (setf (slot-value obj 'ff-pointer) (MAKE-TRANSFORM q)))
 
-(defmethod initialize-instance :after ((obj TRANSFORM) &key (b MATRIX-3X-3) (c VECTOR-3))
+(defmethod initialize-instance :after ((obj TRANSFORM) &key (b MATRIX-3X3) (c VECTOR-3))
   (setf (slot-value obj 'ff-pointer) (MAKE-TRANSFORM b c)))
 
-(defmethod initialize-instance :after ((obj TRANSFORM) &key (b MATRIX-3X-3))
+(defmethod initialize-instance :after ((obj TRANSFORM) &key (b MATRIX-3X3))
   (setf (slot-value obj 'ff-pointer) (MAKE-TRANSFORM b)))
 
 (defmethod initialize-instance :after ((obj TRANSFORM) &key (other TRANSFORM))
@@ -17776,7 +16704,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod INV-XFORM ((self TRANSFORM) (inVec VECTOR-3))
   (TRANSFORM/INV-XFORM (ff-pointer self) inVec))
 
-(defmethod (SETF BASIS) ((self TRANSFORM) (basis MATRIX-3X-3))
+(defmethod (SETF BASIS) ((self TRANSFORM) (basis MATRIX-3X3))
   (TRANSFORM/SET-BASIS (ff-pointer self) basis))
 
 (defmethod (SETF ROTATION) ((self TRANSFORM) (q QUATERNION))
@@ -20108,7 +19036,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod (SETF LATENCY-MOTION-STATE-INTERPOLATION) ((self DISCRETE-DYNAMICS-WORLD) (latencyInterpolation t))
   (DISCRETE-DYNAMICS-WORLD/SET-LATENCY-MOTION-STATE-INTERPOLATION (ff-pointer self) latencyInterpolation))
 
-(defmethod LATENCY-MOTION-STATE-INTERPOLATION ((self (lispify "bt-discrete-dynamics-world" 'classname)))
+(defmethod LATENCY-MOTION-STATE-INTERPOLATION ((self DISCRETE-DYNAMICS-WORLD))
   (BULLET>  (ff-pointer self)))
 
 
@@ -20909,7 +19837,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod INFO-2 ((self CONE-TWIST-CONSTRAINT) info)
   (CONE-TWIST-CONSTRAINT/GET-INFO-2 (ff-pointer self) info))
 
-(defmethod INFO-2-NON-VIRTUAL ((self CONE-TWIST-CONSTRAINT) info (transA TRANSFORM) (transB TRANSFORM) (invInertiaWorldA MATRIX-3X-3) (invInertiaWorldB MATRIX-3X-3))
+(defmethod INFO-2-NON-VIRTUAL ((self CONE-TWIST-CONSTRAINT) info (transA TRANSFORM) (transB TRANSFORM) (invInertiaWorldA MATRIX-3X3) (invInertiaWorldB MATRIX-3X3))
   (CONE-TWIST-CONSTRAINT/GET-INFO-2-NON-VIRTUAL (ff-pointer self) info transA transB invInertiaWorldA invInertiaWorldB))
 
 (defmethod SOLVE-CONSTRAINT-OBSOLETE ((self CONE-TWIST-CONSTRAINT) bodyA bodyB (timeStep number))
@@ -20960,7 +19888,7 @@ DISCRETE-DYNAMICS-WORLD/GET-WORLD-TYPE(declaim (inline ))
 (defmethod CALC-ANGLE-INFO ((self CONE-TWIST-CONSTRAINT))
   (CONE-TWIST-CONSTRAINT/CALC-ANGLE-INFO (ff-pointer self)))
 
-(defmethod CALC-ANGLE-INFO-2 ((self CONE-TWIST-CONSTRAINT) (transA TRANSFORM) (transB TRANSFORM) (invInertiaWorldA MATRIX-3X-3) (invInertiaWorldB MATRIX-3X-3))
+(defmethod CALC-ANGLE-INFO-2 ((self CONE-TWIST-CONSTRAINT) (transA TRANSFORM) (transB TRANSFORM) (invInertiaWorldA MATRIX-3X3) (invInertiaWorldB MATRIX-3X3))
   (CONE-TWIST-CONSTRAINT/CALC-ANGLE-INFO-2 (ff-pointer self) transA transB invInertiaWorldA invInertiaWorldB))
 
 (defmethod SWING-SPAN-1 ((self CONE-TWIST-CONSTRAINT))

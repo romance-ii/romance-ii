@@ -1,7 +1,7 @@
 (in-package :bullet)
 
 (defgeneric param (thing num &optional axis))
-(defgeneric (setf param) (thing num &optional axis))
+(defgeneric (setf param) (thing num value &optional axis))
 
 (declaim (inline #.(lispify "btTypedConstraint_setParam" 'function)))
 (cffi:defcfun ("_wrap_btTypedConstraint_setParam__SWIG_0"
@@ -227,7 +227,8 @@
   (self :pointer)
   (num :int))
 
-(defmethod (setf param) ((self #.(lispify "bt-typed-constraint" 'classname)) (num integer) (value number) &optional (axis nil axis?))  
+(defmethod (setf param) ((self typed-constraint) (num integer) (value number)
+                         &optional (axis nil axis?))  
   (if axis?
       (#.(lispify "btTypedConstraint_setParam_withAxis" 'function) (ff-pointer self) num value axis)
       (#.(lispify "btTypedConstraint_setParam_withoutAxis" 'function) (ff-pointer self) num value)))
@@ -237,12 +238,13 @@
       (#.(lispify "btTypedConstraint_getParam_withAxis" 'function) (ff-pointer self) num axis)
       (#.(lispify "btTypedConstraint_getParam_withoutAxis" 'function) (ff-pointer self) num)))
 
-(defmethod (setf param) ((self #.(lispify "bt-point2-point-constraint" 'classname)) (num integer) (value number) &optional (axis nil axis?))  
+(defmethod (setf param) ((self point->point-constraint)
+                         (num integer) (value number) &optional (axis nil axis?))  
   (if axis?
       (#.(lispify "btPoint2PointConstraint_setParam_withAxis" 'function) (ff-pointer self) num value axis)
       (#.(lispify "btPoint2PointConstraint_setParam_withoutAxis" 'function) (ff-pointer self) num value)))
 
-(defmethod param ((self #.(lispify "bt-point2-point-constraint" 'classname)) (num integer) &optional (axis nil axis?))  
+(defmethod param ((self point->point-constraint) (num integer) &optional (axis nil axis?))  
   (if axis?
       (#.(lispify "btPoint2PointConstraint_getParam_withAxis" 'function) (ff-pointer self) num axis)
       (#.(lispify "btPoint2PointConstraint_getParam_withoutAxis" 'function) (ff-pointer self) num)))

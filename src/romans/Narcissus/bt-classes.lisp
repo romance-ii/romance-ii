@@ -1,9 +1,8 @@
 (in-package :bullet)
 
-(defclass collision-world ()
-  ((ff-pointer :reader ff-pointer)))
+;;; Worlds
 
-(defclass collision-object ()
+(defclass collision-world ()
   ((ff-pointer :reader ff-pointer)))
 
 (defclass discrete-dynamics-world ()
@@ -12,22 +11,9 @@
 (defclass simple-dynamics-world ()
   ((ff-pointer :reader ff-pointer)))
 
-(defclass vector3 ()
-  ((ff-pointer :reader ff-pointer)))
+;;; Things in worlds (objects/bodies)
 
-(defclass vector4 (vector3)
-  ((ff-pointer :reader ff-pointer)))
-
-(defclass quaternion ()
-  ((ff-pointer :reader ff-pointer)))
-
-(defclass matrix-3x3 ()
-  ((ff-pointer :reader ff-pointer)))
-
-(defclass transform ()
-  ((ff-pointer :reader ff-pointer)))
-
-(defclass motion-state ()
+(defclass collision-object ()
   ((ff-pointer :reader ff-pointer)))
 
 (defclass box-shape ()
@@ -88,6 +74,30 @@
   ((ff-pointer :reader ff-pointer)))
 
 (defclass compound-shape ()
+  ((ff-pointer :reader ff-pointer)))
+
+;;; Constraints
+
+;;; Vectors, matrices, et al.
+
+(defclass vector3 ()
+  ((ff-pointer :reader ff-pointer)))
+
+(defclass vector4 (vector3)
+  ((ff-pointer :reader ff-pointer)))
+
+(defclass quaternion ()
+  ((ff-pointer :reader ff-pointer)))
+
+(defclass matrix-3x3 ()
+  ((ff-pointer :reader ff-pointer)))
+
+(defclass transform ()
+  ((ff-pointer :reader ff-pointer)))
+
+;;; Unsorted mass of things
+
+(defclass motion-state ()
   ((ff-pointer :reader ff-pointer)))
 
 (defclass bu-simplex1to4 ()
@@ -165,7 +175,7 @@
 (defclass angular-limit ()
   ((ff-pointer :reader ff-pointer)))
 
-(defclass point2-point-constraint (typed-constraint)
+(defclass point->point-constraint (typed-constraint)
   ((ff-pointer :reader ff-pointer)))
 
 (defclass hinge-constraint (typed-constraint)
@@ -180,13 +190,13 @@
 (defclass translational-limit-motor ()
   ((ff-pointer :reader ff-pointer)))
 
-(defclass generic6-dof-constraint (typed-constraint)
+(defclass generic-6-dof-constraint (typed-constraint)
   ((ff-pointer :reader ff-pointer)))
 
 (defclass slider-constraint (typed-constraint)
   ((ff-pointer :reader ff-pointer)))
 
-(defclass generic-6dof-spring-constraint (generic-6dof-constraint)
+(defclass generic-6-dof-spring-constraint (generic-6dof-constraint)
   ((ff-pointer :reader ff-pointer)))
 
 (defclass universal-constraint (generic-6dof-constraint)

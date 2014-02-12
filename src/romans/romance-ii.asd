@@ -87,14 +87,42 @@
                          (:file "bullet-package")
                          (:file "bt-classes"
                                 :depends-on ("bullet-package"))
-                         (:file "bt-param"
+                         (:file "bt-structs"
                                 :depends-on ("bullet-package"
-                                             "bt-classes" "Narcissus-bullet"))
-                         (:file "Narcissus-bullet"
-                                :depends-on ("bullet-package"))
+                                             "bt-classes"))
+                         (:file "bt-generics"
+                                :depends-on ("bullet-package"
+                                             "bt-classes"
+                                             "bt-structs"))
+                         (:file "bt-param"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-collision-object"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-vector34"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-dynamics-world"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-shapes"
+                                :depends-on ("bt-generics"))
+                         
+                         ;; bt-axis-sweep-3 has problems :-(
+                         
+                         (:file "bt-wrap-a"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-wrap-b"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-wrap-c"
+                                :depends-on ("bt-generics")) 
+                         (:file "bt-wrap-d"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-wrap-e"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-wrap-f"
+                                :depends-on ("bt-generics"))
+                         (:file "bt-wrap-g"
+                                :depends-on ("bt-generics"))
                          (:file "Narcissus"
-                                :depends-on ("package" "Narcissus-bullet"
-                                                       "bt-param"))))
+                                :depends-on ("bt-generics"))))
    (:module "Rabirius"
             :depends-on ("setup" "common")
             :components ((:file "package")
