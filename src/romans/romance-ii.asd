@@ -86,46 +86,25 @@
             :depends-on ("setup" "common")
             :components ((:file "package")
                          (:file "bullet-package")
-                         (:file "bt-classes"
-                                :depends-on ("bullet-package"))
-                         (:file "bt-structs"
-                                :depends-on ("bullet-package"
-                                             "bt-classes"))
-                         (:file "bt-generics"
-                                :depends-on ("bullet-package"
-                                             "bt-classes"
-                                             "bt-structs"))
-                         (:file "bt-param"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-collision-object"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-vector34"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-dynamics-world"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-rigid-body"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-shapes"
-                                :depends-on ("bt-generics"))
-                         
-                         ;; bt-axis-sweep-3 has problems :-(
-                         
-                         (:file "bt-wrap-a"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-wrap-b"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-wrap-c"
-                                :depends-on ("bt-generics")) 
-                         (:file "bt-wrap-d"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-wrap-e"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-wrap-f"
-                                :depends-on ("bt-generics"))
-                         (:file "bt-wrap-g"
-                                :depends-on ("bt-generics"))
-                         (:file "Narcissus"
-                                :depends-on ("bt-generics"))))
+                         (:file "bt-classes")
+                         (:file "bt-structs")
+                         (:file "bt-generics")
+                         (:file "bt-param")
+                         (:file "bt-collision-object")
+                         (:file "bt-vector34")
+                         (:file "bt-matrix3x3")
+                         (:file "bt-dynamics-world")
+                         (:file "bt-rigid-body")
+                         (:file "bt-shapes")
+                         (:file "bt-wrap-a")
+                         (:file "bt-wrap-b")
+                         (:file "bt-wrap-c") 
+                         (:file "bt-wrap-d")
+                         (:file "bt-wrap-e")
+                         (:file "bt-wrap-f")
+                         (:file "bt-wrap-g")
+                         (:file "bt-load-libs")
+                         (:file "Narcissus")))
    (:module "Rabirius"
             :depends-on ("setup" "common")
             :components ((:file "package")

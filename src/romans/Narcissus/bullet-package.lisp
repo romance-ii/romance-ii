@@ -1870,12 +1870,6 @@ Swig properly.")
 
 (in-package #:bullet-physics)
 
-(defparameter *compile-trace-output* nil)
-(eval-when (:compile-toplevel)
-  (setf *compile-trace-output* (open "Bullet Physics Wrapper mapping.log"
-                                     :direction :output
-                                     :if-exists :supersede)))
-
 (cl:eval-when (:compile-toplevel :load-toplevel :execute)
   (defun lispify (identifier expression &optional (package cl:*package*)
                   &aux (setf% nil))

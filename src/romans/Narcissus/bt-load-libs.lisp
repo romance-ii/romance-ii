@@ -1,4 +1,11 @@
 (in-package :bullet-physics)
+(defparameter *compile-trace-output* nil)
+#+trace-bullet-compile
+(eval-when (:compile-toplevel)
+  (setf *compile-trace-output* (open "Bullet-Physics-Wrapper-mapping.log"
+                                     :direction :output
+                                     :if-exists :supersede)))
+
 (format *trace-output* "~&Loading Bullet Physics C libraries: ")
 (mapcar (lambda (n)
           (format *trace-output* "Loading ~A…" n)
@@ -12,5 +19,7 @@
           "cl-bullet2l"))
 (format *trace-output* " (Done.) ")
 (eval-when (:compile-toplevel)
-  (close *compile-trace-output*)
-  (setf *compile-trace-output* nil))
+  (when *compile-trace-output*
+      (close *compile-trace-output*)
+      (setf *compile-trace-output* nil)))
+
