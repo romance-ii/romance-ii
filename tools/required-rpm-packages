@@ -30,6 +30,7 @@ java-1.7.0-openjdk
 texlive-latex-bin-bin
 texlive-pdftex-bin
 texlive-tocloft
+texlive-wrapfig
 
 # (TeX)Info facilities
 texinfo
