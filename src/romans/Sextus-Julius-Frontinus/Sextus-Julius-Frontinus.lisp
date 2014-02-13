@@ -1,4 +1,4 @@
-(in-package :lutatius)
+(in-package :frontinus)
 
 (defun server-start (argv)
   (romance:server-start-banner "Frontinus"
