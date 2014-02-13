@@ -1,9 +1,13 @@
 (in-package :narcissus)
 
+(define-condition unable-to-load-c++-libraries ()
+  ((libs-loaded) (error-condition) (user-message)))
+
 (defun start-server (argv)
-  (romance:server-start-banner "Narcissus" "Narcissus"
-                               "Physical forces simulation server")
-  (format t "~&Narciussus contains:
+  (caesar:with-oversight (:narcissus)
+    (romance:server-start-banner "Narcissus" "Narcissus"
+                                 "Physical forces simulation server")
+   (format t "~&Narciussus contains:
    Bullet Collision Detection and Physics Library
 
    Copyright © 2012 Advanced Micro Devices, Inc. 
@@ -45,7 +49,35 @@ Narcissus wrapper Copyright © 2013-2014, Bruce-Robert Pocock
     License    along    with    this    program.     If    not,    see
     <http://www.gnu.org/licenses/>.")
   
+   (multiple-value-bind (loaded errors) (bullet-physics::load-c++-libraries)
+     (when errors
+       (error 'unable-to-load-c++-libraries
+              :libs-loaded loaded
+              :error-conditions errors
+              :user-message (format nil "
+************************************************************************
+
+ERROR: Unable to load required C++ libraries.
+
+Narcissus attempted to load the C++ Bullet Physics libraries, but was
+unable to do so.
+
+~{------------------------------------------------------------------------
+
+An error condition was signaled: ~S
+
+“~:*~A”
+
+This prevented loading one or more libraries.~}
+------------------------------------------------------------------------
+
+However, the following libraries were loaded successfully:
+~{~A~^, ~}"
+                                    errors loaded)))
   
+   (caesar:report :narcissus :init-loaded-c++-libs
+                  "Loaded required C++ Bullet Physics libraries"
+                  :libraries loaded)))
   (format t "~& Narcissus: Bye!~%"))
 
 

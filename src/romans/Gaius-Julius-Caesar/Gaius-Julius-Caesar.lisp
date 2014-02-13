@@ -32,3 +32,36 @@
                                "Command and control server")
   (format t "~&[CIC] Exiting.~%"))
 
+
+(defun report (module message-keyword user-string &rest keys)
+  ;; TODO
+  (format *error-output*
+          "~&~|~%/C/ CAESAR should have received this report:
+/C/ From: ~:(~A~) @ ~:(~A~)
+/C/ Keyword: ~:(~A~)
+\"\"\"
+~A
+\"\"\"~:[~;~:*~{~&/C/ ~:(A~): ~S~}~]
+/*/
+"
+          module (machine-instance) message-keyword user-string keys))
+
+(defmacro with-oversight ((module) &body body)
+  `(handler-bind
+       ((warning (lambda (c)
+                   (caesar:report ,module :lisp-warning
+                           (format nil
+                                   "Application signaled a WARNING condition:~%~S~% “~:*~A”"
+                                   c)
+                           :condition c)))
+        (error (lambda (c)
+                 (caesar:report ,module :lisp-error
+                         (format nil
+                                 "Application signaled an ERROR condition:~%~S~% “~:*~A”"
+                                 c)
+                         :condition c))))
+     (caesar:report ,module :start-oversight "Beginning oversight by Caesar")
+     (prog1 
+         (progn ,@body)
+       (caesar:report ,module :end-oversight "Ending oversight by Caesar"))))
+
