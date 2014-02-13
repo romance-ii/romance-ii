@@ -29,7 +29,7 @@ BINS=		$(BINDIR)/romance \
 
 SOLIBS=	$(LIBDIR)/libcl-bullet2l.so	\
 		$(LIBDIR)/libLinearMath.so	\
-		$(LIBDIR)/libBulletCollison.so	\
+		$(LIBDIR)/libBulletCollision.so	\
 		$(LIBDIR)/libBulletDynamics.so	\
 		$(LIBDIR)/libBulletSoftBody.so
 
@@ -55,19 +55,24 @@ BUILDCONSTS=--eval "(defconstant cl-user::+BUILD-OS+ :$(OSNAME))" \
 		--eval "(defconstant cl-user::+BUILD-LIBDIR+ (merge-pathnames \"$(LIBDIR)\"))"
 
 $(LIBDIR)/libcl-bullet2l.so: lib/cl-bullet2l/libcl-bullet2l.so
-	ln -f $< $@
+	-rm -f $@
+	cp -f $< $@
 
 $(LIBDIR)/libLinearMath.so:	lib/bullet2/ld/lib/libLinearMath.so
-	ln -f $< $@
+	-rm -f $@
+	cp -f $< $@
 
-$(LIBDIR)/libBulletCollison.so:	lib/bullet2/ld/lib/libBulletCollison.so
-	ln -f $< $@
+$(LIBDIR)/libBulletCollision.so:	lib/bullet2/ld/lib/libBulletCollision.so
+	-rm -f $@
+	cp -f $< $@
 
 $(LIBDIR)/libBulletDynamics.so:	lib/bullet2/ld/lib/libBulletDynamics.so
-	ln -f $< $@
+	-rm -f $@
+	cp -f $< $@
 
 $(LIBDIR)/libBulletSoftBody.so:	lib/bullet2/ld/lib/libBulletSoftBody.so
-	ln -f $< $@
+	-rm -f $@
+	cp -f $< $@
 
 
 lib/cl-bullet2l/libcl-bullet2l.so:
@@ -76,7 +81,7 @@ lib/cl-bullet2l/libcl-bullet2l.so:
 lib/bullet2/ld/lib/libLinearMath.so:
 	$(MAKE) -C lib/cl-bullet2l
 
-lib/bullet2/ld/lib/libBulletCollison.so:
+lib/bullet2/ld/lib/libBulletCollision.so:
 	$(MAKE) -C lib/cl-bullet2l
 
 lib/bullet2/ld/lib/libBulletDynamics.so:
