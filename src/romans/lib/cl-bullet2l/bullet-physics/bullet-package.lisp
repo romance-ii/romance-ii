@@ -1878,9 +1878,6 @@ Swig properly.")
                                  classname class enumname
                                  constant enumvalue
                                  variable slotname)))
-    (when *compile-trace-output*
-      (format *compile-trace-output*
-              "~& ~S → ~:(~A~) ⇒ " identifier expression))
     
     (when (and (> (length identifier) 4)
                (or (equal (subseq identifier 0 4) "set-")
@@ -1979,15 +1976,9 @@ Swig properly.")
               (setf token (concatenate 'string "BULLET/" token)))
             (let ((sym (intern token package)))
               
-              (if setf% 
-                  (progn 
-                    (when *compile-trace-output*
-                      (format *compile-trace-output* "(SETF ~S)" sym))
-                    (list 'setf sym))
-                  (progn 
-                    (when *compile-trace-output*
-                      (format *compile-trace-output* "~S" sym))
-                    sym)))))))))
+              (if setf%
+                  (list 'setf sym)
+                  sym))))))))
 
 (defmacro defmeth (name &rest method-stuff)
   `(progn (defmethod ,name ,@method-stuff)
