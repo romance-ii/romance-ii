@@ -107,6 +107,10 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 (let ((r2src (make-pathname :host "r2src" :directory "romans")))
   (pushnew r2src asdf:*central-registry* :test 'equal))
 
+(let ((bullet-src (merge-pathnames "romans/lib/cl-bullet2l/bullet-physics/"
+                               (translate-logical-pathname (make-pathname :host "r2src")))))
+  (pushnew bullet-src asdf:*central-registry* :test 'equal))
+
 (let ((wn-src (merge-pathnames "romans/lib/smedict-old/"
                                (translate-logical-pathname (make-pathname :host "r2src")))))
   (pushnew wn-src asdf:*central-registry* :test 'equal))
