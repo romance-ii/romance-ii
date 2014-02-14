@@ -104,7 +104,8 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
                            (make-pathname :directory
                                           `(,@(pathname-directory *load-pathname*) ".." "..")))
 
-(let ((r2src (make-pathname :host "r2src" :directory "romans")))
+(let ((r2src (merge-pathnames
+              (make-pathname :host "r2src" :directory "romans"))))
   (pushnew r2src asdf:*central-registry* :test 'equal))
 
 (let ((bullet-src (merge-pathnames "romans/lib/cl-bullet2l/bullet-physics/"
@@ -139,6 +140,13 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
                                       #+(or X86-64) "/usr/lib64"
                                       #-(or X86-64) "/usr/lib"
                                       )))
+
+(pushnew (merge-pathnames "./lib/cl-bullet2l/")
+         cffi:*foreign-library-directories*
+         :test 'equal)
+(pushnew (merge-pathnames (translate-logical-pathname (make-pathname :host "lib")))
+         cffi:*foreign-library-directories*
+         :test 'equal)
 
 (format *trace-output* "~&
 *** Romance II set-up script completed.
