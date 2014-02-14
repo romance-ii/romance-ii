@@ -58,19 +58,19 @@ $(LIBDIR)/libcl-bullet2l.so: lib/cl-bullet2l/libcl-bullet2l.so
 	-rm -f $@
 	cp -f $< $@
 
-$(LIBDIR)/libLinearMath.so:	lib/bullet2/ld/lib/libLinearMath.so
+$(LIBDIR)/libLinearMath.so:	lib/cl-bullet2l/bullet2/ld/lib/libLinearMath.so
 	-rm -f $@
 	cp -f $< $@
 
-$(LIBDIR)/libBulletCollision.so:	lib/bullet2/ld/lib/libBulletCollision.so
+$(LIBDIR)/libBulletCollision.so:	lib/cl-bullet2l/bullet2/ld/lib/libBulletCollision.so
 	-rm -f $@
 	cp -f $< $@
 
-$(LIBDIR)/libBulletDynamics.so:	lib/bullet2/ld/lib/libBulletDynamics.so
+$(LIBDIR)/libBulletDynamics.so:	lib/cl-bullet2l/bullet2/ld/lib/libBulletDynamics.so
 	-rm -f $@
 	cp -f $< $@
 
-$(LIBDIR)/libBulletSoftBody.so:	lib/bullet2/ld/lib/libBulletSoftBody.so
+$(LIBDIR)/libBulletSoftBody.so:	lib/cl-bullet2l/bullet2/ld/lib/libBulletSoftBody.so
 	-rm -f $@
 	cp -f $< $@
 
@@ -78,16 +78,16 @@ $(LIBDIR)/libBulletSoftBody.so:	lib/bullet2/ld/lib/libBulletSoftBody.so
 lib/cl-bullet2l/libcl-bullet2l.so:
 	$(MAKE) -C lib/cl-bullet2l
 
-lib/bullet2/ld/lib/libLinearMath.so:
+lib/cl-bullet2l/bullet2/ld/lib/libLinearMath.so:
 	$(MAKE) -C lib/cl-bullet2l
 
-lib/bullet2/ld/lib/libBulletCollision.so:
+lib/cl-bullet2l/bullet2/ld/lib/libBulletCollision.so:
 	$(MAKE) -C lib/cl-bullet2l
 
-lib/bullet2/ld/lib/libBulletDynamics.so:
+lib/cl-bullet2l/bullet2/ld/lib/libBulletDynamics.so:
 	$(MAKE) -C lib/cl-bullet2l
 
-lib/bullet2/ld/lib/libBulletSoftBody.so:
+lib/cl-bullet2l/bullet2/ld/lib/libBulletSoftBody.so:
 	$(MAKE) -C lib/cl-bullet2l
 
 
