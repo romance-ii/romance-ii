@@ -41,7 +41,7 @@
 /C/ Keyword: ~:(~A~)
 \"\"\"
 ~A
-\"\"\"~:[~;~:*~{~&/C/ ~:(A~): ~S~}~]
+\"\"\"~:[~;~:*~{~&/C/ ~:(~A~): ~S~}~]
 /*/
 "
           module (machine-instance) message-keyword user-string keys))
