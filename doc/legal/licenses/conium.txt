@@ -1,0 +1,3 @@
+Conium is currently being maintained by David Lichteblau and retains
+its original public domain status.
+

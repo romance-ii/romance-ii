@@ -1,0 +1,6 @@
+CommonLisp interface to WordNet; © 1995, Mark Nahabedian, Artificial
+Intelligence Laboratory, Massachusetts Institute of Technology;
+Modified April 2000 to work with Allegro Common Lisp on Solaris by Dan
+G. Tecuci, Univ of Texas at Austin; contributions by Sarah
+Tierney. FIXME: Precise license terms?
+
