@@ -12,51 +12,109 @@
 
 (defvar *repl-ident* nil)
 
-(defun find-copyrights ()
-  (loop for system
-     in (append (slot-value (asdf:find-system :romance-ii)
-                            'asdf::load-dependencies))
-     for license =
-       (loop for path
-          in (directory
-              (make-pathname
-               :directory (pathname-directory
-                           (asdf:system-source-directory system))
-               :name :wild :type :wild))
-          when (member (make-keyword (pathname-name path)) '(:license :copying))
-          return (list system path)
-          else when (member (make-keyword (pathname-name path)) '(:readme))
-          return (list system path))
-     when license collect license
-     else collect (list system nil)))
+(defun strcat (&rest strings)
+  (reduce (curry #'concatenate 'string) 
+          (mapcar (lambda (element)
+                    (typecase element
+                      (cons (reduce #'strcat element))
+                      (string element)
+                      (t (princ-to-string element)))) 
+                  (remove-if #'null strings))))
 
-(defun first-paragraph-of (file)
-  (apply #'concatenate 'string
+(define-constant +license-words+
+    '(:license :licence :copying :copyright)
+  :test 'equal)
+
+(defun keywordify (word)
+  (make-keyword (string-upcase (string word))))
+
+(defun prerequisite-systems (&optional (child :romance-ii))
+  (if-let ((prereqs (slot-value (asdf:find-system child)
+                                'asdf::load-dependencies)))
+    (remove-if 
+     (lambda (sys)
+       (member (keywordify sys)
+               #+sbcl '(:sb-grovel :sb-posix :sb-rotate-byte
+                        :sb-grovel :sb-bsd-sockets)))
+     (remove-duplicates
+      (append (remove-if #'null
+                         (mapcan #'prerequisite-systems prereqs))
+              prereqs)
+      :test #'eql :key #'keywordify))))
+
+(defun find-copyrights (&optional (long nil))
+  (loop for system in (sort (prerequisite-systems :romance-ii)
+                            #'string<
+                            :key (compose #'string-upcase #'string))
+     for asdf-dir = (make-pathname
+                     :directory (pathname-directory
+                                 (asdf:system-source-directory system))
+                     :name :wild :type :wild)
+     for license =
+       (or
+        (let ((override-file 
+               (merge-pathnames
+                (make-pathname :directory '(:relative "doc" "legal" "licenses")
+                               :name (string-downcase (string system))
+                               :type "txt") (translate-logical-pathname               
+                                             (make-pathname :host "r2project")))))
+          (when (fad:file-exists-p override-file)
+            (list system override-file)))
+        (unless long
+          (if-let ((license (ignore-errors
+                              (slot-value (asdf:find-system system) 'asdf::licence))))
+            (list system license)))
+        (loop
+           for path in (directory asdf-dir)
+           when (member (make-keyword (string-upcase 
+                                       (pathname-name path))) +license-words+)
+           return (list system (pathname path)))
+        (loop
+           for path in (directory (merge-pathnames "doc/" asdf-dir))
+           when (member (make-keyword (string-upcase 
+                                       (pathname-name path))) +license-words+)
+           return (list system (pathname path)))
+        (if long
+          (if-let ((license (ignore-errors
+                              (slot-value (asdf:find-system system) 'asdf::licence))))
+            (list system license)))
+        (loop
+           for path in (directory asdf-dir)
+           when (member (make-keyword (string-upcase
+                                            (pathname-name path))) '(:readme))
+           return (prog1 (list system (pathname path))
+                    (warn "No LICENSE for ~:(~A~), using README~%(in ~A)" 
+                          system asdf-dir))))
+     when license collect license
+     else collect (prog1 (list system nil)
+                    (warn "No LICENSE for ~:(~A~)~%(in ~A)" system asdf-dir))))
+
+(defun first-paragraph-of (file &optional (max-lines 10))
+  (strcat
    (with-open-file (stream file :direction :input)
      (loop
-        with seen = nil
-        for line = (read-line stream)
+        with seen = 0
+        for line = (string-trim " #;/*" (read-line stream nil #\¶))
           
-        until (and seen (zerop (length line)))
+        for blank = (zerop (length line))
           
-        unless seen
-        do (setf seen (plusp (length line)))
+        until (or (and (> seen 1) blank)
+                  (>= seen max-lines))
           
-        when seen
+        unless blank do (incf seen)
+          
+          
+        when (not blank)
         collect line
         and
-        collect (string #\Newline)))))
+        collect (when (= seen max-lines) (string #\…))
+        and collect (string #\Newline)))))
 
 (defun copyrights (&optional (long nil))
   "Return a string with applicable copyright notices."
   
-  (apply 
-   #'concatenate 
-   'string
-   (remove-if 
-    #'null
-    (list
-     "Romance Game System
+  (strcat
+   "Romance Game System
 Copyright © 1987-2014, Bruce-Robert Pocock;
 
 This program is free software: you may use, modify, and/or distribute it
@@ -66,27 +124,35 @@ This program is free software: you may use, modify, and/or distribute it
  *** Romance II contains libraries which have their own licenses. ***
 
 "
-     
-     
-     (apply #'concatenate 
-            'string
-            (loop for (package file) in (find-copyrights)
-               when file
-               collect (if long
-                           (format nil "
+   (unless long "(Abbreviated:)
+")
+   (loop for (package license) in (find-copyrights long)
+      collect
+        (if long
+            (format nil "
 ————————————————————————————————————————————————————————————————————————
-Romance II contains ~:(~A~)~2%~A~2%"
-                                   package (alexandria:read-file-into-string file))
-                           (format nil " • ~:(~A~); ~A"
-                                   package (first-paragraph-of file)))
-               else
-               collect (format nil " • ~:(~A~) (see documentation for license)~2%" package)
-               and do (warn "Package ~A has no license?" package)))
-     (if long
-         "
+Romance II uses the library ~@:(~A~)~2%"
+                    package)
+            (format nil "~% • ~:(~A~): " package))
+        
+      collect
+        (typecase license
+          (pathname (if long
+                        (alexandria:read-file-into-string license)
+                        (first-paragraph-of license 2)))
+          (string (if (or (< (length license) 75) long) 
+                      license
+                      (concatenate 'string (subseq license 0 75) "…")))
+          (t (warn "Package ~A has no license?" package)
+             "(see its documentation for license)")))
+   (if long
+       "~|
 ————————————————————————————————————————————————————————————————————————
     
 Romance II itself is a program.
+
+    Romance Game System Copyright © 1987-2014, Bruce-Robert Fenn
+    Pocock;
 
     This  program is  free software:  you can  redistribute it  and/or
     modify it under the terms of the GNU Affero General Public License
@@ -101,9 +167,10 @@ Romance II itself is a program.
     You should have  received a copy of the GNU  Affero General Public
     License    along    with    this    program.     If    not,    see
     < http://www.gnu.org/licenses/ >."
-         
-         "See COPYING.AGPL3 or run “romance --copyright” for details.
-")))))
+       ;; short version
+       "
+See COPYING.AGPL3 or run “romance --copyright” for details.
+")))
 
 (defun start-server (&optional argv)
   (case (make-keyword (string-upcase (car argv)))
@@ -191,6 +258,7 @@ For help, evaluate (ROMANCE:REPL-HELP)~2%"))
   (romanize-print *standard-output* short-name)
 
   (format *standard-output* "
+~|
 ;
 ; ----------------------------------------------------------------------
 ;
@@ -203,7 +271,7 @@ SERVER-PROCESS =    ~A
 MACHINE-INSTANCE =  ~:(~A~)
 MACHINE-TYPE =      ~A
 
-/COPYRIGHTS~%~A~%\\COPYRIGHTS~%~|"
+/COPYRIGHTS~%~A~%\\COPYRIGHTS~%"
           long-name purpose short-name (machine-instance) (machine-type) (copyrights))
 
   (romanize-print *standard-output* long-name))
