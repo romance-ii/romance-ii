@@ -6,6 +6,9 @@
 (unless *load-pathname*
   (error "This file must be `load'ed, not `compile'd"))
 
+(eval-when (:compile-toplevel)
+  (error "This file must be `load'ed, not `compile'd"))
+
 #-sbcl
 (warn "Your compiler is not SBCL. Some things may be weird.
 
@@ -92,8 +95,9 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 
 (set-logical-pathname-host "etc" (make-pathname :directory '(:absolute "etc")))
 (set-logical-pathname-host "share" (make-pathname :directory '(:absolute "usr" "share")))
-(set-logical-pathname-host "r2share" "/usr/share/romance-ii/")
-(set-logical-pathname-host "bin" "/usr/bin/")
+(set-logical-pathname-host "r2share" (make-pathname :directory
+                                                    '(:absolute "usr" "share" "romance-ii")))
+(set-logical-pathname-host "bin" (make-pathname :directory '(:absolute "usr" "bin")))
 (set-logical-pathname-host "var" "/var/lib/romance-ii/")
 (set-logical-pathname-host "tmp" "/tmp/")
 (set-logical-pathname-host "vartmp" "/var/tmp/")
@@ -140,6 +144,8 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
                                       #+(or X86-64) "/usr/lib64"
                                       #-(or X86-64) "/usr/lib"
                                       )))
+
+(ql:quickload :cffi)
 
 (pushnew (merge-pathnames "./lib/cl-bullet2l/")
          cffi:*foreign-library-directories*
