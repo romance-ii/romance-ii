@@ -3,6 +3,17 @@
 (defvar *concept-db* nil)
 (defvar *concept-db-lock* (make-lock "ConceptDB Update Lock"))
 
+(defvar &select-atom-id nil)
+(defvar &insert-atom nil)
+(defvar &insert-concept nil)
+(defvar &select-concept-spo nil)
+(defvar &select-concept-sp nil)
+(defvar &select-concept-po nil)
+(defvar &select-concept-so nil)
+(defvar &select-concept-s nil)
+(defvar &select-concept-p nil)
+(defvar &select-concept-o nil)
+
 (defmacro in-db (&body body)
   `(restart-case
        (handler-case
