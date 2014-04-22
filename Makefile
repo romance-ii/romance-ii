@@ -1,5 +1,3 @@
-#!gmake
-
 # MAIN TARGETS: all (dist); clean; push (to dev server)
 all: dist
 
@@ -42,7 +40,7 @@ $(SERVERDIR)/bin/$(SERVERFULLNAME):	$(shell find src/romans -type f)
 
 $(SERVERDIR)/lib/libcl-bullet2l.so:	\
 	$(SERVERDIR)/bin/$(SERVERFULLNAME) \
-	$(shell find src/romans/lib/cl-bullet2l src/romans/lib/bullet2 -type f)
+	$(shell find src/romans/lib/cl-bullet2l src/romans/lib/cl-bullet2l/bullet2 -type f)
 	mkdir -p $(SERVERDIR)/lib
 	ln build/$(SERVERFULLNAME)-$(VERSION)/lib/*.so -f $(SERVERDIR)/lib/
 
