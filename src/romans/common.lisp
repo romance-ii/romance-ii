@@ -2,8 +2,9 @@
   (:use :cl :alexandria)
   (:nicknames :romans :romance-ii :romance2)
   (:documentation
-   "Common code used by other modules in Romance II")
-  (:export #:copyrights #:start-server #:start-repl #:server-start-banner))
+   "Common code used by other modules in Romance Ⅱ")
+  (:export #:copyrights #:start-server #:start-repl #:server-start-banner
+           #:string-case #:until #:while #:any))
 
 (defpackage :romance-user
   (:use :cl :alexandria :romans))
@@ -21,12 +22,37 @@
                       (t (princ-to-string element)))) 
                   (remove-if #'null strings))))
 
+(defmacro until (test &body body)
+  `(do () (,test) ,@body))
+
+(defmacro while (test &body body)
+  `(do () ((not ,test)) ,@body))
+
+(defmacro string-case (compare &body clauses)
+  "Like a CASE expression, but using STRING= to campare cases. NOT
+optimized for long lists. TODO — this macro should be smart enough to
+use a hash table when the number of cases becomes large.
+
+Example:
+
+\(STRING-CASE FOO ((\"A\" (print :A)) (\"B\" (print :B)) (t (print :otherwise)) "
+  `(cond
+     ,@(mapcar (lambda (clause)
+                 (if (or (eql t (car clause)) (eql 'otherwise (car clause)))
+                     `(t ,@(cdr clause))
+                     `((string= ,compare ,(car clause)) ,@(cdr clause))))
+               clauses)))
+
 (define-constant +license-words+
     '(:license :licence :copying :copyright)
   :test 'equal)
 
 (defun keywordify (word)
   (make-keyword (string-upcase (string word))))
+
+(defun any (predicate set)
+  (loop for item in set
+     when (funcall predicate item) return it))
 
 (defun prerequisite-systems (&optional (child :romance-ii))
   (if-let ((prereqs (slot-value (asdf:find-system child)
@@ -43,51 +69,60 @@
       :test #'eql :key #'keywordify))))
 
 (defun find-copyrights (&optional (long nil))
-  (loop for system in (sort (prerequisite-systems :romance-ii)
-                            #'string<
-                            :key (compose #'string-upcase #'string))
-     for asdf-dir = (make-pathname
-                     :directory (pathname-directory
-                                 (asdf:system-source-directory system))
-                     :name :wild :type :wild)
-     for license =
-       (or
-        (let ((override-file 
-               (merge-pathnames
-                (make-pathname :directory '(:relative "doc" "legal" "licenses")
-                               :name (string-downcase (string system))
-                               :type "txt") (translate-logical-pathname               
-                                             (make-pathname :host "r2project")))))
-          (when (fad:file-exists-p override-file)
-            (list system override-file)))
-        (unless long
-          (if-let ((license (ignore-errors
-                              (slot-value (asdf:find-system system) 'asdf::licence))))
-            (list system license)))
-        (loop
-           for path in (directory asdf-dir)
-           when (member (make-keyword (string-upcase 
-                                       (pathname-name path))) +license-words+)
-           return (list system (pathname path)))
-        (loop
-           for path in (directory (merge-pathnames "doc/" asdf-dir))
-           when (member (make-keyword (string-upcase 
-                                       (pathname-name path))) +license-words+)
-           return (list system (pathname path)))
-        (if long
-          (if-let ((license (ignore-errors
-                              (slot-value (asdf:find-system system) 'asdf::licence))))
-            (list system license)))
-        (loop
-           for path in (directory asdf-dir)
-           when (member (make-keyword (string-upcase
-                                            (pathname-name path))) '(:readme))
-           return (prog1 (list system (pathname path))
-                    (warn "No LICENSE for ~:(~A~), using README~%(in ~A)" 
-                          system asdf-dir))))
-     when license collect license
-     else collect (prog1 (list system nil)
-                    (warn "No LICENSE for ~:(~A~)~%(in ~A)" system asdf-dir))))
+  (append
+   (loop for system in (sort (prerequisite-systems :romance-ii)
+                             #'string<
+                             :key (compose #'string-upcase #'string))
+      for asdf-dir = (make-pathname
+                      :directory (pathname-directory
+                                  (asdf:system-source-directory system))
+                      :name :wild :type :wild)
+      for license =
+        (or
+         (let ((override-file 
+                (merge-pathnames
+                 (make-pathname :directory '(:relative "doc" "legal" "licenses")
+                                :name (string-downcase (string system))
+                                :type "txt") (translate-logical-pathname               
+                                (make-pathname :host "r2project")))))
+           (when (fad:file-exists-p override-file)
+             (list system override-file)))
+         (unless long
+           (if-let ((license (ignore-errors
+                               (slot-value (asdf:find-system system) 'asdf::licence))))
+             (list system license)))
+         (loop
+            for path in (directory asdf-dir)
+            when (member (make-keyword (string-upcase 
+                                        (pathname-name path))) +license-words+)
+            return (list system (pathname path)))
+         (loop
+            for path in (directory (merge-pathnames "doc/" asdf-dir))
+            when (member (make-keyword (string-upcase 
+                                        (pathname-name path))) +license-words+)
+            return (list system (pathname path)))
+         (if long
+             (if-let ((license (ignore-errors
+                                 (slot-value (asdf:find-system system) 'asdf::licence))))
+               (list system license)))
+         (loop
+            for path in (directory asdf-dir)
+            when (member (make-keyword (string-upcase
+                                        (pathname-name path))) '(:readme))
+            return (prog1 (list system (pathname path))
+                     (warn "No LICENSE for ~:(~A~), using README~%(in ~A)" 
+                           system asdf-dir))))
+      when license collect license
+      else collect (prog1 (list system nil)
+                     (warn "No LICENSE for ~:(~A~)~%(in ~A)" system asdf-dir)))
+   (if long
+       (list :bullet2 (merge-pathnames
+                       (make-pathname :directory '(:relative "doc" "legal" "licenses")
+                                      :name "bullet2"
+                                      :type "txt") 
+                       (translate-logical-pathname               
+                        (make-pathname :host "r2project"))))
+       (list :bullet2 "MIT"))))
 
 (defun first-paragraph-of (file &optional (max-lines 10))
   (strcat
@@ -121,7 +156,7 @@ This program is free software: you may use, modify, and/or distribute it
  *ONLY* in accordance with the terms of the GNU Affero General Public License
  (GNU AGPL).
 
- *** Romance II contains libraries which have their own licenses. ***
+   ★ Romance Ⅱ contains libraries which have their own licenses. ★
 
 "
    (unless long "(Abbreviated:)
@@ -131,7 +166,7 @@ This program is free software: you may use, modify, and/or distribute it
         (if long
             (format nil "
 ————————————————————————————————————————————————————————————————————————
-Romance II uses the library ~@:(~A~)~2%"
+Romance Ⅱ uses the library ~@:(~A~)~2%"
                     package)
             (format nil "~% • ~:(~A~): " package))
         
@@ -149,7 +184,7 @@ Romance II uses the library ~@:(~A~)~2%"
        "~|
 ————————————————————————————————————————————————————————————————————————
     
-Romance II itself is a program.
+Romance Ⅱ itself is a program.
 
     Romance Game System Copyright © 1987-2014, Bruce-Robert Fenn
     Pocock;
@@ -177,7 +212,7 @@ See COPYING.AGPL3 or run “romance --copyright” for details.
     (:caesar (warn "TODO Caesar"))
     (:copyrights (format t (copyrights t)))
     (otherwise
-     (format t "Romance II: Generic Executable.  
+     (format t "Romance Ⅱ: Generic Executable.  
 
 Provide the name of the module to start; Caesar will launch
 other modules.
@@ -191,7 +226,7 @@ REPL, HELP, or COPYRIGHTS are also options."))))
    t 
    (case section
      (:comm "
-Romance II: Operations Communications
+Romance Ⅱ: Operations Communications
 
 Use these functions in package CAESAR for messaging. (e.g. to invoke
 WHO you might type (CAESAR:WHO) or (IN-PACKAGE :CAESAR) (WHO) ...)
@@ -203,7 +238,7 @@ various types of connection.
 ")
      (:intro "
 
-             Romance II Read-Eval-Print-Loop (REPL) Help 
+             Romance Ⅱ Read-Eval-Print-Loop (REPL) Help 
 
 Caution: Joining a live game world with this REPL is godlike power. Be
 very careful.
@@ -234,7 +269,7 @@ topic  for a  brief overview;  (HELP  :COMM), (HELP  :REPL), or  (HELP
 
 (defun start-repl (&optional argv)
   (unless (member "--silent" argv)
-   (format t "~&Romance II: Copyright © 2013-2014, Bruce-Robert Pocock.
+   (format t "~&Romance Ⅱ: Copyright © 2013-2014, Bruce-Robert Pocock.
 Evaluate (ROMANCE:COPYRIGHTS T) for details.
 Read-Eval-Print-Loop interactive session.
 For help, evaluate (ROMANCE:REPL-HELP)~2%"))
@@ -262,7 +297,7 @@ For help, evaluate (ROMANCE:REPL-HELP)~2%"))
 ;
 ; ----------------------------------------------------------------------
 ;
-; Romance II Game System        ~40@A
+; Romance Ⅱ Game System        ~40@A
 ;
 ; ~A
 ;
