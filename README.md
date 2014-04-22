@@ -1,4 +1,4 @@
-# Romance II MMORPG Game System
+# Romance Ⅱ MMORPG Game System
 
 ## What does it do?
 
@@ -30,7 +30,7 @@ http://sourceforge.net/p/romance
 And you can grab the code at
 http://sourceforge.net/p/romance/code
 
- * Note that the Romance II project is a "branch" off the older,
+ * Note that the Romance Ⅱ project is a "branch" off the older,
    less-capable (but still usable) Romance 1 project on SourceForge,
    make sure you have the branch you want.
 
@@ -81,7 +81,7 @@ those particular to "your" own game.
 
 ### Server Components
 
-The Romance II Server Core consists of:
+The Romance Ⅱ Server Core consists of:
 
  * APPIUS: Appius Claudius Caecus, the main networking component or
    "socket server." Appius manages network listening sockets, using a
