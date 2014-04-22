@@ -1,5 +1,5 @@
 (asdf:defsystem :romance-ii
-  :description "Romance II Game Core"
+  :description "Romance Ⅱ Game Core"
   :author "Bruce-Robert Fenn Pocock"
   :licence "AGPLv3"
 
@@ -68,7 +68,8 @@
    (:module "Gaius-Valerius-Catullus"
             :depends-on ("common")
             :components ((:file "package")
-                         (:file "conceptnet5")
+                         (:file "conceptnet5"
+                                :depends-on ("package"))
                          (:file "Gaius-Valerius-Catullus"
                                 :depends-on ("package" "conceptnet5"))))
    (:module "Lucius-Aemilius-Regillus"
