@@ -12,7 +12,7 @@
 #-sbcl
 (warn "Your compiler is not SBCL. Some things may be weird.
 
-Romance II is being developed using SBCL. While we greatly appreciate
+Romance Ⅱ is being developed using SBCL. While we greatly appreciate
 and encourage other compilers to be used, and would like to support as
 many as are practical, please keep in mind that the curator and
 principal developers use SBCL on Linux® (64-bit). Patches for your
@@ -26,7 +26,7 @@ is: ~%~S" *features*)
 #-common-lisp
 (warn "*FEATURES* omits COMMON-LISP. What madness is this??
 
-If you are legitimately trying to compile Romance II using some
+If you are legitimately trying to compile Romance Ⅱ using some
 un-Common Lisp, well: good luck, but please don't expect
 any miracles.
 
@@ -37,7 +37,7 @@ its *FEATURES*, please advise us with a copy of CL:*FEATURES*:~%~S"
 #-linux
 (warn "*FEATURES* omits LINUX.
 
-Romance II is being developed on Linux®. While support for some other
+Romance Ⅱ is being developed on Linux®. While support for some other
 operating systems is certainly possible, keep in mind, that the more
 your operating system differs from Linux, the less likely things are
 to Just Work. Patches for other OS are accepted, as long as they don't
@@ -54,7 +54,7 @@ Your machine type is reported as ~A
  (specifically: ~A)
 
 If this is not an AMD-alike* 64-bit architecture, please be forewarned
-that Romance II is being developed primarily for the “AMD 64” (X86-64)
+that Romance Ⅱ is being developed primarily for the “AMD 64” (X86-64)
 architecture. While support for other architectures is surely
 possible, and patches are encouraged, neither the curator nor primary
 contributors are currently using them.
@@ -155,7 +155,7 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
          :test 'equal)
 
 (format *trace-output* "~&
-*** Romance II set-up script completed.
+  ★ Romance Ⅱ set-up script completed. ★
 
 Configured on ~:(~A~)
 Machine type: ~A (~:(~A~))
@@ -171,6 +171,8 @@ LIBDIR: ~S
 
 (unless (ignore-errors (ql:help) t)
   (warn "Quicklisp doesn't appear to be loaded?"))
+
+(declaim (optimize (speed 0) (safety 2) (debug 3) (space 0)))
 
 :romance-ii
 
