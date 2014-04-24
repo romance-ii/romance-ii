@@ -83,10 +83,10 @@
                          (:file "Marcus-Vitruvius-Pollio"
                                 :depends-on ("package"))))
    (:module "Narcissus"
-            :serial t
-            :depends-on ("common")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
-                         (:file "Narcissus")))
+                         (:file "Narcissus"
+                                :depends-on ("package"))))
    (:module "Rabirius"
             :depends-on ("common")
             :components ((:file "package")

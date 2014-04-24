@@ -147,7 +147,7 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 
 (ql:quickload :cffi)
 
-(pushnew (merge-pathnames "./lib/cl-bullet2l/")
+(pushnew (merge-pathnames "./lib/cl-bullet2l/" *load-truename*)
          cffi:*foreign-library-directories*
          :test 'equal)
 (pushnew (merge-pathnames (translate-logical-pathname (make-pathname :host "lib")))
