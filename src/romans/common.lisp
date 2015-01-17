@@ -3,8 +3,34 @@
   (:nicknames :romans :romance-ii :romance2)
   (:documentation
    "Common code used by other modules in Romance Ⅱ")
-  (:export #:copyrights #:start-server #:start-repl #:server-start-banner
-           #:string-case #:until #:while #:any))
+  (:export
+   #:+inline-whitespace+
+   #:+often-naughty-chars+
+   #:+whitespace+
+   #:any
+   #:copyrights
+   #:doseq
+   #:escape-by-doubling
+   #:escape-c-style
+   #:escape-lispy
+   #:escape-url-encoded
+   #:escape-with-char
+   #:keywordify
+   #:server-start-banner
+   #:start-repl
+   #:start-server
+   #:strcat
+   #:string-case
+   #:string-escape
+   #:string-escape
+   #:string-fixed
+   #:until
+   #:while
+   
+   ))
+
+(require :prepl)
+(require :babel)
 
 (defpackage :romance-user
   (:use :cl :alexandria :romans))
@@ -21,6 +47,215 @@
                       (string element)
                       (t (princ-to-string element)))) 
                   (remove-if #'null strings))))
+
+(define-constant +whitespace+
+    (coerce #(;; Defined in ASCII
+              #\Space #\Tab #\Page #\Linefeed #\Return #\Null
+              ;; defined in ISO-8859-*
+              #\No-Break_Space #\Reverse-Linefeed
+              ;; defined in Unicode
+              #\Ogham_space_mark #\Mongolian_Vowel_Separator
+              #\En_quad #\Em_quad #\En_Space #\Em_Space
+              #\Three-per-Em_Space #\Four-per-Em_Space
+              #\Six-per-Em_Space #\Figure_Space #\Punctuation_Space
+              #\Thin_Space #\Hair_Space 
+              #\Zero_Width_Space #\Narrow_No-Break_Space
+              #\Medium_Mathematical_Space #\Ideographic_Space
+              #\Zero_Width_No-Break_Space)
+            'simple-string)
+  :test #'equal
+  :documentation "A list of all whitespace chars in Unicode. Superset of
+  the ASCII whitespace chars we expect to encounter.")
+
+(define-constant +inline-whitespace+
+    (coerce #(;; Defined in ASCII
+              #\Space #\Tab
+              ;; defined in ISO-8859-*
+              #\No-Break_Space
+              ;; defined in Unicode
+              #\Ogham_space_mark #\Mongolian_Vowel_Separator
+              #\En_quad #\Em_quad #\En_Space #\Em_Space
+              #\Three-per-Em_Space #\Four-per-Em_Space
+              #\Six-per-Em_Space #\Figure_Space #\Punctuation_Space
+              #\Thin_Space #\Hair_Space 
+              #\Zero_Width_Space #\Narrow_No-Break_Space
+              #\Medium_Mathematical_Space #\Ideographic_Space
+              #\Zero_Width_No-Break_Space)
+            'simple-string)
+  :test #'equal
+  :documentation "A list of all whitespace chars in Unicode that occur
+  \"on a line,\" i.e. excluding Null, Carriage Return, Linefeed, and
+  Page Break. Superset of the ASCII whitespace chars we expect
+  to encounter.")
+
+(define-constant +often-naughty-chars+
+    (coerce #(#\\ #\! #\| #\# #\$ #\% #\& #\?
+              #\{ #\[ #\( #\) #\] #\} #\= #\^ #\~
+              #\' #\" #\` #\< #\> #\*
+              #\Space #\Tab #\Page #\Linefeed #\Return #\Null
+              #\No-Break_Space #\Reverse-Linefeed
+              #\Zero_Width_No-Break_Space)
+            'simple-string)
+  :test #'equal
+  :documentation "A list of characters which often have special
+meanings (e.g. in the shell) and should usually be replaced or escaped
+in some contexts.")
+
+(defmacro doseq ((element sequence) &body body)
+  `(loop for ,element across ,sequence do (progn ,@body)))
+
+(defun escape-with-char (char escape-char)
+  (check-type char character)
+  (check-type escape-char character)
+  (coerce (list escape-char char) 'string))
+
+(defun escape-by-doubling (char &optional _)
+  (declare (ignore _))
+  (check-type char character)
+  (coerce (list char char) 'string))
+
+(defun escape-url-encoded (char &optional _)
+  (declare (ignore _))
+  (check-type char character)
+  (format nil "~{%~2,'0x~}" (coerce
+                             (babel:string-to-octets (string char))
+                             'list)))
+(defun escape-octal (char &optional _)
+  (declare (ignore _))
+  (check-type char character)
+  (format nil "~{\\0~o~}" (coerce
+                           (babel:string-to-octets (string char))
+                           'list)))
+(defun escape-java (char &optional _)
+  (declare (ignore _))
+  (check-type char character)
+  (assert (< (char-code char) #x10000) (char)
+          "Cannot Java-encode characters whose Unicode codepoint is
+          above #xFFFF. Character ~@C (~:*~:C) has a codepoint of #x~x."
+          char (char-code char))
+  (format nil "\\u~4,'0x" (char-code char)))
+
+(defun escape-html (char &optional _)
+  (declare (ignore _))
+  (check-type char character)
+  (format nil "&~d;" (char-code char)))
+
+(defun string-escape (string &optional
+                               (escape-chars +often-naughty-chars+)
+                               (escape-with #\\)
+                               (escape-function #'escape-with-char))
+  "Escape a string in some of the more popular forms.
+
+The STRING is compared, character-by-character, against ESCAPE-CHARS. When a
+character in STRING is a member of ESCAPE-CHARS, it is passed through ESCAPE-FUNCTION with the additional parameter ESCAPE-WITH.
+
+When ESCAPE-CHARS is NIL, every character in STRING is escaped.
+
+When ESCAPE-CHARS is a vector of two non-negative integers, then every
+character is escaped whose codepoint does NOT fall between the inclusive
+range of those two characters, UNLESS that character is also CHAR= to
+ESCAPE-WITH.
+
+When ESCAPE-CHARS is a string, then only the characters in that string
+are escaped. The default is a set of typically-troublesome characters in
+the ASCII range, including whitespace.
+
+For example, to octal-escape all characters outside the range of printable ASCII characters, you might use:
+
+\(string-escape string #(#x20 #x7e) #\\ #'escape-octal)
+"
+  (check-type string string)
+  (check-type escape-chars (or null (vector (integer 0 *) 2) string))
+  ;; (check-type escape-function (function (character t) string))
+  (let ((output (make-array (length string) :adjustable t
+                            :fill-pointer 0 :element-type 'character)))
+    (flet ((encode-char (char)
+             (doseq (out-char (the string (funcall escape-function char
+                                                   escape-with)))
+               (vector-push-extend out-char output))))
+      (etypecase escape-chars
+        (null (concatenate 'string
+                           (mapcar (rcurry escape-function
+                                           escape-with) string)))
+        (string (loop for char across string
+                   do (cond
+                        ((find char escape-chars :test #'char=)
+                         (encode-char char))
+                        (t 
+                         (vector-push-extend char output)))))
+        (vector (let ((range-start (code-char (elt escape-chars 0)))
+                      (range-end (code-char (elt escape-chars 1))))
+                  
+                  (loop for char across string
+                     do (cond
+                          ((or (not (char< range-start 
+                                           char
+                                           range-end))
+                               (char= escape-with char))
+                           (encode-char char))
+                          (t 
+                           (vector-push-extend char output))))))))
+    output))
+
+(assert (equal (string-escape "C:/WIN" "/" #\*) "C:*/WIN"))
+(assert (equal (string-escape "BLAH 'BLAH' BLAH" "'" nil
+                              #'escape-by-doubling)
+               "BLAH ''BLAH'' BLAH"))
+(assert (equal (string-escape "Foo&Bar" "&" nil
+                              #'escape-url-encoded)
+               "Foo%26Bar"))
+(assert (equal (string-escape "☠" #(#x20 #x7e) nil
+                              #'escape-url-encoded)
+               "%E2%98%A0"))
+(assert (equal (string-escape "boo$" "$" nil
+                              #'escape-octal)
+               "boo\\044"))
+(assert (equal (string-escape "Blah <p>" "<&>" nil
+                              #'escape-html)
+               "Blah &60;p&62;"))
+
+
+(defun string-fixed (string target-length &key (trim-p t) 
+                                            (pad-char #\Space))
+  "Ensure that the string is precisely the length provided, right-padding with PAD-CHAR (Space).
+If the string is too long, it will be truncated. Returns multiple
+values: the trimmed string, and the difference in length of the new
+string. If the second value is negative, the string was truncated."
+  (check-type string string)
+  (check-type target-length (integer 1 *))
+  (check-type pad-char character)
+  (let* ((trimmed (if trim-p
+                      (string-trim +whitespace+ string)
+                      string)) 
+         (change-length (- target-length (length trimmed))))
+    (values (cond
+              ((plusp change-length)
+               (concatenate 'string trimmed 
+                            (make-string change-length
+                                         :initial-element pad-char)))
+              ((minusp change-length)
+               (subseq trimmed 0 target-length))
+              (t 
+               trimmed))
+            change-length)))
+
+(assert (equal (string-fixed "Q" 5) "Q    "))
+(assert (equal (string-fixed "  Q  " 5) "Q    "))
+(assert (equal (string-fixed "  Q  " 5 :trim-p nil) "  Q  "))
+(assert (equal (string-fixed "QJJJJJ" 5 ) "QJJJJ"))
+(multiple-value-bind (string change)
+    (string-fixed "Q" 5)
+  (assert (= 4 change))
+  (assert (equal "Q    " string)))
+(multiple-value-bind (string change)
+    (string-fixed "QJJJJJ" 5)
+  (assert (= -1 change))
+  (assert (equal "QJJJJ" string)))
+(multiple-value-bind (string change)
+    (string-fixed "QQQQQ" 5)
+  (assert (= 0 change))
+  (assert (equal "QQQQQ" string)))
+
 
 (defmacro until (test &body body)
   `(do () (,test) ,@body))
@@ -277,8 +512,8 @@ For help, evaluate (ROMANCE:REPL-HELP)~2%"))
     (format t "~&You haven't identified yourself. Say Hello!
 ... enter (HELLO \"your name here\") to identify yourself.")
     (setf *repl-ident* (format nil "REPL user ~A" (gensym "REPL"))))
-  (in-package :romance-user)
-  (prepl:repl :nobanner t :inspect t :continuable t))
+  (let ((*package* (find-package :romance-user)))
+    (prepl:repl :nobanner t :inspect t :continuable t)))
 
 (defun romanize-print (stream string)
   (let ((len (length string))
