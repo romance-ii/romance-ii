@@ -33,7 +33,7 @@ SOLIBS=	$(LIBDIR)/libcl-bullet2l.so	\
 		$(LIBDIR)/libBulletDynamics.so	\
 		$(LIBDIR)/libBulletSoftBody.so
 
-all: $(BINS) $(SOLIBS)
+all: $(SOLIBS) $(BINS)
 
 clean:
 	mkdir -p $(FASLDIR)
