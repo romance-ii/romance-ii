@@ -14,7 +14,66 @@
 (defgeneric start-program-container (container-model
                                      location program-identifier))
 
-(defmethod start-program-container ((container-model (eql :lxc))
+(defun strings-list-p (list)
+  (and (cons list)
+       (every #'stringp list)))
+
+(deftype strings-list ()
+  '(satisfies string-list-p))
+
+(defmacro run-external/local ((name command args environ
+                                    input output error-output
+                                    killp) &body body)
+  (let ((child (gensym "CHILD")))
+    `(with-open-stream (,input (make-broadcast-stream))
+       (with-open-stream (,output (make-broadcast-stream))
+         (with-open-stream (,error-output (make-broadcast-stream))
+           (let ((,child (sb-posix:fork)))
+             (unwind-protect
+                  (if (zerop ,child)
+                      (let ((*standard-input* ,input)
+                            (*standard-output* ,output)
+                            (*error-output* ,error-output)
+                            (*trace-output* nil)
+                            (*debug-io* nil)
+                            (*query-io* nil))
+                        (swank/sbcl::sys-execv (list ,command ,args)))
+                      (progn ,@body))
+               ,(when killp
+                      `(progn (sb-posix:kill ,child sb-posix:SIGTERM)
+                              (sleep 0.01) ;; FIXME
+                              (sb-posix:kill ,child sb-posix:SIGKILL))))))))))
+
+(defmacro run-external/remote ((host name command args environ
+                                     input output error-output) &body body))
+
+(defun run-external (host name (command args &optional environ))
+  (check-type host (or null string symbol))
+  (check-type name (or null string symbol))
+  (check-type command (or string pathname))
+  (check-type input symbol)
+  (check-type output symbol)
+  (check-type error-output symbol)
+  (if (and (constantp host)
+           (or (null host)
+               (equal (string host) "localhost")))
+      `(run-external/local ,(list (string name) 
+                                  command args environ 
+                                  input output error-output)
+                           ,@body)
+      `(if (or (null host)
+               (equal (string host) "localhost")
+               (equal (string host) (machine-instance)))
+           `(run-external/local ,(list (string name) 
+                                       command args environ
+                                       input output error-output)
+                                ,@body)
+           `(run-external/remote ,(list (string host) (string name) 
+                                        command args environ 
+                                        input output error-output)
+                                 ,@body))))
+
+(defmethod start-program-container ((container-model (eql :docker))
                                     location
                                     program-identifier) (todo))
 
