@@ -1,9 +1,14 @@
 (in-package :catullus)
 
-
 (defmacro TODO (&rest params)
   `(cerror "ignore and continue"
            "Unimplemented function called with~%~S" (list ,@params)))
+
+(defvar *logical-output* nil)
+
+(defmacro logic-trace (&rest args)
+  `(when *logical-output*
+     (format *logical-output* ,@args)))
 
 (defun mq/tap-n-talk->utterance (message)
   (TODO message))
@@ -13,30 +18,22 @@
 
 (defun find-translation (utterance language-code)
   (or (loop
-      for (xlat p o) in (find-facts '* "/r/TranslationOf" utterance)
-      for path = (split-sequence:split-sequence #\/ utterance
-                                                :remove-empty-subseqs t)
-      when (string-equal (second path) (symbol-name language-code))
-      return (list :english-word xlat)
-      finally (list :foreign-term utterance))
-       (list :untranslatable utterance)))
+         for (xlat p o) in (find-facts '* "/r/TranslationOf" utterance)
+         for path = (split-sequence:split-sequence #\/ utterance
+                                                   :remove-empty-subseqs t)
+         when (string-equal (second path) (symbol-name language-code))
+         return (list :english-word xlat)
+         finally (list :foreign-term utterance))
+      (list :untranslatable utterance)))
 
 (defgeneric utterance->human (utterance language-code))
 
 (defgeneric utterance-formatting-string (predicate language-code))
 
-(defmethod utterance-formatting-string 
+(defmethod utterance-formatting-string
     ((predicate integer) language-code)
-  (utterance-formatting-string 
+  (utterance-formatting-string
    (utterance->human predicate language-code) language-code))
-
-(defmacro string-case (compare &body clauses)
-  `(cond
-     ,@(mapcar (lambda (clause)
-                 (if (eql t (car clause))
-                     `(t ,@(cdr clause))
-                     `((string= ,compare ,(car clause)) ,@(cdr clause))))
-               clauses)))
 
 (defmethod utterance-formatting-string
     (predicate (language-code (eql :en)))
@@ -102,7 +99,7 @@
 (defmethod language-name (code (language-code (eql :en)))
   (format nil "the language with code ~A" code))
 
-(defgeneric utterance->human/sub-expression 
+(defgeneric utterance->human/sub-expression
     (keyword utterance language-code))
 
 (defmethod utterance->human/sub-expression ((keyword t) utterance
@@ -156,9 +153,9 @@
     (cerror "skip it" "Can't destructure assertion ~A" a)
     (return-from destructure-assertion-1
       (concatenate 'string "/c/ConceptNet/borked" a)))
-  (destructuring-bind (pred subj obj) 
+  (destructuring-bind (pred subj obj)
       (split-sequence:split-sequence #\, a
-                                     :start 4 :end (- (length a) 2)) 
+                                     :start 4 :end (- (length a) 2))
     (list :clause subj pred obj)))
 
 (defmethod utterance->human ((utterance string) (language-code (eql :en)))
@@ -248,7 +245,7 @@ To quit, enter: Bye!
 (defun converse-dump (stuff)
   (if stuff
       (format t "~&REPLY: ~A"
-           (utterance->human (setf *last-reply* stuff) :en))
+              (utterance->human (setf *last-reply* stuff) :en))
       (format t "~&☹I have no reply to that.")))
 
 (defun converse-read ()
@@ -269,13 +266,13 @@ To quit, enter: Bye!
   (cond
     ((or (null tagged) (zerop (length tagged))) nil)
     (t (let ((nn (loop for (word tag) in tagged
-                  for index from 0
-                  when (member tag '(:nn)) collect index)))
-       (cond
-         ((= 1 (length nn)) (list (nth (car nn) tagged)
-                                  (all-but (car nn) tagged)))
-         ((= 0 (length nn)) (warn "no nouns in ~S" tagged) nil)
-         (t (error "too many nouns for me, I'm confused")))))))
+                    for index from 0
+                    when (member tag '(:nn)) collect index)))
+         (cond
+           ((= 1 (length nn)) (list (nth (car nn) tagged)
+                                    (all-but (car nn) tagged)))
+           ((= 0 (length nn)) (warn "no nouns in ~S" tagged) nil)
+           (t (error "too many nouns for me, I'm confused")))))))
 
 (defun expand-tags-of-verb (tag)
   (ecase tag
@@ -297,10 +294,10 @@ To quit, enter: Bye!
       ((= 1 (length vb ))
        ;; unambiguous: single verb in sentence
        (let* ((vi (car vb))
-             (v (nth vi tagged)))
+              (v (nth vi tagged)))
          (list (cons (car v) (expand-tags-of-verb (second v)))
                (when (plusp vi) (parse-noun-expression (subseq tagged 0 vi)))
-              (when (< vi (length tagged)) (parse-noun-expression (subseq tagged (1+ vi)))))))
+               (when (< vi (length tagged)) (parse-noun-expression (subseq tagged (1+ vi)))))))
       (t (error "Can't parse complex multi-verb sentences, yet")))))
 
 (defun converse/answer-question (string tagged haggard chunky)
@@ -322,7 +319,7 @@ To quit, enter: Bye!
                                       (t nil))) haggard)))
        (format t "~&>~:(~{~A~^/~}~) ~{~A~} ~A?"
                wh vb
-               (descend-langutils-tokens 
+               (descend-langutils-tokens
                 (mapcar #'langutils:phrase->token-array chunky)))
        (format t "~&>~A" (parse-sentence-langnet haggard))))
     (t ;; adjudicate validity of assertion
@@ -366,11 +363,11 @@ To quit, enter: Bye!
        for (word . tags) in haggard
        when tags
        do (ecase (car tags)
-            (:WP                      ; question word or preposition? 
+            (:WP                      ; question word or preposition?
              (setf wh (cons word tags)))
             (:NN (let ((_ (get-anonymous-node)))
                    (push (list _ "/r/IsA" (concept-for word :en)) facts)
-                   (when adjs 
+                   (when adjs
                      (push (mapcar
                             (lambda (adj)
                               (list _ "/r/HasProperty"
@@ -391,7 +388,7 @@ To quit, enter: Bye!
        do (format *trace-output*
                   "~& Parsing: so far ~S~%    dangling bits: ~@[prep ~S ~]~@[be ~S ~]~@[have ~S ~]~
 ~@[adjs ~S ~]~@[noun ~S ~]~@[verb ~S ~]~@[subj ~S ~]~@[obj ~S ~]~
-~@[wh ~O ~]" 
+~@[wh ~O ~]"
                   facts
                   prep be have adjs noun verb subj obj wh))
     facts))
@@ -401,8 +398,8 @@ To quit, enter: Bye!
 
 (defun tagged-to-haggard (tagged)
   (mapcar
-   (lambda (taggy) 
-     (destructuring-bind (morph &rest tags) 
+   (lambda (taggy)
+     (destructuring-bind (morph &rest tags)
          (split-sequence:split-sequence #\/ taggy)
        (cons morph (mapcar (lambda (tag) (intern tag :keyword)) tags))))
    (split-sequence:split-sequence #\Space tagged)))
@@ -428,17 +425,17 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                  string tagged haggard  ;chunky
                  )
          (string-case (car (car (last haggard 2)))
-                      ("?" (converse/answer-question string tagged haggard ;chunky
-                                                     nil))
-                      ("!" (TODO))
-                      (t (TODO)))))))
+           ("?" (converse/answer-question string tagged haggard ;chunky
+                                          nil))
+           ("!" (TODO))
+           (t (TODO)))))))
 
 (defun converse-repl ()
   (init)
   (format t "~|~&~% Conversation REPL; Gaius Valerius Catullus~%~%")
   (let ((*last-reply*))
     (loop
-       (converse-dump 
+       (converse-dump
         (converse-eval
          (converse-read))))))
 
@@ -468,7 +465,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 (defun load-conceptnet5-csv-database
     (&optional
        (wildcard (make-pathname :host "r2src"
-                                :directory '(:relative "conceptnet5-csv" "assertions")
+                                :directory '(:absolute "conceptnet5-csv" "assertions")
                                 :name :wild
                                 :type "csv")))
   (format *trace-output* "~&~%Loading ConceptNet5 dataset from ~S" wildcard)
@@ -480,7 +477,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
   (push :conceptnet5 *initialized*))
 
 (defun load-langutils (&optional
-                         (langutils-dir (asdf:system-relative-pathname 
+                         (langutils-dir (asdf:system-relative-pathname
                                          :langutils ".")))
   (let ((*default-pathname-defaults* langutils-dir))
     (langutils:init-langutils))
@@ -499,8 +496,8 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 (defun ensure-hash-value-member (hash-table key value-member)
   (unless (member value-member
                   (let ((orig (gethash key hash-table)))
-             (if (consp orig) orig
-                 (setf (gethash key hash-table) nil))))
+                    (if (consp orig) orig
+                        (setf (gethash key hash-table) nil))))
     (appendf (gethash key hash-table) value-member)))
 
 (defun learn-word-feature (word word-feature)
@@ -579,12 +576,12 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defmethod lex-sentence (sentence (language (eql :en)))
   (let ((word-start nil)
-        (words nil) 
+        (words nil)
         (the-end (1- (length sentence)))
         (whitespacep   (cl-unicode:property-test "WhiteSpace"))
         (letterp       (cl-unicode:property-test "Letter"))
         (numberp       (cl-unicode:property-test "Number"))
-        (latinp        (cl-unicode:property-test "Latin"))) 
+        (latinp        (cl-unicode:property-test "Latin")))
     (macrolet ((collect-literal (word)
                  `(setf words (append words (list ,word))))
                (collect-word ()
@@ -602,28 +599,28 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
          ;; do (format t "~&~%Parse: ~S~%Input: ~A~%~VT⤒~%" words sentence (+ 7 i))
          when (word-end) do (collect-word)
          do (cond
-              
+
               ;; are we able to start reading a new word?
               ((and (null word-start)
                     (funcall latinp char)
                     (funcall letterp char)) (setf word-start i))
-              
+
               ;; continuing within a word?
               ((and word-start
                     (or (char= char #\-)
                         (and (funcall latinp char)
                              (funcall letterp char)))) nil)
-              
+
               ;; whitespace?
               ((funcall whitespacep char) nil)
-              
+
               ;; numbers suck, let's scan ahead and find the end
-              ;; of them. 
+              ;; of them.
               ((funcall numberp char)
                (collect-literal (read-from-string
                                  (coerce (loop
                                             for j from i
-                                            for ch = (elt sentence j) 
+                                            for ch = (elt sentence j)
                                             unless (char= ch #\,)
                                             when (or (funcall numberp ch)
                                                      (char= ch #\.)
@@ -631,38 +628,38 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                                             collect ch
                                             else do (setf i j) and do (loop-finish))
                                          'string))))
-              
+
               ;; punctuation which is syntactically meaningful — these
               ;; are effectively the same thing as words, for the
               ;; purposes of the lexer.
               ((member char +syntactic-punctuation+) (collect-literal (string char)))
-              
+
               ;; word-like symbols.
               ((getf +english-word-symbols+ char)
                (collect-literal (getf +english-word-symbols+ char)))
-              
+
               ;; naked - or -- are translated to a dash
               ((and (char= #\- char)
                     (and (word-end 2)
                          (char= #\- (elt sentence (1+ i))))) (collect-literal "–") (incf i))
               ((and (char= #\- char) (word-end 1)) (collect-literal "–"))
-              
+
               ;; users type ' for ‘’ and we need to detect it. Gross.
               ((and (null word-start)
                     (not (word-end 1))
                     (char= #\' char))
                (collect-literal (or #\‘ #\’)))
-              
+
               ;; a " might be either “”
               ((char= #\" char)
                (collect-literal (or #\“ #\”)))
-              
+
               ;; Apostrophes are evil. Let's begin to examine just how evil, here.
               ((and word-start
                     (char= #\' char))
-               
+
                (cond
-                 
+
                  ;; word ending "in'" actually end "ing"
                  ((and (word-end 1)
                        (> i (+ 2 word-start))
@@ -671,7 +668,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                   (collect-literal (concatenate 'string (subseq sentence word-start i)
                                                 "g"))
                   (setf word-start nil))
-                 
+
                  ;; a trailing ' with a preceding s is a
                  ;; plural-possessive; or, it could be an attempt at a
                  ;; ’ (closing quote)
@@ -681,19 +678,19 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                                          :plural))
                   (setf word-start nil)
                   (collect-literal (or :possessive-s #\’)))
-                 
+
                  ;; other trailing ' are probably a ’
                  ((word-end 1)
                   (collect-word)
                   (collect-literal #\’))
-                 
+
                  ;; 's is pernicious and difficult to decide the meaning-of.
                  ;; It might be a contraction, or a possessive particle.
                  ((and (< (1+ i) the-end)
                        (char= #\s (elt sentence (1+ i)))
                        (word-end 2))
                   (let ((so-far (subseq sentence word-start i)))
-                    (cond 
+                    (cond
                       ;; pronouns of all sorts can only be has or is
                       ((member so-far '("he" "she" "it"
                                         "how" "what" "who" "when" "where"
@@ -717,7 +714,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                       (t
                        (collect-word)   ; technically: must be a noun.
                        (collect-literal '(or :possessive-s "is" "has"))))))
-                 
+
                  ;; I'm
                  ((and (< (1+ i) the-end)
                        (= word-start (1- i))
@@ -728,7 +725,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                   (collect-literal "am")
                   (incf i)
                   (setf word-start nil))
-                 
+
                  ;; 'd
                  ((and (< (1+ i) the-end)
                        (char= #\d (elt sentence (1+ i)))
@@ -736,7 +733,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                   (collect-word)
                   (collect-literal '(or "had" "would"))
                   (incf i))
-                 
+
                  ;; n't
                  ((and (< (1+ i) the-end)
                        (char= #\n (elt sentence (1- i)))
@@ -751,7 +748,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                   (collect-literal "not")
                   (setf word-start nil)
                   (incf i 2))
-                 
+
                  ;; 're
                  ((and (< (+ 2 i) the-end)
                        (char= #\r (elt sentence (1+ i)))
@@ -760,7 +757,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                   (collect-word)
                   (collect-literal "are")
                   (incf i 3))
-                 
+
                  ;; 've
                  ((and (< (+ 2 i) the-end)
                        (char= #\v (elt sentence (1+ i)))
@@ -769,7 +766,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                   (collect-word)
                   (collect-literal "have")
                   (incf i 3))
-                 
+
                  ;; 'll
                  ((and (< (+ 2 i) the-end)
                        (char= #\l
@@ -779,11 +776,11 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                   (collect-word)
                   (collect-literal '(or "shall" "will"))
                   (incf i 3))
-                 
+
                  ;; in all other cases, assume it's a letterlike
                  ;; symbol. keep reading the word.
                  (t nil)))
-              
+
               (t (cerror "Ignore and continue"
                          "Unhandled symbol in input stream: ~S in:~%~A ★~A★ ~A"
                          char (subseq sentence 0 i)
@@ -793,65 +790,66 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defgeneric potential-parts-of-speech (word language))
 
-(#-later defvar
- #+later define-constant
-         english-core-words
-         '(|the|  (:article :definite)
-           |a|     ((or (:noun :letter) (:article :indefinite :should-not-precede-vowel)))
-           |an|    ((or (:if :archaic) (:article :indefinite :must-precede-vowel)))
-           |no|    ((or (:article :negative) :determinant :negation))
-           |this|  ((or :determinant (:pronoun :impersonal)))
-           |am|    ((or (:verb :1person :singular :copula :present :active :indicative)
-                     (:assist-verb :1person :singular :present :active)))
-           |is|    ((or (:verb :3person :singular :copula :present :active :indicative)
-                     (:assist-verb :3person :singular :present :active)))
-           |are|   ((or (:verb (or :1person :3person) :plural :copula :present :active :indicative)
-                     (:verb :2person (or :singular :plural) :copula :active)
-                     (:assist-verb (or (:2person (or :singular :plural))
-                                          ((or :1person :3person) :plural)) :present :active)))
-           |be|    ((or (:verb :present :participle)
-                     (:verb :1person :subjunctive)))
-           |were|  ((or (:verb (or :2person :3person) :subjunctive)
-                     (:verb :2person :active :indicative :past))))
-    #+later :test #+later 'equal)
+(define-constant
+    +english-core-words+
+    '(:the  (:article :definite)
+      :a     ((or (:noun :letter) (:article :indefinite :should-not-precede-vowel)))
+      :an    ((or (:if :archaic) (:article :indefinite :must-precede-vowel)))
+      :no    ((or (:article :negative) :determinant :negation))
+      :this  ((or :determinant (:pronoun :impersonal)))
+      :am    ((or (:verb :1person :singular :copula :present :active :indicative)
+               (:assist-verb :1person :singular :present :active)))
+      :is    ((or (:verb :3person :singular :copula :present :active :indicative)
+               (:assist-verb :3person :singular :present :active)))
+      :are   ((or (:verb (or :1person :3person) :plural :copula :present :active :indicative)
+               (:verb :2person (or :singular :plural) :copula :active)
+               (:assist-verb (or (:2person (or :singular :plural))
+                                 ((or :1person :3person) :plural)) :present :active)))
+      :be    ((or (:verb :present :participle)
+               (:verb :1person :subjunctive)))
+      :were  ((or (:verb (or :2person :3person) :subjunctive)
+               (:verb :2person :active :indicative :past))))
+  :test #'equalp)
 
-(defvar punctuation
-  '(#\. (:punctuation :sentence-terminal :statement)
-    #\, (or (:punctuation :list-separator)
-         (:punctuation :vocative-separator)
-         (:punctation :phrase-disambiguator)
-         (:punctuation :in-quotes-final-sentence-full-stop))
-    #\en_dash (or (:punctuation :vocative-separator)
-               (:punctation :annominative-separator)
-               (:punctation :phrase-disambiguator))
-    #\em_dash (or (:punctuation :vocative-separator)
-         (:punctation :annominative-separator)
-         (:punctation :phrase-disambiguator))
-    #\; (or (:punctation :clause-splitting)
-         (:punctuation :list-separator-superior))
-    #\: (or (:punctuation :vocative-separator)
-         (:punctuation :phrase-spliting))
-    #\! (:punctuation :sentence-terminal :exclamation)
-    #\? (:punctuation :sentence-terminal :interrogative)
-    #\‽ (:punctuation :sentence-terminal :exclamation :interrogative)
-    #\/ (:stroke)
-    #\" (:error)))
+(define-constant +punctuation+
+    '(#\. (:punctuation :sentence-terminal :statement)
+      #\, (or (:punctuation :list-separator)
+           (:punctuation :vocative-separator)
+           (:punctuation :phrase-disambiguator)
+           (:punctuation :in-quotes-final-sentence-full-stop))
+      #\en_dash (or (:punctuation :vocative-separator)
+                 (:punctuation :annominative-separator)
+                 (:punctuation :phrase-disambiguator))
+      #\em_dash (or (:punctuation :vocative-separator)
+                 (:punctuation :annominative-separator)
+                 (:punctuation :phrase-disambiguator))
+      #\; (or (:punctuation :clause-splitting)
+           (:punctuation :list-separator-superior))
+      #\: (or (:punctuation :vocative-separator)
+           (:punctuation :phrase-spliting))
+      #\! (:punctuation :sentence-terminal :exclamation)
+      #\? (:punctuation :sentence-terminal :interrogative)
+      #\‽ (:punctuation :sentence-terminal :exclamation :interrogative)
+      #\/ (:stroke)
+      #\" (:error))
+  :test #'equalp)
 
-(defvar paired-punctuation 
-  '((#\( #\)) (:parenthetical)
-    (#\“ #\”) (:quotation)
-    (#\‘ #\’) (:quotation)
-    (#\« #\») (:quotation)
-    (#\¿ #\?) (:interrogative)
-    (#\¡ #\!) (:exclamation)))
+(define-constant +paired-punctuation+
+    '((#\( #\)) (:parenthetical)
+      (#\“ #\”) (:quotation)
+      (#\‘ #\’) (:quotation)
+      (#\« #\») (:quotation)
+      (#\¿ #\?) (:interrogative)
+      (#\¡ #\!) (:exclamation))
+  :test #'equalp)
 
 (defun forgotten-punctuation (set)
   (remove-if (lambda (char)
-               (getf punctuation char))
+               (getf +punctuation+ char))
              (remove-if (lambda (char)
                           (find-if (lambda (el)
-                                    (member char el))
-                                  paired-punctuation))
+                                     (member char el))
+                                   +paired-punctuation+))
                         set)))
 
 (defmethod potential-parts-of-speech (word (language (eql :en)))
@@ -860,10 +858,10 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
     ((and (consp word) (keywordp (car word))) word)
     ((and (stringp word) (= 1 (length word)))
      (let ((char (elt word 0)))
-       (if-let ((interp (getf punctuation char)))
+       (if-let ((interp (getf +punctuation+ char)))
          interp
          (if-let ((start (find-if (lambda (el)
-                                    (eql (car el) char)) paired-punctuation)))
+                                    (eql (car el) char)) +paired-punctuation+)))
            :punctuation-start-pair
            :mystery))))
     ((or-list-p word)
@@ -871,7 +869,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
            (mapcar (lambda (maybe) (potential-parts-of-speech maybe :en))
                    (cdr word))))
     (t (or (and (stringp word)
-                (getf english-core-words (intern (string-downcase word))))
+                (getf +english-core-words+ (intern (string-upcase word) :keyword)))
            (let ((matches (loop for pos in (wordnet:parts-of-speech)
                              when (wordnet:cached-index-lookup word pos) collect pos)))
              (case (length matches)
@@ -884,21 +882,27 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 (defmethod tag-sentence (sentence (language (eql :en)))
   (cond ((or-list-p sentence)
          (cons (car sentence)
-               (mapcar (lambda (each) (tag-sentence each :en)) (cdr sentence))))
-        ((find-if #'or-list-p sentence :from-end t)
+               (mapcar (rcurry #'tag-sentence :en) (cdr sentence))))
+        ((any-or sentence)
          (tag-sentence (superpose-or sentence) :en))
-        (t
-         (superpose-or 
-          (loop for word in sentence
-             for parts = (potential-parts-of-speech word :en) 
-             collect
-               (cond
-                 ((null parts) :unknown)
-                 ((or-list-p parts) (list word parts))
-                 ((consp parts) (cons word parts))
-                 (t (list word parts))))))))
+        (t (superpose-or
+            (loop for word in sentence
+               for parts = (potential-parts-of-speech word :en)
+               collect
+                 (cond
+                   ((null parts) :unknown)
+                   ((or-list-p parts) (list word parts))
+                   ((consp parts) (cons word parts))
+                   (t (list word parts))))))))
 
-(defun tagged-to-string (word) 
+(defun collapse (phrase)
+  (cond
+    ((atom phrase) phrase)
+    ((null phrase) nil)
+    ;;    ((and-list-p phrase) (error "TODO"))
+    (t (error "TODO"))))
+
+(defun tagged-to-string (word)
   (cond
     ((or-list-p word)
      (format nil "[~{~A~^, or ~}]" (mapcar #'tagged-to-string (cdr word))))
@@ -907,85 +911,153 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
     (t (format nil "~A (~(~{~A~^, ~_~}~))" (car word) (cdr word)))))
 
 (defun print-tagged (sentence &optional (stream t))
-    (if (or-list-p sentence)
-        (format stream"~&~{~A~^~&or: ~}" 
-                (mapcar (lambda (alt) (print-tagged alt nil)) (cdr sentence)))
-        (format stream"~&~{~A~^ ~_~}"
-                (mapcar #'tagged-to-string
-                        sentence))))
+  (if (or-list-p sentence)
+      (format stream"~&~{~A~^~&or: ~}"
+              (mapcar (lambda (alt) (print-tagged alt nil))
+                      (cdr sentence)))
+      (format stream"~&~{~A~^ ~_~}"
+              (mapcar #'tagged-to-string
+                      sentence))))
 
 (defun or-list-p (thing)
   (and (consp thing) (eql 'or (car thing))))
-
-(defun merge-or-list (list)
-  (assert (eql (car list) 'or))
-  (cons (car list)
-        (remove-duplicates 
-         (loop for el in (cdr list) 
-            if (or-list-p el)
-            append (cdr el)
-            else collect el)
-         :test 'equal)))
 
 (defun list-before (list index)
   (check-type list cons)
   (check-type index (integer 0 *))
   (if (plusp index) (subseq list 0 index) (values)))
 
-(defun burgeon (list alt index)
-  (check-type list cons) 
-  (check-type index (integer 0 *))
-  (check-type alt (or cons atom))
-  (typecase alt 
-    ;; This case is easy, and works reliably, and can probably be
-    ;; optimized pretty heavily.
-    (atom (let ((returning (copy-list list)))
-            (setf (nth index returning) alt)
-            returning))
-    ;; This case is a pain in the ass.
-    (cons (cond
-            ((zerop index) (append alt (cdr list)))
-            (t
-             (append (subseq list 0 index)
-                     alt
-                     (when (< index (length list))
-                       (subseq list (1+ index)))))))))
+(defun any-or (list)
+  (and (consp list)
+       (or (or-list-p list)
+           (any #'any-or list))))
 
-(defun superpose-within-list (list)
-  (loop
-     for el in list
-     for i from 0
-     when (or-list-p el)
-     do (return-from superpose-within-list
-          (cons (car el)
-                (mapcar (lambda (alt) (burgeon list alt i))
-                        (cdr el))))))
+(defun superpose-or/immediate (phrase)
+  (logic-trace "~&Superposition (immediate) of the logical OR assertion:~%~A" (treely phrase))
+  (let ((members (remove-duplicates (cdr phrase) :test #'equalp)))
+    (if (null (cdr members))
+        (car members) 
+        (cons (car phrase) members))))
 
-(defun superpose-or (list)
-  (cond
-    ((atom list) list)
-    ((or-list-p list)
-     (cond 
-       ((find-if #'or-list-p (cdr list)) (superpose-or (merge-or-list list)))
-       ((null (cddr list)) (superpose-or (cdr list)))
-       (t (cons (car list)
-                (remove-duplicates
-                 (loop 
-                    for sub-list in (cdr list)
-                    collecting (superpose-or sub-list))
-                 :test 'equal)))))
-    ((find-if #'or-list-p list :from-end t)
-     (merge-or-list (superpose-within-list list)))
-    (t (mapcar #'superpose-or list))))
+(defun inject-into-list (list pos inject)
+  (check-type list cons)
+  (check-type pos (integer 0 *))
+  (assert (not (null inject)))
+  (flet ((lastp (n) (= n (length list))))
+    (typecase inject
+      (atom (let ((copy (copy-list list)))
+              (setf (nth pos copy) inject)
+              copy))
+      (cons (cond
+              ((zerop pos)
+               (append inject (subseq list (1+ pos))))
+              ((lastp pos)
+               (append (subseq list 0 pos) inject))
+              (t (append (subseq list 0 pos)
+                         inject
+                         (subseq list (1+ pos)))))))))
+
+(defun superpose-or/next-depth (phrase)
+  (logic-trace "~&Lifting a nested OR assertion from a lower level:~%~A" (treely phrase))
+  (cons (car phrase) 
+        (mapcan (lambda (part)
+                  (if (or-list-p part)
+                      (cdr part)
+                      (list part))) (cdr phrase))))
+
+(defun superpose-or/cross-product (phrase)
+  (logic-trace "~&Going to perform a cross-product on:~%~A" (treely phrase))
+  (let ((pos (position 'or phrase :key #'car?)))
+    (if pos 
+        (progn (logic-trace "~&Found the OR list at index ~:D" pos)
+               (let ((alternatives (cdr (elt phrase pos))))
+                 (logic-trace "~&Creating the cross-product with these alternatives:~{~% •~A~}" alternatives)
+                 (let ((cross (cons 'or (mapcar (curry #'inject-into-list phrase pos) alternatives))))
+                   (if (any-or (cdr cross))
+                       (progn (logic-trace "~&Initial cross-product yields:~%~A
+This contains further OR lists which can be superposed."
+                                           cross)
+                              (superpose-or cross))
+                       cross))))
+        (error "No subordinate OR lists found."))))
+
+(defun car? (x) (and (consp x) (car x)))
+
+(defvar *superpose-or/recursion-guard* nil)
+
+(defun superpose-or (phrase)
+  "If a phrase contains any expressions of the form (OR x …), this 
+function will create top-level superpositions, such as:
+
+ • Nested OR expressions will be lifted to create a single top-level
+   OR expression that is a cross-product of all nested expressions;
+ • Any WRITEME
+
+⁂See TEST-PARSER for not really docs in the form of tests
+"
+  (logic-trace "~&Superpostition of any OR expressions in:~&~A" (treely phrase))
+  (let ((*superpose-or/recursion-guard* (or (and *superpose-or/recursion-guard*
+                                                 (1- *superpose-or/recursion-guard*))
+                                            (progn
+                                              (logic-trace "~&Not recursive yet; initializing recursion guard to 10")
+                                              10))))
+    (logic-trace "~&(Recursion guard is currently set to allow ~R further level~:P)" *superpose-or/recursion-guard*)
+    (unless (plusp *superpose-or/recursion-guard*)
+      (break "Recursion guard stricken; you probably need to abort."))
+    (cond 
+      ((atom phrase) phrase)
+      ((null phrase) nil)
+                                        ;     ✗ ((null (cdr phrase)) (list (superpose-or (car phrase))))
+      
+      ;; No alternatives: (OR x) ⇒ x
+      ((and (or-list-p phrase)
+            (null (cdr (cdr phrase)))) (second phrase))
+
+      ;; (OR x (OR y z)) ⇒ (OR x y z) 
+      ;; 
+      ;; (sort of associative property)
+      ((and (or-list-p phrase)
+            (any #'or-list-p (cdr phrase))) (superpose-or/next-depth phrase))
+
+      ;; (x (OR y z)) ⇒ (OR (x y) (x z))
+      ;;
+      ;; (simplify as a cross-“product”)
+      ((any #'or-list-p (cdr phrase)) (superpose-or/cross-product phrase))
+
+      ;; nested OR is farther down; need to elevate or eliminate it at
+      ;; that lower level.
+      ((any-or phrase) (logic-trace "~& There's an OR phrase in there, but it's buried.
+I'm going to try to dig for it, and probably fail.")
+       (let* ((n (mapcar (compose #'superpose-or) phrase))
+              (m (superpose-or n)))
+         (logic-trace "~3&OK, so I started with:~%~A
+
+I saw some OR lists buried in there, so I tried to apply OR
+superposition logic to each of the top-level elements:~{~% •~A~}
+
+That got me: ~%~A
+Then, I ran that through one more try, and got:~%~A"
+                      (treely phrase) phrase (treely n) (treely m))
+         m))
+
+      ;; any other simplifications possible should occur here
+      ((or-list-p phrase) (superpose-or/immediate phrase))
+
+      ;; whatever's left is untouchable here
+      (t phrase))))
 
 (defun identify-main-verb (tagged-sentence)
-  (cons 'or 
+  (cons 'or
         (loop for word in tagged-sentence
            for i from 0
            when (member :verb (cdr word))
-           collect (burgeon tagged-sentence (append word :main) i))))
+           collect (inject-into-list tagged-sentence i (append word :main)))))
 
 (defgeneric parse-structure (clause language context antecedents))
+
+#+ (or) ; this one might be better
+(defun any-cdr (needle haystacks)
+  (reduce #'or (mapcar (curry #'member needle) (mapcar #'cdr haystacks))))
 
 (defun any-cdr (needle haystacks)
   (loop for stack in (mapcar #'cdr haystacks)
@@ -993,8 +1065,10 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
      return t))
 
 (defun assist-verb (clause language verb i &optional (direction :interrogative))
-  (loop for word from 0 to i
-     when t return nil))
+  (declare (ignorable clause language verb i direction))
+  (break "I don't handle ASSIST-VERB yet")
+  #+ (or)  (loop for word from 0 to i
+              when t return nil))
 
 (defun find-subordinated-clauses (clause)
   (loop for word in clause
@@ -1002,78 +1076,163 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
      do (break "I don't actually handle subordinated clauses yet; found ~S in ~S" word clause))
   clause)
 
-(defmethod parse-structure (clause (language (eql :en)) (context (eql :sentence)) antecedents)
+(defmethod parse-structure (clause (language (eql :en))
+                            (context (eql :sentence)) antecedents)
   (let ((clause (find-subordinated-clauses clause)))
     (cond ((any-cdr :interrogative clause)
            (when (and (any-cdr :assist-verb clause)
                       (any-cdr :verb clause))
-               (loop for verb in clause
-                  for i from 0
-                  when (eql (second verb) :assist-verb)
-                  do (assist-verb clause language verb i :interrogative))))
+             (loop for verb in clause
+                for i from 0
+                when (eql (second verb) :assist-verb)
+                do (assist-verb clause language verb i :interrogative))))
           (t (error "Interrogative only")))))
 
+(defvar *interactive-test* t)
+(defvar *tests-pass* 0)
+(defvar *tests-fail* 0)
+
+(defmacro itest (expr vars &rest report)
+  (declare (ignore vars))
+  `(if *interactive-test*
+       (progn
+         (format *terminal-io* "~& ★ Test: ~%")
+         (format *terminal-io* ,@report)
+         (format *terminal-io* "~&~% Test expression: ~%~S" ',expr)
+         (if (y-or-n-p "Run this test?")
+             (let ((out ,expr))
+               (if out
+                   (progn
+                     (incf *tests-pass*)
+                     (format *terminal-io* "~& ✓ Test PASSED ⇒ ~S" out))
+                   (progn
+                     (incf *tests-fail*)
+                     (format *terminal-io* "~& ✗ Test FAILED")
+                     (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report)))))
+             (format *terminal-io* "~& ⁂ Test SKIPPED")))
+       (if ,expr
+           (incf *tests-pass*)
+           (progn 
+             (incf *tests-fail*)
+             (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report))))))
+
 (defun test-parser ()
-  (assert (null (forgotten-punctuation +syntactic-punctuation+))
-          (punctuation paired-punctuation)
+  (format t "~&Testing parser components; any failure should signal an error.")
+  (when *interactive-test*
+    (format t "~&Testing parser components (interactively)"))
+  (setf *tests-pass* 0 *tests-fail* 0)
+  (itest (null (forgotten-punctuation +syntactic-punctuation+))
+          ()
           "Forgotten punctuation: ~S
 All punctuation in +SYNTACTIC-PUNCTUATION+
-must be defined in PUNCTUATION or PAIRED-PUNCTUATION" (forgotten-punctuation +syntactic-punctuation+))
-  (assert (null (forgotten-punctuation +word-terminating-punctuation+))
-          (punctuation paired-punctuation)
+must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
+          (forgotten-punctuation +syntactic-punctuation+))
+  (itest (null (forgotten-punctuation +word-terminating-punctuation+))
+          ()
           "Forgotten punctuation: ~S
 All punctuation in +WORD-TERMINATING-PUNCTUATION+
-must be defined in PUNCTUATION or PAIRED-PUNCTUATION" (forgotten-punctuation +word-terminating-punctuation+))
+must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
+          (forgotten-punctuation +word-terminating-punctuation+))
   (fresh-line)
-  (assert (equal (merge-or-list '(or a (or b c))) '(or a b c)))
-  (assert (equal (burgeon '(thing (or (1 2) (3 4))) '(1 2) 1)
-                 '(thing 1 2)))
-  (assert (equal (superpose-within-list '(thing (or 1 2)))
-                 '(or (thing 1) (thing 2))))
-  (assert (equal (superpose-within-list '(thing (or (:one 1) (:two 2))))
-                 '(or (thing :one 1) (thing :two 2))))
-  (assert (equal (superpose-or '(thing (:one (or (1 2) (3 4)))))
-                 '(or (thing (or (:one 1 2) (:one 3 4))))))
-  (assert (equal (superpose-or '("thing" (or :one :two)))
-                 '(or ("thing" :one) ("thing" :two))))
-  (assert (equal (superpose-or '("thing" (or (:one 1) (:two 2))))
-                 '(or ("thing" :one 1) ("thing" :two 2))))
-  (assert (equal (burgeon '(dog (or :noun :verb)) :noun 1)
-                 '(dog :noun))
+  (itest (equalp (superpose-or '(or a (or b c))) 
+                  '(or a b c))
+          () "A list containing nested OR expressions must reduce to a single list.")
+  (itest (equalp (inject-into-list '(thing (or (1 2) (3 4))) 1 '(1 2))
+                  '(thing 1 2))
+          () "Replacing a sublist with a new list must work at the end.")
+  (itest (equalp (inject-into-list '(a b c) 0 '(1 2 3))
+                  '(1 2 3 b c))
+          () "Relpacing a sub-list with a new list must work at the beginning.")
+  (itest (equalp (superpose-or '(thing (or 1 2)))
+                  '(or (thing 1) (thing 2)))
+          () "A buried OR expression must be lifted to the highest level.")
+  (itest (equalp (superpose-or '(thing (or (:one 1) (:two 2))))
+                  '(or (thing :one 1) (thing :two 2)))
+          () "A buried OR expression must be lifted to the highest level.")
+  (itest (equalp (superpose-or '(thing (:one (or (1 2) (3 4)))))
+                  '(or (thing (:one 1 2)) (thing (:one 3 4))))
+          () "A buried OR expression must be lifted to the highest level.")
+  (itest (equalp (superpose-or '(or it)) 
+                  'it)
+          () "An OR expression with only one alternative must be simplified to a constant.")
+  (itest (equalp (superpose-or '(or it it it)) 
+                  'it)
+          () "An OR expression with only one alternative (even if
+         re-expressed more than once) must be simplified to
+         a constant.")
+  (itest (equalp (superpose-or '(or (1 2 3 4) (1 (or 2 2) (or 3 3) (or 4)))) 
+                  '(1 2 3 4))
+          () "An OR expression which reduces to anly one alternative
+          must be simplified to a constant after all nested OR
+          expressions have likewise been normalized.")
+  (itest (equalp (superpose-or '("thing" (or :one :two)))
+                  '(or ("thing" :one) ("thing" :two)))
+          () "An OR expression being lifted must deal with any type of
+          nested sequence (including a string or array) as well as
+          atoms or constructed cells.")
+  (itest (equalp (superpose-or '("thing" (or (:one 1) (:two 2))))
+                  '(or ("thing" :one 1) ("thing" :two 2)))
+          () "An OR expression being lifted must deal with any type of
+          nested sequence (including a string or array) as well as
+          atoms or constructed cells.")
+  (itest (equalp (inject-into-list '(dog (or :noun :verb)) 1 :noun)
+                  '(dog :noun))
           nil "Burgeoning should replace element 1 of a 2-part list")
-  (assert (equal (burgeon '((or cat dog) :pet) 'cat 0)
-                 '(cat :pet))
+  (itest (equalp (inject-into-list '((or cat dog) :pet) 0 'cat)
+                  '(cat :pet))
           nil "Burgeoning should replace element 0 of a 2-part list")
-  (assert (equal (burgeon '(dog :being (or :noun :verb))  :noun 2)
-                 '(dog :being :noun))
+  (itest (equalp (inject-into-list '(dog :being (or :noun :verb)) 2 :noun)
+                  '(dog :being :noun))
           nil "Burgeoning should replace element 2 of a 3-part list")
-  (assert (equal (burgeon '((or :noun :verb)) :noun 0)
-                 '(:noun))
+  (itest (equalp (inject-into-list '((or :noun :verb)) 0 :noun)
+                  '(:noun))
           nil "Burgeoning should replace element 0 of a 1-part list")
+  (itest (equalp (collapse '(and a (not a)))
+                  nil)
+          nil "An assertion to be A ∧ ¬A must reduce to NIL")
+  (itest (equalp (collapse '(and a a))
+                  'a)
+          nil "A repeated AND assertion must reduce to a constant.")
+  (itest (equalp (collapse '(or a (not a)))
+                  t)
+          nil "An assertion of A ∨ ¬A must reduce to T")
+  (itest (equalp (collapse '(and t nil))
+                  nil)
+          nil "An assertion of truth and falsity must reduce to false.")
+  (itest (equalp (collapse '(or t nil))
+                  t)
+          nil "An assertion of truth or falsity must reduce to truth.")
+  (itest (equalp (collapse '(or nil b)) 'b)
+          nil "An assertion of OR with only one true value reduces to
+                  that value.")
+  (itest (equalp (collapse '(and (or t nil) nil))
+                  nil)
+          nil "( ( T ∨ NIL ) ∧ NIL ) ⇒ NIL")
+  (cerror "Good, keep going" "Passed all the simplest tests")
   (let ((sentence "Why is the cat purple?"))
     (print sentence)
     (fresh-line)
     (princ "Lex:")
     (let ((lexed (lex-sentence sentence :en)))
-      (assert (equal lexed
-                     '("Why" "is" "the" "cat" "purple" "?"))
+      (itest (equalp lexed
+                      '("Why" "is" "the" "cat" "purple" "?"))
               nil "Lexing this sentence should yield the given result")
       (print lexed)
       (fresh-line)
       (princ "Tag:")
       (let ((tagged (tag-sentence lexed :en))
-            (expected '(("Why" :noun) 
+            (expected '(("Why" :noun)
                         (or ("is" :verb :3person :singular :copula :present :active :indicative)
                          ("is" :assist-verb :3person :singular :present :active))
                         ("the" :article :definite)
                         (or ("cat" :noun) ("cat" :verb))
                         (or ("purple" :noun) ("purple" :verb) ("purple" :adjective))
                         ("?" :punctuation :sentence-terminal :interrogative))))
-        (assert (equal tagged expected) (tagged expected)
-                "Expected to tag ~A~%as: ~S~%but instead got~%~S"
-                lexed expected tagged)
-        (print tagged)
-        (fresh-line) 
+        (itest (equalp tagged expected) (tagged expected)
+                "Expected to tag ~A~%as: ~A~%but instead got~%~A"
+                (treely lexed) (treely expected) (treely tagged))
+        (print (treely tagged))
+        (fresh-line)
         (princ "Print tagged:")
         (print-tagged tagged)
         (fresh-line)
@@ -1105,22 +1264,22 @@ must be defined in PUNCTUATION or PAIRED-PUNCTUATION" (forgotten-punctuation +wo
                   (#2# :VERB :3PERSON :SINGULAR :COPULA :PRESENT :ACTIVE :INDICATIVE)
                   (#3# :ARTICLE :DEFINITE) (#4# :VERB) (#5# :ADJECTIVE)
                   (#6# :PUNCTUATION :SENTENCE-TERMINAL :INTERROGATIVE)))))
-          (assert (equal tagged-superposition expected-superposition)
+          (itest (equalp tagged-superposition expected-superposition)
                   (tagged-superposition expected-superposition)
                   "The tagged sentence contains superpositions, which need to be normalized
 into a singular top-level superposed sentence (this is a sort of first normal form,
 which is a cross product of the interior superpositions). This process should have
 returned:
-~S
+~A
 
 Instead, the following was returned:
-~S"
-                  expected-superposition tagged-superposition)
+~A"
+                  (treely expected-superposition) (treely tagged-superposition))
           (print-tagged tagged-superposition)
           (fresh-line)
           (let ((parses
                  (remove-duplicates
-                  (remove-if 
+                  (remove-if
                    #'null
                    (loop for alt in (cdr tagged-superposition)
                       do (terpri)
@@ -1133,11 +1292,20 @@ Instead, the following was returned:
                             (princ "**Alternative dropped: can't parse")
                             (print-tagged alt))))))))
             (terpri) (terpri)
-            (if parses
-                (format t "Found ~:D distinct ways to parse:~{~%~S~}"
-                        (length parses) parses)
-                (format t "Can't parse any alternative. Sentence seems to be nonsense."))))))))
+            (format t "Found ~:D distinct ways to parse:~{~%~S~}"
+                    (length parses) parses))))))
+  
+  (format *trace-output* "~& Tests completed~%~%Ran ~:D tests~% ✓ ~:D test~:P passed~% ✗ ~:D test~:P failed"
+          (+ *tests-pass* *tests-fail*) *tests-pass* *tests-fail*)
+  (when (plusp *tests-fail*)
+    (format *trace-output* "~& (SETQ CATULLUS::*INTERACTIVE-TESTS* T) for more debugging aids")))
 
+(defun treely (sexp &optional (indent 2) (carp nil))
+  (if (consp sexp)
+      (format nil "~:[~%~VT~; ~*~](~A ~{~A~^ ~})" carp indent
+              (treely (car sexp) (+ 2 indent) t)
+              (mapcar (rcurry #'treely (+ 2 indent) nil) (cdr sexp)))
+      (format nil "~S" sexp)))
 
 
 
@@ -1145,8 +1313,14 @@ Instead, the following was returned:
 
 
 (defun server-start (argv)
+  (declare (ignorable argv))
   (romance:server-start-banner "Catullus"
                                "Gaius Valerius Catullus"
                                "Intelligent Agents and Language Server")
+  (test-parser)
   (format t "~& Conversation REPL starting…")
   (converse-repl))
+
+
+
+
