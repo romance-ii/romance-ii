@@ -1,8 +1,8 @@
 (defpackage :lutatius
   (:use :cl :alexandria)
   (:documentation "Lutatius is the module responsible for character
-  attributes and inventory, and how the two interact \(e.g. magical
-  items might buff/debuff the character)
+ attributes and inventory, and how the two interact \(e.g. magical
+ items might buff/debuff the character)
 
 Gaius Lutatius Catulus [Latin: C·LVTATIVS·C·F·CATVLVS] was a Roman
 statesman and naval commander in the First Punic War.  Temple to
