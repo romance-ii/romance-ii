@@ -9,7 +9,7 @@
                :apply-argv
                :bordeaux-threads
                :buildapp
-               :cl-bullet2l
+               #+romance-with-physics  :cl-bullet2l
                :cl-fad
                :cl-unicode
                :cffi
@@ -34,8 +34,10 @@
    (:module "Appius-Claudius-Caecus"
             :depends-on ("common")
             :components ((:file "package")
+                         (:file "socket-structures"
+                                :depends-on ("package"))
                          (:file "Appius-Claudius-Caecus"
-                                :depends-on ("package"))))
+                                :depends-on ("package" "socket-structures"))))
    (:module "Clodia-Metelli-Pulcher"
             :depends-on ("common")
             :components ((:file "package")
