@@ -1,6 +1,16 @@
 (in-package :common-lisp-user)
 
-(defpackage :romans-compiler-setup (:use :cl))
+(defpackage :romans-compiler-setup 
+  (:use :cl)
+  (:export #:*path/etc*
+           #:*path/share*
+           #:*path/r2share*
+           #:*path/bin*
+           #:*path/var*
+           #:*path/tmp*
+           #:*path/var/tmp*
+           #:*path/r2src*
+           #:*path/r2project*))
 (in-package :romans-compiler-setup)
 
 (unless *load-pathname*
@@ -47,7 +57,7 @@ If your OS *is* a Linux, and your compiler simply does not specify
 the :LINUX keyword in *FEATURES*, please advise us with this copy of
 your CL:*FEATURES*: ~%~S" *features*)
 
-#-x86-64 
+#-x86-64
 (warn "*FEATURES* omits X64-64.
 
 Your machine type is reported as ~A
@@ -69,55 +79,53 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 #+sbcl
 (progn
   (setf sb-impl::*default-external-format* :utf-8)
-        
+
   (defun uninteresting-ordinary-function-redefinition-p (warning)
     (and
      (or (typep warning 'sb-kernel::redefinition-with-defun)
          (typep warning 'sb-kernel::redefinition-with-defmacro))
-     ;; Shared logic.                   ;
+     ;; Shared logic.
      (let ((name (sb-kernel::redefinition-warning-name warning)))
        (not (sb-kernel::interesting-function-redefinition-warning-p
              warning
              (or (fdefinition name)
                  (macro-function name)))))))
-        
-  (deftype my-uninteresting-redefinition ()
+
+  (deftype uninteresting-redefinition ()
     '(or
       (satisfies uninteresting-ordinary-function-redefinition-p)))
-        
-  (setf sb-ext:*muffled-warnings* 'my-uninteresting-redefinition))
+
+  (setf sb-ext:*muffled-warnings* 'uninteresting-redefinition))
 
 ;;; Define “Hosts” for Logical Pathnames
 
-(defun set-logical-pathname-host  (host dir)
-  (setf (logical-pathname-translations host)
-        `(("**;*.*.*" ,(merge-pathnames "**/" dir))))) ;
+;; (defun set-logical-pathname-host  (host dir)
+;;   (setf (logical-pathname-translations host)
+;;         `(("**;*.*.*" ,(merge-pathnames "**/" dir)))))
 
-(set-logical-pathname-host "etc" (make-pathname :directory '(:absolute "etc")))
-(set-logical-pathname-host "share" (make-pathname :directory '(:absolute "usr" "share")))
-(set-logical-pathname-host "r2share" (make-pathname :directory
-                                                    '(:absolute "usr" "share" "romance-ii")))
-(set-logical-pathname-host "bin" (make-pathname :directory '(:absolute "usr" "bin")))
-(set-logical-pathname-host "var" "/var/lib/romance-ii/")
-(set-logical-pathname-host "tmp" "/tmp/")
-(set-logical-pathname-host "vartmp" "/var/tmp/")
-(set-logical-pathname-host "r2src"
-                           (make-pathname :directory 
-                                          `(,@(pathname-directory *load-pathname*) "..")))
-(set-logical-pathname-host "r2project"
-                           (make-pathname :directory
-                                          `(,@(pathname-directory *load-pathname*) ".." "..")))
+(defparameter *path/etc* (make-pathname :directory "/etc/"))
+(defparameter *path/share* (make-pathname :directory "/usr/share/"))
+(defparameter *path/r2share*
+  (make-pathname :directory "/usr/share/romance-ii"))
+(defparameter *path/bin* (make-pathname :directory "/usr/bin/"))
+(defparameter *path/var* (make-pathname :directory "/var/lib/romance-ii/"))
+(defparameter *path/tmp* (make-pathname :directory "/tmp/"))
+(defparameter *path/var/tmp* (make-pathname :directory "/var/tmp/"))
+(defparameter *path/r2src* 
+  (merge-pathnames "../" 
+                   (make-pathname :directory (pathname-directory *load-pathname*))))
+(defparameter *path/r2project*
+  (merge-pathnames "../../" *load-pathname*))
 
-(let ((r2src (merge-pathnames
-              (make-pathname :host "r2src" :directory "romans"))))
+(let ((r2src (merge-pathnames "romans" *path/r2src*)))
   (pushnew r2src asdf:*central-registry* :test 'equal))
 
 (let ((bullet-src (merge-pathnames "romans/lib/cl-bullet2l/bullet-physics/"
-                               (translate-logical-pathname (make-pathname :host "r2src")))))
+                                   *path/r2src*)))
   (pushnew bullet-src asdf:*central-registry* :test 'equal))
 
 (let ((wn-src (merge-pathnames "romans/lib/smedict-old/"
-                               (translate-logical-pathname (make-pathname :host "r2src")))))
+                               *path/r2src*)))
   (pushnew wn-src asdf:*central-registry* :test 'equal))
 
 (defvar *os-name* (or #+android "Android"
@@ -132,25 +140,25 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (unless (boundp (intern "+BUILD-OS+" :cl-user))
     (eval `(progn
-             (defconstant ,(intern "+BUILD-OS+" :cl-user) 
+             (defconstant ,(intern "+BUILD-OS+" :cl-user)
                ,(intern (string-upcase *os-name*) :keyword))
              (defconstant ,(intern "+BUILD-CPU+" :cl-user)
                ,(intern (string-upcase (machine-type)) :keyword))
              (defconstant ,(intern "+BUILD-LIBDIR+" :cl-user) #p".")))))
 
-(set-logical-pathname-host "lib" (or (eval (intern "+BUILD-LIBDIR+" :cl-user))
-                                     (merge-pathnames 
-                                      ;; TODO: other 64-bit systems add to first list
-                                      #+(or X86-64) "/usr/lib64"
-                                      #-(or X86-64) "/usr/lib"
-                                      )))
+(defparameter *path/lib* (or (eval (intern "+BUILD-LIBDIR+" :cl-user))
+                             (merge-pathnames
+                              ;; TODO: other 64-bit systems add to first list
+                              #+(or X86-64) "/usr/lib64/"
+                              #-(or X86-64) "/usr/lib/"
+                              )))
 
-(ql:quickload :cffi)
+(ql:quickload :cffi :verbose nil :prompt nil :explain nil)
 
 (pushnew (merge-pathnames "./lib/cl-bullet2l/" *load-truename*)
          cffi:*foreign-library-directories*
          :test 'equal)
-(pushnew (merge-pathnames (translate-logical-pathname (make-pathname :host "lib")))
+(pushnew *path/lib*
          cffi:*foreign-library-directories*
          :test 'equal)
 
@@ -175,4 +183,3 @@ LIBDIR: ~S
 (declaim (optimize (speed 0) (safety 2) (debug 3) (space 0)))
 
 :romance-ii
-
