@@ -28,7 +28,7 @@
    #:strings-list-p
    #:until
    #:while
-   
+
    ))
 
 (require :prepl)
@@ -42,12 +42,12 @@
 (defvar *repl-ident* nil)
 
 (defun strcat (&rest strings)
-  (reduce (curry #'concatenate 'string) 
+  (reduce (curry #'concatenate 'string)
           (mapcar (lambda (element)
                     (typecase element
                       (cons (reduce #'strcat element))
                       (string element)
-                      (t (princ-to-string element)))) 
+                      (t (princ-to-string element))))
                   (remove-if #'null strings))))
 
 (define-constant +whitespace+
@@ -60,7 +60,7 @@
               #\En_quad #\Em_quad #\En_Space #\Em_Space
               #\Three-per-Em_Space #\Four-per-Em_Space
               #\Six-per-Em_Space #\Figure_Space #\Punctuation_Space
-              #\Thin_Space #\Hair_Space 
+              #\Thin_Space #\Hair_Space
               #\Zero_Width_Space #\Narrow_No-Break_Space
               #\Medium_Mathematical_Space #\Ideographic_Space
               #\Zero_Width_No-Break_Space)
@@ -79,7 +79,7 @@
               #\En_quad #\Em_quad #\En_Space #\Em_Space
               #\Three-per-Em_Space #\Four-per-Em_Space
               #\Six-per-Em_Space #\Figure_Space #\Punctuation_Space
-              #\Thin_Space #\Hair_Space 
+              #\Thin_Space #\Hair_Space
               #\Zero_Width_Space #\Narrow_No-Break_Space
               #\Medium_Mathematical_Space #\Ideographic_Space
               #\Zero_Width_No-Break_Space)
@@ -185,19 +185,19 @@ For example, to octal-escape all characters outside the range of printable ASCII
                    do (cond
                         ((find char escape-chars :test #'char=)
                          (encode-char char))
-                        (t 
+                        (t
                          (vector-push-extend char output)))))
         (vector (let ((range-start (code-char (elt escape-chars 0)))
                       (range-end (code-char (elt escape-chars 1))))
-                  
+
                   (loop for char across string
                      do (cond
-                          ((or (not (char< range-start 
+                          ((or (not (char< range-start
                                            char
                                            range-end))
                                (char= escape-with char))
                            (encode-char char))
-                          (t 
+                          (t
                            (vector-push-extend char output))))))))
     output))
 
@@ -220,7 +220,7 @@ For example, to octal-escape all characters outside the range of printable ASCII
 
 
 
-(defun string-fixed (string target-length &key (trim-p t) 
+(defun string-fixed (string target-length &key (trim-p t)
                                             (pad-char #\Space))
   "Ensure that the string is precisely the length provided, right-padding with PAD-CHAR (Space).
 If the string is too long, it will be truncated. Returns multiple
@@ -231,16 +231,16 @@ string. If the second value is negative, the string was truncated."
   (check-type pad-char character)
   (let* ((trimmed (if trim-p
                       (string-trim +whitespace+ string)
-                      string)) 
+                      string))
          (change-length (- target-length (length trimmed))))
     (values (cond
               ((plusp change-length)
-               (concatenate 'string trimmed 
+               (concatenate 'string trimmed
                             (make-string change-length
                                          :initial-element pad-char)))
               ((minusp change-length)
                (subseq trimmed 0 target-length))
-              (t 
+              (t
                trimmed))
             change-length)))
 
@@ -280,7 +280,7 @@ string. If the second value is negative, the string was truncated."
 
 (defun string-case/literals% (compare clauses)
   (let ((instance (gensym "STRING-CASE")))
-    `(let ((,instance (eval-once ,compare))) 
+    `(let ((,instance (eval-once ,compare)))
        (cond
          ,@(mapcar (lambda (clause)
                      (if (or (eql t (car clause)) (eql 'otherwise (car clause)))
@@ -299,54 +299,55 @@ string. If the second value is negative, the string was truncated."
                    clauses)))))
 
 
-(let* ((num-repeats 2500) 
-       (interning-better-breakpoint 
-        ;; Determine about how many cases there need to be, for interning to be
-        ;; faster than STRING=
-        (flet ((make-random-string (string-length)
-                 (format nil "~{~C~}"
-                         (loop for char from 1 upto (1+ string-length)
-                            collecting (code-char (+ 32 (random 95))))))) 
-          (format *trace-output* "~&;; timing STRING-CASE implementations …")
-          (let ((trials
-                 (loop for n from 1 to 20 
-                    collecting
-                      (loop for num-cases from 1 to 50
-                         for stuff = (loop for case from 1 upto num-cases
-                                        for string = (make-random-string (+ 4 (random 28)))
-                                        collect (list string :nobody))
-                         for expr/literal = (compile 'expr/literal 
-                                                     (list 'lambda '(x)
-                                                           (funcall #'string-case/literals% 
-                                                                    'x stuff)))
-                         for expr/interning = (compile 'expr/interning
-                                                       (list 'lambda '(x)
-                                                             (funcall #'string-case/interning% 
-                                                                      'x stuff)))
-                         for cost/literal = (progn
-                                              (trivial-garbage:gc)
-                                              (let ((start (get-internal-real-time))) 
-                                                (dotimes (i num-repeats)
-                                                  (funcall expr/literal (make-random-string 40)))
-                                                (- (get-internal-real-time) start)))
-                         for cost/interning = (progn
-                                                (trivial-garbage:gc)
-                                                (let ((start (get-internal-real-time))) 
-                                                  (dotimes (i num-repeats)
-                                                    (funcall expr/interning (make-random-string 40)))
-                                                  (- (get-internal-real-time) start)))
-                           
-                         ;; do (format *trace-output* "~&;; STRING-CASE Cost for ~D (~:D×): interning: ~F literals: ~F"
-                         ;;            num-cases num-repeats cost/interning cost/literal)
-                         when (< cost/interning cost/literal)
-                         return num-cases))))
-            (let ((average (round (/ (apply #'+ trials) (length trials)))))
-              (format *trace-output* "~&;;; STRING-CASE trials done; sweet spot is about ~R case~:P"
-                      average)
-              average)))))
+(let ((interning-better-breakpoint
+       ;; Determine about how many cases there need to be, for interning to be
+       ;; faster than STRING=
+       (flet ((make-random-string (string-length)
+                (format nil "~{~C~}"
+                        (loop for char from 1 upto (1+ string-length)
+                           collecting (code-char (+ 32 (random 95)))))))
+         (format *trace-output* "~&;; timing STRING-CASE implementations …")
+         (let ((trials
+                (loop for trial-count from 1 to (* 5 (+ 5 (random 5)))
+                   for num-repeats = (* 1000 (+ 2 (random 4)))
+                   collecting
+                     (loop for num-cases from 1 by (1+ (random 2))
+                        for stuff = (loop for case from 1 upto num-cases
+                                       for string = (make-random-string (+ 4 (random 28)))
+                                       collect (list string :nobody))
+                        for expr/literal = (compile 'expr/literal
+                                                    (list 'lambda '(x)
+                                                          (funcall #'string-case/literals%
+                                                                   'x stuff)))
+                        for expr/interning = (compile 'expr/interning
+                                                      (list 'lambda '(x)
+                                                            (funcall #'string-case/interning%
+                                                                     'x stuff)))
+                        for test-string = (make-random-string 40)
+                        for cost/literal = (progn
+                                             (trivial-garbage:gc)
+                                             (let ((start (get-internal-real-time)))
+                                               (dotimes (i num-repeats)
+                                                 (funcall expr/literal test-string))
+                                               (- (get-internal-real-time) start)))
+                        for cost/interning = (progn
+                                               (trivial-garbage:gc)
+                                               (let ((start (get-internal-real-time)))
+                                                 (dotimes (i num-repeats)
+                                                   (funcall expr/interning test-string))
+                                                 (- (get-internal-real-time) start)))
+
+                        ;; do (format *trace-output* "~&;; STRING-CASE Cost for ~D (~:D×): interning: ~F literals: ~F"
+                        ;;            num-cases num-repeats cost/interning cost/literal)
+                        when (< cost/interning cost/literal)
+                        return num-cases))))
+           (let ((average (round (/ (apply #'+ trials) (length trials)))))
+             (format *trace-output* "~&;;; STRING-CASE trials done; sweet spot is about ~R case~:P after ~R trial~:P"
+                     average (length trials))
+             average)))))
 
   (defmacro string-case (compare &body clauses)
-    "Like a CASE expression, but using STRING= to campare cases. 
+    "Like a CASE expression, but using STRING= to campare cases.
 
 Example:
 
@@ -367,7 +368,7 @@ Example:
 (defun prerequisite-systems (&optional (child :romance-ii))
   (if-let ((prereqs (slot-value (asdf:find-system child)
                                 'asdf::load-dependencies)))
-    (remove-if 
+    (remove-if
      (lambda (sys)
        (member (keywordify sys)
                #+sbcl '(:sb-grovel :sb-posix :sb-rotate-byte
@@ -394,11 +395,11 @@ Example:
                       :name :wild :type :wild)
       for license =
         (or
-         (let ((override-file 
+         (let ((override-file
                 (merge-pathnames
                  (make-pathname :directory '(:relative "doc" "legal" "licenses")
                                 :name (string-downcase (string system))
-                                :type "txt") (translate-logical-pathname               
+                                :type "txt") (translate-logical-pathname
                                               (make-pathname :host "r2project")))))
            (when (fad:file-exists-p override-file)
              (list system override-file)))
@@ -408,12 +409,12 @@ Example:
              (list system license)))
          (loop
             for path in (directory asdf-dir)
-            when (member (make-keyword (string-upcase 
+            when (member (make-keyword (string-upcase
                                         (pathname-name path))) +license-words+)
             return (list system (pathname path)))
          (loop
             for path in (directory (merge-pathnames "doc/" asdf-dir))
-            when (member (make-keyword (string-upcase 
+            when (member (make-keyword (string-upcase
                                         (pathname-name path))) +license-words+)
             return (list system (pathname path)))
          (if long
@@ -425,7 +426,7 @@ Example:
             when (member (make-keyword (string-upcase
                                         (pathname-name path))) '(:readme))
             return (prog1 (list system (pathname path))
-                     (warn "No LICENSE for ~:(~A~), using README~%(in ~A)" 
+                     (warn "No LICENSE for ~:(~A~), using README~%(in ~A)"
                            system asdf-dir))))
       when license collect license
       else collect (prog1 (list system nil)
@@ -434,8 +435,8 @@ Example:
        (list :bullet2 (merge-pathnames
                        (make-pathname :directory '(:relative "doc" "legal" "licenses")
                                       :name "bullet2"
-                                      :type "txt") 
-                       (translate-logical-pathname               
+                                      :type "txt")
+                       (translate-logical-pathname
                         (make-pathname :host "r2project"))))
        (list :bullet2 "MIT"))))
 
@@ -447,15 +448,15 @@ Example:
      (loop
         with seen = 0
         for line = (string-trim " #;/*" (read-line stream nil #\¶))
-          
+
         for blank = (zerop (length line))
-          
+
         until (or (and (> seen 1) blank)
                   (>= seen max-lines))
-          
+
         unless blank do (incf seen)
-          
-          
+
+
         when (not blank)
         collect line
         and
@@ -466,7 +467,7 @@ Example:
 
 (defun copyrights (&optional (long nil))
   "Return a string with applicable copyright notices."
-  
+
   (strcat
    "Romance Game System
 Copyright © 1987-2014, Bruce-Robert Pocock;
@@ -488,13 +489,13 @@ This program is free software: you may use, modify, and/or distribute it
 Romance Ⅱ uses the library ~@:(~A~)~2%"
                     package)
             (format nil "~% • ~:(~A~): " package))
-        
+
       collect
         (typecase license
           (pathname (if long
                         (alexandria:read-file-into-string license)
                         (first-paragraph-of license 2)))
-          (string (if (or (< (length license) 75) long) 
+          (string (if (or (< (length license) 75) long)
                       license
                       (concatenate 'string (subseq license 0 75) "…")))
           (t (warn "Package ~A has no license?" package)
@@ -502,7 +503,7 @@ Romance Ⅱ uses the library ~@:(~A~)~2%"
    (if long
        "~|
 ————————————————————————————————————————————————————————————————————————
-    
+
 Romance Ⅱ itself is a program.
 
     Romance Game System Copyright © 1987-2014, Bruce-Robert Fenn
@@ -531,7 +532,7 @@ See COPYING.AGPL3 or run “romance --copyright” for details.
     (:caesar (warn "TODO Caesar"))
     (:copyrights (format t (copyrights t)))
     (otherwise
-     (format t "Romance Ⅱ: Generic Executable.  
+     (format t "Romance Ⅱ: Generic Executable.
 
 Provide the name of the module to start; Caesar will launch
 other modules.
@@ -542,7 +543,7 @@ REPL, HELP, or COPYRIGHTS are also options."))))
   (when (eql section :repl)
     (prepl::help-cmd) (return-from repl-help nil))
   (format
-   t 
+   t
    (case section
      (:comm "
 Romance Ⅱ: Operations Communications
@@ -557,7 +558,7 @@ various types of connection.
 ")
      (:intro "
 
-             Romance Ⅱ Read-Eval-Print-Loop (REPL) Help 
+             Romance Ⅱ Read-Eval-Print-Loop (REPL) Help
 
 Caution: Joining a live game world with this REPL is godlike power. Be
 very careful.
@@ -603,7 +604,7 @@ For help, evaluate (ROMANCE:REPL-HELP)~2%"))
 
 (defun romanize-print (stream string)
   (let ((len (length string))
-        (string (substitute #\C #\G 
+        (string (substitute #\C #\G
                             (substitute #\I #\J
                                         (substitute #\V #\U
                                                     string)))))
@@ -655,19 +656,19 @@ with the same `place'"
   ((note :initarg :note :reader todo-note)))
 
 (defun todo (&optional (string
-                        "TODO: This function is not yet implemented") 
+                        "TODO: This function is not yet implemented")
              &rest whinge)
   (restart-case
       (error 'todo-item :note (apply #'format string whinge))
-    (return-nil () 
+    (return-nil ()
       :report (lambda (s)
                 (format s "Return NIL"))
       nil)
-    (return-t () 
+    (return-t ()
       :report (lambda (s)
                 (format s "Return T"))
       t)
-    (return-value (value) 
+    (return-value (value)
       :report (lambda (s)
                 (format s "Return some other value"))
       value)))
