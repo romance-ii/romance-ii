@@ -1,12 +1,4 @@
 (in-package :narcissus)
-
-(define-condition unable-to-load-c++-libraries ()
-  ((libs-loaded) (error-condition) (user-message))
-  (:report (lambda (c s)
-             (format s "Unable to load C++ libraries. ~@[~%Loaded these libraries successfully:~{~% • ~A~}~]
-Unable to load because of error: ~A~&~A"
-                     (libs-loaded c) (error-condition c) (user-message c)))))
-
 (defgeneric propagate-stimulus (stimulus)
   (:documentation "Inject a stimulus into the world. 
 
