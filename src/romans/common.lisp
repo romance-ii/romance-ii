@@ -1,5 +1,5 @@
 (defpackage :romance
-  (:use :cl :alexandria)
+  (:use :cl :alexandria :split-sequence)
   (:nicknames :romans :romance-ii :romance2)
   (:documentation
    "Common code used by other modules in Romance Ⅱ")
@@ -16,14 +16,16 @@
    #:escape-url-encoded
    #:escape-with-char
    #:keywordify
+   #:make-t-every-n-times
    #:server-start-banner
    #:start-repl
-   #:start-server
+   #:start-server/generic
    #:strcat
    #:string-case
    #:string-escape
-   #:string-escape
    #:string-fixed
+   #:strings-list
+   #:strings-list-p
    #:until
    #:while
    
@@ -103,6 +105,8 @@ in some contexts.")
 
 (defmacro doseq ((element sequence) &body body)
   `(loop for ,element across ,sequence do (progn ,@body)))
+
+
 
 (defun escape-with-char (char escape-char)
   (check-type char character)
@@ -214,6 +218,7 @@ For example, to octal-escape all characters outside the range of printable ASCII
                               #'escape-html)
                "Blah &60;p&62;"))
 
+
 
 (defun string-fixed (string target-length &key (trim-p t) 
                                             (pad-char #\Space))
@@ -257,30 +262,98 @@ string. If the second value is negative, the string was truncated."
   (assert (equal "QQQQQ" string)))
 
 
+
+
 (defmacro until (test &body body)
   `(do () (,test) ,@body))
 
 (defmacro while (test &body body)
   `(do () ((not ,test)) ,@body))
 
-(defmacro string-case (compare &body clauses)
-  "Like a CASE expression, but using STRING= to campare cases. NOT
-optimized for long lists. TODO — this macro should be smart enough to
-use a hash table when the number of cases becomes large.
+
+
+(defmacro eval-once (form)
+  `(let ((v ',(gensym "ONCE")));the symbol persists between calls
+     (if (boundp v)
+         (symbol-value v)
+         (set v ,form))) )
+
+(defun string-case/literals% (compare clauses)
+  (let ((instance (gensym "STRING-CASE")))
+    `(let ((,instance (eval-once ,compare))) 
+       (cond
+         ,@(mapcar (lambda (clause)
+                     (if (or (eql t (car clause)) (eql 'otherwise (car clause)))
+                         `(t ,@(cdr clause))
+                         `((string= ,instance ,(car clause)) ,@(cdr clause))))
+                   clauses)))))
+
+(defun string-case/interning% (compare clauses)
+  (let ((instance (gensym "STRING-INTERNED")))
+    `(let ((,instance (intern (eval-once ,compare) :keyword)))
+       (case ,instance
+         ,@(mapcar (lambda (clause)
+                     (if (or (eql t (car clause)) (eql 'otherwise (car clause)))
+                         `(t ,@(cdr clause))
+                         `(,(intern (car clause) :keyword) ,@(cdr clause))))
+                   clauses)))))
+
+
+(let* ((num-repeats 2500) 
+       (interning-better-breakpoint 
+        ;; Determine about how many cases there need to be, for interning to be
+        ;; faster than STRING=
+        (flet ((make-random-string (string-length)
+                 (format nil "~{~C~}"
+                         (loop for char from 1 upto (1+ string-length)
+                            collecting (code-char (+ 32 (random 95))))))) 
+          (format *trace-output* "~&;; timing STRING-CASE implementations …")
+          (let ((trials
+                 (loop for n from 1 to 20 
+                    collecting
+                      (loop for num-cases from 1 to 50
+                         for stuff = (loop for case from 1 upto num-cases
+                                        for string = (make-random-string (+ 4 (random 28)))
+                                        collect (list string :nobody))
+                         for expr/literal = (compile 'expr/literal 
+                                                     (list 'lambda '(x)
+                                                           (funcall #'string-case/literals% 
+                                                                    'x stuff)))
+                         for expr/interning = (compile 'expr/interning
+                                                       (list 'lambda '(x)
+                                                             (funcall #'string-case/interning% 
+                                                                      'x stuff)))
+                         for cost/literal = (progn
+                                              (trivial-garbage:gc)
+                                              (let ((start (get-internal-real-time))) 
+                                                (dotimes (i num-repeats)
+                                                  (funcall expr/literal (make-random-string 40)))
+                                                (- (get-internal-real-time) start)))
+                         for cost/interning = (progn
+                                                (trivial-garbage:gc)
+                                                (let ((start (get-internal-real-time))) 
+                                                  (dotimes (i num-repeats)
+                                                    (funcall expr/interning (make-random-string 40)))
+                                                  (- (get-internal-real-time) start)))
+                           
+                         ;; do (format *trace-output* "~&;; STRING-CASE Cost for ~D (~:D×): interning: ~F literals: ~F"
+                         ;;            num-cases num-repeats cost/interning cost/literal)
+                         when (< cost/interning cost/literal)
+                         return num-cases))))
+            (let ((average (round (/ (apply #'+ trials) (length trials)))))
+              (format *trace-output* "~&;;; STRING-CASE trials done; sweet spot is about ~R case~:P"
+                      average)
+              average)))))
+
+  (defmacro string-case (compare &body clauses)
+    "Like a CASE expression, but using STRING= to campare cases. 
 
 Example:
 
 \(STRING-CASE FOO ((\"A\" (print :A)) (\"B\" (print :B)) (t (print :otherwise)) "
-  `(cond
-     ,@(mapcar (lambda (clause)
-                 (if (or (eql t (car clause)) (eql 'otherwise (car clause)))
-                     `(t ,@(cdr clause))
-                     `((string= ,compare ,(car clause)) ,@(cdr clause))))
-               clauses)))
-
-(define-constant +license-words+
-    '(:license :licence :copying :copyright)
-  :test 'equal)
+    (if (< interning-better-breakpoint (length clauses))
+        (string-case/literals% compare clauses)
+        (string-case/interning% compare clauses))))
 
 (defun keywordify (word)
   (make-keyword (string-upcase (string word))))
@@ -288,6 +361,8 @@ Example:
 (defun any (predicate set)
   (loop for item in set
      when (funcall predicate item) return it))
+
+
 
 (defun prerequisite-systems (&optional (child :romance-ii))
   (if-let ((prereqs (slot-value (asdf:find-system child)
@@ -302,6 +377,11 @@ Example:
                          (mapcan #'prerequisite-systems prereqs))
               prereqs)
       :test #'eql :key #'keywordify))))
+
+
+(define-constant +license-words+
+    '(:license :licence :copying :copyright)
+  :test 'equal)
 
 (defun find-copyrights (&optional (long nil))
   (append
@@ -319,7 +399,7 @@ Example:
                  (make-pathname :directory '(:relative "doc" "legal" "licenses")
                                 :name (string-downcase (string system))
                                 :type "txt") (translate-logical-pathname               
-                                (make-pathname :host "r2project")))))
+                                              (make-pathname :host "r2project")))))
            (when (fad:file-exists-p override-file)
              (list system override-file)))
          (unless long
@@ -359,6 +439,8 @@ Example:
                         (make-pathname :host "r2project"))))
        (list :bullet2 "MIT"))))
 
+
+
 (defun first-paragraph-of (file &optional (max-lines 10))
   (strcat
    (with-open-file (stream file :direction :input)
@@ -379,6 +461,8 @@ Example:
         and
         collect (when (= seen max-lines) (string #\…))
         and collect (string #\Newline)))))
+
+
 
 (defun copyrights (&optional (long nil))
   "Return a string with applicable copyright notices."
@@ -442,7 +526,7 @@ Romance Ⅱ itself is a program.
 See COPYING.AGPL3 or run “romance --copyright” for details.
 ")))
 
-(defun start-server (&optional argv)
+(defun start-server/generic (&optional argv)
   (case (make-keyword (string-upcase (car argv)))
     (:caesar (warn "TODO Caesar"))
     (:copyrights (format t (copyrights t)))
@@ -502,9 +586,11 @@ topic  for a  brief overview;  (HELP  :COMM), (HELP  :REPL), or  (HELP
 
 ")) ))
 
+
+
 (defun start-repl (&optional argv)
   (unless (member "--silent" argv)
-   (format t "~&Romance Ⅱ: Copyright © 2013-2014, Bruce-Robert Pocock.
+    (format t "~&Romance Ⅱ: Copyright © 2013-2014, Bruce-Robert Pocock.
 Evaluate (ROMANCE:COPYRIGHTS T) for details.
 Read-Eval-Print-Loop interactive session.
 For help, evaluate (ROMANCE:REPL-HELP)~2%"))
@@ -545,5 +631,54 @@ MACHINE-TYPE =      ~A
           long-name purpose short-name (machine-instance) (machine-type) (copyrights))
 
   (romanize-print *standard-output* long-name))
+
+
+
+(defmacro modincf (place base)
+  "Increment a setf'able place, and return true whenever it wraps
+around modulo base.
+
+Put in a more sane way: return true every `base' times it is called
+with the same `place'"
+  `(zerop (setf ,place (mod (1+ ,place) ,base))))
+
+(defun make-t-every-n-times (base)
+  "Returns a function which, every \"N\" times that it is called,
+  returns true."
+  (let ((private 0))
+    (lambda ()
+      (modincf private base))))
+
+
+
+(define-condition todo-item (error)
+  ((note :initarg :note :reader todo-note)))
+
+(defun todo (&optional (string
+                        "TODO: This function is not yet implemented") 
+             &rest whinge)
+  (restart-case
+      (error 'todo-item :note (apply #'format string whinge))
+    (return-nil () 
+      :report (lambda (s)
+                (format s "Return NIL"))
+      nil)
+    (return-t () 
+      :report (lambda (s)
+                (format s "Return T"))
+      t)
+    (return-value (value) 
+      :report (lambda (s)
+                (format s "Return some other value"))
+      value)))
+
+
+
+(defun strings-list-p (list)
+  (and (consp list)
+       (every #'stringp list)))
+
+(deftype strings-list ()
+  '(satisfies string-list-p))
 
 
