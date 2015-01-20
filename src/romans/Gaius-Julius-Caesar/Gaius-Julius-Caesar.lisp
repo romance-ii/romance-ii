@@ -1,5 +1,12 @@
 (in-package :caesar)
 
+(define-condition todo-item ((note)))
+
+(defun todo (&optional string &rest args)
+  (error 'todo-item :note (apply #'format
+                                 (or string "TODO: This function is not implemented")
+                                 args)))
+
 (defun collate-quality-of-service-reports ())
 
 (defun heartbeat-failure-detection ())
@@ -9,21 +16,21 @@
 
 (defmethod start-program-container ((container-model (eql :lxc))
                                     location
-                                    program-identifier) :TODO)
+                                    program-identifier) (todo))
 
 (defgeneric launch-program (container program))
 
-(defmethod launch-program (container (program (eql :postgres))) :TODO)
-(defmethod launch-program (container (program (eql :static-web-server))) :TODO)
-(defmethod launch-program (container (program t)) :TODO)
+(defmethod launch-program (container (program (eql :postgres))) (todo))
+(defmethod launch-program (container (program (eql :static-web-server))) (todo))
+(defmethod launch-program (container (program t)) (todo))
 
-(defun stop-program (identifier) :TODO)
+(defun stop-program (identifier) (todo))
 
-(defun kill-program (identifier) :TODO)
+(defun kill-program (identifier) (todo))
 
-(defun stop-program-container (identifier) :TODO)
+(defun stop-program-container (identifier) (todo))
 
-(defun stonith (identifier) :TODO)
+(defun stonith (identifier) (todo))
 
 (defun start-server (argv)
   (romance:server-start-banner "Caesar"
@@ -58,29 +65,44 @@
 
 (defmethod handle-report :after ((module t) (machine t) (message (eql :lisp-warning)) (user-string t)
                                  &key condition)
-  "A Lisp program issued a WARNing")
+  "A Lisp program issued a WARNing"
+  (journal ""))
 
 (defmethod handle-report :after ((module t) (machine t) (message (eql :lisp-error)) (user-string t)
                                  &key condition)
   "A Lisp program issued an ERROR."
   )
 
-(defun report (module message-keyword user-string &rest keys)
-  ())
+(define-condition report (condition)
+  ((module :reader  report-module :initarg :report-module :type symbol)
+   (message-keyword :reader report-message :initarg :message-keyword :type symbol)
+   (user-string :reader report-user-string :initarg :user-string :type string)
+   (keys :reader report-keys :initarg :keys :type list)))
 
-(with-oversight (foobulous) (warn "boo"))
+(defun report (module message-keyword user-string &rest keys)
+  (signal 'report))
 
 (defmacro with-oversight ((module) &body body)
   `(handler-bind
-       ((or warning error) (lambda (c)
-                             (caesar:report ,module :lisp-error
-                                            (format nil
-                                                    "Application signaled an ERROR condition:~%~S~% “~:*~A”"
-                                                    c)
-                                            :condition c
-                                            :restarts (compute-restarts)
-                                            :condition-restarts (compute-restarts c))))
-     (caesar:report ,module :start-oversight "Beginning oversight by Caesar")
-     (unwind-protect 
-          (progn ,@body)
-       (caesar:report ,module :end-oversight "Ending oversight by Caesar"))))
+       (report
+        (lambda (r)
+          (apply #'handle-report (or (report-module r) ,module)
+                 (or (report-machine r) (machine-instance))
+                 (report-message-keyword r)
+                 (report-user-string r)
+                 (report-keys r))))
+     
+     (handler-bind
+         (((warning error) 
+           (lambda (c)
+             (caesar:report ,module :lisp-error
+                            (format nil
+                                    "Application signaled an ERROR condition:~%~S~% “~:*~A”"
+                                    c)
+                            :condition c
+                            :restarts (compute-restarts)
+                            :condition-restarts (compute-restarts c)))))
+       (caesar:report ,module :start-oversight "Beginning oversight by Caesar")
+       (unwind-protect 
+            (progn ,@body)
+         (caesar:report ,module :end-oversight "Ending oversight by Caesar")))))
