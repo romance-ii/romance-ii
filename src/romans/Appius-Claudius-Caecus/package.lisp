@@ -1,5 +1,5 @@
 (defpackage :appius
-  (:use :cl :alexandria :usocket :st-json)
+  (:use :cl :alexandria :usocket :st-json :romans)
   (:nicknames :appius-claudius-caecus :appius-claudius-cæcus)
   (:documentation
    "Appius Claudius Caecus handles network I/O. All socket connections
