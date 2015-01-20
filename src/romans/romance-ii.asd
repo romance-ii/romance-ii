@@ -18,6 +18,7 @@
                :prepl
                :split-sequence
                :sqlite
+               :st-json
                :trivial-garbage
                :usocket
                :wordnet
