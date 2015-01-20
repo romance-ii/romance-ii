@@ -16,7 +16,9 @@
                :langutils
                :postmodern
                :prepl
+               :split-sequence
                :sqlite
+               :trivial-garbage
                :usocket
                :wordnet
 

@@ -117,7 +117,7 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 (defparameter *path/r2project*
   (merge-pathnames "../../" *load-pathname*))
 
-(let ((r2src (merge-pathnames "romans" *path/r2src*)))
+(let ((r2src (merge-pathnames "romans/" *path/r2src*)))
   (pushnew r2src asdf:*central-registry* :test 'equal))
 
 (let ((bullet-src (merge-pathnames "romans/lib/cl-bullet2l/bullet-physics/"

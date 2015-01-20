@@ -288,17 +288,18 @@ string. If the second value is negative, the string was truncated."
                          `((string= ,instance ,(car clause)) ,@(cdr clause))))
                    clauses)))))
 
-(defun string-case/interning% (compare clauses)
-  (let ((instance (gensym "STRING-INTERNED")))
-    `(let ((,instance (intern (eval-once ,compare) :keyword)))
-       (case ,instance
-         ,@(mapcar (lambda (clause)
-                     (if (or (eql t (car clause)) (eql 'otherwise (car clause)))
-                         `(t ,@(cdr clause))
-                         `(,(intern (car clause) :keyword) ,@(cdr clause))))
-                   clauses)))))
 
-
+(let ( (crap-package (make-package "string-case-crap%")))
+  (defun string-case/interning% (compare clauses)
+    (let ((instance (gensym "STRING-INTERNED")))
+      `(let ((,instance (intern (eval-once ,compare) :keyword)))
+         (case ,instance
+           ,@(mapcar (lambda (clause)
+                       (if (or (eql t (car clause)) (eql 'otherwise (car clause)))
+                           `(t ,@(cdr clause))
+                           `(,(intern (car clause) :keyword) ,@(cdr clause))))
+                     clauses))))))
+  
 (let ((interning-better-breakpoint
        ;; Determine about how many cases there need to be, for interning to be
        ;; faster than STRING=
@@ -344,17 +345,17 @@ string. If the second value is negative, the string was truncated."
            (let ((average (round (/ (apply #'+ trials) (length trials)))))
              (format *trace-output* "~&;;; STRING-CASE trials done; sweet spot is about ~R case~:P after ~R trial~:P"
                      average (length trials))
-             average)))))
+             average))))))
 
-  (defmacro string-case (compare &body clauses)
-    "Like a CASE expression, but using STRING= to campare cases.
+(defmacro string-case (compare &body clauses)
+  "Like a CASE expression, but using STRING= to campare cases.
 
 Example:
 
 \(STRING-CASE FOO ((\"A\" (print :A)) (\"B\" (print :B)) (t (print :otherwise)) "
-    (if (< interning-better-breakpoint (length clauses))
-        (string-case/literals% compare clauses)
-        (string-case/interning% compare clauses))))
+  (if (< interning-better-breakpoint (length clauses))
+      (string-case/literals% compare clauses)
+      (string-case/interning% compare clauses)))
 
 (defun keywordify (word)
   (make-keyword (string-upcase (string word))))
