@@ -26,12 +26,12 @@
 (defmethod serve ((socket stream-usocket))
   (let ((info (gethash *connection-pool* socket)))
     (serve-socket (socket-info-stream info)
-                      (socket-info-encoding info)
-                      (socket-info-state info)
-                      socket info)))
+                  (socket-info-encoding info)
+                  (socket-info-state info)
+                  socket info)))
 
-(define-condition protocol-unhandled-error
-    (socket-info)
+(define-condition protocol-unhandled-error (error)
+  (socket-info)
   (:report "no handler for this socket state: ~A"))
 
 (defmethod serve-socket ((stream t) (encoding t) (state t)
@@ -105,10 +105,10 @@
 (defmethod convert-packet (data (from (eql :json)) (to (eql :bson)))
   (todo))
 (defmethod convert-packet (data (from (eql :json)) (to (eql :sexp)))
-(todo))
+  (todo))
 
 (defmethod convert-packet (data (from (eql :bson)) (to (eql :mq)))
-(todo))
+  (todo))
 (defmethod convert-packet (data (from (eql :bson)) (to (eql :json)))
 (todo))
 (defmethod convert-packet (data (from (eql :bson)) (to (eql :sexp)))

@@ -31,7 +31,7 @@ reaction; a further realm of dampening might occur as the NPC might
 not notice something, or might not be paying attemtion to it."))
 
 (defun start-server (argv)
-  (caesar:with-oversight (:narcissus)
+  (caesar:with-oversight (narcissus)
     (romance:server-start-banner "Narcissus" "Narcissus"
                                  "Physical forces simulation server"))
   (format t "~& Narcissus: Bye!~%"))

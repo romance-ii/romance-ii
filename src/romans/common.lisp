@@ -19,6 +19,7 @@
    #:join
    #:keywordify
    #:make-t-every-n-times
+   #:repeat
    #:server-start-banner
    #:start-repl
    #:start-server/generic
@@ -34,11 +35,9 @@
 
    ))
 
-
 (require :babel)
 
 (in-package :romance)
-
 
 (defun start-server/generic (&optional argv)
   (case (make-keyword (string-upcase (car argv)))

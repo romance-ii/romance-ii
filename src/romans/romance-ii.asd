@@ -11,14 +11,17 @@
                :buildapp
                #+romance-with-physics  :cl-bullet2l
                :cl-fad
+               :cl-oauth
                :cl-unicode
                :cffi
                :langutils
+               :local-time
                :postmodern
                :prepl
                :split-sequence
                :sqlite
                :st-json
+               :swank
                :trivial-garbage
                :usocket
                :wordnet
@@ -30,21 +33,27 @@
   :components
   ((:file "common")
    (:module "lib"
-            (:file ))
-   (:module "Aelius-Galenus"
             :depends-on ("common")
+            :components (#+ (and debug bored) (:file "class-graph")
+                            (:file "control-utils")
+                            (:file "json-utils")
+                            (:file "repl-glue")
+                            (:file "string-utils")
+                            (:file "system-utils")))
+   (:module "Aelius-Galenus"
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "Aelius-Galenus"
                                 :depends-on ("package"))))
    (:module "Appius-Claudius-Caecus"
-            :depends-on ("common")
+            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "socket-structures"
                                 :depends-on ("package"))
                          (:file "Appius-Claudius-Caecus"
                                 :depends-on ("package" "socket-structures"))))
    (:module "Clodia-Metelli-Pulcher"
-            :depends-on ("common")
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "memory"
                                 :depends-on ("package"))
@@ -56,36 +65,44 @@
                                 :depends-on ("package"))
                          (:file "server"
                                 :depends-on ("package")))
-            :depends-on ("common"))
+            :depends-on ("common" "lib"))
    (:module "Gaius-Asinius-Pollio"
-            :depends-on ("common")
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "Gaius-Asinius-Pollio"
                                 :depends-on ("package"))))
    (:module "Gaius-Julius-Caesar"
-            :depends-on ("common")
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "Gaius-Julius-Caesar"
-                                :depends-on ("package"))))
+                                :depends-on ("package"))
+                         (:file "exec-utils"
+                                :depends-on ("package"))
+                         (:file "ssh-utils"
+                                :depends-on ("package"))
+                         (:file "running"
+                                :depends-on ("package" "exec-utils" "ssh-utils"))
+                         (:file "containers" 
+                                :depends-on ("package" "running"))))
    (:module "Gaius-Lutatius-Catulus"
-            :depends-on ("common")
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "Gaius-Lutatius-Catulus"
                                 :depends-on ("package"))))
    (:module "Gaius-Valerius-Catullus"
-            :depends-on ("common")
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "conceptnet5"
                                 :depends-on ("package"))
                          (:file "Gaius-Valerius-Catullus"
                                 :depends-on ("package" "conceptnet5"))))
    (:module "Lucius-Aemilius-Regillus"
-            :depends-on ("common")
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "Lucius-Aemilius-Regillus"
                                 :depends-on ("package"))))
    (:module "Marcus-Vitruvius-Pollio"
-            :depends-on ("common")
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "Marcus-Vitruvius-Pollio"
                                 :depends-on ("package"))))
@@ -95,12 +112,12 @@
                          (:file "Narcissus"
                                 :depends-on ("package"))))
    (:module "Rabirius"
-            :depends-on ("common")
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "Rabirius"
                                 :depends-on ("package"))))
    (:module "Sextus-Julius-Frontinus"
-            :depends-on ("common")
+            :depends-on ("common" "lib")
             :components ((:file "package")
                          (:file "Sextus-Julius-Frontinus"
                                 :depends-on ("package"))))))

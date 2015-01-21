@@ -331,6 +331,9 @@ Example:
               (concatenate 'string a joiner b))
             list-of-strings)))
 
+(defun repeat (what times)
+  (loop for i from 1 upto times collecting what))
+
 
 
 (defun first-paragraph-of (file &optional (max-lines 10))
@@ -353,3 +356,126 @@ Example:
         and
         collect (when (= seen max-lines) (string #\…))
         and collect (string #\Newline)))))
+
+
+
+(defun error-or-nil-p (x)
+  (or (null x)
+      (eql :error x)))
+(deftype error-or-nil () 
+  '(satisfies error-or-nil-p))
+
+(defun parse-bignum (string &key (if-not-bignum nil))
+  (check-type if-not-bignum error-or-nil)
+  (let ((string (string-trim '(#\Space #\Tab) string)))
+    (cond 
+      ((zerop (length string)) nil)
+      
+      ((and (= 1 (count #\. string))
+            (every (lambda (ch)
+                     (or (digit-char-p ch)
+                         (eql #\. ch))) string))
+       (let* ((decimal (position #\. string))
+              (whole (parse-integer (subseq string 0 decimal)))
+              (fraction$ (subseq string (1+ decimal))))
+         (+ whole (/ (parse-integer fraction$) (expt 10 (length fraction$))))))
+      
+      ((every #'digit-char-p string)
+       (parse-integer string))
+      
+      (t nil))))
+
+(defun maybe-numeric (string)
+  (if-let (numeric (parse-bignum string))
+    numeric
+    (let ((pos (- (length string) 3)))
+      (if (and (plusp pos) 
+               (equal " kB" (subseq string pos)))
+          (* 1024 (parse-integer (subseq string 0 pos)))
+          string))))
+
+
+;;; String←file functions
+
+(defun split-and-collect-line (line &optional (split-char #\Space)
+                                      (filter #'string-upcase))
+  (let ((split (position split-char line))) 
+    (when split
+      (let ((key-part (subseq line 0 split)))
+        (list (if (every #'digit-char-p key-part)
+                  (parse-integer key-part)
+                  (make-keyword 
+                   (funcall filter
+                            (string-trim 
+                             '(#\Space #\Tab)
+                             (substitute #\- #\_
+                                         (substitute #\- #\( 
+                                                     (substitute #\Space #\)
+                                                                 key-part)))))))
+              (let* ((rest-of-line (subseq line (1+ split)))
+                     (numeric (parse-bignum rest-of-line)))
+                (if numeric 
+                    numeric
+                    rest-of-line)))))))
+
+(defun split-and-collect-file (file &optional (split-char #\Space)
+                                      (filter #'string-upcase))
+  (handler-bind
+      ((simple-file-error (lambda (c)
+                            (return-from split-and-collect-file c))))
+    (with-open-file (reading file :direction :input)
+      (loop for line = (read-line reading nil nil)
+         while line
+         when line
+         append (split-and-collect-line line split-char filter)))))
+
+(defun collect-file-lines (file &optional (record-end-char #\Newline))
+  (let (lines 
+        (line (make-array 72 :element-type 'character :adjustable t :fill-pointer 0)))
+    (with-open-file (reading file :direction :input)
+      (loop for char = (read-char reading nil nil)
+         while char
+         do (if (char= record-end-char char)
+                (progn (push (copy-seq line) lines)
+                       (setf (fill-pointer line) 0))
+                (vector-push-extend char line 16)))
+      (when (plusp (length line)) 
+        (push lines line)))
+    (nreverse lines)))
+
+
+(defun collect-file (file)
+  (handler-bind
+      ((simple-file-error (lambda (c) 
+                            (return-from collect-file c))))
+    (let ((contents (string-trim '(#\Space #\Tab #\Linefeed #\Return)
+                                 (alexandria:read-file-into-string file))))
+      (maybe-numeric contents))))
+
+(defun collect-file-tabular (file &optional (tab-char #\Tab) (record-char #\Newline))
+  (let ((contents (alexandria:read-file-into-string file)))
+    (mapcar (lambda (row)
+              (mapcar #'maybe-numeric row))
+            (mapcar (curry #'split-sequence tab-char)
+                    (split-sequence record-char
+                                    contents)))))
+
+(defun maybe-alist-row (string &optional (= #\=))
+  (cond ((and (every #'alpha-char-p string)
+              (equal (string-downcase string) string))
+         (make-keyword (string-upcase string)))
+        
+        ((find = string)
+         (let ((=pos (position = string))) 
+           (cons (make-keyword (string-upcase (subseq string 0 =pos)))
+                 (maybe-numeric (subseq string (1+ =pos))))))
+        
+        (t string)))
+
+(defun maybe-alist-split (string &optional (= #\=) (record-char #\,))
+  (mapcar (rcurry #'maybe-alist-row =)
+          (split-sequence record-char string)))
+
+
+
+

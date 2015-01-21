@@ -61,9 +61,8 @@ with the same `place'"
 (define-condition todo-item (error)
   ((note :initarg :note :reader todo-note)))
 
-(defun todo (&optional (string
-                        "TODO: This function is not yet implemented")
-             &rest whinge)
+(defmethod todo (&optional (string "TODO: This function is not yet implemented")
+                 &rest keys)
   (restart-case
       (error 'todo-item :note (apply #'format string whinge))
     (return-nil ()
