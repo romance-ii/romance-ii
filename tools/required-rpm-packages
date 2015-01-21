@@ -5,6 +5,9 @@
 coreutils
 binutils
 
+# Container management
+docker-io
+
 # The core facilities: Emacs, SBCL
 emacs
 sbcl
