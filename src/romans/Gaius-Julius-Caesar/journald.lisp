@@ -5,11 +5,10 @@
 
 (in-package :systemd)
 
-(define-foreign-library libsystemd
-  (t "libsystemd.so"))
-(load-foreign-library 'libsystemd)
-
 (defun journal-send (&rest p-list)
+  (define-foreign-library libsystemd
+    (t "libsystemd.so"))
+  (load-foreign-library libsystemd)
   (eval `(alien-funcall
           (extern-alien "sd_journal_send"
                         (function sb-alien:int 
