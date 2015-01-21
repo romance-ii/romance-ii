@@ -74,8 +74,9 @@
    (:module "Gaius-Julius-Caesar"
             :depends-on ("common" "lib")
             :components ((:file "package")
+                         (:file "journald" :depends-on ("package"))
                          (:file "Gaius-Julius-Caesar"
-                                :depends-on ("package"))
+                                :depends-on ("package" "journald"))
                          (:file "exec-utils"
                                 :depends-on ("package"))
                          (:file "ssh-utils"

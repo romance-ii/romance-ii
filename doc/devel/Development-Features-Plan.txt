@@ -552,7 +552,7 @@ _________________
 1.4 Core Design
 ~~~~~~~~~~~~~~~
 
-  Romance II server core. New message queue based system, replacing the
+  Romance Ⅱ server core. New message queue based system, replacing the
   packet system from Quaestor; binary compiled Lisp, so much faster than
   Java; lots of nice stuff.
 
