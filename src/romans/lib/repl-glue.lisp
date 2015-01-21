@@ -1,0 +1,181 @@
+(in-package :romans)
+
+(require :prepl)
+(require :local-time)
+
+(defpackage :romance-user 
+  (:nicknames :user)
+  (:use :cl :alexandria :romans :local-time :split-sequence))
+
+(defvar *repl-ident* nil)
+
+(defgeneric repl-help (keyword))
+
+(defmethod repl-help :around (keyword)
+  (format t (call-next-method)))
+
+(defmethod repl-help ((keyword (eql :repl)))
+  (prepl::help-cmd))
+
+(defmethod repl-help ((keyword (eql :comm))) "
+Romance Ⅱ: Operations Communications
+
+Use these functions in package CAESAR for messaging. (e.g. to invoke
+WHO you might type (CAESAR:WHO) or (IN-PACKAGE :CAESAR) (WHO) ...)
+
+WHO: Who is online throughout the sysplex? (WHO :CLASS :OPER) by
+default; (WHO :CLASS :AGENT) (WHO :CLASS :USER) (WHO :CLASS :ALL) for
+various types of connection.
+
+")
+(defmethod repl-help ((keyword (eql :intro))) "
+
+             Romance Ⅱ Read-Eval-Print-Loop (REPL) Help
+
+CAUTION: Joining a live game world with this REPL is godlike power. Be
+very careful.
+
+ • For help with using the REPL, type :HELP or (HELP :REPL)
+
+ • For copyright information, type (COPYRIGHTS) for brief, (COPYRIGHTS
+   T) for full details.
+
+ • If  you  enter  the  debugger,  choose  a  restart  with  :CONTINUE
+   (restart)  from the  list  presented. (The  debugger  prompt has  a
+   preceding number, usually [1], before your package prompt.) You can
+   also use :ABORT  to kill the function you had  started and return to
+   the REPL.
+
+ • Use (HELP :COMM) to learn  about communicating with other operators
+   through the REPL.
+
+ • Use (HELP :SYSOP) to learn about systems administration tasks.
+
+ • Use (BYE) to leave the REPL.
+")
+
+(defmethod repl-help ((keyword (eql :start))) 
+  "~| ★ Getting Started with the Romance Ⅱ REPL ★
+
+This REPL (Read-Eval-Print Loop) is one way to interact directly with a
+running instance of your Romance game system. Here, you can directly
+interact with the various software objects (entities, components,
+systems; functions, variables, classes, and more) which make up the game
+server's environment.
+
+The REPL is a part of the Common Lisp system in which Romance
+runs. Usually, you'll interact with the REPL by entering a “form,” which
+will begin with a symbol (word) representing a function. Most functions
+expect some “arguments,” i.e. values, on which to operate, and return a
+value to you. In Lisp's notation, each form is surrounded with
+parentheses, like this:
+
+     (help :intro)
+     (+ 5 9)
+     (string-downcase \"SOMETHING\")
+
+~|
+
+★Be Careful.★ You are in the live, running system. The actions you take
+here can affect the game server running on this host.
+
+The REPL has two main help functions you may want to use. This
+one, (HELP) will tell you all about a Romance server feature when you
+give it a keyword, e.g. (HELP :REPL), or about a symbol in the
+environment, e.g. (HELP PRINT) or (HELP MACHINE-TYPE).
+
+You can also discover what objects are defined in the system
+using (APROPOS). (HELP APROPOS) will explain how, in brief. The most
+general way is to provide a partial name, e.g. (APROPOS \"COPYRIGHT\").
+
+~|
+
+Symbol names are not case-sensitive, so HELP, help, Help, and heLP are
+all the same. They're all treated internally as being UPPER-CASE. Symbol
+names containing spaces, odd punctuation, or lower-case letters are
+wrapped in | (the vertical pipe symbol), like this: |Symbol with
+spaces|.
+
+Strings are wrapped in \"double quotes\"; characters are prefixed with
+#\ (e.g. #\C is the upper-case letter C, and #\Space is the space
+character.) Numbers are entered without commas; e.g. 42,
+123.45. Rational (fractional) numbers are entered as
+numerator/denominator form only: e.g. 1½ is 3/2. (To compute this form,
+though, you can enter the longer form: (+ 1 1/2) ⇒ 3/2) Numbers in
+hexadecimal begin with #x (#xa0) and in octal with
+#o (#o644). Complex (imaginary) numbers are entered in the form:
+#c(real-part imaginary-part); e.g. #c(1 0) is just 1, but #c(1 2) is
+1+2ｉ.
+
+To quote a symbol, enter (quote symbol) or 'symbol. A keyword is
+prefaced with a colon, :keyword. A symbol in another package that has
+been exported is package:symbol; if not exported (private),
+package::symbol instead. To get the value of a variable, just provide
+the symbol naming it; to get the fuction named by a symbol,
+use (function symbol) or #'symbol.
+
+~|
+This is a long document; you might need to scroll up to find the start." )
+(defmethod repl-help ((keyword t))
+  " Sorry: No help topic with that ID exists. Try (HELP :INTRO) for a
+brief overview; (HELP :COMM), (HELP :REPL), or (HELP
+:SYSOP) for other entry points.
+
+If you're totally lost here, try (HELP :START)
+")
+
+
+
+
+(defun start-repl (&optional argv)
+  (unless (member "--silent" argv)
+    (format t "~&Romance Ⅱ: Copyright © 2013-2015, Bruce-Robert Pocock.
+Evaluate (ROMANCE:COPYRIGHTS T) for details.
+Read-Eval-Print-Loop interactive session.
+For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
+  (unless *repl-ident*
+    (format t "~&You haven't identified yourself. Say Hello!
+... enter (HELLO \"your name here\") to identify yourself.")
+    (setf *repl-ident* (format nil "REPL user ~A" (gensym "REPL"))))
+  (let ((*package* (find-package :romance-user)))
+    (block repl
+      (restart-bind 
+          ((exit-repl (lambda ()
+                        (return-from repl :bye))
+             :report-function (lambda () "Exit from the REPL")))
+        (prepl:repl :nobanner t :inspect t :continuable t)))))
+
+
+
+(in-package :romance-user)
+
+(defun bye ()
+  (invoke-restart (find-restart 'exit-repl)))
+
+(defmacro romance-user::help (&optional (word :intro)) 
+  (if (keywordp word)
+      (romans::repl-help word)
+      (progn (when (swank:connection-info)
+               (ignore-errors 
+                 (swank:eval-in-emacs (list 'slime-hyperspec-lookup (string word)))))
+             (when (symbolp word)
+               (describe word)
+               (when (boundp word)
+                 (format t "~&Bound: The current value is ~:D" (symbol-value word)))
+               (dolist (doc-type '(variable function structure type setf t))
+                 (when-let ((info (without-warnings (documentation word doc-type))))
+                   (format t "~&~%Documentation of the ~(~A~) ~S:~%~A~%"
+                           doc-type word info)))))))
+
+(defmacro hello (name)
+  (let ((named (typecase name
+                 (symbol (join #\- (mapcar #'string-capitalize
+                                           (split-sequence #\- (symbol-name name)))))
+                 (string name)
+                 (number (format nil "User ~:(~R~)" name))
+                 (character (format nil "User ~:C" name)))))
+    (setf romans::*repl-ident* named)
+    (format t "~&Hello, ~A." named)
+    named))
+
+

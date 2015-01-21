@@ -29,6 +29,8 @@
 
   :components
   ((:file "common")
+   (:module "lib"
+            (:file ))
    (:module "Aelius-Galenus"
             :depends-on ("common")
             :components ((:file "package")
