@@ -5,7 +5,8 @@
 
 (defpackage :romance-user 
   (:nicknames :user)
-  (:use :cl :alexandria :romans :local-time :split-sequence))
+  (:use :cl :alexandria :romans :local-time :split-sequence)
+  (:export #:help #:hello #:bye))
 
 (defvar *repl-ident* nil)
 
@@ -152,20 +153,76 @@ For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
 (defun bye ()
   (invoke-restart (find-restart 'exit-repl)))
 
-(defmacro romance-user::help (&optional (word :intro)) 
-  (if (keywordp word)
-      (romans::repl-help word)
-      (progn (when (swank:connection-info)
-               (ignore-errors 
-                 (swank:eval-in-emacs (list 'slime-hyperspec-lookup (string word)))))
-             (when (symbolp word)
-               (describe word)
-               (when (boundp word)
-                 (format t "~&Bound: The current value is ~:D" (symbol-value word)))
-               (dolist (doc-type '(variable function structure type setf t))
-                 (when-let ((info (without-warnings (documentation word doc-type))))
-                   (format t "~&~%Documentation of the ~(~A~) ~S:~%~A~%"
-                           doc-type word info)))))))
+(defmacro help (&optional (word :intro)) 
+  (typecase word 
+    (keyword
+     (romans::repl-help word))
+    (string
+     (apropos word)
+     (terpri)
+     (ql:system-apropos word))
+    (t (when (swank:connection-info)
+         (ignore-errors 
+           (swank:eval-in-emacs 
+            `(ignore-errors 
+               (slime-hyperspec-lookup ,(string word))))))
+       (when (symbolp word)
+         (describe word)
+         ;; (describe-object word t)
+         (when (boundp word)
+           (format t "~&Bound: The ~[current~;constant~] value is ~:D" 
+                   (constantp word)
+                   (symbol-value word)))
+         (dolist (doc-type '(variable function structure type setf t))
+           (when-let ((info (without-warnings (documentation word doc-type))))
+             (format t "~&~%Documentation of the ~(~A~) ~S:~%~A~%"
+                     doc-type word info))))
+       
+       (when-let ((system (asdf:find-system word nil)))
+         (format t "~&~|~%ASDF System ~A:~{~%  ~:(~A~): ~A~}"
+                 word
+                 (loop for fun in '(asdf:system-long-name
+                                    
+                                    asdf:system-description 	asdf:system-homepage
+                                    asdf:system-author asdf:system-licence
+                                    asdf:system-mailto 	asdf:system-maintainer
+                                    
+                                    asdf:system-long-description
+                                    
+                                    asdf:system-bug-tracker
+                                    asdf:system-definition-pathname
+                                    asdf:system-defsystem-depends-on
+                                    asdf:system-depends-on
+                                    asdf:system-weakly-depends-on
+                                    
+                                    asdf:system-source-control 	
+                                    asdf:system-source-directory
+                                    asdf:system-source-file)
+                    for val = (funcall fun system)
+                    when val
+                    appending (list (subseq (symbol-name fun) 7)
+                                    val))))
+       
+       (when-let ((package (find-package (string word))))
+         (format t "~&~|~% ~:@(~A~) is a package, which exports these symbols:~%"
+                 word)
+         (let ((package-symbols 
+                (sort (loop for sym being the external-symbols of package
+                         collect sym) #'string< :key #'symbol-name)))
+           (when-let ((bound (remove-if-not #'boundp package-symbols))) 
+             (format t "~% Values bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
+                     word
+                     bound))
+           (when-let ((fbound (remove-if-not #'fboundp package-symbols)))
+             (format t "~% Functions bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
+                     word
+                     fbound))
+           (when-let ((unbound (remove-if (lambda (sym)
+                                            (or (fboundp sym)
+                                                (boundp sym))) package-symbols)))
+             (format t "~% Other symbols in package ~A:~{~%   ~32A~^ ~32A~}~%"
+                     word
+                     unbound)))))))
 
 (defmacro hello (name)
   (let ((named (typecase name

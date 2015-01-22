@@ -77,3 +77,40 @@ program's name."
                       `(progn (sb-posix:kill ,child sb-posix:SIGTERM)
                               (sleep 1/100) ;; FIXME
                               (sb-posix:kill ,child sb-posix:SIGKILL))))))))))
+
+
+
+(defun all-threads/alpha ()
+  (sort (all-threads)
+        #'string< :key (compose #'string-downcase #'thread-name)))
+
+(defun what (&aux (proc (this-process)))
+  (format t "~&~%Process ~A (~D) ~A on ~A"
+          (process-name proc) 
+          (process-id proc) (process-state-gerund proc)
+          (machine-instance))
+  (dolist (thread (all-threads/alpha))
+    (format t "~& • ~A ~@[☠~]"
+            (thread-name thread) (not (thread-alive-p thread)))))
+
+(defvar *myselfness* 42)
+
+(defun get-myselfness ()
+  (incf *myselfness*))
+
+(defun who ()
+  (dolist (thread (all-threads/alpha))
+    (format t "~& ~A ⇒ ~A"
+            (thread-name thread)
+            (interrupt-thread thread
+                              (lambda () (get-myselfness))))))
+
+(defun find-thread (name)
+  (find name (all-threads) :key #'thread-name))
+
+(defun read-from-thread (thread function)
+  (let ((stream (make-string-output-stream)))
+    (interrupt-thread thread (lambda () (ignore-errors (prin1 (funcall function) stream))))
+    (read-from-string (get-output-stream-string stream))))
+
+

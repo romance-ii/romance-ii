@@ -100,6 +100,15 @@ in some contexts.")
           char (char-code char))
   (format nil "\\u~4,'0x" (char-code char)))
 
+(defun escape-c-style (char &optional _)
+  (declare (ignore _))
+  (check-type char character)
+  (assert (< (char-code char) #x10000) (char)
+          "Cannot Java-encode characters whose Unicode codepoint is
+          above #xFFFF. Character ~@C (~:*~:C) has a codepoint of #x~x."
+          char (char-code char))
+  (format nil "\\u~4,'0x" (char-code char)))
+
 (defun escape-html (char &optional _)
   (declare (ignore _))
   (check-type char character)

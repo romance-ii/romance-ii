@@ -1,5 +1,5 @@
 (defpackage :caesar
-  (:use :cl :alexandria :split-sequence :romans)
+  (:use :cl :alexandria :split-sequence :romans :bordeaux-threads)
   (:nicknames :gaius-iulius-caesar)
   (:documentation "Caesar oversees the system on which it is running,
 and ensures that sufficient resources are available for uninterrupted
