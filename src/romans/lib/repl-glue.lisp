@@ -5,7 +5,8 @@
 
 (defpackage :romance-user 
   (:nicknames :user)
-  (:use :cl :alexandria :romans :local-time :split-sequence)
+  (:use :cl :alexandria :romans :local-time :split-sequence
+        :bordeaux-threads)
   (:export #:help #:hello #:bye))
 
 (defvar *repl-ident* nil)

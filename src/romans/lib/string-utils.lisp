@@ -190,7 +190,108 @@ For example, to octal-escape all characters outside the range of printable ASCII
                               #'escape-html)
                "Blah &60;p&62;"))
 
+
 
+(defvar *language*)
+(defvar *dialect*)
+(defvar *language-coding*)
+
+(defun get-lang ()
+  (unless (and (boundp '*language*)
+               (symbol-value '*language*))
+    (setf *language* (keywordify
+                      (first (split-sequence 
+                              #\_ (sb-posix:getenv "LANG"))))))
+  (unless (and (boundp '*dialect*)
+               (symbol-value '*dialect*))
+    (setf *dialect* (keywordify
+                     (first (split-sequence 
+                             #\. (second (split-sequence
+                                          #\_ (sb-posix:getenv "LANG"))))))))
+  (unless (and (boundp '*language-coding*)
+               (symbol-value '*language-coding*))
+    (setf *language-coding* (keywordify
+                             (second (split-sequence 
+                                      #\. (sb-posix:getenv "LANG")))))))
+
+(defun letter-case (string)
+  (cond ((equal string (string-upcase string))
+         'string-upcase)
+        ((equal string (string-downcase string))
+         'string-downcase)
+        ((equal string (string-capitalize string))
+         'string-capitalize)
+        (t 'identity)))
+
+(define-condition language-not-implemented-warning (warning)
+  ((language :initarg :language :reader language-not-implemented)
+   (fn :initarg :function :reader language-not-implemented-function)))
+
+(defmacro defun-lang (function (&rest lambda-list) &body bodies)
+  (let ((underlying (intern (concatenate 'string (string function) "%"))))
+    `(progn 
+       (defgeneric ,underlying (language ,@lambda-list)
+         ,@(mapcar (lambda (body)
+                     (let ((match (car body))
+                           (code (cdr body)))
+                       `(:method ((language (eql ,match)) ,@lambda-list)
+                          ,@code)))
+                   bodies)
+         (:method ((language t) ,@lambda-list)
+           (warn 'language-not-implemented-warning :language language :function ',function)
+           (,underlying :en ,@lambda-list)))
+       (defun ,function (,@lambda-list)
+         (,underlying (or (get-lang) :en) 
+                      ,@lambda-list)))))
+
+(defun-lang a/an (string)
+  (:en (let ((letter (elt string 0)))
+         (case letter
+           ((#\a #\e #\i #\o #\u #\h)
+            (concatenate 'string "an " string))
+           ((#\A #\E #\I #\O #\U #\H)
+            (concatenate 'string (funcall (letter-case string) "an ") string))
+           (otherwise 
+            (concatenate 'string (funcall (letter-case string) "a ") string))))))
+
+(defun-lang plural (count string)
+  (:en (if (= 1 count) 
+           string
+           (cond
+             (t (funcall (letter-case string)
+                         (concatenate 'string string "s"))))))
+  (:fr (if (= 1 count) 
+           string
+           (cond
+             (t (funcall (letter-case string)
+                         (concatenate 'string string "s"))))))
+  (:es (if (= 1 count) 
+           string
+           (cond
+             (t (funcall (letter-case string)
+                         (concatenate 'string string "s")))))))
+
+(defun-lang counting (count string)
+  (:en (cond
+         ((zerop count) (a/an/some string))
+         ((< 0 count 21) (funcall (letter-case string)
+                                  (format nil "~R ~A" count
+                                          (plural count string))))
+         (t (format nil "~:D ~A" count (plural count string))))))
+
+(defun-lang a/an/some (count string)
+  (:en (case count
+         (0 (concatenate 'string (funcall (letter-case string) "no ")
+                         (plural 0 string)))
+         (1 (a/an string))
+         (otherwise (concatenate 'string (funcall (letter-case string) "some ")
+                                 (plural count string)))))
+  (:fr (case count
+         (0 (concatenate 'string (funcall (letter-case string) "sans ")
+                         (plural 0 string)))
+         (1 (a/an string))
+         (otherwise (concatenate 'string (funcall (letter-case string) "des ")
+                                 (plural count string))))))
 
 
 
@@ -328,7 +429,7 @@ Example:
 (defun keywordify (word)
   (make-keyword
    (substitute #\- #\_ 
-               (symbol-name (cffi:translate-camelcase-name string)))))
+               (symbol-name (cffi:translate-camelcase-name word)))))
 
 
 (defun join (joiner list-of-strings)

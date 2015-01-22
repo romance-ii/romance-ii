@@ -24,13 +24,18 @@
   (split-and-collect-file "/proc/meminfo" #\:
                           #'cffi:translate-camelcase-name))
 
-
-
 (defun all-process-ids ()
   (loop for entry in (directory "/proc/*")
      for pid = (parse-integer (lastcar (pathname-directory entry)) :junk-allowed t)
      while entry
      when pid collect it))
+
+
+
+
+(defun collect-qos (module machine activity capacity vmstats))
+
+
 
 (defun start-server (argv)
   (romance:server-start-banner "Caesar"
@@ -69,12 +74,10 @@
           (append (list :module module :machine machine 
                         :message message-keyword) keys)))
 
-(defun collect-qos (module machine activity capacity vmstats))
-
 (defmethod handle-report ((module t) (machine t) (message t) (user-string t)
                           &rest keys)
   (format *error-output*
-          "~&[CIC] Message (~s) from module ~:(~a~): “~a”~{~&  ~32<~:(~a~)~>: ~a~}"
+          "~&~%[CIC] Message (~s) from module ~:(~a~): “~a”~{~&  ~32<~:(~a~)~>: ~a~}"
           message module user-string keys))
 
 (defmethod handle-report ((module t) (machine t) (message (eql :qos)) (user-string t)
@@ -98,12 +101,12 @@
 (defmethod handle-report ((module t) (machine t) (message (eql :lisp-warning)) (user-string t)
                           &key condition)
   "A Lisp program issued a WARNing"
-  (journal ""))
+  (journal module machine message user-string))
 
 (defmethod handle-report ((module t) (machine t) (message (eql :lisp-error)) (user-string t)
                           &key condition)
   "A Lisp program issued an ERROR."
-  )
+  (journal module machine message user-string))
 
 (define-condition report (condition)
   ((module :reader report-module :initarg :module :type symbol)
@@ -115,7 +118,7 @@
 (defvar *module*)
 
 (defun report (message-keyword user-string &rest keys)
-  (signal 'report :module (if (boundp *module*)
+  (signal 'report :module (if (boundp '*module*)
                               (symbol-value '*module*)
                               '#.(gensym "UNKNOWN-MODULE"))
           :message-keyword message-keyword
@@ -125,37 +128,86 @@
   (apply #'report :todo message keys)
   (call-next-method))
 
-(defmacro with-oversight ((module) &body body)
-  `(let ((*module* ',module))
-     (block ,(format-symbol *package* "~A-MODULE" (string module)) 
+
+
+(defun oversight-handle (case)
+  `(,case
+       (lambda (condition)
+         (caesar:report ,(make-keyword (concatenate 'string "LISP-" (string case)))
+                        (format nil
+                                ,(concatenate 'string "Application signaled "
+                                              (a/an (string case)) 
+                                              " condition:~%~S~% “~:*~A”")
+                                condition)
+                        :condition condition
+                        :restarts (compute-restarts)
+                        :condition-restarts (compute-restarts condition)))))
+
+(define-condition hook-timeout (warning)
+  ((elapsed-time :initarg :elapsed-time :reader timeout-elapsed-time)))
+(define-condition hook-soft-timeout (hook-timeout)
+  ())
+(define-condition hook-hard-timeout (hook-timeout)
+  ())
+
+(defmacro with-timeout-handler ((soft-timeout hard-timeout) &body body)
+  (let ((soft-timeout (min soft-timeout hard-timeout))
+        (hard-timeout (max soft-timeout hard-timeout))
+        (timer (gensym "TIMER")))
+    `(let ((,timer (/ (get-internal-real-time) internal-time-units-per-second)))
        (handler-bind
-           ((report
-             (lambda (r)
-               (apply #'handle-report 
-                      (or (report-module r) ',module)
-                      (or (report-machine r) (machine-instance))
-                      (report-message r)
-                      (report-user-string r)
-                      (report-keys r)))))
-         (handler-bind
-             ((error 
-               (lambda (c)
-                 (caesar:report :lisp-error
-                                (format nil
-                                        "Application signaled an ERROR condition:~%~S~% “~:*~A”"
-                                        c)
-                                :condition c
-                                :restarts (compute-restarts)
-                                :condition-restarts (compute-restarts c))))
-              (warning (lambda (c)
-                         (caesar:report :lisp-warning
-                                        (format nil
-                                                "Application signaled a WARNING condition:~%~S~% “~:*~A”"
-                                                c)
-                                        :condition c
-                                        :restarts (compute-restarts)
-                                        :condition-restarts (compute-restarts c)))))
-           (caesar:report :begin-oversight "Beginning oversight by Caesar")
-           (unwind-protect 
-                (progn ,@body)
-             (caesar:report :end-oversight "Ending oversight by Caesar")))))))
+           ((timeout (lambda (condition)
+                       (let ((elapsed (- (/ (get-internal-real-time) internal-time-units-per-second)
+                                         ,timer)))
+                         (cond ((< elapsed ,soft-timeout)
+                                (report :false-timeout "TIMEOUT signaled before soft timeout"
+                                        :condition condition
+                                        :elapsed-time elapsed
+                                        :soft-timeout ,soft-timeout
+                                        :hard-timeout ,hard-timeout)
+                                (signal 'hook-soft-timeout :elapsed-time elapsed)
+                                (continue))
+                               ((and (<= ,soft-timeout elapsed)
+                                     (< elapsed ,hard-timeout))
+                                (report :soft-timeout "Function exceeded soft timeout"
+                                        :condition condition
+                                        :elapsed-time elapsed
+                                        :soft-timeout ,soft-timeout)
+                                (continue))
+                               (t 
+                                (report :hard-timeout "Function exceeded hard timeout and is being aborted"
+                                        :condition condition
+                                        :elapsed-time elapsed
+                                        :hard-timeout ,hard-timeout)
+                                (signal 'hook-hard-timeout :elapsed-time elapsed)
+                                (abort)))))))
+         (with-timeout (,hard-timeout)
+           (with-timeout (,soft-timeout)
+             ,@body))))))
+
+(defmacro with-report-acceptor (&body body)
+  `(handler-bind
+       ((report
+         (lambda (r)
+           (apply #'handle-report 
+                  (or (report-module r) *module*)
+                  (or (report-machine r) (machine-instance))
+                  (report-message r)
+                  (report-user-string r)
+                  (report-keys r)))))
+     ,@body))
+
+(defmacro with-oversight ((module &key soft-timeout hard-timeout) &body body)
+  `(let ((*module* ',(string module)))
+     (block ,(format-symbol *package* "~A-MODULE" (string module))
+       (with-report-acceptor
+         (with-timeout-handler (,soft-timeout ,hard-timeout)
+           (handler-bind
+               (,(oversight-handle 'error)
+                ,(oversight-handle 'warning))
+             (caesar:report :begin-oversight "Beginning oversight by Caesar")
+             (unwind-protect 
+                  (progn ,@body)
+               (caesar:report :end-oversight "Ending oversight by Caesar"))))))))
+
+

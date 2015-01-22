@@ -7,8 +7,11 @@
    #:+inline-whitespace+
    #:+often-naughty-chars+
    #:+whitespace+
+   #:a/an
+   #:a/an/some
    #:any
    #:copyrights
+   #:counting
    #:doseq
    #:escape-by-doubling
    #:escape-c-style
@@ -18,7 +21,9 @@
    #:forever
    #:join
    #:keywordify
+   #:letter-case
    #:make-t-every-n-times
+   #:plural
    #:repeat
    #:server-start-banner
    #:start-repl
