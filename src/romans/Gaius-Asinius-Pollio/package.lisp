@@ -1,5 +1,5 @@
 (defpackage :asinius
-  (:use :cl :alexandria :postmodern)
+  (:use :cl :alexandria :romans :local-time :bordeaux-threads :split-sequence)
   (:nicknames :gaius-asinius-pollio)
   (:documentation
    "Asinius handles connectivity to the Postgres database server, for

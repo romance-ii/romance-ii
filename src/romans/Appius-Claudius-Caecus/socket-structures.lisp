@@ -24,7 +24,7 @@
   Stream: ~A
   Authentication: ~A
   State: ~A; Encoding: ~A
-  Version range: ~:D to ~:D  >"
+  Version range: ~:D to ~:D >"
           (socket-info-socket info)
           (socket-info-stream info)
           (socket-info-authentication info)

@@ -12,17 +12,22 @@
    #:any
    #:copyrights
    #:counting
+   #:c-style-identifier
+   #:c-style-identifier-p
    #:doseq
    #:escape-by-doubling
    #:escape-c-style
    #:escape-lispy
    #:escape-url-encoded
    #:escape-with-char
+   #:for-all
+   #:for-any
    #:forever
    #:join
    #:keywordify
    #:letter-case
    #:make-t-every-n-times
+   #:membership
    #:plural
    #:repeat
    #:server-start-banner

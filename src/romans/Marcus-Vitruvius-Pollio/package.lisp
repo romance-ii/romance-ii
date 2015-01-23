@@ -1,5 +1,5 @@
 (defpackage :vitruvius
-  (:use :cl :alexandria)
+  (:use :cl :alexandria :romans :local-time :bordeaux-threads :split-sequence)
   (:nicknames :marcus-vitruvius-pollio)
   (:documentation "Vitruvius is the module responsible for mapping
   between the genotype (inherited traits) and morphotype (physical, or

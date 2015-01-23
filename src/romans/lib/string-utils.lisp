@@ -586,6 +586,34 @@ Example:
   (mapcar (rcurry #'maybe-alist-row =)
           (split-sequence record-char string)))
 
+
+(defun for-all (&rest predicates)
+  (lambda (&rest args)
+    (loop for predicate in predicates
+       unless (apply predicate args)
+       do (return nil)
+       finally (return t))))
 
+(defun for-any (&rest predicates)
+  (lambda (&rest args)
+    (loop for predicate in predicates
+       when (apply predicate args)
+       do (return t)
+       finally (return nil))))
+
+(defun membership (set)
+  (rcurry #'member set))
+
+
+
+(defun c-style-identifier-p (string)
+  (and (let ((first (elt string 0)))
+         (or (alpha-char-p first)
+             (eql #\_ first)))
+       (every (for-any #'alphanumericp
+                       (membership '(#\_ #\$))) string)))
+
+(deftype c-style-identifier
+    '(satisfies c-style-identifier-p))
 
 

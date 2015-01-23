@@ -145,45 +145,81 @@
 
 (define-condition hook-timeout (warning)
   ((elapsed-time :initarg :elapsed-time :reader timeout-elapsed-time)))
+(define-condition hook-early-timeout (hook-timeout)
+  ())
 (define-condition hook-soft-timeout (hook-timeout)
   ())
 (define-condition hook-hard-timeout (hook-timeout)
   ())
 
+(defun get-real-time ()
+  (/ (get-internal-real-time)
+     internal-time-units-per-second))
+
+(defun timeout-handler%early (soft-timeout hard-timeout timer)
+  `((< elapsed ,(or soft-timeout hard-timeout))
+    (report :false-timeout "TIMEOUT signaled early (continuing, ignoring this)"
+            :condition condition
+            :elapsed-time elapsed
+            :soft-timeout ,soft-timeout
+            :hard-timeout ,hard-timeout)
+    (signal 'hook-early-timeout :elapsed-time elapsed)
+    (continue)))
+
+(defun timeout-handler%soft (soft-timeout hard-timeout timer)
+  (when soft-timeout
+    `(((and ,@(when soft-timeout
+                    `((<= ,soft-timeout elapsed)))
+            (< elapsed ,hard-timeout)
+            t)
+       (report :soft-timeout "Function exceeded soft timeout"
+               :condition condition
+               :elapsed-time elapsed
+               :soft-timeout ,soft-timeout)
+       (continue)))))
+
+(defun timeout-handler%hard (soft-timeout hard-timeout timer)
+  `((t 
+     (report :hard-timeout "Function exceeded hard timeout and is being aborted"
+             :condition condition
+             :elapsed-time elapsed
+             :hard-timeout ,hard-timeout)
+     (signal 'hook-hard-timeout :elapsed-time elapsed)
+     (abort))))
+
 (defmacro with-timeout-handler ((soft-timeout hard-timeout) &body body)
-  (let ((soft-timeout (min soft-timeout hard-timeout))
-        (hard-timeout (max soft-timeout hard-timeout))
-        (timer (gensym "TIMER")))
-    `(let ((,timer (/ (get-internal-real-time) internal-time-units-per-second)))
-       (handler-bind
-           ((timeout (lambda (condition)
-                       (let ((elapsed (- (/ (get-internal-real-time) internal-time-units-per-second)
-                                         ,timer)))
-                         (cond ((< elapsed ,soft-timeout)
-                                (report :false-timeout "TIMEOUT signaled before soft timeout"
-                                        :condition condition
-                                        :elapsed-time elapsed
-                                        :soft-timeout ,soft-timeout
-                                        :hard-timeout ,hard-timeout)
-                                (signal 'hook-soft-timeout :elapsed-time elapsed)
-                                (continue))
-                               ((and (<= ,soft-timeout elapsed)
-                                     (< elapsed ,hard-timeout))
-                                (report :soft-timeout "Function exceeded soft timeout"
-                                        :condition condition
-                                        :elapsed-time elapsed
-                                        :soft-timeout ,soft-timeout)
-                                (continue))
-                               (t 
-                                (report :hard-timeout "Function exceeded hard timeout and is being aborted"
-                                        :condition condition
-                                        :elapsed-time elapsed
-                                        :hard-timeout ,hard-timeout)
-                                (signal 'hook-hard-timeout :elapsed-time elapsed)
-                                (abort)))))))
-         (with-timeout (,hard-timeout)
-           (with-timeout (,soft-timeout)
-             ,@body))))))
+  (check-type soft-timeout (or real symbol null))
+  (check-type hard-timeout (or real symbol null))
+  (let ((timer-tag (gensym "TIMEOUT-BLOCK-")))
+    (if (or soft-timeout hard-timeout)
+        (let ((soft-timeout (if (and (realp soft-timeout)
+                                     (realp hard-timeout))
+                                (min soft-timeout hard-timeout)
+                                soft-timeout))
+              (hard-timeout (if (and (realp soft-timeout)
+                                     (realp hard-timeout))
+                                (max soft-timeout hard-timeout)
+                                soft-timeout))
+              (timer (gensym "TIMER-")))
+          `(block ,timer-tag
+             (let ((,timer (get-real-time)))
+               (handler-bind
+                   ((timeout 
+                     (lambda (condition)
+                       (let ((elapsed (- (get-real-time) ,timer)))
+                         (cond
+                           ,@(timeout-handler%early soft-timeout hard-timeout timer)
+                           ,@(timeout-handler%soft soft-timeout hard-timeout timer)
+                           ,@(timeout-handler%hard soft-timeout hard-timeout timer))))))
+                 (,@(if (realp hard-timeout) 
+                        (list 'with-timeout (list hard-timeout))
+                        (list 'identity))
+                    (,@(if (realp soft-timeout) 
+                           (list 'with-timeout (list soft-timeout))
+                           (list 'identity))
+                       ,@body))))))
+        `(block ,timer-tag
+           ,@body))))
 
 (defmacro with-report-acceptor (&body body)
   `(handler-bind
