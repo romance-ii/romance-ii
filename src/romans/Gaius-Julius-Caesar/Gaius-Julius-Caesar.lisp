@@ -101,12 +101,12 @@
 (defmethod handle-report ((module t) (machine t) (message (eql :lisp-warning)) (user-string t)
                           &key condition)
   "A Lisp program issued a WARNing"
-  (journal module machine message user-string))
+  )
 
 (defmethod handle-report ((module t) (machine t) (message (eql :lisp-error)) (user-string t)
                           &key condition)
   "A Lisp program issued an ERROR."
-  (journal module machine message user-string))
+  )
 
 (define-condition report (condition)
   ((module :reader report-module :initarg :module :type symbol)

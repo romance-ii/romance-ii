@@ -188,6 +188,7 @@ universal (all local addresses) and port 2770."
   (todo))
 
 
+
 (defgeneric convert-packet (data from to))
 
 (defmethod convert-packet (data (from (eql :json)) (to (eql :mq)))
@@ -223,8 +224,10 @@ universal (all local addresses) and port 2770."
 (defmethod convert-package (data (from (eql :mq)) (to (eql :mq))) data)
 (defmethod convert-package (data (from (eql :sexp)) (to (eql :sexp))) data)
 
+
+
 (defun get-quality-of-service ()
-(todo))
+  (todo))
 
 (defun connection-pool-moderation ()
   "when one guy's getting too many connections and another one is light,
