@@ -13,30 +13,36 @@
 
 (defgeneric serve (socket))
 
+(define-condition tcp-connection-accepted (condition)
+  ((socket-info :initarg :socket-info :reader connection-socket-info)))
+
 (defmethod serve ((socket stream-server-usocket))
   "Accept a new connection"
   (let* ((accepted (socket-accept socket))
          (info (make-instance 'socket-info
                               :socket accepted)))
-    (setf (gethash *connection-pool* accepted) info))
-  (format t "~&TODO QoS and logging; but, I got a connection"))
+    (setf (gethash accepted *connection-pool*) info)
+    (signal 'tcp-connection-accepted :socket-info info)
+    (caesar::report :accepted-connection 
+                    "Accepted a TCP/IP connection and added to connection pool"
+                    :socket-info info)))
 
 (defgeneric serve-socket (stream encoding state socket info))
 
 (defmethod serve ((socket stream-usocket))
-  (let ((info (gethash *connection-pool* socket)))
+  (let ((info (gethash socket *connection-pool*)))
     (serve-socket (socket-info-stream info)
                   (socket-info-encoding info)
                   (socket-info-state info)
                   socket info)))
 
 (define-condition protocol-unhandled-error (error)
-  (socket-info)
+  ((socket-info :initarg :socket-info :reader error-socket-info))
   (:report "no handler for this socket state: ~A"))
 
 (defmethod serve-socket ((stream t) (encoding t) (state t)
                          (socket t) (info t))
-  (error 'protocol-unhandled-error :socket-info))
+  (error 'protocol-unhandled-error :socket-info info))
 
 (defparameter $reaper-cycles$ 40)
 
@@ -44,51 +50,135 @@
   "Send the server message with the given code to the client."
   (format (socket-stream *selected-socket*)
           "~C~CSERVER MESSAGE CODE ~S~%~C"
-          (code-char 3) (code-char 0) code (code-char 4))
-  (todo))
+          (code-char 3) (code-char 0) code (code-char 4)))
 
-(defvar *connection-pool* nil)
+(defvar *connection-pool* (make-hash-table))
+
+(defvar *selected-socket*)
+
+(defun end-of-file-handler (condition)
+  (when (typep *selected-socket* 'stream-server-usocket)
+    (error 'listener-disconnected
+           :caused-by condition))
+  (invoke-restart 'disconnected condition))
+
+(define-condition socket-disconnect-polite-hook (condition) ())
+(define-condition socket-disconnect-hook (condition) ())
+
+(defun socket-polite-disconnect (note)
+  ;; TODO QoS
+  (when note (send-server-message note))
+  (send-server-message :disconnecting)
+  (signal 'socket-disconnect-polite-hook)
+  (caesar::report :polite-disconnect (strcat "Note: " note)
+                  :socket *selected-socket*)
+  (invoke-restart 'disconnected note))
+
+(defun socket-disconnected ()
+  ;; TODO QoS
+  (signal 'socket-disconnect-hook)
+  (caesar::report :disconnected "Socket disconnecting"
+                  :socket *selected-socket*)
+  (socket-close *selected-socket*)
+  ;;(remhash *selected-socket* *socket-accumulators*)
+  (remhash *selected-socket* *connection-pool*))
 
 (defun server-listen ()
-  (restart-case
-      (handler-case
-          (serve *selected-socket*)
-        (end-of-file (c)
-          (when (typep *selected-socket* 'stream-server-usocket)
-            (error 'listener-disconnected
-                   :caused-by c))
-          (invoke-restart 'disconnected c)))
-    (disconnect-politely (note)
-      ;; TODO QoS
-      (when note (send-server-message note))
-      (send-server-message :disconnecting)
-      (invoke-restart 'disconnected note))
-    (disconnected (c)
-      (declare (ignore c))
-      ;; TODO QoS
-      (socket-close *selected-socket*)
-      (remhash *selected-socket* *socket-accumulators*)
-      (removef *connection-pool* *selected-socket*))))
+  (restart-bind
+      ((disconnect-politely #'socket-polite-disconnect
+         :report-function (lambda (s) 
+                            (princ "Politely disconnect socket" s))
+         :test-function (lambda (c) 
+                          (declare (ignore c))
+                          *selected-socket*))
+       (disconnected #'socket-disconnected
+         :report-function (lambda (s) 
+                            (princ "Disconnect socket" s))
+         :test-function (lambda (c)
+                          (declare (ignore c))
+                          *selected-socket*)))
+    (handler-bind
+        ((end-of-file #'end-of-file-handler)
+         (bad-file-descriptor #'end-of-file-handler))
+      (serve *selected-socket*))))
+
+
+(define-condition tcp-pre-listen-hook (condition)
+  ((address :initarg :address :reader ip-address)
+   (port :initarg :port :reader tcp-port)))
+
+(define-condition tcp-unwinding-hook (condition)
+  ((connection-pool :initarg :connection-pool :reader connection-pool)))
 
 (defun start-server/tcp-listener (&optional (address *wildcard-host*)
                                     (port 2770))
-  "Start listening at the given address and port. Defaults to universal (all local addresses) and port 2770."
-  (loop
-     with listener = (socket-listen address port
-                                    :reuse-address t
-                                    :backlog #x100)
-     with *connection-pool* = (list listener)
-     with cycler = 0
-     for *selected-socket*
-     ;; return only ready sockets for 39 cycles, but return them all
-     ;; on the 40. This means that, combined with the timeout, we
-     ;; will wait at most 20 seconds to notice a dead connection —
-     ;; and probably far less time.
-     in (wait-for-input *connection-pool*
-                        :timeout 1/2    ;sec
-                        :ready-only (not (modincf cycler $reaper-cycles$)))
-     until *server-quit*
-     do (server-listen)))
+  "Start listening at the given address and port. Defaults to
+universal (all local addresses) and port 2770."
+  (check-type port (integer 1024 65535) "Valid TCP port number")
+  (caesar:with-oversight (appius/tcp-server)
+    (restart-bind
+        
+        ((use-other-interface 
+          (lambda (address)
+            (start-server/tcp-listener address port))
+           :report-function (lambda (s) 
+                              (princ "Listen on another interface" s))
+           :interactive-function 
+           (lambda ()
+             (format *query-io* "~&Enter the address of the interface on which to listen
+\(~S for all interfaces) ⇒ " *wildcard-host*)
+             (list (read *query-io*)))
+           :test-function
+           (lambda (c)
+             (typep c 'address-in-use-error)))
+         
+         (use-other-port 
+          (lambda (port)
+            (start-server/tcp-listener address port))
+           :report-function (lambda (s) 
+                              (princ "Listen on another port" s))
+           :interactive-function 
+           (lambda ()
+             (format *query-io* "~&Enter the port number on which to listen
+\(Default is 2770) ⇒ ")
+             (list (read *query-io*)))
+           :test-function
+           (lambda (c)
+             (typep c 'address-in-use-error))))
+      
+      (caesar::report :begin-listening 
+                      (format nil "Listening for TCP connections on ~{~d.~d.~d.~d~} port ~S"
+                              (coerce address 'list) port))
+      (signal 'tcp-pre-listen-hook :address address :port port)
+      (let* ((listener (socket-listen address port
+                                      :reuse-address t
+                                      :backlog #x20))
+             (cycler  (make-t-every-n-times $reaper-cycles$)))
+        (unwind-protect
+             (progn
+               (setf (gethash listener *connection-pool*)
+                     (make-instance 'socket-info :socket listener
+                                    :encoding :tcp-listen))
+
+               (loop
+                  for *selected-socket*
+                  in (wait-for-input (hash-table-keys *connection-pool*)
+                                     :timeout 1/2 ;sec
+                                     :ready-only (funcall cycler))
+                  until *server-quit*
+                  do (server-listen)))
+          (progn
+            (signal 'tcp-unwinding-hook :connection-pool *connection-pool*)
+            (when *connection-pool*
+              (caesar:report :left-over-connections 
+                             (format nil "Closing ~:D sockets left in pool" 
+                                     (hash-table-count *connection-pool*))
+                             :connection-pool *connection-pool*)
+              (loop for socket in *connection-pool*
+                 do (ignore-errors
+                      (socket-close socket))))))))))
+
+
 
 (defun start-server/websockets (address port)
   "Note, we'll need COTS (Cross-Origin) headers. TODO all over the place.
@@ -150,4 +240,7 @@ the load"
 (defun start-server (argv)
   (romance:server-start-banner "Appius" "Appius Claudius Cæcus"
                                "Network communications server")
+  (caesar::report :debug (format nil "Ignoring ARGV: ~S" argv))
+  ;;  (start-server/socket-activation)
+  (start-server/tcp-listener)
   (format t "~&Appius Claudius Cæcus: Done. Bye!~%"))

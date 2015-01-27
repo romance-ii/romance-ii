@@ -27,6 +27,7 @@
    #:keywordify
    #:letter-case
    #:make-t-every-n-times
+   #:modincf
    #:membership
    #:plural
    #:repeat

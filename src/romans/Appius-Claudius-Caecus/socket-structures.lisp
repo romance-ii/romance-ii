@@ -2,9 +2,8 @@
 
 (defclass socket-info ()
   ((socket :type socket :reader socket-info-socket
-           :initarg :socket)
-   (stream :type stream :reader socket-info-stream
-           :initform (socket-stream socket))
+           :initarg :socket :initform (error 'required-argument))
+   (stream :type stream :reader socket-info-stream)
    (authentication :accessor socket-info-authentication :initform nil)
    (state :accessor socket-info-state :initform :pre-login)
    (encoding :type symbol :accessor socket-info-encoding
@@ -14,12 +13,19 @@
    (max-version :type number :accessor socket-info-max-version 
                 :initform 0 :initarg :max-version)))
 
+(defmethod initialize-instance :after ((socket-info socket-info) 
+                                       &key &allow-other-keys)
+  (let ((socket (socket-info-socket socket-info)))
+    (unless (typep socket 'stream-server-usocket)
+      (setf (slot-value socket-info 'stream) 
+            (socket-stream socket)))))
+
 (defun socket-info-accept-version-p (info version)
   (check-type info socket-info)
   (check-type version number)
   (<= (socket-info-min-version info) version (socket-info-max-version info)))
 
-(defmethod print-object (stream (info socket-info))
+(defmethod print-object ((info socket-info) stream)
   (format stream "#< Socket: ~A
   Stream: ~A
   Authentication: ~A
