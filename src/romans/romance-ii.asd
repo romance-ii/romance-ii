@@ -14,6 +14,7 @@
                :cl-oauth
                :cl-unicode
                :cffi
+               :gsll
                :langutils
                :local-time
                :postmodern
@@ -39,6 +40,8 @@
                             (:file "json-utils")
                             (:file "repl-glue")
                             (:file "string-utils")
+                            (:file "i18n+l10n"
+                                   :depends-on ("string-utils"))
                             (:file "system-utils")))
    (:module "Aelius-Galenus"
             :depends-on ("common" "lib" "Gaius-Julius-Caesar")

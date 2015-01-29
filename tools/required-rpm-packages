@@ -1,6 +1,10 @@
 # RPM packages required to function
 # Run tools/bin/install-required-packages to load these via PackageKit
 
+#
+# TODO: Sort these into build-time v. run-time deps
+#
+
 # You must be joking?
 coreutils
 binutils
@@ -37,4 +41,7 @@ texlive-wrapfig
 
 # (TeX)Info facilities
 texinfo
+
+# Used in Lisp for maths; GSL-BLAS
+gsl-devel
 
