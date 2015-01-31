@@ -240,6 +240,12 @@ the associated values of the p-list."
                    char))
        word))
 
+(defun string-starts-with (longer prefix)
+  (let ((longer-length (length longer))
+        (prefix-length (length prefix)))
+    (and (>= longer-length prefix-length)
+         (string= longer prefix :end1 prefix-length))))
+
 (defun string-ends-with (longer ending)
   (let ((longer-length (length longer))
         (ending-length (length ending)))
@@ -258,10 +264,10 @@ the associated values of the p-list."
                            ((member match '(otherwise t))
                             `(t ,@body))
                            ((listp match)
-                            `((or ,@(mapcar (lambda (ending)
-                                              `(string-ends-with ,s
-                                                                 ,ending))
-                                            match))
+                            `((member ,s ,(list 'quote (if (symbolp (car match))
+                                                           (eval match)
+                                                           match))
+                                      :test #'string-ends-with)
                               ,@body))
                            (t `((string-ends-with ,s ,match)
                                 ,@body))))))))
@@ -321,16 +327,16 @@ string. If the second value is negative, the string was truncated."
 
 (defun string-case/literals% (compare clauses)
   (let ((instance (gensym "STRING-CASE")))
-    `(let ((,instance (eval-once ,compare)))
+    `(let ((,instance ,compare))
        (cond
          ,@(mapcar (lambda (clause)
                      (cond ((or (eql t (car clause)) 
                                 (eql 'otherwise (car clause)))
                             `(t ,@(cdr clause)))
                            ((consp (car clause))
-                            `((or ,(mapcar (lambda (each)
-                                             `(string= ,instance ,each))
-                                           (car clause)))
+                            `((or ,@(mapcar (lambda (each)
+                                              `(string= ,instance ,each))
+                                            (car clause)))
                               ,@(cdr clause)))
                            (t
                             `((string= ,instance ,(car clause)) ,@(cdr clause)))))
@@ -339,7 +345,7 @@ string. If the second value is negative, the string was truncated."
 
 (defun string-case/interning% (compare clauses)
   (let ((instance (gensym "STRING-INTERNED")))
-    `(let ((,instance (intern$ (eval-once ,compare))))
+    `(let ((,instance (intern$ ,compare)))
        (case ,instance
          ,@(mapcar (lambda (clause)
                      (cond 
@@ -419,7 +425,7 @@ string. If the second value is negative, the string was truncated."
 Example:
 
 \(STRING-CASE FOO ((\"A\" (print :A)) (\"B\" (print :B)) (t (print :otherwise)) "
-    (if (< interning-better-breakpoint (length clauses))
+    (if (> interning-better-breakpoint (length clauses))
         (string-case/literals% compare clauses)
         (string-case/interning% compare clauses))))
 
@@ -430,7 +436,6 @@ Example:
    (substitute #\- #\_ 
                (symbol-name (cffi:translate-camelcase-name word)))))
 
-
 (defun lc-string-syms (token)
   (cond 
     ((symbolp token)
@@ -439,10 +444,17 @@ Example:
      (mapcar #'lc-string-syms token))
     (t token)))
 
+(defmacro @$ (&rest list-of-strings)
+  (list 'quote (mapcar #'lc-string-syms list-of-strings)))
+
+(defun char-string (char)
+  (check-type char character)
+  (princ-to-string char))
+
 (defun join (joiner list-of-strings)
   (let ((joiner (etypecase joiner
                   (string joiner)
-                  (character (princ-to-string joiner))
+                  (character (char-string joiner))
                   (symbol (symbol-name joiner))))) 
     (reduce (lambda (a b)
               (concatenate 'string a joiner b))
@@ -620,7 +632,7 @@ Example:
        (every (for-any #'alphanumericp
                        (membership '(#\_ #\$))) string)))
 
-(deftype c-style-identifier 
-    (satisfies c-style-identifier-p))
+(deftype c-style-identifier ()
+  '(satisfies c-style-identifier-p))
 
 
