@@ -13,35 +13,39 @@
            #:*path/r2project*))
 (in-package :romans-compiler-setup)
 
+(format *trace-output* "~& ★ Romance Ⅱ set-up script ★
+
+Setting up environment to compile Romance Ⅱ… If you run into problems,
+check the manual in the “doc” folder.")
+
 (unless *load-pathname*
-  (error "This file must be `load'ed, not `compile'd"))
+  (error "This file must be `load'ed, not `compile'd. (LOAD \"setup\")"))
 
 (eval-when (:compile-toplevel)
-  (error "This file must be `load'ed, not `compile'd"))
+  (error "This file must be `load'ed, not `compile'd. (LOAD \"setup\")"))
 
 #-sbcl
 (warn "Your compiler is not SBCL. Some things may be weird.
 
-Romance Ⅱ is being developed using SBCL. While we greatly appreciate
-and encourage other compilers to be used, and would like to support as
-many as are practical, please keep in mind that the curator and
-principal developers use SBCL on Linux® (64-bit). Patches for your
-compiler will certainly be accepted, however, as long as they don't
-break support for SBCL (e.g. use #+xyzlisp reader macros).
+Romance Ⅱ is being developed using SBCL. While we greatly appreciate and
+encourage other compilers to be used,  and would like to support as many
+as are  practical, please keep  in mind  that the curator  and principal
+developers use SBCL  on Linux® (64-bit). Patches for  your compiler will
+certainly be accepted, however, as long  as they don't break support for
+SBCL (e.g. use #+xyzlisp reader macros).
 
-The name of your compiler would be helpful for us to know, as well as
-its feature-test symbol(s) for #± reader macros; your CL:*FEATURES*
-is: ~%~S" *features*)
+The name of  your compiler would be  helpful for us to know,  as well as
+its feature-test symbol(s) for #±  reader macros; your CL:*FEATURES* is:
+~%~S" *features*)
 
 #-common-lisp
 (warn "*FEATURES* omits COMMON-LISP. What madness is this??
 
-If you are legitimately trying to compile Romance Ⅱ using some
-un-Common Lisp, well: good luck, but please don't expect
-any miracles.
+If you are legitimately trying to compile Romance Ⅱ using some un-Common
+Lisp, well: good luck, but please don't expect any miracles.
 
-If you're on a Common Lisp system that doesn't mention COMMON-LISP in
-its *FEATURES*, please advise us with a copy of CL:*FEATURES*:~%~S"
+If you're  on a Common Lisp  system that doesn't mention  COMMON-LISP in
+its  *FEATURES*, please  advise us  with a  copy of  CL:*FEATURES*:~%~S"
       *features*)
 
 #-linux
@@ -65,9 +69,9 @@ Your machine type is reported as ~A
 
 If this is not an AMD-alike* 64-bit architecture, please be forewarned
 that Romance Ⅱ is being developed primarily for the “AMD 64” (X86-64)
-architecture. While support for other architectures is surely
-possible, and patches are encouraged, neither the curator nor primary
-contributors are currently using them.
+architecture. While support for other architectures is surely possible,
+and patches are encouraged, neither the curator nor primary contributors
+are currently using them.
 
    * Intel's non-Itanium 64-bit systems are AMD-alikes; e.g. the Intel
      Core series.
@@ -97,12 +101,6 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 
   (setf sb-ext:*muffled-warnings* 'uninteresting-redefinition))
 
-;;; Define “Hosts” for Logical Pathnames
-
-;; (defun set-logical-pathname-host  (host dir)
-;;   (setf (logical-pathname-translations host)
-;;         `(("**;*.*.*" ,(merge-pathnames "**/" dir)))))
-
 (defparameter *path/etc* (make-pathname :directory "/etc/"))
 (defparameter *path/share* (make-pathname :directory "/usr/share/"))
 (defparameter *path/r2share*
@@ -112,21 +110,18 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 (defparameter *path/tmp* (make-pathname :directory "/tmp/"))
 (defparameter *path/var/tmp* (make-pathname :directory "/var/tmp/"))
 (defparameter *path/r2src* 
-  (merge-pathnames "../" 
-                   (make-pathname :directory (pathname-directory *load-pathname*))))
+  (truename 
+   (merge-pathnames "../" 
+                    (make-pathname :directory (pathname-directory *load-pathname*)))))
 (defparameter *path/r2project*
-  (merge-pathnames "../../" *load-pathname*))
+  (truename (merge-pathnames "../../" 
+                             (make-pathname :directory (pathname-directory *load-pathname*)))))
 
-(let ((r2src (merge-pathnames "romans/" *path/r2src*)))
-  (pushnew r2src asdf:*central-registry* :test 'equal))
-
-(let ((bullet-src (merge-pathnames "romans/lib/cl-bullet2l/bullet-physics/"
-                                   *path/r2src*)))
-  (pushnew bullet-src asdf:*central-registry* :test 'equal))
-
-(let ((wn-src (merge-pathnames "romans/lib/smedict-old/"
-                               *path/r2src*)))
-  (pushnew wn-src asdf:*central-registry* :test 'equal))
+(dolist (path '("romans/"
+                "romans/lib/smedict-old/"
+                "romans/lib/sb-texinfo/"))
+  (pushnew (merge-pathnames path *path/r2src*)
+           asdf:*central-registry* :test 'equal))
 
 (defvar *os-name* (or #+android "Android"
                       #+ios "iOS"
@@ -153,7 +148,12 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
                               #-(or X86-64) "/usr/lib/"
                               )))
 
-(ql:quickload :cffi :verbose nil :prompt nil :explain nil)
+(format *trace-output* "~&Quicklisp-quickloading some core dependencies~2%")
+
+(mapcar 
+ (lambda (pkg) 
+   (ql:quickload pkg :silent t :verbose nil :prompt nil :explain nil))
+ '(:cffi :alexandria :split-sequence :local-time :bordeaux-threads))
 
 (pushnew (merge-pathnames "./lib/cl-bullet2l/" *load-truename*)
          cffi:*foreign-library-directories*

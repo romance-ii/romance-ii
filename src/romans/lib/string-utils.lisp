@@ -432,9 +432,12 @@ Example:
 
 
 (defun keywordify (word)
-  (make-keyword
-   (substitute #\- #\_ 
-               (symbol-name (cffi:translate-camelcase-name word)))))
+  (etypecase word
+    (string
+     (make-keyword
+      (substitute #\- #\_ 
+                  (symbol-name (cffi:translate-camelcase-name word)))))
+    (symbol (make-keyword (string word)))))
 
 (defun lc-string-syms (token)
   (cond 

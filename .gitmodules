@@ -38,3 +38,6 @@
 [submodule "cl-bullet2l"]
 	path = src/romans/lib/cl-bullet2l
 	url = git@github.com:romance-ii/cl-bullet2l
+[submodule "sb-texinfo"]
+	path = src/romans/lib/sb-texinfo
+	url = git@github.com:nikodemus/sb-texinfo

@@ -1,7 +1,11 @@
 (asdf:defsystem :romance-ii
-  :description "Romance Ⅱ Game Core"
+  :description "Romance Ⅱ is a game server system, mostly oriented toward persistent, MMO-RPG games."
   :author "Bruce-Robert Fenn Pocock"
+  :version "2.0.5"
+  :maintainer "Bruce-Robert Fenn Pocock"
+  :mailto "brpocock+romance2@star-hope.org"
   :licence "AGPLv3"
+  :long-name "Romance Ⅱ Game System"
 
   :depends-on (
 

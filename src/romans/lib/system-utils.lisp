@@ -2,18 +2,26 @@
 
 
 (defun prerequisite-systems (&optional (child :romance-ii))
-  (if-let ((prereqs (slot-value (asdf:find-system child)
-                                'asdf::load-dependencies)))
+  (check-type child string-designator)
+  (assert child)
+  (if-let ((prereqs (remove-duplicates
+                     (mapcar #'keywordify
+                             (remove-if #'null
+                                        (list*
+                                         (ignore-errors (slot-value (asdf:find-system child)
+                                                                    'asdf::load-dependencies))
+                                         (ignore-errors (slot-value (asdf:find-system child)
+                                                                    'asdf::depends-on))
+                                         (ignore-errors (slot-value (asdf:find-system child)
+                                                                    'asdf::sideway-dependencies))))))))
     (remove-if
      (lambda (sys)
-       (member (keywordify sys)
+       (member sys
                #+sbcl '(:sb-grovel :sb-posix :sb-rotate-byte
                         :sb-grovel :sb-bsd-sockets)))
      (remove-duplicates
-      (append (remove-if #'null
-                         (mapcan #'prerequisite-systems prereqs))
-              prereqs)
-      :test #'eql :key #'keywordify))))
+      (append (mapcan #'prerequisite-systems prereqs)
+              prereqs)))))
 
 
 

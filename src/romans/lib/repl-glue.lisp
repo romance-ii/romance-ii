@@ -10,8 +10,15 @@
   (:export #:help #:hello #:bye))
 
 (defvar *repl-ident* nil)
+(defconstant f nil
+  "In USER, F means NIL for user-friendly'ish false values.")
 
-(defgeneric repl-help (keyword))
+(defgeneric repl-help (keyword)
+  (:documentation "The REPL-HELP methods allow arbitrary text pages to 
+be added to the not-very-nice online help system.
+
+TODO: Replace the online help system with a nice, hypertext
+Info viewer."))
 
 (defmethod repl-help :around (keyword)
   (format t (call-next-method)))
@@ -39,14 +46,15 @@ very careful.
 
  • For help with using the REPL, type :HELP or (HELP :REPL)
 
- • For copyright information, type (COPYRIGHTS) for brief, (COPYRIGHTS
-   T) for full details.
+ • For copyright information, type (COPYRIGHTS) for brief,
+   or (COPYRIGHTS T) for full details.
 
- • If  you  enter  the  debugger,  choose  a  restart  with  :CONTINUE
-   (restart)  from the  list  presented. (The  debugger  prompt has  a
-   preceding number, usually [1], before your package prompt.) You can
-   also use :ABORT  to kill the function you had  started and return to
-   the REPL.
+ • If you enter the debugger, and are presented with some restarts,
+   choose a restart with :CONTINUE (restart) from the list
+   presented. (The debugger prompt has a preceding number, usually [1],
+   before your package prompt.) You can also use :ABORT to kill the
+   function you had started and return to the REPL. — e.g. to choose
+   restart [1], you would type: :CONTINUE 1 (with the leading \":\")
 
  • Use (HELP :COMM) to learn  about communicating with other operators
    through the REPL.

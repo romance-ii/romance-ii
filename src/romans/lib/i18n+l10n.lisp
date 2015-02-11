@@ -129,7 +129,7 @@
   (:fr (if (member (last-elt noun) '(#\e #\E))
            :f
            :m))
-  (:ga (if-let ((gender (gethash (string-upcase noun) irish-gender-dictionary)))
+  (:ga (if-let ((gender (gethash (string-downcase noun) irish-gender-dictionary)))
          gender
          (string-ends-with-case noun
            (("e" "í") :f)

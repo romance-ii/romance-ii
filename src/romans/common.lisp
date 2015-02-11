@@ -1,5 +1,5 @@
 (defpackage :romance
-  (:use :cl :alexandria :split-sequence)
+  (:use :cl :alexandria :split-sequence :fad)
   (:nicknames :romans :romance-ii :romance2)
   (:documentation
    "Common code used by other modules in Romance Ⅱ")
@@ -36,6 +36,7 @@
    #:start-server/generic
    #:strcat
    #:string-case
+   #:string-ends-with
    #:string-escape
    #:string-fixed
    #:strings-list
