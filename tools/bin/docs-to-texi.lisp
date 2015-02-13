@@ -1,11 +1,20 @@
 (format *trace-output* "~&DOCS-TO-TEXI: getting ready")
+
 (in-package :cl-user)
 (require :quicklisp)
-(load "../../src/romans/setup")
-(eval-when (:compile-toplevel :load-toplevel :execute)
+
+(eval-when (:compile-toplevel)
+  (warn "This file won't work when COMPILEd, LOAD it."))
+
+(eval-when (:load-toplevel :execute)
+  (load (make-pathname :directory (append (pathname-directory *load-truename*)
+                                          '(".." ".." "src" "romans"))
+                       :name "setup"))
+  (ql:quickload :romance-ii)
   (ql:quickload :sb-texinfo))
 (defpackage docs-to-texi (:use :cl :alexandria))
 (in-package :docs-to-texi)
+
 (defparameter *r2* 
   (truename 
    (make-pathname :directory (append (pathname-directory *load-truename*) 
@@ -34,7 +43,8 @@
 " *sb-texinfo-package*)
   (dolist (doc docs)
     (format sb-texinfo::*texinfo-output*
-            "@include include/~A~%" (sb-texinfo::include-pathname doc))))
+            "@include include/~A~%" 
+            (sb-texinfo::include-pathname doc))))
 
 (defun tex-it (package title)
   (let ((*default-pathname-defaults* *doc-dir*)
@@ -127,38 +137,70 @@
                   :type "cob")
    (merge-pathnames *doc-dir* "QCMN.texi")))
 
-(defun find-defpackages-in-file (file-name)
-  (with-input-from-file (source file-name)
-    (loop for form in (read source)
-       when (eql (car form) 'defpackage)
-       collect (make-keyword (string (elt form 1))))))
+(defun file-is-under-directory-p (file-name directory)
+  (and file-name directory
+       (let ((file-path (pathname-directory (truename file-name)))
+             (dir-path (pathname-directory directory)))
+         (and (>= (length file-path) (length dir-path))
+              (equalp (subseq file-path
+                              0 (length dir-path))
+                      dir-path)))))
 
-(defun for-every-asdf-file (fn asdf-system)
-  (labels 
-      ((for-every-file (dir &aux collected) 
-         (dolist (name (directory 
-                        (make-pathname :directory (pathname-directory dir)
-                                       :name :wild :type :wild
-                                       :version :newest)))
-           (cond ((fad:directory-exists-p name)
-                  (for-every-file name))
-                 ((equal (pathname-type name) "lisp")
-                  (mapcar (lambda (file) 
-                            (pushnew file collected))
-                          (ignore-errors
-                            (find-defpackages-in-file name))))))
-         collected))
-    (mapcar fn 
-            (for-every-file (asdf:system-source-directory asdf-system)))))
+(defun asdf-system-contains-file-p (system file-name)
+  (file-is-under-directory-p file-name 
+                             (asdf:system-source-directory system)))
 
 (defun asdf-system-packages (system)
-  (remove-duplicates 
-   (for-every-asdf-file (curry #'find-defpackages-in-file)
-                        system)))
+  (remove-if-not (lambda (source)
+                   (and source
+                        (asdf-system-contains-file-p system
+                                                     (sb-c:definition-source-location-namestring source))))
+                 (list-all-packages)
+                 :key #'sb-impl::package-source-location))
 
 (defun make-boring (string)
   (substitute #\- #\/
               (cl-ppcre:regex-replace "[^A-Za-z0-9\\-\\+\\.\\_\\=\\@]" string "-")))
+
+(defun write-asdf-system-packages (system system-title collection)
+  (loop for package in (mapcar #'package-name (asdf-system-packages system))
+     for title = (concatenate 'string
+                              title
+                              " Package "
+                              (string-capitalize package))
+     do (princ "." *trace-output*)
+     do (collector package system-title collection)
+     do (tex-it package title)))
+
+(defun write-asdf-system
+    (system collection
+     &aux
+       (system-title (concatenate 'string
+                                  "System "
+                                  (or (let ((lname (asdf:system-long-name (asdf:find-system system))))
+                                        (when (< 60 (length lname))
+                                          lname))
+                                      (string system)))))
+  (collector system-title 
+             (or (asdf:system-description (asdf:find-system system))
+                 (asdf:system-long-name (asdf:find-system system))
+                 system-title) 
+             collection)
+  (with-output-to-file (texi (make-pathname 
+                              :name (make-boring system-title)
+                              :type "texi"
+                              :directory (pathname-directory *doc-dir*))
+                             :if-exists :supersede)
+    (format texi "``~a'' is a system defined by ASDF and loaded
+as a prerequisite package for the compilation of Romance. The following
+sections define the packages@footnote{It's possible that not all
+packages may be listed correctly, because ASDF systems enumerate their
+source code modules, not their packages. Package discovery is still
+somewhat error-prone in the DOCS-TO-TEXI driver which extracts this
+documentation.} provided by the system.~2%" 
+            (sb-texinfo::escape-for-texinfo system-title)))
+  (princ "/" *trace-output*)
+  (write-asdf-system-packages system system-title collection))
 
 (defun document-other-packages (collection)
   (format collection "~2%@node System Documentation --- Other Packages
@@ -173,42 +215,8 @@
                           (romans::prerequisite-systems :romance-ii))
                #'string<
                :key (compose #'string-upcase #'string))))
-    (loop for system in prerequisites
-       for system-title = (concatenate 'string
-                                       "System "
-                                       (or (let ((lname (asdf:system-long-name (asdf:find-system system))))
-                                             (when (< 60 (length lname))
-                                               lname))
-                                           (string system)))
-       do
-         (collector system-title 
-                    (or (asdf:system-description (asdf:find-system system))
-                        (asdf:system-long-name (asdf:find-system system))
-                        system-title) 
-                    collection)
-       do
-         (with-output-to-file (texi (make-pathname 
-                                     :name (make-boring system-title)
-                                     :type "texi"
-                                     :directory (pathname-directory *doc-dir*))
-                                    :if-exists :supersede)
-           (format texi "``~a'' is a system defined by ASDF and loaded
-as a prerequisite package for the compilation of Romance. The following
-sections define the packages@footnote{It's possible that not all
-packages may be listed correctly, because ASDF systems enumerate their
-source code modules, not their packages. Package discovery is still
-somewhat error-prone in the DOCS-TO-TEXI driver which extracts this
-documentation.} provided by the system.~2%" 
-                   (sb-texinfo::escape-for-texinfo system-title))) 
-         
-       do
-         (loop for package in (asdf-system-packages system)
-            for title = (concatenate 'string
-                                     system-title
-                                     " Package "
-                                     (string-capitalize (string package)))
-            do (collector package title collection)
-            do (tex-it package title)))
+    (format *trace-output* "~r other systems to extract docs… " (length prerequisites))
+    (map nil (rcurry #'write-asdf-system collection) prerequisites)
     prerequisites))
 
 (defun docs-to-texi ()
@@ -249,6 +257,7 @@ Numidicus (QCMN) is written instead in COBOL.")
 @end menu~2%")
     (loop for (package title) in +roman-packages+
        do (collector package title collection)
+       do (princ "." *trace-output*)
        do (tex-it package title))
     
     (format *trace-output* "~& Building docs for Numidicus (COBOL)… ")
@@ -269,24 +278,33 @@ functions in various packages."
               (length +roman-packages+)
               (length prerequisites))))
   
-  (format *trace-output* "~& Fixing generated includes' paths… ")
-  (dolist (a-file (directory
-                   (make-pathname :directory (pathname-directory *doc-dir*)
-                                  :name :wild :type "texi")))
-    (sb-ext:run-program "/usr/bin/perl" (list "-pne" 
-                                              "s,\\@include include/,\\@include include/,g; s{^\\@include (.*)$} {open IN, '<', $1 or die; join $/, <IN>}gex"
-                                              "-i"
-                                              (princ-to-string a-file))))
-  
-  
-  (copy-file (make-pathname :directory (append (pathname-directory *r2*) 
-                                               '("doc" "devel"))
-                            :name "The-Book-of-Romance"
-                            :type "texi")
-             (make-pathname :directory (append (pathname-directory *r2*) 
-                                               '("doc" "devel" "genr"))
-                            :name "The-Book-of-Romance"
-                            :type "texi"))
+  (format *trace-output* "~& Performing inclusions… ")
+  (let ((genr-full (make-pathname :directory (append (pathname-directory *r2*) 
+                                                     '("doc" "devel" "genr"))
+                                  :name "The-Book-of-Romance"
+                                  :type "texi"))) 
+    (copy-file (make-pathname :directory (append (pathname-directory *r2*) 
+                                                 '("doc" "devel"))
+                              :name "The-Book-of-Romance"
+                              :type "texi")
+               genr-full)
+    (dotimes (i 10)
+      (sb-ext:run-program 
+       "/usr/bin/perl"
+       (list "-pne" 
+             "$/ = undef; 
+s,\@include include/,\@include include/,g;
+s{^\@include +(\w.*)$} 
+ {open my $in, \"<\", $1 or die \"$1: $!\";
+   join \"\n\", (<$in>, \"\") }gex"
+             "-i"
+             (princ-to-string genr-full))))
+    
+    (format *trace-output* "~& Asking Emacs to build hypertext menus…")
+    (swank:eval-in-emacs `(let ((file (find-file ,(princ-to-string genr-full))))
+                            (texinfo-every-node-update)
+                            (texinfo-all-menus-update)
+                            (save-buffer))))
   (format *trace-output* "~& DOCS-TO-TEXI done."))
 
 (docs-to-texi)
