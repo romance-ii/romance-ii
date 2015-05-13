@@ -90,27 +90,32 @@ program's name."
           (process-id proc) (process-state-gerund proc)
           (machine-instance))
   (dolist (thread (all-threads/alpha))
-    (format t "~& • ~A ~@[☠~]"
-            (thread-name thread) (not (thread-alive-p thread)))))
-
-(defvar *myselfness* 42)
-
-(defun get-myselfness ()
-  (incf *myselfness*))
+    (when (thread-alive-p thread)
+      (format t "~& • ~A ~@[☠~]"
+              (thread-name thread) (not (thread-alive-p thread))))))
 
 (defun who ()
   (dolist (thread (all-threads/alpha))
     (format t "~& ~A ⇒ ~A"
             (thread-name thread)
-            (interrupt-thread thread
-                              (lambda () (get-myselfness))))))
+            (read-from-thread thread
+                              (lambda () 
+                                (user-ident))))))
 
 (defun find-thread (name)
   (find name (all-threads) :key #'thread-name))
 
+(defvar *read-from-thread-global-whiteboard* nil)
+
 (defun read-from-thread (thread function)
-  (let ((stream (make-string-output-stream)))
-    (interrupt-thread thread (lambda () (ignore-errors (prin1 (funcall function) stream))))
-    (read-from-string (get-output-stream-string stream))))
+  (let ((unique (gensym (thread-name thread))))
+    (interrupt-thread thread 
+                      (lambda () 
+                        (ignore-errors 
+                          (setf (getf *read-from-thread-global-whiteboard* unique)
+                                (funcall function)))))
+    (prog1
+        (getf *read-from-thread-global-whiteboard* unique nil)
+      (remf *read-from-thread-global-whiteboard* unique))))
 
 

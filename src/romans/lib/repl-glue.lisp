@@ -2,6 +2,7 @@
 
 (require :prepl)
 (require :local-time)
+(require :trivial-garbage)
 
 (defpackage :romance-user 
   (:nicknames :user)
@@ -9,7 +10,13 @@
         :bordeaux-threads)
   (:export #:help #:hello #:bye))
 
-(defvar *repl-ident* nil)
+(defvar *user-ident* (make-hash-table :weakness :key :test 'equal))
+
+(defun user-ident (&optional (new-name nil new-name-?))
+  (prog1 (gethash (current-thread) *user-ident*)
+    (when new-name-?
+      (setf (gethash (current-thread) *user-ident*) new-name))))
+
 (defconstant f nil
   "In USER, F means NIL for user-friendly'ish false values.")
 
@@ -143,7 +150,7 @@ If you're totally lost here, try (HELP :START)
 Evaluate (ROMANCE:COPYRIGHTS T) for details.
 Read-Eval-Print-Loop interactive session.
 For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
-  (unless *repl-ident*
+  (unless (user-ident)
     (format t "~&You haven't identified yourself. Say Hello!
 ... enter (HELLO \"your name here\") to identify yourself.")
     (setf *repl-ident* (format nil "REPL user ~A" (gensym "REPL"))))
@@ -191,19 +198,18 @@ For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
          (format t "~&~|~%ASDF System ~A:~{~%  ~:(~A~): ~A~}"
                  word
                  (loop for fun in '(asdf:system-long-name
-                                    
-                                    asdf:system-description 	asdf:system-homepage
-                                    asdf:system-author asdf:system-licence
-                                    asdf:system-mailto 	asdf:system-maintainer
-                                    
+                                    asdf:system-description
+                                    asdf:system-homepage
+                                    asdf:system-author
+                                    asdf:system-licence
+                                    asdf:system-mailto
+                                    asdf:system-maintainer
                                     asdf:system-long-description
-                                    
                                     asdf:system-bug-tracker
                                     asdf:system-definition-pathname
                                     asdf:system-defsystem-depends-on
                                     asdf:system-depends-on
                                     asdf:system-weakly-depends-on
-                                    
                                     asdf:system-source-control 	
                                     asdf:system-source-directory
                                     asdf:system-source-file)
@@ -240,7 +246,7 @@ For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
                  (string name)
                  (number (format nil "User ~:(~R~)" name))
                  (character (format nil "User ~:C" name)))))
-    (setf romans::*repl-ident* named)
+    (user-ident named)
     (format t "~&Hello, ~A." named)
     named))
 

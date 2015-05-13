@@ -1,8 +1,9 @@
 (defpackage :romance
-  (:use :cl :alexandria :split-sequence :fad)
+  (:use :cl :alexandria :split-sequence :cl-fad)
   (:nicknames :romans :romance-ii :romance2)
+  (:shadowing-import-from :cl-fad :copy-file :copy-stream) ; conflicts with Alexandria.
   (:documentation
-   "Common code used by other modules in Romance Ⅱ")
+   "Common code used by other modules in Romance Ⅱ.")
   (:export
    #:+inline-whitespace+
    #:+often-naughty-chars+

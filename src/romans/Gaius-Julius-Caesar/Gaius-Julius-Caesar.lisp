@@ -1,9 +1,11 @@
 (in-package :caesar)
 
 
-(defun collate-quality-of-service-reports ())
+(defun collate-quality-of-service-reports ()
+  (todo))
 
-(defun heartbeat-failure-detection ())
+(defun heartbeat-failure-detection ()
+  (todo))
 
 
 
@@ -25,7 +27,8 @@
 
 
 
-(defun collect-qos (module machine activity capacity vmstats))
+(defun collect-qos (module machine activity capacity vmstats)
+  (todo))
 
 
 
@@ -33,6 +36,8 @@
   (romance:server-start-banner "Caesar"
                                "Gaius Julius Cæsar"
                                "Command and control server")
+  (with-oversight (caesar)
+    (todo))
   (format t "~&[CIC] Exiting.~%"))
 
 (defgeneric handle-report (module machine message-keyword user-string 
