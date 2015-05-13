@@ -92,7 +92,8 @@
 
 (defun start-server/websockets (address port)
   "Note, we'll need COTS (Cross-Origin) headers. TODO all over the place.
-"(todo))
+"
+  (todo))
 
 (defun connect-to-mq ()
   (todo))
@@ -134,12 +135,12 @@
 (defmethod convert-package (data (from (eql :sexp)) (to (eql :sexp))) data)
 
 (defun get-quality-of-service ()
-(todo))
+  (todo))
 
 (defun connection-pool-moderation ()
   "when one guy's getting too many connections and another one is light,
 alter the usual round-robin selection to balance the load"
-(todo))
+  (todo))
 
 (defun migration-things-todo ()
   "when bringing up/down Appius nodes, migrate users around to balance
@@ -148,6 +149,6 @@ the load"
 
 
 (defun start-server (argv)
-  (romance:server-start-banner "Appius" "Appius Claudius CÃ¦cus"
+  (romance:server-start-banner "Appius" "Appius Claudius Cæcus"
                                "Network communications server")
-  (format t "~&Appius Claudius CÃ¦cus: Done. Bye!~%"))
+  (format t "~&Appius Claudius Cæcus: Done. Bye!~%"))

@@ -53,22 +53,59 @@
 (defun keyword-priority-map (keyword) 
   3)
 
+#+sbcl
+(defun find-throwing-frame ()
+  (loop with signal-function-found = nil
+     for frame = (or sb-debug:*stack-top-hint* (sb-di:top-frame)) 
+     then (sb-di:frame-down frame)
+     for function = (ignore-errors
+                      (sb-di:debug-fun-name
+                       (sb-di:frame-debug-fun frame)))
+     do (cond ((member function '(signal throw error))
+               (setf signal-function-found t))
+              (signal-function-found
+               (return-from find-throwing-frame frame)))))
+
+#+sbcl
+(defun frame-funcall (frame)
+  (format nil "(~S~{ (~S←~S ~[✗~;✓~]~})"
+          (ignore-errors
+            (sb-di:debug-fun-name 			    
+             (sb-di:frame-debug-fun frame)))
+          (or (map 'list (lambda (var)
+                           (or (ignore-errors
+                                 (when (eq :valid
+                                           (sb-di:debug-var-validity 
+                                            var (sb-di:frame-code-location frame)))
+                                   (list (sb-di:debug-var-symbol var)
+                                         (sb-di:debug-var-value var frame)
+                                         t)))
+                               (list var '#:? nil)))
+                   (ignore-errors (sb-di::debug-fun-debug-vars
+                                   (sb-di:frame-debug-fun frame))))
+              (list '#:? '#:… nil))))
+
+(defun journal-condition (module machine message user-string &optional condition)
+  (let* ((throwing-frame (find-throwing-frame))
+         (debug-source (sb-di:code-location-debug-source 
+                        (sb-di:frame-code-location throwing-frame))))
+    (systemd:journal-send
+     (cons (cons (list :message user-string
+                       :priority (keyword-priority-map message)
+                       :code-file (sb-di:debug-source-namestring debug-source)
+                       :code-line (sb-di:debug-source-form debug-source)
+                       :code-func (frame-funcall throwing-frame)
+                       :x-module (string module)
+                       :x-machine (string machine))
+                 (when condition
+                   (list :x-condition (princ-to-string condition)
+                         :x-condition-type message)))
+           (when-let ((message-id (keyword-journal-message-id message)))
+             :message-id message-id)))))
+
 (defmethod handle-report :before (module machine message-keyword user-string 
                                   &rest keys)
-  (apply #'systemd:journal-send 
-         (let ((args (list :message user-string
-                           :message-id (keyword-journal-message-id message-keyword)
-                           :priority (keyword-priority-map message-keyword)
-                           :syslog-identifier (concatenate 'string "Romance/" (string module) "@" (string machine)))))
-           (when-let ((code-file (getf keys :source-file)))
-             (appendf args (list :code-file code-file)))
-           (when-let ((code-func (getf keys :source-function)))
-             (appendf args (list :code-func code-func)))
-           (when-let ((code-line (getf keys :source-line)))
-             (appendf args (list :code-line code-line)))
-           (when-let ((errno (getf keys :libc-errno)))
-             (appendf args (list :errno errno)))
-           args))
+  (journal-condition module machine message-keyword user-string)
   (format *trace-output* "~&~%〈CIC〉 “~a”~{~%〈CIC〉 ⋅ ~:(~a:~) ~a~}" 
           user-string
           (append (list :module module :machine machine 
@@ -88,6 +125,7 @@
                           &key)
   (format *standard-output* "~&[CIC] Beginning module ~:(~a~) on machine ~:(~a~).~[  “~a”~]"
           module machine user-string))
+
 (defmethod handle-report ((module t) (machine t) (message (eql :end-oversight)) (user-string t)
                           &key )
   (format *standard-output* "~&[CIC] Ending module ~:(~a~) on machine ~:(~a~).~[  “~a”~]"
@@ -98,15 +136,16 @@
   "The machine MACHINE is going down. Schedule replacement for any tasks
   pending on it.")
 
-(defmethod handle-report ((module t) (machine t) (message (eql :lisp-warning)) (user-string t)
+(defmethod handle-report ((module t) (machine t)
+                          (message (eql :lisp-warning)) (user-string t)
                           &key condition)
   "A Lisp program issued a WARNing"
-  (journal module machine message user-string))
+  )
 
 (defmethod handle-report ((module t) (machine t) (message (eql :lisp-error)) (user-string t)
                           &key condition)
   "A Lisp program issued an ERROR."
-  (journal module machine message user-string))
+  (journal-condition module machine message user-string condition))
 
 (define-condition report (condition)
   ((module :reader report-module :initarg :module :type symbol)
@@ -156,7 +195,7 @@
   (/ (get-internal-real-time)
      internal-time-units-per-second))
 
-(defun timeout-handler%early (soft-timeout hard-timeout timer)
+(defun timeout-handler%early (soft-timeout hard-timeout)
   `((< elapsed ,(or soft-timeout hard-timeout))
     (report :false-timeout "TIMEOUT signaled early (continuing, ignoring this)"
             :condition condition
@@ -166,7 +205,7 @@
     (signal 'hook-early-timeout :elapsed-time elapsed)
     (continue)))
 
-(defun timeout-handler%soft (soft-timeout hard-timeout timer)
+(defun timeout-handler%soft (soft-timeout hard-timeout)
   (when soft-timeout
     `(((and ,@(when soft-timeout
                     `((<= ,soft-timeout elapsed)))
@@ -178,7 +217,7 @@
                :soft-timeout ,soft-timeout)
        (continue)))))
 
-(defun timeout-handler%hard (soft-timeout hard-timeout timer)
+(defun timeout-handler%hard (soft-timeout hard-timeout)
   `((t 
      (report :hard-timeout "Function exceeded hard timeout and is being aborted"
              :condition condition
@@ -204,13 +243,12 @@
           `(block ,timer-tag
              (let ((,timer (get-real-time)))
                (handler-bind
-                   ((timeout 
-                     (lambda (condition)
-                       (let ((elapsed (- (get-real-time) ,timer)))
-                         (cond
-                           ,@(timeout-handler%early soft-timeout hard-timeout timer)
-                           ,@(timeout-handler%soft soft-timeout hard-timeout timer)
-                           ,@(timeout-handler%hard soft-timeout hard-timeout timer))))))
+                   ((timeout (lambda (condition)
+                               (let ((elapsed (- (get-real-time) ,timer)))
+                                 (cond
+                                   ,@(timeout-handler%early soft-timeout hard-timeout)
+                                   ,@(timeout-handler%soft soft-timeout hard-timeout)
+                                   ,@(timeout-handler%hard soft-timeout hard-timeout))))))
                  (,@(if (realp hard-timeout) 
                         (list 'with-timeout (list hard-timeout))
                         (list 'identity))
