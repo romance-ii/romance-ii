@@ -1,7 +1,12 @@
 (in-package 'common-lisp-user)
+(require :alexandria)
+(require :split-sequence)
+(require :cl-fad)
+(require :local-time)
+(require :parse-number)
 
 (defpackage :romance
-  (:use :cl :alexandria :split-sequence :cl-fad :parse-number)
+  (:use :cl :alexandria :local-time :split-sequence :cl-fad :parse-number)
   (:nicknames :romans :romance-ii :romance2)
   (:shadowing-import-from :cl-fad :copy-file :copy-stream) ; conflicts with Alexandria.
   (:documentation
@@ -48,6 +53,14 @@
    #:until
    #:while
    #:without-warnings
+   
+   ;;; Symbols from other libraries
+   ;; There is a very lengthy set of library functions that we want to
+   ;; use without package prefixes in all of our other packages. As
+   ;; such, they're exported here from their original packages. In other
+   ;; packages, (:USE :CL :ROMANS) is the normal DEFPACKAGE form; MOST
+   ;; other packages should NOT be “used” in the DEFPACKAGE form, with
+   ;; some exceptions on a subsystem basis.
    alexandria:alist-hash-table 
    alexandria:alist-plist
    alexandria:appendf 
@@ -63,10 +76,10 @@
    alexandria:compose 
    alexandria:conjoin
    alexandria:copy-array 
-   alexandria:copy-file
+   ;; NOT: alexandria:copy-file (using CL-FAD:COPY-FILE)
    alexandria:copy-hash-table 
    alexandria:copy-sequence
-   alexandria:copy-stream 
+   ;; NOT: alexandria:copy-stream (using CL-FAD:COPY-STREAM)
    alexandria:count-permutations
    alexandria:cswitch 
    alexandria:curry
@@ -254,6 +267,31 @@
    alexandria:write-byte-vector-into-file
    alexandria:write-string-into-file 
    alexandria:xor
+   cl-fad:*default-template* 
+   cl-fad:cannot-create-temporary-file
+   cl-fad:canonical-pathname 
+   cl-fad:copy-file
+   cl-fad:copy-stream 
+   cl-fad:delete-directory-and-files
+   cl-fad:directory-exists-p 
+   cl-fad:directory-pathname-p
+   cl-fad:file-exists-p
+   cl-fad:invalid-temporary-pathname-template
+   cl-fad:list-directory 
+   cl-fad:merge-pathnames-as-directory
+   cl-fad:merge-pathnames-as-file 
+   cl-fad:open-temporary
+   cl-fad:pathname-absolute-p 
+   cl-fad:pathname-as-directory
+   cl-fad:pathname-as-file 
+   cl-fad:pathname-directory-pathname
+   cl-fad:pathname-equal 
+   cl-fad:pathname-parent-directory
+   cl-fad:pathname-relative-p 
+   cl-fad:pathname-root-p
+   cl-fad:walk-directory 
+   cl-fad:with-open-temporary-file
+   cl-fad:with-output-to-temporary-file
    local-time:*clock* 
    local-time:*default-timezone*
    local-time:+asctime-format+ 
@@ -348,7 +386,10 @@
    split-sequence:split-sequence
    split-sequence:split-sequence-if
    split-sequence:split-sequence-if-not
-   ))
+   
+   
+   
+   )) ; end of DEFPACKAGE form
 
 (require :babel)
 
