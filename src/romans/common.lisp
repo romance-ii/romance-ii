@@ -1,4 +1,4 @@
-(in-package 'common-lisp-user)
+(in-package :cl-user)
 (require :alexandria)
 (require :split-sequence)
 (require :cl-fad)
