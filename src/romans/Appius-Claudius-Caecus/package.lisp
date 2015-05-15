@@ -1,5 +1,5 @@
 (defpackage :appius
-  (:use :cl :alexandria :romans :local-time :bordeaux-threads :split-sequence :usocket)
+  (:use :cl :romans :usocket)
   (:nicknames :appius-claudius-caecus :appius-claudius-cæcus)
   (:documentation
    "Appius Claudius Caecus handles network I/O. All socket connections

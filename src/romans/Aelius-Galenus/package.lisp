@@ -1,5 +1,5 @@
 (defpackage :galen
-  (:use :cl :alexandria)
+  (:use :cl :romans)
   (:nicknames :aelius-galenus :claudius-galenus)
   (:documentation "Galen handles the system whereby superposed states
 of quiesced arrondissements are collapsed into a discrete state. In

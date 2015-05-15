@@ -1,5 +1,5 @@
 (defpackage :caesar
-  (:use :cl :alexandria :romans :local-time :bordeaux-threads :split-sequence)
+  (:use :cl :romans)
   (:nicknames :gaius-iulius-caesar)
   (:documentation "Caesar oversees the system on which it is running,
 and ensures that sufficient resources are available for uninterrupted
@@ -12,6 +12,7 @@ Gaius Julius Caesar was known as a famous general. (But you knew
 that, right?)")
   
   (:export #:*module*
+           #:*operator-handle-signals*
            #:all-process-ids
            #:all-threads/alpha
            #:collect-qos

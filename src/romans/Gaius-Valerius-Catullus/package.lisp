@@ -1,5 +1,5 @@
 (defpackage catullus 
-  (:use :cl :alexandria :romans :local-time :bordeaux-threads :split-sequence)
+  (:use :cl :romans)
   (:nicknames :gaius-valerius-catullus)
   (:documentation "Catullus handles the textual interface whereby
 human-provided strings are parsed and tokenized into propositions
