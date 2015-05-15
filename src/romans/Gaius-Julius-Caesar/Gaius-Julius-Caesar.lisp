@@ -32,13 +32,10 @@
 
 
 
-(defun start-server (argv)
-  (romance:server-start-banner "Caesar"
-                               "Gaius Julius Cæsar"
-                               "Command and control server")
-  (with-oversight (caesar)
-    (todo))
-  (format t "~&[CIC] Exiting.~%"))
+(defvar *operator-handle-signals* nil
+  "A list of threads to be signaled when a signal arrives.")
+
+
 
 (defgeneric handle-report (module machine message-keyword user-string 
                            &key &allow-other-keys))
@@ -56,7 +53,9 @@
          (let ((args (list :message user-string
                            :message-id (keyword-journal-message-id message-keyword)
                            :priority (keyword-priority-map message-keyword)
-                           :syslog-identifier (concatenate 'string "Romance/" (string module) "@" (string machine)))))
+                           :syslog-identifier (concatenate 'string "Romance/" 
+                                                           (string module) "@"
+                                                           (string machine)))))
            (when-let ((code-file (getf keys :source-file)))
              (appendf args (list :code-file code-file)))
            (when-let ((code-func (getf keys :source-function)))
@@ -69,41 +68,52 @@
   (format *trace-output* "~&~%〈CIC〉 “~a”~{~%〈CIC〉 ⋅ ~:(~a:~) ~a~}" 
           user-string
           (append (list :module module :machine machine 
-                        :message message-keyword) keys)))
+                        :message message-keyword) keys))
+  (force-output *trace-output*))
 
 (defmethod handle-report ((module t) (machine t) (message t) (user-string t)
                           &rest keys)
   (format *error-output*
           "~&~%[CIC] Message (~s) from module ~:(~a~): “~a”~{~&  ~32<~:(~a~)~>: ~a~}"
-          message module user-string keys))
+          message module user-string keys)
+  (force-output *error-output*))
 
 (defmethod handle-report ((module t) (machine t) (message (eql :qos)) (user-string t)
                           &key activity capacity vmstats)
   (collect-qos module machine activity capacity vmstats))
 
-(defmethod handle-report ((module t) (machine t) (message (eql :begin-oversight)) (user-string t)
+(defmethod handle-report ((module t) (machine t) (message (eql :begin-oversight)) 
+                          (user-string t)
                           &key)
   (format *standard-output* "~&[CIC] Beginning module ~:(~a~) on machine ~:(~a~).~[  “~a”~]"
-          module machine user-string))
-(defmethod handle-report ((module t) (machine t) (message (eql :end-oversight)) (user-string t)
+          module machine user-string)
+  (force-output *standard-output*))
+(defmethod handle-report ((module t) (machine t) (message (eql :end-oversight)) 
+                          (user-string t)
                           &key )
   (format *standard-output* "~&[CIC] Ending module ~:(~a~) on machine ~:(~a~).~[  “~a”~]"
-          module machine user-string))
+          module machine user-string)
+  (force-output *standard-output*))
 
-(defmethod handle-report ((module t) (machine t) (message (eql :machine-down)) (user-string t)
+(defmethod handle-report ((module t) (machine t) (message (eql :machine-down)) 
+                          (user-string t)
                           &key time-to-live)
   "The machine MACHINE is going down. Schedule replacement for any tasks
   pending on it.")
 
-(defmethod handle-report ((module t) (machine t) (message (eql :lisp-warning)) (user-string t)
-                          &key condition)
+(defmethod handle-report ((module t) (machine t) (message (eql :lisp-warning))
+                          (user-string t)
+                          &rest keys)
   "A Lisp program issued a WARNing"
-  )
+  (when *operator-handle-signals*
+    (funcall *operator-handle-signals* module machine message user-string keys)))
 
-(defmethod handle-report ((module t) (machine t) (message (eql :lisp-error)) (user-string t)
-                          &key condition)
+(defmethod handle-report ((module t) (machine t) (message (eql :lisp-error)) 
+                          (user-string t)
+                          &rest keys)
   "A Lisp program issued an ERROR."
-  )
+  (when *operator-handle-signals*
+    (funcall *operator-handle-signals* module machine message user-string keys)))
 
 (define-condition report (condition)
   ((module :reader report-module :initarg :module :type symbol)
@@ -117,7 +127,7 @@
 (defun report (message-keyword user-string &rest keys)
   (signal 'report :module (if (boundp '*module*)
                               (symbol-value '*module*)
-                              '#.(gensym "UNKNOWN-MODULE"))
+                              '#:UNKNOWN-MODULE)
           :message-keyword message-keyword
           :user-string user-string :keys keys :machine (machine-instance)))
 
@@ -231,16 +241,39 @@
      ,@body))
 
 (defmacro with-oversight ((module &key soft-timeout hard-timeout) &body body)
-  `(let ((*module* ',(string module)))
-     (block ,(format-symbol *package* "~A-MODULE" (string module))
-       (with-report-acceptor
-         (with-timeout-handler (,soft-timeout ,hard-timeout)
-           (handler-bind
-               (,(oversight-handle 'error)
-                ,(oversight-handle 'warning))
-             (caesar:report :begin-oversight "Beginning oversight by Caesar")
-             (unwind-protect 
-                  (progn ,@body)
-               (caesar:report :end-oversight "Ending oversight by Caesar"))))))))
+  (let ((mod-keyword (make-keyword (string-upcase (string module)))))
+    `(let ((*module* ',mod-keyword))
+       (block ,(format-symbol *package* "~A-MODULE" mod-keyword)
+         (with-report-acceptor
+           (with-timeout-handler (,soft-timeout ,hard-timeout)
+             (handler-bind
+                 (,(oversight-handle 'error)
+                  ,(oversight-handle 'warning))
+               (caesar:report :begin-oversight "Beginning oversight by Caesar")
+               (unwind-protect 
+                    (restart-bind
+                        ((exit-module 
+                          (lambda ()
+                            (return-from
+                             ,(format-symbol *package* "~A-MODULE" mod-keyword)
+                              nil))
+                           :report-function 
+                           (lambda (s)
+                             (princ
+                              ,(format nil "Exit the ~:(~a~) module"
+                                       mod-keyword)
+                              s))))
+                      ,@body)
+                 (caesar:report :end-oversight "Ending oversight by Caesar")))))))))
 
+
+
+
+(defun start-server (&optional argv)
+  (romance:server-start-banner "Caesar"
+                               "Gaius Julius Cæsar"
+                               "Command and control server")
+  (with-oversight (caesar)
+    (todo))
+  (format t "~&[CIC] Exiting.~%"))
 
