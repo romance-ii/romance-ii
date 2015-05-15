@@ -29,6 +29,7 @@
                :st-json
                :swank
                :trivial-garbage
+               :trivial-gray-streams
                :usocket
                :wordnet
 
@@ -129,5 +130,10 @@
             :depends-on ("common" "lib" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Sextus-Julius-Frontinus"
+                                :depends-on ("package"))))
+   (:module "Rahab"
+            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :components ((:file "package")
+                         (:file "Rahab"
                                 :depends-on ("package"))))))
 
