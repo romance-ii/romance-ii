@@ -5,10 +5,19 @@
 (require :trivial-garbage)
 
 (defpackage :romance-user 
-  (:nicknames :user)
-  (:use :cl :alexandria :romans :local-time :split-sequence
-        :bordeaux-threads)
+  (:nicknames :romance2-user :romans-user :romance-ii-user)
+  (:use :cl :romans)
   (:export #:help #:hello #:bye))
+
+
+;; Don't be rude: We only claim the nickname USER if nobody else has
+;; lain claim to it before us.
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (unless (find-package "USER")
+    (rename-package :romance-user
+                    :romance-user
+                    (cons "USER"
+                          (package-nicknames :romance-user)))))
 
 (defvar *user-ident* (make-hash-table :weakness :key :test 'equal))
 
@@ -144,30 +153,56 @@ If you're totally lost here, try (HELP :START)
 
 
 
+(defun greeting-tod (&optional (instant (now)))
+  (let ((sunrise (cons 6 0))
+        (sunset (cons 18 0))
+        (hour (timestamp-hour instant))
+        (minute (timestamp-minute instant)))
+    (concatenate 
+     'string
+     (cond
+       ((and
+         (or (> hour (car sunrise))
+             (and (= hour (car sunrise))
+                  (>= minute (cdr sunrise)))) 
+         (<= hour 12)) "Good morning")
+       ((and 
+         (or (< hour (car sunset))
+             (and (= hour (car sunset))
+                  (< minute (cdr sunset))))
+         (<= 12 hour)) "Good day")
+       ((<= hour 23) "Good evening")
+       (t "Hello, you nightowl"))
+     (case (timestamp-day-of-week instant)
+       ((0 6 7)
+        ", and I hope you're having a relaxing week-end")
+       (3 ", and happy hump day")
+       (5 ", and TGIF")
+       (otherwise "")))))
+
+
+
 (defun start-repl (&optional argv)
-  (unless (member "--silent" argv)
-    (format t "~&Romance Ⅱ: Copyright © 2013-2015, Bruce-Robert Pocock.
+  (unless (member "--silent" argv :test #'string-equal)
+    (format t "~&~|~%Romance Ⅱ
+Copyright © 2013-2015, Bruce-Robert Fenn Pocock.
 Evaluate (ROMANCE:COPYRIGHTS T) for details.
 Read-Eval-Print-Loop interactive session.
-For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
+For help, evaluate (ROMANCE:REPL-HELP) (ie type: (HELP) at the prompt.)~2%"))
   (unless (user-ident)
     (format t "~&You haven't identified yourself. Say Hello!
 ... enter (HELLO \"your name here\") to identify yourself.")
-    (setf *repl-ident* (format nil "REPL user ~A" (gensym "REPL"))))
-  (let ((*package* (find-package :romance-user)))
-    (block repl
-      (restart-bind 
-          ((exit-repl (lambda ()
-                        (return-from repl :bye))
-             :report-function (lambda () "Exit from the REPL")))
-        (prepl:repl :nobanner t :inspect t :continuable t)))))
+    (setf *user-ident* (format nil "REPL user ~A" (gensym "REPL"))))
+  (caesar:with-oversight (repl)
+    (let ((*package* (find-package :romance-user)))
+      (prepl:repl :nobanner t :inspect t :continuable t))))
 
 
 
 (in-package :romance-user)
 
 (defun bye ()
-  (invoke-restart (find-restart 'exit-repl)))
+  (invoke-restart (find-restart 'exit-module)))
 
 (defmacro help (&optional (word :intro)) 
   (typecase word 
@@ -246,8 +281,10 @@ For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
                  (string name)
                  (number (format nil "User ~:(~R~)" name))
                  (character (format nil "User ~:C" name)))))
-    (user-ident named)
-    (format t "~&Hello, ~A." named)
+    (romans::user-ident named)
+    (format t "~&~a, ~a." (romans::greeting-tod) named)
     named))
 
+(defun spy (&rest args)
+  (apply rahab:spy args))
 
