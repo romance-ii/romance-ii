@@ -1,12 +1,16 @@
 (in-package :cl-user)
 (require :alexandria)
+(require :bordeaux-threads)
 (require :split-sequence)
 (require :cl-fad)
 (require :local-time)
 (require :parse-number)
+(require 'trivial-gray-streams)
 
 (defpackage :romance
-  (:use :cl :alexandria :local-time :split-sequence :cl-fad :parse-number)
+  (:use :cl :alexandria 
+        :bordeaux-threads :local-time :split-sequence :cl-fad :parse-number
+        :trivial-gray-streams)
   (:nicknames :romans :romance-ii :romance2)
   (:shadowing-import-from :cl-fad :copy-file :copy-stream) ; conflicts with Alexandria.
   (:documentation
@@ -267,6 +271,34 @@
    alexandria:write-byte-vector-into-file
    alexandria:write-string-into-file 
    alexandria:xor
+   bordeaux-threads:*default-special-bindings*
+   bordeaux-threads:*standard-io-bindings* 
+   bordeaux-threads:*supports-threads-p*
+   bordeaux-threads:acquire-lock 
+   bordeaux-threads:acquire-recursive-lock
+   bordeaux-threads:all-threads 
+   bordeaux-threads:condition-notify
+   bordeaux-threads:condition-wait 
+   bordeaux-threads:current-thread
+   bordeaux-threads:destroy-thread 
+   bordeaux-threads:interrupt-thread
+   bordeaux-threads:join-thread 
+   bordeaux-threads:make-condition-variable
+   bordeaux-threads:make-lock 
+   bordeaux-threads:make-recursive-lock
+   bordeaux-threads:make-thread 
+   bordeaux-threads:release-lock
+   bordeaux-threads:release-recursive-lock 
+   bordeaux-threads:start-multiprocessing
+   bordeaux-threads:thread 
+   bordeaux-threads:thread-alive-p
+   bordeaux-threads:thread-name 
+   bordeaux-threads:thread-yield
+   bordeaux-threads:threadp 
+   bordeaux-threads:timeout
+   bordeaux-threads:with-lock-held
+   bordeaux-threads:with-recursive-lock-held
+   bordeaux-threads:with-timeout
    cl-fad:*default-template* 
    cl-fad:cannot-create-temporary-file
    cl-fad:canonical-pathname 
@@ -386,7 +418,37 @@
    split-sequence:split-sequence
    split-sequence:split-sequence-if
    split-sequence:split-sequence-if-not
-   
+   trivial-gray-streams:fundamental-binary-input-stream
+   trivial-gray-streams:fundamental-binary-output-stream
+   trivial-gray-streams:fundamental-binary-stream
+   trivial-gray-streams:fundamental-character-input-stream
+   trivial-gray-streams:fundamental-character-output-stream
+   trivial-gray-streams:fundamental-character-stream
+   trivial-gray-streams:fundamental-input-stream
+   trivial-gray-streams:fundamental-output-stream
+   trivial-gray-streams:fundamental-stream
+   trivial-gray-streams:stream-advance-to-column
+   trivial-gray-streams:stream-clear-input 	
+   trivial-gray-streams:stream-clear-output
+   trivial-gray-streams:stream-file-position
+   trivial-gray-streams:stream-finish-output
+   trivial-gray-streams:stream-force-output
+   trivial-gray-streams:stream-fresh-line
+   trivial-gray-streams:stream-line-column
+   trivial-gray-streams:stream-listen
+   trivial-gray-streams:stream-peek-char
+   trivial-gray-streams:stream-read-byte
+   trivial-gray-streams:stream-read-char
+   trivial-gray-streams:stream-read-char-no-hang
+   trivial-gray-streams:stream-read-line
+   trivial-gray-streams:stream-read-sequence
+   trivial-gray-streams:stream-start-line-p
+   trivial-gray-streams:stream-terpri 
+   trivial-gray-streams:stream-unread-char
+   trivial-gray-streams:stream-write-byte
+   trivial-gray-streams:stream-write-char
+   trivial-gray-streams:stream-write-sequence
+   trivial-gray-streams:stream-write-string
    
    
    )) ; end of DEFPACKAGE form
@@ -396,16 +458,24 @@
 (in-package :romance)
 
 (defun start-server/generic (&optional argv)
-  (case (make-keyword (string-upcase (car argv)))
-    (:caesar (warn "TODO Caesar"))
-    (:copyrights (format t (copyrights t)))
-    (otherwise
-     (format t "Romance Ⅱ: Generic Executable.
+  (let ((module (make-keyword (string-upcase (car argv)))))
+    (case module
+      (:caesar 
+       (funcall (intern "START-SERVER" (find-package module))))
+      (:copyrights (format t (copyrights t)))
+      (:repl (start-repl))
+      ((:help :-h :/h :/help :--h :--he :--hel :--help :h :? :/? :-?)
+       (command-line-help))
+      (otherwise
+       (format t "Romance Ⅱ: Generic Executable.
 
 Provide the name of the module to start; Caesar will launch
-other modules.
+other modules. (Module names are case-insensitive.)
 
-REPL, HELP, or COPYRIGHTS are also options."))))
+Example: To start or join a cluster, you can run:
+    romance2 Caesar
+
+REPL, HELP, or COPYRIGHTS are also options.")))))
 
 (defun romanize-print (stream string)
   (let ((len (length string))
@@ -419,8 +489,7 @@ REPL, HELP, or COPYRIGHTS are also options."))))
 (defun server-start-banner (short-name long-name purpose)
   (romanize-print *standard-output* short-name)
 
-  (format *standard-output* "
-~|
+  (format *standard-output* "~&~|
 ;
 ; ----------------------------------------------------------------------
 ;
@@ -429,13 +498,17 @@ REPL, HELP, or COPYRIGHTS are also options."))))
 ; ~A
 ;
 ; ----------------------------------------------------------------------
-Server-Process = ~A
-Machine-Instance = ~:(~A~)
-Machine-Type = ~A
-Compiler = ~A ~A
-Software = ~A ~A
+/ENVIRONMENT
+Server-Process ~A
+Machine-Instance ~:(~A~)
+Machine-Type ~A
+Compiler ~A ~A
+Software ~A ~A
+\\ENVIRONMENT
 
-/COPYRIGHTS~%~A~%\\COPYRIGHTS~%"
+/COPYRIGHTS
+~A
+\\COPYRIGHTS~%"
           long-name purpose short-name 
           (machine-instance) (machine-type)
           (lisp-implementation-type) (lisp-implementation-version)
@@ -444,5 +517,42 @@ Software = ~A ~A
 
   (romanize-print *standard-output* long-name))
 
+(defun command-line-help ()
+  (princ "
+Romance Ⅱ Game System — Brief Command-line Help
+
+Romance Ⅱ (Romance2) is a  multi-player game server system. This program
+is a  monolithic executable  that performs various  functions, depending
+upon how it is called.
+
+You may either create a symbolic link to this program (which is normally
+done for you  during installation) with the given name,  or else call it
+with the module name as the first parameter after the program name.
+
+The full documentation  should be installed in your Info  system on your
+host, with additional documentation extracted into your system manual.
+
+To read Info pages, you can:
+ 
+• In Emacs (choose Help→More Manuals→All Other Manuals from the menu, or
+   type <M-x> info <Ret> — Meta+x, “info”, Return)
+
+• Run a Terminal program like  “info” (uses Emacs-style navigation keys)
+   or “pinfo” (uses Pine/Alpine/Pico/Nano-style navigation)
+ 
+• Use the  Gnome Help program: launch  Help from within Gnome,  often by
+  hitting Super+Help  or Super+F1  keys; then,  press Control+L  for the
+  (hidden) Location  bar to  appear, and enter  “info:romance2” (without
+  the quotation marks) into the location box;
+
+    • or,  from  a   Terminal  or  Run  (usually   Alt+F2)  window,  run
+      “gnome-help info:romance2” (with no quotation marks)
+
+A printed copy of the manual is available at a reasonable price from the
+developers; see  thi introduction  to the  manual for  details. Proceeds
+from the sales  of printed manuals support the  continued development of
+this software.
+
+"))
 
 
