@@ -34,14 +34,10 @@ contains the following (one of which should, hopefully, match your OS):
                     (logior +fd-cloexec+ flags))))
 
 #-(or sbcl)
-(warn "Need to implement SET-CLOSE-ON-EXEC for ~A; add an
-implementation to ~A 
-with an appropriate #+(feature) tag for your OS; your *FEATURES*
-contains the following (one of which should, hopefully, match your OS):
-~S"
-      (lisp-implementation-type)
-      (or *compile-file-truename* *load-truename* "systemd-daemon.lisp")
-      *features*)
+(warn-impl set-close-on-exec )
+
+(warn-impl set-close-on-exec)
+
 
 #+sbcl
 (defun socket-from-fd (fd)
