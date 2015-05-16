@@ -2,16 +2,39 @@
 
 (require :prepl)
 (require :local-time)
+(require :trivial-garbage)
 
 (defpackage :romance-user 
-  (:nicknames :user)
-  (:use :cl :alexandria :romans :local-time :split-sequence
-        :bordeaux-threads)
+  (:nicknames :romance2-user :romans-user :romance-ii-user)
+  (:use :cl :romans)
   (:export #:help #:hello #:bye))
 
-(defvar *repl-ident* nil)
 
-(defgeneric repl-help (keyword))
+;; Don't be rude: We only claim the nickname USER if nobody else has
+;; lain claim to it before us.
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (unless (find-package "USER")
+    (rename-package :romance-user
+                    :romance-user
+                    (cons "USER"
+                          (package-nicknames :romance-user)))))
+
+(defvar *user-ident* (make-hash-table :weakness :key :test 'equal))
+
+(defun user-ident (&optional (new-name nil new-name-?))
+  (prog1 (gethash (current-thread) *user-ident*)
+    (when new-name-?
+      (setf (gethash (current-thread) *user-ident*) new-name))))
+
+(defconstant f nil
+  "In USER, F means NIL for user-friendly'ish false values.")
+
+(defgeneric repl-help (keyword)
+  (:documentation "The REPL-HELP methods allow arbitrary text pages to 
+be added to the not-very-nice online help system.
+
+TODO: Replace the online help system with a nice, hypertext
+Info viewer."))
 
 (defmethod repl-help :around (keyword)
   (format t (call-next-method)))
@@ -39,14 +62,15 @@ very careful.
 
  • For help with using the REPL, type :HELP or (HELP :REPL)
 
- • For copyright information, type (COPYRIGHTS) for brief, (COPYRIGHTS
-   T) for full details.
+ • For copyright information, type (COPYRIGHTS) for brief,
+   or (COPYRIGHTS T) for full details.
 
- • If  you  enter  the  debugger,  choose  a  restart  with  :CONTINUE
-   (restart)  from the  list  presented. (The  debugger  prompt has  a
-   preceding number, usually [1], before your package prompt.) You can
-   also use :ABORT  to kill the function you had  started and return to
-   the REPL.
+ • If you enter the debugger, and are presented with some restarts,
+   choose a restart with :CONTINUE (restart) from the list
+   presented. (The debugger prompt has a preceding number, usually [1],
+   before your package prompt.) You can also use :ABORT to kill the
+   function you had started and return to the REPL. — e.g. to choose
+   restart [1], you would type: :CONTINUE 1 (with the leading \":\")
 
  • Use (HELP :COMM) to learn  about communicating with other operators
    through the REPL.
@@ -129,30 +153,56 @@ If you're totally lost here, try (HELP :START)
 
 
 
+(defun greeting-tod (&optional (instant (now)))
+  (let ((sunrise (cons 6 0))
+        (sunset (cons 18 0))
+        (hour (timestamp-hour instant))
+        (minute (timestamp-minute instant)))
+    (concatenate 
+     'string
+     (cond
+       ((and
+         (or (> hour (car sunrise))
+             (and (= hour (car sunrise))
+                  (>= minute (cdr sunrise)))) 
+         (<= hour 12)) "Good morning")
+       ((and 
+         (or (< hour (car sunset))
+             (and (= hour (car sunset))
+                  (< minute (cdr sunset))))
+         (<= 12 hour)) "Good day")
+       ((<= hour 23) "Good evening")
+       (t "Hello, you nightowl"))
+     (case (timestamp-day-of-week instant)
+       ((0 6 7)
+        ", and I hope you're having a relaxing week-end")
+       (3 ", and happy hump day")
+       (5 ", and TGIF")
+       (otherwise "")))))
+
+
+
 (defun start-repl (&optional argv)
-  (unless (member "--silent" argv)
-    (format t "~&Romance Ⅱ: Copyright © 2013-2015, Bruce-Robert Pocock.
+  (unless (member "--silent" argv :test #'string-equal)
+    (format t "~&~|~%Romance Ⅱ
+Copyright © 2013-2015, Bruce-Robert Fenn Pocock.
 Evaluate (ROMANCE:COPYRIGHTS T) for details.
 Read-Eval-Print-Loop interactive session.
-For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
-  (unless *repl-ident*
+For help, evaluate (ROMANCE:REPL-HELP) (ie type: (HELP) at the prompt.)~2%"))
+  (unless (user-ident)
     (format t "~&You haven't identified yourself. Say Hello!
 ... enter (HELLO \"your name here\") to identify yourself.")
-    (setf *repl-ident* (format nil "REPL user ~A" (gensym "REPL"))))
-  (let ((*package* (find-package :romance-user)))
-    (block repl
-      (restart-bind 
-          ((exit-repl (lambda ()
-                        (return-from repl :bye))
-             :report-function (lambda () "Exit from the REPL")))
-        (prepl:repl :nobanner t :inspect t :continuable t)))))
+    (setf *user-ident* (format nil "REPL user ~A" (gensym "REPL"))))
+  (caesar:with-oversight (repl)
+    (let ((*package* (find-package :romance-user)))
+      (prepl:repl :nobanner t :inspect t :continuable t))))
 
 
 
 (in-package :romance-user)
 
 (defun bye ()
-  (invoke-restart (find-restart 'exit-repl)))
+  (invoke-restart (find-restart 'exit-module)))
 
 (defmacro help (&optional (word :intro)) 
   (typecase word 
@@ -183,19 +233,18 @@ For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
          (format t "~&~|~%ASDF System ~A:~{~%  ~:(~A~): ~A~}"
                  word
                  (loop for fun in '(asdf:system-long-name
-                                    
-                                    asdf:system-description 	asdf:system-homepage
-                                    asdf:system-author asdf:system-licence
-                                    asdf:system-mailto 	asdf:system-maintainer
-                                    
+                                    asdf:system-description
+                                    asdf:system-homepage
+                                    asdf:system-author
+                                    asdf:system-licence
+                                    asdf:system-mailto
+                                    asdf:system-maintainer
                                     asdf:system-long-description
-                                    
                                     asdf:system-bug-tracker
                                     asdf:system-definition-pathname
                                     asdf:system-defsystem-depends-on
                                     asdf:system-depends-on
                                     asdf:system-weakly-depends-on
-                                    
                                     asdf:system-source-control 	
                                     asdf:system-source-directory
                                     asdf:system-source-file)
@@ -232,8 +281,10 @@ For help, evaluate (ROMANCE:REPL-HELP) (i.e. type: (HELP) at the prompt.)~2%"))
                  (string name)
                  (number (format nil "User ~:(~R~)" name))
                  (character (format nil "User ~:C" name)))))
-    (setf romans::*repl-ident* named)
-    (format t "~&Hello, ~A." named)
+    (romans::user-ident named)
+    (format t "~&~a, ~a." (romans::greeting-tod) named)
     named))
 
+(defun spy (&rest args)
+  (apply rahab:spy args))
 

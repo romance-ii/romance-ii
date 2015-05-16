@@ -1,5 +1,5 @@
 (defpackage :lutatius
-  (:use :cl :alexandria :romans :local-time :bordeaux-threads :split-sequence)
+  (:use :cl :romans)
   (:documentation "Lutatius is the module responsible for character
  attributes and inventory, and how the two interact \(e.g. magical
  items might buff/debuff the character)

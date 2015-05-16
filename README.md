@@ -158,14 +158,16 @@ The Romance Ⅱ Server Core consists of:
  * Steel Bank Common Lisp (SBCL)
  * ZeroMQ (0MQ)
 
-Also, primary development of Parenthetical is being performed using only
-Firefox  at  present, although  other  browsers  are being  ocassionally
-tested and we do intend to support as many as plausible.
+Here, we have  dropped the development efforts of  Parenthetical and are
+now focusing  instead upon  the UnrealEngine for  our front-end  for the
+main project supporting ongoing development.  This is not an open-source
+application, unfortunately, although the licensing terms are rather more
+open than most alternatives.
  
 ## Getting Started
 
-Since you're presumably a programmer, suffice to say that you can name
-everything, whatever you like, but here's an example of spinning up a
+Since you're presumably  a programmer, suffice to say that  you can name
+everything, whatever  you like, but here's  an example of spinning  up a
 blank, server-only project.
 
     cd ~/Projects

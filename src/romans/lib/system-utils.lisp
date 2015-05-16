@@ -1,21 +1,26 @@
 (in-package :romans)
 
-
 (defun prerequisite-systems (&optional (child :romance-ii))
-  (if-let ((prereqs (slot-value (asdf:find-system child)
-                                'asdf::load-dependencies)))
+  (check-type child string-designator)
+  (assert child)
+  (if-let ((prereqs (remove-duplicates
+                     (mapcar #'keywordify
+                             (remove-if #'null
+                                        (list*
+                                         (ignore-errors (slot-value (asdf:find-system child)
+                                                                    'asdf::load-dependencies))
+                                         (ignore-errors (slot-value (asdf:find-system child)
+                                                                    'asdf::depends-on))
+                                         (ignore-errors (slot-value (asdf:find-system child)
+                                                                    'asdf::sideway-dependencies))))))))
     (remove-if
      (lambda (sys)
-       (member (keywordify sys)
+       (member sys
                #+sbcl '(:sb-grovel :sb-posix :sb-rotate-byte
                         :sb-grovel :sb-bsd-sockets)))
      (remove-duplicates
-      (append (remove-if #'null
-                         (mapcan #'prerequisite-systems prereqs))
-              prereqs)
-      :test #'eql :key #'keywordify))))
-
-
+      (append (mapcan #'prerequisite-systems prereqs)
+              prereqs)))))
 
 
 (define-constant +license-words+
@@ -23,8 +28,14 @@
   :test 'equal)
 
 
+(defun manual-license-path (system)
+  (merge-pathnames 
+   (make-pathname :directory '(:relative "doc" "legal" "licenses")
+                  :name (string-downcase (string system))
+                  :type "txt")
+   romans-compiler-setup:*path/r2project*))
 
-(defun find-copyrights (&optional (long nil))
+(defun find-copyrights (&optional (longp nil))
   (append
    (loop for system in (sort (prerequisite-systems :romance-ii)
                              #'string<
@@ -35,32 +46,27 @@
                       :name :wild :type :wild)
       for license =
         (or
-         (let ((override-file
-                (merge-pathnames
-                 (make-pathname :directory '(:relative "doc" "legal" "licenses")
-                                :name (string-downcase (string system))
-                                :type "txt") (translate-logical-pathname
-                                              (make-pathname :host "r2project")))))
+         (let ((override-file (manual-license-path system)))
            (when (fad:file-exists-p override-file)
-             (list system override-file)))
-         (unless long
+             override-file))
+         (unless longp
            (if-let ((license (ignore-errors
                                (slot-value (asdf:find-system system) 'asdf::licence))))
-             (list system license)))
+             license))
          (loop
             for path in (directory asdf-dir)
             when (member (make-keyword (string-upcase
                                         (pathname-name path))) +license-words+)
-            return (list system (pathname path)))
+            return (pathname path))
          (loop
             for path in (directory (merge-pathnames "doc/" asdf-dir))
             when (member (make-keyword (string-upcase
                                         (pathname-name path))) +license-words+)
-            return (list system (pathname path)))
-         (if long
+            return (pathname path))
+         (if longp
              (if-let ((license (ignore-errors
                                  (slot-value (asdf:find-system system) 'asdf::licence))))
-               (list system license)))
+               license))
          (loop
             for path in (directory asdf-dir)
             when (member (make-keyword (string-upcase
@@ -68,40 +74,40 @@
             return (prog1 (list system (pathname path))
                      (warn "No LICENSE for ~:(~A~), using README~%(in ~A)"
                            system asdf-dir))))
-      when license collect license
+      when license collect (list system license)
       else collect (prog1 (list system nil)
-                     (warn "No LICENSE for ~:(~A~)~%(in ~A)" system asdf-dir)))
-   (if long
-       (list :bullet2 (merge-pathnames
-                       (make-pathname :directory '(:relative "doc" "legal" "licenses")
-                                      :name "bullet2"
-                                      :type "txt")
-                       (translate-logical-pathname
-                        (make-pathname :host "r2project"))))
-       (list :bullet2 "MIT"))))
+                     (warn "No LICENSE for ~:(~A~)~%(in ~A );~%~TPlease find the license and insert it as ~a" 
+                           system asdf-dir (manual-license-path system))))
+   (if longp
+       (list (list :bullet2 (merge-pathnames
+                             (make-pathname :directory '(:relative "doc" "legal" "licenses")
+                                            :name "bullet2"
+                                            :type "txt")
+                             romans-compiler-setup:*path/r2project*)))
+       (list (list :bullet2 "MIT")))))
 
 
 
 
-(defun copyrights (&optional (long nil))
+(defun copyrights (&optional (longp nil))
   "Return a string with applicable copyright notices."
   
   (strcat
    "Romance Game System
-Copyright © 1987-2014, Bruce-Robert Pocock;
+Copyright © 1987-2015, Bruce-Robert Pocock;
 
 This program is free software: you may use, modify, and/or distribute it
  *ONLY* in accordance with the terms of the GNU Affero General Public License
  (GNU AGPL).
 
-   ★ Romance Ⅱ contains libraries which have their own licenses. ★
+   ★ Romance Ⅱ uses libraries which have their own licenses. ★
 
 "
-   (unless long "(Abbreviated:)
+   (unless longp "(Abbreviated:)
 ")
-   (loop for (package license) in (find-copyrights long)
+   (loop for (package license) in (find-copyrights longp)
       collect
-        (if long
+        (if longp
             (format nil "
 ————————————————————————————————————————————————————————————————————————
 Romance Ⅱ uses the library ~@:(~A~)~2%"
@@ -110,36 +116,35 @@ Romance Ⅱ uses the library ~@:(~A~)~2%"
         
       collect
         (typecase license
-          (pathname (if long
+          (pathname (if longp
                         (alexandria:read-file-into-string license)
                         (first-paragraph-of license 2)))
-          (string (if (or (< (length license) 75) long)
+          (string (if (or (< (length license) 75) longp)
                       license
                       (concatenate 'string (subseq license 0 75) "…")))
           (t (warn "Package ~A has no license?" package)
              "(see its documentation for license)")))
-   (if long
+   (if longp
        "~|
 ————————————————————————————————————————————————————————————————————————
 
 Romance Ⅱ itself is a program.
 
-    Romance Game System Copyright © 1987-2014, Bruce-Robert Fenn
-    Pocock;
+    Romance Game System Copyright © 1987-2015, Bruce-Robert Fenn Pocock;
 
-    This  program is  free software:  you can  redistribute it  and/or
-    modify it under the terms of the GNU Affero General Public License
-    as published by the Free  Software Foundation, either version 3 of
-    the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
 
-    This program  is distributed in the  hope that it will  be useful,
-    but WITHOUT  ANY WARRANTY;  without even  the implied  warranty of
-    MERCHANTABILITY or FITNESS FOR A  PARTICULAR PURPOSE.  See the GNU
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Affero General Public License for more details.
 
-    You should have  received a copy of the GNU  Affero General Public
-    License    along    with    this    program.     If    not,    see
-    < http://www.gnu.org/licenses/ >."
+    You should have received a copy of the GNU Affero General Public
+    License along with this program.  If not, see
+    http://www.gnu.org/licenses/ ."
        ;; short version
        "
 See COPYING.AGPL3 or run “romance --copyright” for details.

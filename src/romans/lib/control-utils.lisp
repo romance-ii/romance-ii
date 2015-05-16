@@ -64,7 +64,7 @@ with the same `place'"
 (defmethod todo (&optional (string "TODO: This function is not yet implemented")
                  &rest keys)
   (restart-case
-      (error 'todo-item :note (apply #'format string whinge))
+      (error 'todo-item :note string)
     (return-nil ()
       :report (lambda (s)
                 (format s "Return NIL"))

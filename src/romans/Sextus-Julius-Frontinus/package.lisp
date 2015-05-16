@@ -1,5 +1,5 @@
 (defpackage :frontinus
-  (:use :cl :alexandria :romans :local-time :bordeaux-threads :split-sequence)
+  (:use :cl :romans)
   (:nicknames :sextus-julius-frontinus)
   (:documentation "Frontinus provides a simulation of weather,
  including general water cycle, winds, and the day/night cycle, sky

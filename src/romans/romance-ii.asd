@@ -1,7 +1,11 @@
 (asdf:defsystem :romance-ii
-  :description "Romance Ⅱ Game Core"
+  :description "Romance Ⅱ is a game server system, mostly oriented toward persistent, MMO-RPG games."
   :author "Bruce-Robert Fenn Pocock"
+  :version "2.0.5"
+  :maintainer "Bruce-Robert Fenn Pocock"
+  :mailto "brpocock+romance2@star-hope.org"
   :licence "AGPLv3"
+  :long-name "Romance Ⅱ Game System"
 
   :depends-on (
 
@@ -14,8 +18,10 @@
                :cl-oauth
                :cl-unicode
                :cffi
+               :gsll
                :langutils
                :local-time
+               :parse-number
                :postmodern
                :prepl
                :split-sequence
@@ -23,6 +29,7 @@
                :st-json
                :swank
                :trivial-garbage
+               :trivial-gray-streams
                :usocket
                :wordnet
 
@@ -39,6 +46,8 @@
                             (:file "json-utils")
                             (:file "repl-glue")
                             (:file "string-utils")
+                            (:file "i18n+l10n"
+                                   :depends-on ("string-utils"))
                             (:file "system-utils")))
    (:module "Aelius-Galenus"
             :depends-on ("common" "lib" "Gaius-Julius-Caesar")
@@ -121,5 +130,10 @@
             :depends-on ("common" "lib" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Sextus-Julius-Frontinus"
+                                :depends-on ("package"))))
+   (:module "Rahab"
+            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :components ((:file "package")
+                         (:file "Rahab"
                                 :depends-on ("package"))))))
 

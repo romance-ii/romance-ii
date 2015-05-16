@@ -223,75 +223,55 @@ For example, to octal-escape all characters outside the range of printable ASCII
          'string-capitalize)
         (t 'identity)))
 
-(define-condition language-not-implemented-warning (warning)
-  ((language :initarg :language :reader language-not-implemented)
-   (fn :initarg :function :reader language-not-implemented-function)))
+(defun irish-consonant-p (letter)
+  (member (char-downcase letter) 
+          '(#\b #\c #\d #\f #\g #\j #\l #\m #\n #\p #\r #\s #\t #\v)))
 
-(defmacro defun-lang (function (&rest lambda-list) &body bodies)
-  (let ((underlying (intern (concatenate 'string (string function) "%"))))
-    `(progn 
-       (defgeneric ,underlying (language ,@lambda-list)
-         ,@(mapcar (lambda (body)
-                     (let ((match (car body))
-                           (code (cdr body)))
-                       `(:method ((language (eql ,match)) ,@lambda-list)
-                          ,@code)))
-                   bodies)
-         (:method ((language t) ,@lambda-list)
-           (warn 'language-not-implemented-warning :language language :function ',function)
-           (,underlying :en ,@lambda-list)))
-       (defun ,function (,@lambda-list)
-         (,underlying (or (get-lang) :en) 
-                      ,@lambda-list)))))
+(defun irish-vowel-p (letter)
+  (member (char-downcase letter) 
+          '(#\ɑ #\a #\á #\e #\é #\i #\í #\ı #\o #\ó #\u #\ú)))
 
-(defun-lang a/an (string)
-  (:en (let ((letter (elt string 0)))
-         (case letter
-           ((#\a #\e #\i #\o #\u #\h)
-            (concatenate 'string "an " string))
-           ((#\A #\E #\I #\O #\U #\H)
-            (concatenate 'string (funcall (letter-case string) "an ") string))
-           (otherwise 
-            (concatenate 'string (funcall (letter-case string) "a ") string))))))
+(defun substitute-map (map word)
+  "Given a p-list MAP, where the keys are characters, replace them with
+the associated values of the p-list."
+  (map 'string (lambda (char)
+                 (if-let ((new (getf map char)))
+                   new 
+                   char))
+       word))
 
-(defun-lang plural (count string)
-  (:en (if (= 1 count) 
-           string
-           (cond
-             (t (funcall (letter-case string)
-                         (concatenate 'string string "s"))))))
-  (:fr (if (= 1 count) 
-           string
-           (cond
-             (t (funcall (letter-case string)
-                         (concatenate 'string string "s"))))))
-  (:es (if (= 1 count) 
-           string
-           (cond
-             (t (funcall (letter-case string)
-                         (concatenate 'string string "s")))))))
+(defun string-starts-with (longer prefix)
+  (let ((longer-length (length longer))
+        (prefix-length (length prefix)))
+    (and (>= longer-length prefix-length)
+         (string= longer prefix :end1 prefix-length))))
 
-(defun-lang counting (count string)
-  (:en (cond
-         ((zerop count) (a/an/some string))
-         ((< 0 count 21) (funcall (letter-case string)
-                                  (format nil "~R ~A" count
-                                          (plural count string))))
-         (t (format nil "~:D ~A" count (plural count string))))))
+(defun string-ends-with (longer ending)
+  (let ((longer-length (length longer))
+        (ending-length (length ending)))
+    (and (>= longer-length ending-length)
+         (string= longer ending
+                  :start1 (- longer-length ending-length)))))
 
-(defun-lang a/an/some (count string)
-  (:en (case count
-         (0 (concatenate 'string (funcall (letter-case string) "no ")
-                         (plural 0 string)))
-         (1 (a/an string))
-         (otherwise (concatenate 'string (funcall (letter-case string) "some ")
-                                 (plural count string)))))
-  (:fr (case count
-         (0 (concatenate 'string (funcall (letter-case string) "sans ")
-                         (plural 0 string)))
-         (1 (a/an string))
-         (otherwise (concatenate 'string (funcall (letter-case string) "des ")
-                                 (plural count string))))))
+(defmacro string-ends-with-case (string &body clauses)
+  (let ((s (gensym "STRING")))
+    `(let ((,s ,string)) 
+       (cond 
+         ,@(loop for pair in clauses
+              for match = (car pair)
+              for body = (cdr pair)
+              collecting (cond 
+                           ((member match '(otherwise t))
+                            `(t ,@body))
+                           ((listp match)
+                            `((member ,s ,(list 'quote (if (symbolp (car match))
+                                                           (eval match)
+                                                           match))
+                                      :test #'string-ends-with)
+                              ,@body))
+                           (t `((string-ends-with ,s ,match)
+                                ,@body))))))))
+
 
 
 
@@ -347,72 +327,97 @@ string. If the second value is negative, the string was truncated."
 
 (defun string-case/literals% (compare clauses)
   (let ((instance (gensym "STRING-CASE")))
-    `(let ((,instance (eval-once ,compare)))
+    `(let ((,instance ,compare))
        (cond
          ,@(mapcar (lambda (clause)
-                     (if (or (eql t (car clause)) (eql 'otherwise (car clause)))
-                         `(t ,@(cdr clause))
-                         `((string= ,instance ,(car clause)) ,@(cdr clause))))
+                     (cond ((or (eql t (car clause)) 
+                                (eql 'otherwise (car clause)))
+                            `(t ,@(cdr clause)))
+                           ((consp (car clause))
+                            `((or ,@(mapcar (lambda (each)
+                                              `(string= ,instance ,each))
+                                            (car clause)))
+                              ,@(cdr clause)))
+                           (t
+                            `((string= ,instance ,(car clause)) ,@(cdr clause)))))
                    clauses)))))
 
 
 (defun string-case/interning% (compare clauses)
   (let ((instance (gensym "STRING-INTERNED")))
-    `(let ((,instance (intern$ (eval-once ,compare))))
+    `(let ((,instance (intern$ ,compare)))
        (case ,instance
          ,@(mapcar (lambda (clause)
-                     (if (or (eql t (car clause)) (eql 'otherwise (car clause)))
-                         `(t ,@(cdr clause))
-                         `(,(intern$ (car clause)) ,@(cdr clause))))
+                     (cond 
+                       ((or (eql t (car clause)) 
+                            (eql 'otherwise (car clause)))
+                        `(t ,@(cdr clause)))
+                       ((consp (car clause))
+                        `(,(mapcar #'intern$ (car clause))
+                           ,@(cdr clause)))
+                       (t
+                        `(,(intern$ (car clause)) ,@(cdr clause)))))
                    clauses)))))
 
+
+(defparameter *--interning-better-breakpoint* 25)
 
 (let ((interning-better-breakpoint
        ;; Determine about how many cases there need to be, for interning to be
        ;; faster than STRING=
-       (flet ((make-random-string (string-length)
-                (format nil "~{~C~}"
-                        (loop for char from 1 upto (1+ string-length)
-                           collecting (code-char (+ 32 (random 95)))))))
-         (format *trace-output* "~&;; timing STRING-CASE implementations …")
-         (let ((trials
-                (loop for trial-count from 1 to (* 5 (+ 5 (random 5)))
-                   for num-repeats = (* 1000 (+ 2 (random 4)))
-                   collecting
-                     (loop for num-cases from 1 by (1+ (random 2))
-                        for stuff = (loop for case from 1 upto num-cases
-                                       for string = (make-random-string (+ 4 (random 28)))
-                                       collect (list string :nobody))
-                        for expr/literal = (compile 'expr/literal
-                                                    (list 'lambda '(x)
-                                                          (funcall #'string-case/literals%
-                                                                   'x stuff)))
-                        for expr/interning = (compile 'expr/interning
-                                                      (list 'lambda '(x)
-                                                            (funcall #'string-case/interning%
-                                                                     'x stuff)))
-                        for test-string = (make-random-string 40)
-                        for cost/literal = (progn
-                                             (trivial-garbage:gc)
-                                             (let ((start (get-internal-real-time)))
-                                               (dotimes (i num-repeats)
-                                                 (funcall expr/literal test-string))
-                                               (- (get-internal-real-time) start)))
-                        for cost/interning = (progn
-                                               (trivial-garbage:gc)
-                                               (let ((start (get-internal-real-time)))
-                                                 (dotimes (i num-repeats)
-                                                   (funcall expr/interning test-string))
-                                                 (- (get-internal-real-time) start)))
-                          
-                        ;; do (format *trace-output* "~&;; STRING-CASE Cost for ~D (~:D×): interning: ~F literals: ~F"
-                        ;;            num-cases num-repeats cost/interning cost/literal)
-                        when (< cost/interning cost/literal)
-                        return num-cases))))
-           (let ((average (round (/ (apply #'+ trials) (length trials)))))
-             (format *trace-output* "~&;;; STRING-CASE trials done; sweet spot is about ~R case~:P after ~R trial~:P"
-                     average (length trials))
-             average)))))
+       (or
+        (when (boundp '*--interning-better-breakpoint*)
+          (if (numberp *--interning-better-breakpoint*)
+              (prog1
+                  *--interning-better-breakpoint*
+                (warn "Using string interning for STRING-CASE of ~R cases"
+                      *--interning-better-breakpoint*))
+              (prog1
+                  GSLL:+POSITIVE-INFINITY+
+                (warn "Disabling string interning on this platform"))))
+        (flet ((make-random-string (string-length)
+                 (format nil "~{~C~}"
+                         (loop for char from 1 upto (1+ string-length)
+                            collecting (code-char (+ 32 (random 95)))))))
+          (format *trace-output* "~&;; timing STRING-CASE implementations …")
+          (let ((trials
+                 (loop for trial-count from 1 to (* 5 (+ 5 (random 5)))
+                    for num-repeats = (* 1000 (+ 2 (random 4)))
+                    collecting
+                      (loop for num-cases from 1 by (1+ (random 2))
+                         for stuff = (loop for case from 1 upto num-cases
+                                        for string = (make-random-string (+ 4 (random 28)))
+                                        collect (list string :nobody))
+                         for expr/literal = (compile 'expr/literal
+                                                     (list 'lambda '(x)
+                                                           (funcall #'string-case/literals%
+                                                                    'x stuff)))
+                         for expr/interning = (compile 'expr/interning
+                                                       (list 'lambda '(x)
+                                                             (funcall #'string-case/interning%
+                                                                      'x stuff)))
+                         for test-string = (make-random-string 40)
+                         for cost/literal = (progn
+                                              (trivial-garbage:gc)
+                                              (let ((start (get-internal-real-time)))
+                                                (dotimes (i num-repeats)
+                                                  (funcall expr/literal test-string))
+                                                (- (get-internal-real-time) start)))
+                         for cost/interning = (progn
+                                                (trivial-garbage:gc)
+                                                (let ((start (get-internal-real-time)))
+                                                  (dotimes (i num-repeats)
+                                                    (funcall expr/interning test-string))
+                                                  (- (get-internal-real-time) start)))
+                           
+                         ;; do (format *trace-output* "~&;; STRING-CASE Cost for ~D (~:D×): interning: ~F literals: ~F"
+                         ;;            num-cases num-repeats cost/interning cost/literal)
+                         when (< cost/interning cost/literal)
+                         return num-cases))))
+            (let ((average (round (/ (apply #'+ trials) (length trials)))))
+              (format *trace-output* "~&;;; STRING-CASE trials done; sweet spot is about ~R case~:P after ~R trial~:P"
+                      average (length trials))
+              average))))))
   
   (defmacro string-case (compare &body clauses)
     "Like a CASE expression, but using STRING= to campare cases.
@@ -420,22 +425,39 @@ string. If the second value is negative, the string was truncated."
 Example:
 
 \(STRING-CASE FOO ((\"A\" (print :A)) (\"B\" (print :B)) (t (print :otherwise)) "
-    (if (< interning-better-breakpoint (length clauses))
+    (if (> interning-better-breakpoint (length clauses))
         (string-case/literals% compare clauses)
         (string-case/interning% compare clauses))))
 
 
 
 (defun keywordify (word)
-  (make-keyword
-   (substitute #\- #\_ 
-               (symbol-name (cffi:translate-camelcase-name word)))))
+  (etypecase word
+    (string
+     (make-keyword
+      (substitute #\- #\_ 
+                  (symbol-name (cffi:translate-camelcase-name word)))))
+    (symbol (make-keyword (string word)))))
 
+(defun lc-string-syms (token)
+  (cond 
+    ((symbolp token)
+     (string-downcase (symbol-name token)))
+    ((consp token)
+     (mapcar #'lc-string-syms token))
+    (t token)))
+
+(defmacro @$ (&rest list-of-strings)
+  (list 'quote (mapcar #'lc-string-syms list-of-strings)))
+
+(defun char-string (char)
+  (check-type char character)
+  (princ-to-string char))
 
 (defun join (joiner list-of-strings)
   (let ((joiner (etypecase joiner
                   (string joiner)
-                  (character (princ-to-string joiner))
+                  (character (char-string joiner))
                   (symbol (symbol-name joiner))))) 
     (reduce (lambda (a b)
               (concatenate 'string a joiner b))
@@ -613,7 +635,7 @@ Example:
        (every (for-any #'alphanumericp
                        (membership '(#\_ #\$))) string)))
 
-(deftype c-style-identifier
-    '(satisfies c-style-identifier-p))
+(deftype c-style-identifier ()
+  '(satisfies c-style-identifier-p))
 
 

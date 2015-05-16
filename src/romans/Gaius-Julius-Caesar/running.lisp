@@ -1,6 +1,12 @@
 (in-package :caesar)
 
 
+(defun host-is-local-p (host)
+  (or (null host)
+      (member (string host) '("localhost" "::1" "127.0.0.1")
+              :test 'string-equal)
+      ;; todo, compare host name and local interface addresses
+      nil))
 
 (defmacro run-external ((host name (command args &optional environ)
                               &key (input (gensym "INPUT"))
@@ -14,8 +20,7 @@
   (check-type output symbol)
   (check-type error-output symbol)
   (if (and (constantp host)
-           (or (null host)
-               (equal (string host) "localhost")))
+           (host-is-local-p host))
       `(run-external/local ,(list (string (eval name)) 
                                   command args environ 
                                   input output error-output)
@@ -34,9 +39,12 @@
 
 (defgeneric launch-program (container program))
 
-(defmethod launch-program (container (program (eql :postgres))) (todo))
-(defmethod launch-program (container (program (eql :static-web-server))) (todo))
-(defmethod launch-program (container (program t)) (todo))
+(defmethod launch-program (container (program (eql :postgres))) 
+  (todo))
+(defmethod launch-program (container (program (eql :static-web-server))) 
+  (todo))
+(defmethod launch-program (container (program t))
+  (todo))
 
 (defun stop-program (identifier) (todo))
 

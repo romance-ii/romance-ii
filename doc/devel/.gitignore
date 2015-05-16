@@ -1,0 +1,18 @@
+# Generated and temporary files
+include/**
+*.pdf
+*.html
+*.info
+*.aux
+*.cp
+*.fn
+*.fns
+*.ky
+*.log
+*.pg
+*.toc
+*.tps
+*.vr
+autodocs.texi
+include-stamp
+

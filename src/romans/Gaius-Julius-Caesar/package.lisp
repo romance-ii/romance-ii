@@ -1,5 +1,5 @@
 (defpackage :caesar
-  (:use :cl :alexandria :romans :local-time :bordeaux-threads :split-sequence)
+  (:use :cl :romans)
   (:nicknames :gaius-iulius-caesar)
   (:documentation "Caesar oversees the system on which it is running,
 and ensures that sufficient resources are available for uninterrupted
@@ -12,7 +12,35 @@ Gaius Julius Caesar was known as a famous general. (But you knew
 that, right?)")
   
   (:export #:*module*
+           #:*operator-handle-signals*
+           #:all-process-ids
+           #:all-threads/alpha
+           #:collect-qos
+           #:get-real-time
+           #:find-thread
+           #:machine-meminfo
+           #:machine-vmstat
+           #:process-id
+           #:process-name
+           #:process-state-gerund
+           #:read-from-thread
            #:report
-           #:with-oversight))
+           #:run-external
+           #:split-and-collect-file
+           #:start-server
+           #:this-process
+           #:todo
+           #:what
+           #:who
+           #:with-oversight
+           #:with-report-acceptor
+           #:with-timeout-handler))
 
+(import 'romance::split-and-collect-file)
+(import 'romance::collect-file)
+(import 'romance::collect-file-lines)
+(import 'romance::collect-file-tabular)
+(import 'romance::maybe-alist-split)
+(import 'romance::maybe-alist-row)
+(import 'romance::maybe-numeric)
 

@@ -46,46 +46,6 @@ $(SERVERDIR)/lib/libcl-bullet2l.so:	\
 
 
 
-
-%.txt:	%.org
-	emacs --batch -q -nw \
-		--load doc/batch-export.el \
-		--visit $< \
-		--funcall org-ascii-export-to-ascii
-
-%.html:	%.org
-	emacs --batch -q -nw \
-		--load doc/batch-export.el \
-		--visit $< \
-		--funcall org-html-export-to-html
-
-%.tex:	%.org
-	emacs --batch -q -nw \
-		--load doc/batch-export.el \
-		--visit $< \
-		--funcall org-latex-export-to-latex
-
-%.pdf:	%.tex
-	( cd $(shell dirname $< ) ; pdflatex $(shell basename $< ) ) < /dev/null
-
-%.info:  %.texi
-	cd $(shell dirname $< ) && texi2any --info --force $(shell basename $<) -o $(shell tools/bin/relative-to $< $@)
-
-%.html.d:  %.texi	
-	cd $(shell dirname $< ) && texi2any --html --split=section \
-		--css-ref=romance2-doc.css --force \
-		$(shell basename $<) -o $(shell tools/bin/relative-to $< $@)
-
-%.pdf:	%.texi
-	cd $(shell dirname $< ) && texi2any --pdf --force $(shell basename $<) -o $(shell tools/bin/relative-to $< $@)
-
-%.ps:	%.texi
-	cd $(shell dirname $< ) && texi2any --ps --force $(shell basename $<) -o $(shell tools/bin/relative-to $< $@)
-
-%.txt:	%.texi
-	cd $(shell dirname $< ) && texi2any --plaintext --force $(shell basename $<) -o $(shell tools/bin/relative-to $< $@) 
- 
 doc:	\
-	doc/devel/The-Book-of-Romance.pdf \
-	doc/devel/The-Book-of-Romance.info \
-	doc/devel/The-Book-of-Romance.html.d
+	$(MAKE) -C doc/devel all
+

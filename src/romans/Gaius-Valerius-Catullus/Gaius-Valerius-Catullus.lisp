@@ -1,8 +1,8 @@
 (in-package :catullus)
 
-(defmacro TODO (&rest params)
-  `(cerror "ignore and continue"
-           "Unimplemented function called with~%~S" (list ,@params)))
+;; (defmacro TODO (&rest params)
+;;   `(cerror "ignore and continue"
+;;            "Unimplemented function called with~%~S" (list ,@params)))
 
 (defvar *logical-output* nil)
 

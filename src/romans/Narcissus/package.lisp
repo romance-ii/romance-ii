@@ -1,5 +1,5 @@
 (defpackage :narcissus 
-  (:use :cl :alexandria :romans :local-time :bordeaux-threads :split-sequence)
+  (:use :cl :romans)
   (:documentation "Narcissus handles the simulation of physical forces.
 
 Named for the famous wrestler Narcissus, who may have once
