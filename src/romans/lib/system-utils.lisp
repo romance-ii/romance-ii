@@ -144,3 +144,23 @@ Romance Ⅱ itself is a program.
        "
 See COPYING.AGPL3 or run “romance --copyright” for details.
 ")))
+
+
+
+(defmacro warn-impl (symbol &optional message)
+  `(warn "An implementation of ~a is needed for ~a on ~a.
+~@[~%~a~%~]~
+Please add an implementation to the file:
+~a
+
+ … with an appropriate #+(feature) tag to identify it, or contact the Romans
+   development team, and we may be able to help. Your *FEATURES* contains the
+   following:
+~s
+"
+         ',symbol ,message
+         (lisp-implementation-type) (machine-type)
+         (or *compile-file-truename* *load-truename*)
+         *features*))
+
+
