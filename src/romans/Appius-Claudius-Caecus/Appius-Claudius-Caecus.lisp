@@ -78,7 +78,6 @@
                                     :reuse-address t
                                     :backlog #x100)
      with *connection-pool* = (list listener)
-     with cycler = 0
      for *selected-socket*
      ;; return only ready sockets for 39 cycles, but return them all
      ;; on the 40. This means that, combined with the timeout, we
@@ -86,7 +85,7 @@
      ;; and probably far less time.
      in (wait-for-input *connection-pool*
                         :timeout 1/2    ;sec
-                        :ready-only (not (modincf cycler $reaper-cycles$)))
+                        :ready-only (not (make-t-every-n-times $reaper-cycles$)))
      until *server-quit*
      do (server-listen)))
 
