@@ -1,5 +1,5 @@
 (defpackage systemd-fds
-  (:use :cl :alexandria #+sbcl :sb-bsd-sockets)
+  (:use :cl :alexandria :romance #+sbcl :sb-bsd-sockets)
   (:export #:listen-fds))
 
 (in-package :systemd-fds)
@@ -56,8 +56,6 @@ contains the following (one of which should, hopefully, match your OS):
       (lisp-implementation-type)
       (or *compile-file-truename* *load-truename* "systemd-daemon.lisp")
       *features*)
-
-
 
 (defun listen-fds ()
   (when-let ((listen-pid 
