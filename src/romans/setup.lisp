@@ -27,25 +27,26 @@ check the manual in the “doc” folder.")
 #-sbcl
 (warn "Your compiler is not SBCL. Some things may be weird.
 
-Romance Ⅱ is being developed using SBCL. While we greatly appreciate and
-encourage other compilers to be used,  and would like to support as many
-as are  practical, please keep  in mind  that the curator  and principal
-developers use SBCL  on Linux® (64-bit). Patches for  your compiler will
-certainly be accepted, however, as long  as they don't break support for
-SBCL (e.g. use #+xyzlisp reader macros).
+Romance Ⅱ is being developed using SBCL. While we greatly appreciate
+and encourage other compilers to be used, and would like to support as
+many as are practical, please keep in mind that the curator and
+principal developers use SBCL on Linux® (64-bit). Patches for your
+compiler will certainly be accepted, however, as long as they don't
+break support for SBCL (e.g. use #+xyzlisp reader macros).
 
-The name of  your compiler would be  helpful for us to know,  as well as
-its feature-test symbol(s) for #±  reader macros; your CL:*FEATURES* is:
-~%~S" *features*)
+The name of your compiler would be helpful for us to know, as well as
+its feature-test symbol(s) for #± reader macros; your CL:*FEATURES*
+is: ~%~S" *features*)
 
 #-common-lisp
 (warn "*FEATURES* omits COMMON-LISP. What madness is this??
 
-If you are legitimately trying to compile Romance Ⅱ using some un-Common
-Lisp, well: good luck, but please don't expect any miracles.
+If you are legitimately trying to compile Romance Ⅱ using some
+un-Common Lisp, well: good luck, but please don't expect
+any miracles.
 
-If you're  on a Common Lisp  system that doesn't mention  COMMON-LISP in
-its  *FEATURES*, please  advise us  with a  copy of  CL:*FEATURES*:~%~S"
+If you're on a Common Lisp system that doesn't mention COMMON-LISP in
+its *FEATURES*, please advise us with a copy of CL:*FEATURES*:~%~S"
       *features*)
 
 #-linux
@@ -69,9 +70,9 @@ Your machine type is reported as ~A
 
 If this is not an AMD-alike* 64-bit architecture, please be forewarned
 that Romance Ⅱ is being developed primarily for the “AMD 64” (X86-64)
-architecture. While support for other architectures is surely possible,
-and patches are encouraged, neither the curator nor primary contributors
-are currently using them.
+architecture. While support for other architectures is surely
+possible, and patches are encouraged, neither the curator nor primary
+contributors are currently using them.
 
    * Intel's non-Itanium 64-bit systems are AMD-alikes; e.g. the Intel
      Core series.

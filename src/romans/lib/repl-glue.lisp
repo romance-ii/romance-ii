@@ -286,5 +286,6 @@ For help, evaluate (ROMANCE:REPL-HELP) (ie type: (HELP) at the prompt.)~2%"))
     named))
 
 (defun spy (&rest args)
-  (apply rahab:spy args))
+  ;; package RAHAB isn't available yet at compile-time
+  (apply (intern "SPY" (find-package "RAHAB")) args))
 

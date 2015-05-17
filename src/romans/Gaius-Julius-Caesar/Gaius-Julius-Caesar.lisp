@@ -28,6 +28,7 @@
 
 
 (defun collect-qos (module machine activity capacity vmstats)
+  (declare (ignore module machine activity capacity vmstats))
   (todo))
 
 
@@ -44,58 +45,48 @@
   (subseq (cl-oauth:hmac-sha1 (string keyword) (package-name (symbol-package keyword)))
           0 15))
 
-(defun keyword-priority-map (keyword) 
+(defmethod keyword-priority-map (keyword) 
+  (declare (ignore keyword))
   3)
 
-#+sbcl
 (defun find-throwing-frame ()
-  (loop with signal-function-found = nil
-     for frame = (or sb-debug:*stack-top-hint* (sb-di:top-frame)) 
-     then (sb-di:frame-down frame)
-     for function = (ignore-errors
-                      (sb-di:debug-fun-name
-                       (sb-di:frame-debug-fun frame)))
-     do (cond ((member function '(signal throw error))
-               (setf signal-function-found t))
-              (signal-function-found
-               (return-from find-throwing-frame frame)))))
+  (let ((foundp nil))
+    (ignore-errors
+      (trivial-backtrace:map-backtrace 
+       (lambda (frame)
+         (let ((function (trivial-backtrace::frame-func frame)))
+           (cond 
+             ((member function '(signal throw error warn)) (setf foundp t))
+             (foundp (return-from find-throwing-frame frame)))))))))
 
-#+sbcl
 (defun frame-funcall (frame)
-  (format nil "(~S~{ (~S←~S ~[✗~;✓~]~})"
-          (ignore-errors
-            (sb-di:debug-fun-name 			    
-             (sb-di:frame-debug-fun frame)))
-          (or (map 'list (lambda (var)
-                           (or (ignore-errors
-                                 (when (eq :valid
-                                           (sb-di:debug-var-validity 
-                                            var (sb-di:frame-code-location frame)))
-                                   (list (sb-di:debug-var-symbol var)
-                                         (sb-di:debug-var-value var frame)
-                                         t)))
-                               (list var '#:? nil)))
-                   (ignore-errors (sb-di::debug-fun-debug-vars
-                                   (sb-di:frame-debug-fun frame))))
-              (list '#:? '#:… nil))))
+  (format nil "(~S~{ (~S←~S ~})"
+          (trivial-backtrace::frame-func frame)
+          (or 
+           (map 'list
+                (lambda (var)
+                  (list (trivial-backtrace::var-name var)
+                        (trivial-backtrace::var-value var)))
+                (trivial-backtrace::frame-vars frame))
+           (list '#:? '#:… nil))))
 
-(defun journal-condition (module machine message user-string &optional condition)
-  (let* ((throwing-frame (find-throwing-frame))
-         (debug-source (sb-di:code-location-debug-source 
-                        (sb-di:frame-code-location throwing-frame))))
-    (systemd:journal-send
-     (cons (cons (list :message user-string
-                       :priority (keyword-priority-map message)
-                       :code-file (sb-di:debug-source-namestring debug-source)
-                       :code-line (sb-di:debug-source-form debug-source)
-                       :code-func (frame-funcall throwing-frame)
-                       :x-module (string module)
-                       :x-machine (string machine))
-                 (when condition
-                   (list :x-condition (princ-to-string condition)
-                         :x-condition-type message)))
-           (when-let ((message-id (keyword-journal-message-id message)))
-             :message-id message-id)))))
+;; (defun journal-condition (module machine message user-string &optional condition throwing-frame)
+;;   (let* ((throwing-frame throwing-frame)
+;;          (debug-source (sb-di:code-location-debug-source 
+;;                         (sb-di:frame-code-location throwing-frame))))
+;;     (systemd:journal-send
+;;      (cons (cons (list :message user-string
+;;                        :priority (keyword-priority-map message)
+;;                        :code-file (sb-di:debug-source-namestring debug-source)
+;;                        :code-line (sb-di:debug-source-form debug-source)
+;;                        :code-func (frame-funcall throwing-frame)
+;;                        :x-module (string module)
+;;                        :x-machine (string machine))
+;;                  (when condition
+;;                    (list :x-condition (princ-to-string condition)
+;;                          :x-condition-type message)))
+;;            (when-let ((message-id (keyword-journal-message-id message)))
+;;              :message-id message-id)))))
 
 (defmethod handle-report :before (module machine message-keyword user-string 
                                   &rest keys)
@@ -119,14 +110,14 @@
           user-string
           (append (list :module module :machine machine 
                         :message message-keyword) keys))
-  (force-output *trace-output*))
+  (finish-output *trace-output*))
 
 (defmethod handle-report ((module t) (machine t) (message t) (user-string t)
                           &rest keys)
   (format *error-output*
           "~&~%[CIC] Message (~s) from module ~:(~a~): “~a”~{~&  ~32<~:(~a~)~>: ~a~}"
           message module user-string keys)
-  (force-output *error-output*))
+  (finish-output *error-output*))
 
 (defmethod handle-report ((module t) (machine t) (message (eql :qos)) (user-string t)
                           &key activity capacity vmstats)
@@ -137,19 +128,21 @@
                           &key)
   (format *standard-output* "~&[CIC] Beginning module ~:(~a~) on machine ~:(~a~).~[  “~a”~]"
           module machine user-string)
-  (force-output *standard-output*))
+  (finish-output *standard-output*))
 (defmethod handle-report ((module t) (machine t) (message (eql :end-oversight)) 
                           (user-string t)
                           &key )
   (format *standard-output* "~&[CIC] Ending module ~:(~a~) on machine ~:(~a~).~[  “~a”~]"
           module machine user-string)
-  (force-output *standard-output*))
+  (finish-output *standard-output*))
 
 (defmethod handle-report ((module t) (machine t) (message (eql :machine-down)) 
                           (user-string t)
                           &key time-to-live)
   "The machine MACHINE is going down. Schedule replacement for any tasks
-  pending on it.")
+  pending on it."
+  (declare (ignore time-to-live))
+  (todo))
 
 (defmethod handle-report ((module t) (machine t) (message (eql :lisp-warning))
                           (user-string t)
@@ -160,9 +153,9 @@
 
 (defmethod handle-report ((module t) (machine t) (message (eql :lisp-error)) 
                           (user-string t)
-                          &key condition &rest keys)
+                          &rest keys &key condition)
   "A Lisp program issued an ERROR."
-  (journal-condition module machine message user-string condition))
+  ;; (journal-condition module machine message user-string condition)
   (when *operator-handle-signals*
     (funcall *operator-handle-signals* module machine message user-string keys)))
 
@@ -176,11 +169,16 @@
 (defvar *module*)
 
 (defun report (message-keyword user-string &rest keys)
-  (signal 'report :module (if (boundp '*module*)
-                              (symbol-value '*module*)
-                              '#:UNKNOWN-MODULE)
-          :message-keyword message-keyword
-          :user-string user-string :keys keys :machine (machine-instance)))
+  (let ((frame (find-throwing-frame)))
+    (signal 'report
+            :module (if (boundp '*module*)
+                        (symbol-value '*module*)
+                        '#:UNKNOWN-MODULE)
+            :source-function (when frame (trivial-backtrace::frame-func frame))
+            :source-filename (when frame (trivial-backtrace::frame-source-filename frame))
+            :source-line (when frame (trivial-backtrace::frame-source-pos frame))
+            :message-keyword message-keyword
+            :user-string user-string :keys keys :machine (machine-instance))))
 
 (defmethod romance::todo :around (&optional message &rest keys)
   (apply #'report :todo message keys)
@@ -237,6 +235,7 @@
        (continue)))))
 
 (defun timeout-handler%hard (soft-timeout hard-timeout)
+  (declare (ignore soft-timeout))
   `((t 
      (report :hard-timeout "Function exceeded hard timeout and is being aborted"
              :condition condition
@@ -319,11 +318,73 @@
 
 
 
+(defvar *cluster* nil)
+
+(defun find-cluster (&key cluster-name cluster-address)
+  (let ((found (append (when cluster-address
+                         (todo))
+                       (when cluster-name
+                         (todo))
+                       (unless (or cluster-name cluster-address)
+                         (todo)))))
+    (case (length found)
+      (0 (error "Could not find any cluster~@[ named ~a~]~@[ at address ~a~]"
+                cluster-name cluster-address))
+      (1 (car found))
+      (otherwise (error "~&Multiple clusters were found~@[ named ~a~]~@[ at address ~a~]
+~{~% • ~a~}
+Please provide an unique name or address to join one cluster"
+                        cluster-name cluster-address found)
+                 ))))
+
+(defun start-cluster (&key (cluster-name (random-elt '("Whitney" "Rama" "Ganesh" "Goethe" "Indira"))))
+  (when (find-cluster :cluster-name cluster-name)
+    (error "Cluster named “~a” already exists, but I was asked to start it." cluster-name)))
+
+(defun join-cluster (&optional (cluster *cluster*))
+  (format *trace-output* "~&Contacting cluster ~a to join them…" cluster)
+  (todo))
+
+
+(defun ensure-servers-live ()
+  (todo))
+(defun poll-qos-reports ()
+  (todo))
+
+(defun manage-cluster (&optional (cluster *cluster*))
+  (format *trace-output* "~&Now managing cluster ~a." cluster)
+  (restart-case 
+      (loop 
+         (ensure-servers-live)
+         (poll-qos-reports))
+    (stop-caesar-managing ()
+      :report (lambda (s)
+                (format s "Stop Caesar from managing this cluster"))
+      (return-from manage-cluster nil))))
+
+
+
+
+(defun caesar (&key cluster-name cluster-address)
+  (if-let ((*cluster* (find-cluster :cluster-name cluster-name
+                                    :cluster-address cluster-address)))
+    (join-cluster *cluster*)
+    (start-cluster)))
+
+(defun argv->keywords (argument)
+  (if (and (plusp (length argument))
+           (char= #\- (elt argument 0)))
+      (if (and (< 2 (length argument))
+               (char= #\- (elt argument 1)))
+          (make-keyword (string-upcase (subseq argument 2)))
+          (make-keyword (string-upcase (subseq argument 1))))
+      argument))
+
 (defun start-server (&optional argv)
   (romance:server-start-banner "Caesar"
                                "Gaius Julius Cæsar"
                                "Command and control server")
   (with-oversight (caesar)
-    (todo))
+    (apply #'caesar (mapcar #'argv->keywords argv)))
   (format t "~&[CIC] Exiting.~%"))
 

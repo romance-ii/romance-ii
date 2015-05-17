@@ -36,11 +36,5 @@ that, right?)")
            #:with-report-acceptor
            #:with-timeout-handler))
 
-(import 'romance::split-and-collect-file)
-(import 'romance::collect-file)
-(import 'romance::collect-file-lines)
-(import 'romance::collect-file-tabular)
-(import 'romance::maybe-alist-split)
-(import 'romance::maybe-alist-row)
-(import 'romance::maybe-numeric)
+(require :trivial-backtrace)
 

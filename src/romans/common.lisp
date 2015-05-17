@@ -36,6 +36,7 @@
    #:for-all
    #:for-any
    #:forever
+   #:|hash|
    #:join
    #:keywordify
    #:letter-case
