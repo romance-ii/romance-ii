@@ -329,8 +329,8 @@
                                   (unless (or cluster-name cluster-address)
                                     (todo))))))
     (case (length found)
-      (0 (warn "Could not find any cluster~@[ named ~a~]~@[ at address ~a~]"
-               cluster-name cluster-address)
+      (0 (format *trace-output* "~&Could not find any cluster~@[ named ~a~]~@[ at address ~a~]"
+                 cluster-name cluster-address)
          nil)
       (1 (car found))
       (otherwise (error "~&Multiple clusters were found~@[ named ~a~]~@[ at address ~a~]
@@ -338,13 +338,18 @@
 Please provide an unique name or address to join one cluster"
                         cluster-name cluster-address found)))))
 
-(defun start-cluster (&key (cluster-name (random-elt '("Beefy" "Composite" "Ganesh" "Goethe" 
-                                                       "Indira" "Prime" "Rama" "Whitney"))))
+(defun start-cluster (&key (cluster-name (random-elt
+                                          (remove-if
+                                           (curry #'find-cluster :cluster-name)
+                                           '("Beefy" "Composite" "Ganesh" "Goethe" 
+                                             "Indira" "Prime" "Rama" "Whitney")))))
   (when (find-cluster :cluster-name cluster-name)
-    (error "Cluster named “~a” already exists, but I was asked to start it." cluster-name)))
+    (error "Cluster named “~a” already exists, but I was asked to start it." cluster-name))
+  (appius:start-server/tcp-listener))
 
 (defun join-cluster (&optional (cluster *cluster*))
   (format *trace-output* "~&Contacting cluster ~a to join them…" cluster)
+  (finish-output)
   (todo))
 
 
@@ -374,7 +379,8 @@ Please provide an unique name or address to join one cluster"
     (start-cluster)))
 
 (defun argv->keywords (argument)
-  (if (and (plusp (length argument))
+  (if (and (stringp argument)
+           (plusp (length argument))
            (char= #\- (elt argument 0)))
       (if (and (< 2 (length argument))
                (char= #\- (elt argument 1)))
@@ -382,11 +388,11 @@ Please provide an unique name or address to join one cluster"
           (make-keyword (string-upcase (subseq argument 1))))
       argument))
 
-(defun start-server (&optional argv)
+(defun start-server (&rest argv)
   (romance:server-start-banner "Caesar"
                                "Gaius Julius Cæsar"
                                "Command and control server")
   (with-oversight (caesar)
-    (apply #'caesar (mapcar #'argv->keywords argv)))
+    (apply #'caesar (mapcar #'argv->keywords (flatten argv))))
   (format t "~&[CIC] Exiting.~%"))
 
