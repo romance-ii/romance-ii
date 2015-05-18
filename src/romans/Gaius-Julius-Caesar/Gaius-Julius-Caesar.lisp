@@ -321,23 +321,25 @@
 (defvar *cluster* nil)
 
 (defun find-cluster (&key cluster-name cluster-address)
-  (let ((found (append (when cluster-address
-                         (todo))
-                       (when cluster-name
-                         (todo))
-                       (unless (or cluster-name cluster-address)
-                         (todo)))))
+  (let ((found (remove-if #'null
+                          (append (when cluster-address
+                                    (todo))
+                                  (when cluster-name
+                                    (todo))
+                                  (unless (or cluster-name cluster-address)
+                                    (todo))))))
     (case (length found)
-      (0 (error "Could not find any cluster~@[ named ~a~]~@[ at address ~a~]"
-                cluster-name cluster-address))
+      (0 (warn "Could not find any cluster~@[ named ~a~]~@[ at address ~a~]"
+               cluster-name cluster-address)
+         nil)
       (1 (car found))
       (otherwise (error "~&Multiple clusters were found~@[ named ~a~]~@[ at address ~a~]
 ~{~% • ~a~}
 Please provide an unique name or address to join one cluster"
-                        cluster-name cluster-address found)
-                 ))))
+                        cluster-name cluster-address found)))))
 
-(defun start-cluster (&key (cluster-name (random-elt '("Whitney" "Rama" "Ganesh" "Goethe" "Indira"))))
+(defun start-cluster (&key (cluster-name (random-elt '("Beefy" "Composite" "Ganesh" "Goethe" 
+                                                       "Indira" "Prime" "Rama" "Whitney"))))
   (when (find-cluster :cluster-name cluster-name)
     (error "Cluster named “~a” already exists, but I was asked to start it." cluster-name)))
 
