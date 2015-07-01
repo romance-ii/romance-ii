@@ -15,7 +15,7 @@ docker-io
 # The core facilities: Emacs, SBCL
 emacs
 sbcl
-### Note, Quicklisp and Slime are “sideloaded” per-user
+### Note, Quicklisp and Slime are “sideloaded” per-user;
 ### installing the system's Slime package may be detrimental
 
 # Devel libraries needed for accessing libraries
@@ -31,7 +31,7 @@ nodejs
 uglify-js
 
 # Java
-java-1.7.0-openjdk
+java-1.8.0-openjdk
 
 # (La)TeX facilities
 texlive-latex-bin-bin
