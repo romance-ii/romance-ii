@@ -11,9 +11,13 @@ for my $file (@ARGV) {
     $dump .= '.dump';
     $dump =~ s,\Q$swfdir\E,build/svg/,g;
     system sh => -c => "mkdir -p \$(dirname $dump)";
-    if ($?) { warn "mkdir (dirname $dump) → $?" }
+    if ($?) {
+      warn "mkdir (dirname $dump) → $?";
+    }
     system sh => -c => "swfdump -tsFpBbd '$file' > '$dump'";
-    if ($?) { warn "swfdump $dump → $?" }
+    if ($?) {
+      warn "swfdump $dump → $?";
+    }
   }
 
   my  (%shape)= ();
@@ -21,7 +25,7 @@ for my $file (@ARGV) {
     print q[<?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" 
+<svg xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink= "http://www.w3.org/1999/xlink"
   version="1.1">
 <title>], "$dump</title>\n";
@@ -44,7 +48,7 @@ for my $file (@ARGV) {
       ($d, $e, $f) = (0+ $1, 0+ $2, 0+ $3);
       $frame{ $depth } = [ "#shape$id", "matrix($a,$b,$c,$d,$e,$f)" ];
     }
-    
+
   READFILE:
     while (my $line = <DUMP>) {
       #print STDERR "$dump:$.:$in_sprite\n";
@@ -133,10 +137,10 @@ for my $file (@ARGV) {
             }
           }
         }
-        
+
         # print STDERR "Fills: ",
         #   (map { " $_ => " . (join ',' => @{ $fillc{ $_ } }) . "\n" } (sort keys %fillc));
-        
+
         my ($p1, $p2, $ps) = (-1, -1, -1);
       CURVE: while (1) {
           $line = <DUMP>;
@@ -186,7 +190,7 @@ for my $file (@ARGV) {
               }
               print "stroke='#", $linec{ $l }[1],
                 "' stroke-opacity='", (hex ($linec{ $l }[2]) / 0xff),
-                  "' stroke-width='", $linec{ $l }[0], "' ";
+                "' stroke-width='", $linec{ $l }[0], "' ";
             }
             print "\n  d='";
           }
@@ -274,7 +278,7 @@ but now it's $frame1 through $framen coming together?";
         }
         print "\n<symbol ",
           (defined $frame{label} ? "id='$frame{label}'" : "id='$in_sprite-frame$frame1'"),
-            ">\n";
+          ">\n";
         for my $depth (sort { $a <=> $b } grep {/\d+/} keys %frame) {
           my ($shape, $xform) = @{ $frame{ $depth } };
           print "  <use xlink:href='$shape'", ($xform? " transform='$xform'" : ''), "/>\n";
@@ -301,7 +305,7 @@ but now it's $framed";
         }
         print "\n<symbol ",
           (defined $frame{label} ? "id='$frame{label}'" : "id='$in_sprite-frame$framed'"),
-            ">\n";
+          ">\n";
         for my $depth (sort { $a <=> $b } grep {/\d+/} keys %frame) {
           my ($shape, $xform) = @{ $frame{ $depth } };
           print "  <use xlink:href='$shape'", ($xform? " transform='$xform'" : ''), "/>\n";
@@ -339,8 +343,8 @@ but now it's $framed";
         print STDERR "<!-- Don't understand line:\n$dump:$.:\n$line -->\n";
       }
     }
-    print "</svg>\n";
-    close DUMP;
-  };
+print "</svg>\n";
+close DUMP;
+};
 }
 
