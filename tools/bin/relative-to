@@ -10,7 +10,7 @@ if ( $mod =~ m[^/] ) { print $mod; exit 0 }
 $rel =~ s[//+][/]g; 
 $rel =~ s[/$][]g;
 
-my $d = `dirname $rel`;
+my $d = `dirname "$rel"`;
 chomp $d;
 
 $rel = $d;
