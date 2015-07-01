@@ -5,7 +5,5 @@ mkdir -p $TOPDIR/"$(dirname "$1")"
 
 echo " • $1"
 
-
-
 exec $TOPDIR/../../tools/swf2svg "$1" > $TOPDIR/"$1".svg 2| tee $TOPDIR/"$1".err
 
