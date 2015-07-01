@@ -1,0 +1,240 @@
+<HTML>
+
+<HEAD>
+<title>Building simple planners in Lisp</title>
+</HEAD>
+
+<body>
+
+<h1>Building simple planners in Lisp</h1>
+
+This is the home of a few simple Lisp planning systems intended for
+classroom use:
+
+<ul>
+<li> <b>simple-GP</b>, a simplified implementation of Blum and Furst's
+GraphPlan.
+<li> <b>simple-GP-CSP</b>, a refinement of simple-GP that extracts solutions
+  using constraint satisfaction.
+<li> <b>simple-SAT</b>, a different refinement of simple-GP (based on
+  Kautz and Selman) that translates a planning graph into a
+  satisfiability problem and uses the DPLL algorithm to find
+  solutions.
+<li> <b>simple-HSP</b>, a heuristic search planner patterned after
+  Bonet and Geffner's HSP2.
+<li> <b>simple-POP</b>, an implementation of a partial-order planner.
+ The basic version handles propositional actions; an extension handles
+ actions with variable bindings.
+</ul>
+
+These simple planners were developed for (and within) a course on
+artificial intelligence programming.  Credits for design and
+implementation, before revision, go to Mike Dickheiser (simple-GP),
+Stephen G. Ware (simple-GP-CSP and simple-SAT), and David Boyuka
+(simple-HSP).  The planners generally follow the discussion in Stuart
+Russell and Peter Norvig's
+<i>Artificial Intelligence: A Modern Approach</i>, 2nd edition
+(<a href="http://aima.cs.berkeley.edu/">AIMA</a>).  The planners run
+using the Lisp code supplied with either AIMA or Peter
+Norvig's <i>Paradigms of AI Programming: Case Studies in Common
+Lisp</i> (<a href="http://norvig.com/paip.html">PAIP</a>).
+
+<p>
+The focus of the planners is on clarity rather than efficiency.  This
+means that, in comparison with their heavy-duty research counterparts,
+all the simple planners are stripped to the essentials and are very
+slow.  In compensation, the planners are small and understandable.
+They run side-by-side in the same environment.  Each planner can be
+presented in a single lecture, concepts and code.  I've found that
+students with half a semester of Lisp instruction can usefully test,
+compare, and modify the systems in homework assignments or projects.
+
+<p>
+All the planners can be used with the PAIP or AIMA Lisp code, or
+without either.  It's possible that bugs are present in the planners,
+but they currently produce reasonable results.  All the planners pass
+simple tests in Clozure and Lispworks Personal (Mac OS X, 10.4, on my
+aging PowerBook).  It should be trivial to port the code if it does
+not run already.
+
+<p>
+If you have questions about the code, would like to contribute changes
+or bug fixes, or would simply like to say that you find it useful,
+please send email to the author, Rob St. Amant
+(<a href="mailto:stamant@csc.ncsu.edu">stamant@csc.ncsu.edu</a>).<p>
+
+<h2>Getting started </h2>
+
+<ol>
+<li> Get the code for the simple planners:<p>
+
+   <a href="http://www.csc.ncsu.edu/faculty/stamant/simple-planners.zip">http://www.csc.ncsu.edu/faculty/stamant/simple-planners.zip</a><p>
+
+<li> Follow the installation instructions
+  in <a href="./simple-README.txt"><tt>simple-README.txt</tt></a>.<p>
+
+
+<li> Start your Lisp environment.  Load the system and test the
+  planners.  A few domains and problems are loaded automatically with
+  the system.  Two domain examples, plus associated problems:
+
+<pre>
+;;; In simple-problems.lisp [AIMA, p. 388]
+(define (domain socks-and-shoes)
+  (:action Right-Shoe :precond Right-Sock-On :effect Right-Shoe-On)
+  (:action Right-Sock :precond nil :effect Right-Sock-On)
+  (:action Left-Shoe :precond Left-Sock-On :effect Left-Shoe-On)
+  (:action Left-Sock :precond nil :effect Left-Sock-On))
+
+(define (problem put-on-shoes)
+    (:domain socks-and-shoes)
+  (:init)
+  (:goal (and Right-Shoe-On Left-Shoe-On)))
+
+;;; In simple-problems.lisp [AIMA p. 380]
+(define (domain cargo)
+  (:action Load
+           :parameters (?c ?p ?a)
+           :precond (and (At ?c ?a) (At ?p ?a) (Cargo ?c) (Plane ?p) (Airport ?a))
+           :effect (and (not (At ?c ?a)) (In ?c ?p)))
+  (:action Unload
+           :parameters (?c ?p ?a)
+           :precond (and (In ?c ?p) (At ?p ?a) (Cargo ?c) (Plane ?p) (Airport ?a))
+           :effect (and (At ?c ?a) (not (In ?c ?p))))
+  (:action Fly
+           :parameters (?p ?from ?to) 
+           :precond (and (At ?p ?from) (Plane ?p) (Airport ?from) (Airport ?to))
+           :effect (and (not (At ?p ?from)) (At ?p ?to))))
+
+(define (problem deliver-no-return)
+  (:domain cargo)
+  (:objects C1 SFO P1 JFK)
+  (:init (At C1 SFO) (At P1 SFO)
+         (Cargo C1) (Plane P1)
+         (Airport JFK) (Airport SFO))
+  (:goal (At C1 JFK)))
+
+(define (problem back-and-forth)
+  (:domain cargo)
+  (:objects C1 C2 SFO P1 P2 JFK)
+  (:init (At C1 SFO) (At C2 JFK) (At P1 SFO) (At P2 JFK)
+         (Cargo C1) (Cargo C2) (Plane P1) (Plane P2)
+         (Airport JFK) (Airport SFO))
+  (:goal (and (At C1 JFK) (At C2 SFO))))
+</pre>
+
+Given such domain and problem definitions, you can paste the following
+into a Lisp listener/REPL:
+
+<pre>
+(plan (make-instance 'propositional-POP-planner) 'put-on-shoes :domain 'socks-and-shoes)
+;;; returns #&lt;Plan: Left-Sock, Left-Shoe, Right-Sock, Right-Shoe&gt;
+;;; Steps are linearized for printing.
+
+(plan (make-instance 'GP-planner) 'put-on-shoes :domain 'socks-and-shoes)
+;;; returns #&lt;Plan: [Right-Sock, Left-Sock]; [Right-Shoe, Left-Shoe]&gt;
+
+;;; or, in a domain with first-order actions:
+
+(plan (make-instance 'GP-planner) 'back-and-forth :domain 'cargo)
+;;; returns #&lt;Plan: [Load(C1 P1 SFO), Load(C2 P2 JFK)]; [Fly(P2 JFK SFO), Fly(P1 SFO JFK)]; [Unload(C2 P2 SFO), Unload(C1 P1 JFK)]&gt;
+
+(plan (make-instance 'GP-CSP-planner) 'back-and-forth :domain 'cargo)
+;;; returns #&lt;Plan: [Load(C1 P1 SFO), Load(C2 P2 JFK)]; [Fly(P2 JFK SFO), Fly(P1 SFO JFK)]; [Unload(C2 P2 SFO), Unload(C1 P1 JFK)]&gt;
+
+(plan (make-instance 'SAT-planner) 'back-and-forth :domain 'cargo)
+;;; returns #&lt;Plan: [Load(C1 P1 SFO), Load(C2 P2 JFK)]; [Fly(P2 JFK SFO), Fly(P1 SFO JFK)]; [Unload(C2 P2 SFO), Unload(C1 P1 JFK)]&gt;
+
+(plan (make-instance 'HSP-planner) 'back-and-forth :domain 'cargo)
+;;; returns #&lt;Plan: Load(C2 P2 JFK), Fly(P2 JFK SFO), Unload(C2 P2 SFO), Load(C1 P2 SFO), Fly(P2 SFO JFK), Unload(C1 P2 JFK)]&gt;
+
+(plan (make-instance 'POP-planner) 'deliver-no-return :domain 'cargo)
+;;; returns #&lt;Plan: Load(C1 P1 SFO), Fly(P1 SFO JFK), Unload(C1 P1 JFK)&gt;
+
+</pre>
+
+There are minor differences in the plans returned by the planners, as
+shown (e.g., linearized steps in simple-POP and simple-HSP plans;
+levels of unordered actions in simple-GP plans).  The repeated
+creation of planner instances above is not necessary for handling
+different problems or domains.
+
+</ol>
+
+<h2>Notes on the files</h2>
+
+
+<p><b><a href="./simple-README.txt">simple-README.txt</a>:</b>
+
+This file explains where the code for the planners should be installed
+and how the planners can be loaded.
+
+<p><b><a href="simple-gp.lisp">simple-gp.lisp</a></b> and <b><a href="simple-gp-csp.lisp">simple-gp-csp.lisp</a>:</b>
+
+These two files contain the code for GraphPlan.  The basic variant
+extracts solutions from a planning graph with a naive brute-force
+approach; the CSP variant relies on simple constraint satisfaction.
+
+<p><b><a href="simple-sat.lisp">simple-sat.lisp</a></b> and <b><a href="simple-sat-solver.lisp">simple-sat-solver.lisp</a>:</b>
+
+These files contain the code for a SAT-based planner, translation
+functions for conversion back and forth between a planning
+representation and a SAT representation, and a DPLL-based SAT solver.
+
+<p><b><a href="simple-hsp.lisp">simple-hsp.lisp</a>:</b>
+
+This file contains the code for a heuristic search planner patterned
+after HSP2.  simple-HSP performs a best-first search using a cost
+function that ignores action delete lists.
+
+<p><b><a href="simple-pop.lisp">simple-pop.lisp</a></b> and <b><a href="simple-pop-with-bindings.lisp">simple-pop-with-bindings.lisp</a>:</b>
+
+These two files contains the code for the propositional partial-order
+planner and an extension to handle planning with variable bindings.
+
+<p><b><a href="simple-data-structures.lisp">simple-data-structures.lisp</a></b> and <b><a href="simple-planners.lisp">simple-planners.lisp</a>:</b>
+
+The first file contains basic data structure definitions for the
+planners: actions, plans, and so forth.  The second file contains code
+for consistent invocation of the planners, using a <tt>plan</tt>
+method, and code for planner-specific pre-processing of planning
+problems and domains.
+
+<p><b><a href="simple-pddl-processing.lisp">simple-pddl-processing.lisp</a>:</b>
+
+This file contains functions for handling PDDL.  PDDL parsing is very
+fragile; using domains and problems from other sources may require a
+bit of work to translate them into an appropriate form.
+
+<p><b><a href="simple-problems.lisp">simple-problems.lisp</a>:</b>
+
+This file contains a small number of problems and their associated
+domains, for testing the planners.
+
+<p><b><a href="simple-utilities.lisp">simple-utilities.lisp</a></b>,
+   <b><a href="standalone.lisp">standalone.lisp</a></b>, 
+   <b><a href="aima-compatibility.lisp">aima-compatibility.lisp</a></b>, 
+   <b><a href="paip-planners.lisp">paip-planners.lisp</a></b>,
+   <b><a href="paip-compatibility.lisp">paip-compatibility.lisp</a></b>,
+and <b><a href="paip-problems.lisp">paip-problems.lisp</a>:</b>
+
+These files contain general utility functions and macros used by the
+planners, as well as code specific to different code bases, to allow
+the planning systems to run in standalone form or to run on top of the
+PAIP or the AIMA code base.
+
+<p>
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript" language="javascript">
+var sc_project=2443068; 
+var sc_invisible=0; 
+var sc_partition=23; 
+var sc_security="91d61a83"; 
+</script>
+
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c24.statcounter.com/counter.php?sc_project=2443068&amp;java=0&amp;security=91d61a83&amp;invisible=0" alt="web statistics" border="0"></a> </noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</HTML>
