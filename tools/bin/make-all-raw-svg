@@ -3,5 +3,3 @@
 find src/glitch -type f -name \*.swf -exec \
    sh -c 'mkdir -p build/$(dirname {}) ; ~/Projects/violet-volts/tools/swf2svg {} > build/{}.svg' \;
 
-
-
