@@ -45,3 +45,6 @@ texinfo
 # Used in Lisp for maths; GSL-BLAS
 gsl-devel
 
+# Bullet2
+bullet2-devel
+
