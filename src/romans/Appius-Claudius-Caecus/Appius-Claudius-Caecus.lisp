@@ -138,6 +138,10 @@
 (define-condition tcp-unwinding-hook (condition)
   ((connection-pool :initarg :connection-pool :reader connection-pool)))
 
+(defun remove-closed-socket-from-pool (closed-stream-error)
+  (when-let (stream (stream-error-stream closed-stream-error))
+    (remhash stream *connection-pool*)))
+
 (defun start-server/tcp-listener (&optional (address *wildcard-host*)
                                     (port 2770))
   "Start listening at the given address and port. Defaults to
@@ -193,14 +197,21 @@ universal (all local addresses) and port 2770."
                      (make-instance 'socket-info :socket listener
                                     :encoding :tcp-listen))
 
-               (loop
-                  for *selected-socket*
-                  in (wait-for-input (hash-table-keys *connection-pool*)
-                                     :timeout 1/2 ;sec
-                                     :ready-only (funcall cycler))
-                  until *server-quit*
-                  do (server-listen)))
+               (handler-bind
+                   ((#+sbcl sb-int:closed-stream-error
+                      #-sbcl error
+                      #'remove-closed-socket-from-pool))
+                 (loop
+                    for *selected-socket*
+                    in (wait-for-input (hash-table-keys *connection-pool*)
+                                       :timeout 1/2 ;sec
+                                       :ready-only (funcall cycler))
+                    until *server-quit*
+                    do (server-listen))))
           (progn
+            (caesar:report :stopped-listening
+                           "Stopped listening" 
+                           :connection-pool *connection-pool*)
             (signal 'tcp-unwinding-hook :connection-pool *connection-pool*)
             (when (and *connection-pool*
                        (plusp (hash-table-count *connection-pool*)))
