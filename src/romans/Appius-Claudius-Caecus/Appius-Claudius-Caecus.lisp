@@ -97,6 +97,22 @@
          :test-function (lambda (c)
                           (declare (ignore c))
                           *selected-socket*))
+       (disconnect-politely-from-operator 
+        (lambda ()
+          (socket-polite-disconnect "Disconnected by operator action"))
+         :report-function (lambda (s)
+                            (princ "Politely disconnect socket (with generic operator message)" s))
+         :test-function (lambda (c)
+                          (declare (ignore c))
+                          *selected-socket*))
+       (disconnect-politely-with-note 
+        (lambda (note)
+          (socket-polite-disconnect note))
+         :report-function (lambda (s)
+                            (princ "Politely disconnect socket with a note" s))
+         :test-function (lambda (c)
+                          (declare (ignore c))
+                          *selected-socket*))
        (disconnected #'socket-disconnected
          :report-function (lambda (s)
                             (princ "Disconnect socket" s))
