@@ -2,6 +2,7 @@
 
 (defun start-server/socket-activation (socket)
   "working with SystemD for TCP streams (and WebSockets streams as well?)"
+  (declare (ignore socket))
   (todo))
 
 (defvar *server-quit* nil
@@ -186,8 +187,9 @@ universal (all local addresses) and port 2770."
 
 
 (defun start-server/websockets (address port)
-  "Note, we'll need COTS (Cross-Origin) headers. TODO all over the place.
-"(todo))
+  "Note, we'll need COTS (Cross-Origin) headers. TODO all over the place."
+  (declare (ignore address port))
+  (todo))
 
 (defun connect-to-mq ()
   (todo))
