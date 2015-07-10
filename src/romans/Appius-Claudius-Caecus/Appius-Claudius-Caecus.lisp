@@ -121,7 +121,8 @@
                           *selected-socket*)))
     (handler-bind
         ((end-of-file #'end-of-file-handler)
-         (usocket:bad-file-descriptor-error #'end-of-file-handler))
+         (usocket:bad-file-descriptor-error #'end-of-file-handler)
+         #+sbcl (sb-int:closed-stream-error #'end-of-file-handler))
       (serve *selected-socket*))))
 
 
