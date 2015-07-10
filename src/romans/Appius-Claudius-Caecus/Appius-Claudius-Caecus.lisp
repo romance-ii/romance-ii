@@ -178,12 +178,13 @@ universal (all local addresses) and port 2770."
                   do (server-listen)))
           (progn
             (signal 'tcp-unwinding-hook :connection-pool *connection-pool*)
-            (when *connection-pool*
+            (when (and *connection-pool*
+                       (plusp (hash-table-count *connection-pool*)))
               (caesar:report :left-over-connections
                              (format nil "Closing ~:D sockets left in pool"
                                      (hash-table-count *connection-pool*))
                              :connection-pool *connection-pool*)
-              (loop for socket in *connection-pool*
+              (loop for socket being each hash-key in *connection-pool*
                  do (ignore-errors
                       (socket-close socket))))))))))
 
