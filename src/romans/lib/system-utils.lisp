@@ -29,7 +29,7 @@
 
 
 (defun manual-license-path (system)
-  (merge-pathnames 
+  (merge-pathnames
    (make-pathname :directory '(:relative "doc" "legal" "licenses")
                   :name (string-downcase (string system))
                   :type "txt")
@@ -76,7 +76,7 @@
                            system asdf-dir))))
       when license collect (list system license)
       else collect (prog1 (list system nil)
-                     (warn "No LICENSE for ~:(~A~)~%(in ~A );~%~TPlease find the license and insert it as ~a" 
+                     (warn "No LICENSE for ~:(~A~)~%(in ~A );~%~TPlease find the license and insert it as ~a"
                            system asdf-dir (manual-license-path system))))
    (if longp
        (list (list :bullet2 (merge-pathnames
@@ -91,7 +91,7 @@
 
 (defun copyrights (&optional (longp nil))
   "Return a string with applicable copyright notices."
-  
+
   (strcat
    "Romance Game System
 Copyright © 1987-2015, Bruce-Robert Pocock;
@@ -113,7 +113,7 @@ This program is free software: you may use, modify, and/or distribute it
 Romance Ⅱ uses the library ~@:(~A~)~2%"
                     package)
             (format nil "~% • ~:(~A~): " package))
-        
+
       collect
         (typecase license
           (pathname (if longp
