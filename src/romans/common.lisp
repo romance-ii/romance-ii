@@ -23,6 +23,9 @@
    #:a/an
    #:a/an/some
    #:any
+   #:collect-file
+   #:collect-file-lines
+   #:collect-file-tabular
    #:copyrights
    #:counting
    #:c-style-identifier
@@ -41,10 +44,14 @@
    #:keywordify
    #:letter-case
    #:make-t-every-n-times
+   #:maybe-alist-row
+   #:maybe-alist-split
+   #:maybe-numeric
    #:modincf
    #:membership
    #:plural
    #:repeat
+   #:split-and-collect-file
    #:server-start-banner
    #:start-repl
    #:start-server/generic
@@ -55,6 +62,7 @@
    #:string-fixed
    #:strings-list
    #:strings-list-p
+   #:todo
    #:until
    #:while
    #:without-warnings
