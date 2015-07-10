@@ -14,8 +14,8 @@
    (fn :initarg :function :reader language-not-implemented-function))
   (:report (lambda (s c)
              (format s "There is not an implementation of ƒ ~A for language ~A ~@[~{~*(~A/~A)~}~]"
-                     (language-not-implemented-function c)
-                     (language-not-implemented c)
+                     (slot-value c 'fn)
+                     (slot-value c 'language)
                      (assoc (language-not-implemented c) +language-names+)))))
 
 (defmacro defun-lang (function (&rest lambda-list) &body bodies)
