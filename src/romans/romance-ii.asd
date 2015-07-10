@@ -95,8 +95,10 @@
                                 :depends-on ("package"))
                          (:file "running"
                                 :depends-on ("package" "exec-utils" "ssh-utils"))
-                         (:file "containers" 
-                                :depends-on ("package" "running"))))
+                         (:file "containers"
+                                :depends-on ("package" "running"))
+                         (:file "process-info"
+                                :depends-on ("package" "Gaius-Julius-Caesar"))))
    (:module "Gaius-Lutatius-Catulus"
             :depends-on ("common" "lib" "Gaius-Julius-Caesar")
             :components ((:file "package")
