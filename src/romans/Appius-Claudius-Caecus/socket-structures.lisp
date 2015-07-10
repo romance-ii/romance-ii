@@ -8,10 +8,10 @@
    (state :accessor socket-info-state :initform :pre-login)
    (encoding :type symbol :accessor socket-info-encoding
              :initform :cons :initarg :encoding)
-   (min-version :type number :accessor socket-info-min-version 
-                :initform 0 :initarg :min-version)
-   (max-version :type number :accessor socket-info-max-version 
-                :initform 0 :initarg :max-version)))
+   (min-version :type (or nil number) :accessor socket-info-min-version 
+                :initform nil :initarg :min-version)
+   (max-version :type (or nil number) :accessor socket-info-max-version 
+                :initform nil :initarg :max-version)))
 
 (defmethod initialize-instance :after ((socket-info socket-info) 
                                        &key &allow-other-keys)
