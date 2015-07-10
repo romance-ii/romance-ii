@@ -157,14 +157,15 @@ See COPYING.AGPL3 or run “romance --copyright” for details.
 ~@[~%~a~%~]~
 Please add an implementation to the file:
 ~a
-
+git
  … with an appropriate #+(feature) tag to identify it, or contact the Romans
    development team, and we may be able to help. Your *FEATURES* contains the
    following:
 ~s
 "
-         ',symbol ,message
+         ',symbol
          (lisp-implementation-type) (machine-type)
+         ,message
          (or *compile-file-truename* *load-truename*)
          *features*))
 
