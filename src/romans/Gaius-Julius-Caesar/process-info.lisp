@@ -49,7 +49,7 @@
                     (eighth row)
                     (ninth row)
                     (tenth row)
-                    (maybe-alist-split (nth 10 row))))) 
+                    (maybe-alist-split (nth 10 row)))))
           (collect-file-tabular (proc-file process "mountinfo") #\Space)))
 
 (defmethod process-status ((process process))
@@ -81,7 +81,7 @@
                                        (mapcar #'maybe-numeric (split-sequence #\/ row))))))
         (loop for line in skim
            for colon = (position #\: line)
-           for key = (make-keyword (cffi:translate-camelcase-name 
+           for key = (make-keyword (cffi:translate-camelcase-name
                                     (substitute #\- #\_ (subseq line 0 colon))))
            for rest = (trimmy (subseq line (1+ colon)))
            for fn = (getf translator key)
@@ -102,7 +102,7 @@
 (defmethod process-command-line ((process process))
   (collect-file-lines (proc-file process "cmdline") #\Null))
 
-(defconstant +path-separator-char+ 
+(defconstant +path-separator-char+
   (or #+(or windows win32 win64 msdos winnt pcdos reactos) #\;
       #\:)
   "The character used to separate PATH entries (#\: normally, #\; on
@@ -137,7 +137,7 @@ Windows); entries will be coërced to pathnames with probe-file (thus,
 correctly making directory objects as appropriate), unless they don't
 exist, in which case they remain name-strings."
   (mapcar (lambda (path-entry)
-            (or (probe-file path-entry) path-entry)) 
+            (or (probe-file path-entry) path-entry))
           (split-sequence +path-separator-char+ path-string)))
 
 (defun maybe-path-expand (assoc-pair)
@@ -147,7 +147,7 @@ into a list of PATH entries."
     (let* ((key-string (string key))
            (key-string-length (length key-string)))
       (if (and (>= key-string-length 4)
-               (string-equal (subseq key-string 
+               (string-equal (subseq key-string
                                      (- key-string-length 4)
                                      (- key-string-length 1))
                              "PATH"))
@@ -156,10 +156,10 @@ into a list of PATH entries."
 
 (defmethod process-environment ((process process))
   (alist-plist (mapcar #'maybe-path-expand
-                       (mapcar #'maybe-alist-row 
+                       (mapcar #'maybe-alist-row
                                (collect-file-lines (proc-file process "environ") #\Null)))))
 
-(defmethod process-command ((process process)) 
+(defmethod process-command ((process process))
   (collect-file (proc-file process "comm")))
 (defmethod process-oom-score ((process process))
   (collect-file (proc-file process "oom_score")))
