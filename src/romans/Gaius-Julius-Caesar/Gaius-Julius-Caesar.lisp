@@ -58,8 +58,6 @@
 (defvar *operator-handle-signals* nil
   "A list of threads to be signaled when a signal arrives.")
 
-
-
 (defgeneric handle-report (module machine message-keyword user-string 
                            &key &allow-other-keys))
 
@@ -67,9 +65,8 @@
   (subseq (cl-oauth:hmac-sha1 (string keyword) (package-name (symbol-package keyword)))
           0 15))
 
-(defmethod keyword-priority-map (keyword) 
-  (declare (ignore keyword))
-  3)
+(defgeneric keyword-priority-map (keyword)
+  (:method ((keyword t)) (declare (ignore keyword)) 3))
 
 (defun find-throwing-frame ()
   (let ((foundp nil))
@@ -178,6 +175,7 @@
                           &rest keys &key condition)
   "A Lisp program issued an ERROR."
   ;; (journal-condition module machine message user-string condition)
+  (declare (ignorable condition))
   (when *operator-handle-signals*
     (funcall *operator-handle-signals* module machine message user-string keys)))
 
@@ -291,10 +289,10 @@
                                    ,@(timeout-handler%hard soft-timeout hard-timeout))))))
                  (,@(if (realp hard-timeout) 
                         (list 'with-timeout (list hard-timeout))
-                        (list 'identity))
+                        (list 'values))
                     (,@(if (realp soft-timeout) 
                            (list 'with-timeout (list soft-timeout))
-                           (list 'identity))
+                           (list 'values))
                        ,@body))))))
         `(block ,timer-tag
            ,@body))))
@@ -328,12 +326,10 @@
                             (return-from
                              ,(format-symbol *package* "~A-MODULE" mod-keyword)
                               nil))
-                           :report-function 
-                           (lambda (s)
-                             (princ
-                              ,(format nil "Exit the ~:(~a~) module"
-                                       mod-keyword)
-                              s))))
+                           :report-function (lambda (stream)
+                                              (princ ,(format nil "Exit the ~:(~a~) module"
+                                                              mod-keyword) 
+                                                     stream))))
                       ,@body)
                  (caesar:report :end-oversight "Ending oversight by Caesar")))))))))
 
