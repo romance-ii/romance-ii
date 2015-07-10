@@ -71,7 +71,7 @@
 (define-condition socket-disconnect-polite-hook (condition) ())
 (define-condition socket-disconnect-hook (condition) ())
 
-(defun socket-polite-disconnect (&optional (note ""))
+(defun socket-polite-disconnect (&optional (note "Disconnection request from server"))
   ;; TODO QoS
   (when note (send-server-message note))
   (send-server-message :disconnecting)
