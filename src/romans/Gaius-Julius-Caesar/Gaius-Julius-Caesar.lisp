@@ -252,6 +252,7 @@
                :condition condition
                :elapsed-time elapsed
                :soft-timeout ,soft-timeout)
+       (signal 'hook-soft-timeout :elapsed-time elapsed)
        (continue)))))
 
 (defun timeout-handler%hard (soft-timeout hard-timeout)
