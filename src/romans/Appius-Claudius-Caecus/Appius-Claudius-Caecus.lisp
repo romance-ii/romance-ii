@@ -112,7 +112,12 @@
                             (princ "Politely disconnect socket with a note" s))
          :test-function (lambda (c)
                           (declare (ignore c))
-                          *selected-socket*))
+                          *selected-socket*)
+         :interactive-function
+         (lambda ()
+           (format *query-io* "~& Enter a message to send with the disconnection (may be visible to the end-user)
+⇒ ")
+           (list (read *query-io*))))
        (disconnected #'socket-disconnected
          :report-function (lambda (s)
                             (princ "Disconnect socket" s))
