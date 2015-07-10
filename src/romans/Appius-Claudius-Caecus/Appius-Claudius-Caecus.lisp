@@ -17,6 +17,11 @@
 (define-condition tcp-connection-accepted (condition)
   ((socket-info :initarg :socket-info :reader connection-socket-info)))
 
+(defvar *connection-pool* (make-hash-table)
+  "The set of all connected sockets. The keys to the hash table are the
+  socket objects; the values are socket-info objects providing
+  their details.")
+
 (defmethod serve ((socket stream-server-usocket))
   "Accept a new connection"
   (let* ((accepted (socket-accept socket))
@@ -52,8 +57,6 @@
   (format (socket-stream *selected-socket*)
           "~C~CSERVER MESSAGE CODE ~S~%~C"
           (code-char 3) (code-char 0) code (code-char 4)))
-
-(defvar *connection-pool* (make-hash-table))
 
 (defvar *selected-socket*)
 
