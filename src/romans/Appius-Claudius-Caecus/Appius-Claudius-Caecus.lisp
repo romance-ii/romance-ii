@@ -71,9 +71,14 @@
 (define-condition socket-disconnect-polite-hook (condition) ())
 (define-condition socket-disconnect-hook (condition) ())
 
+(defun socket-to-client-p (&optional (socket *selected-socket*))
+  (and (typep socket 'usocket:stream-usocket)))
+
 (defun socket-polite-disconnect (&optional (note "Disconnection request from server"))
   ;; TODO QoS
-  (when note (send-server-message note))
+  (when (and note
+             (socket-to-client-p)) 
+    (send-server-message note))
   (send-server-message :disconnecting)
   (signal 'socket-disconnect-polite-hook)
   (caesar::report :polite-disconnect (strcat "Note: " note)
