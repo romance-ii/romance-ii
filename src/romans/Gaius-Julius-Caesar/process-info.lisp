@@ -103,9 +103,63 @@
   (split-and-collect-file (proc-file process "cgroup") #\:))
 (defmethod process-command-line ((process process))
   (collect-file-lines (proc-file process "cmdline") #\Null))
+
+(defconstant +path-separator-char+ 
+  (or #+(or windows win32 win64 msdos winnt pcdos reactos) #\;
+      #\:)
+  "The character used to separate PATH entries (#\: normally, #\; on
+  Windows)")
+
+(define-constant +fat8.3-forbidden-file-chars+
+    '(#\" #\* #\+ #\, #\/ #\; #\< #\= #\> #\? #\[ #\] #\|)
+  :test 'equal)
+
+(define-constant +vfat-forbidden-file-chars+
+    '(#\" #\* #\/ #\< #\> #\? #\|)
+  :test 'equal)
+
+(defun valid-file-name-p (file-name-string)
+  (declare #+sbcl (sb-ext:muffle-conditions sb-ext:code-deletion-note))
+  (if (or #+ (or windows win32 win64 msdos winnt pcdos reactos) t
+          nil)
+      (and
+       (and (or (not (member #\: file-name-string))
+                (and (> (length file-name-string) 2)
+                     (or (char<= #\A (char 0 file-name-string) #\Z)
+                         (char<= #\a (char 0 file-name-string) #\z))
+                     (every (curry (complement #'char=) #\:) file-name-string ))))
+       (every (lambda (char)
+                (not (member char +vfat-forbidden-file-chars+ :test #'char=)))
+              file-name-string))
+      (every (curry (complement #'char=) #\Null) file-name-string)))
+
+(defun path-expand (path-string)
+  "Expand a PATH-like environment string, splitting on #\: (#\; on
+Windows); entries will be coërced to pathnames with probe-file (thus,
+correctly making directory objects as appropriate), unless they don't
+exist, in which case they remain name-strings."
+  (mapcar (lambda (path-entry)
+            (or (probe-file path-entry) path-entry)) 
+          (split-sequence +path-separator-char+ path-string)))
+
+(defun maybe-path-expand (assoc-pair)
+  "If the associative pair's key ends in “PATH,” then split the value
+into a list of PATH entries."
+  (destructuring-bind (key . value) assoc-pair
+    (let* ((key-string (string key))
+           (key-string-length (length key-string)))
+      (if (and (>= key-string-length 4)
+               (string-equal (subseq key-string 
+                                     (- key-string-length 4)
+                                     (- key-string-length 1))
+                             "PATH"))
+          (cons key (path-expand value))
+          assoc-pair))))
+
 (defmethod process-environment ((process process))
-  (mapcar #'maybe-alist-row 
-          (collect-file-lines (proc-file process "environ") #\Null)))
+  (alist-plist (mapcar #'maybe-path-expand
+                       (mapcar #'maybe-alist-row 
+                               (collect-file-lines (proc-file process "environ") #\Null)))))
 
 (defmethod process-command ((process process)) 
   (collect-file (proc-file process "comm")))
