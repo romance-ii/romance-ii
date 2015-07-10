@@ -221,7 +221,9 @@ universal (all local addresses) and port 2770."
                              :connection-pool *connection-pool*)
               (loop for socket being each hash-key in *connection-pool*
                  do (ignore-errors
-                      (socket-close socket))))))))))
+                      (socket-close socket))
+                 do (ignore-errors
+                      (remhash socket *connection-pool*))))))))))
 
 
 
