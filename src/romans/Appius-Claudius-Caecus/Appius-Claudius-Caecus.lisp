@@ -124,11 +124,11 @@
          :test-function (lambda (c)
                           (declare (ignore c))
                           *selected-socket*)))
-    (handler-bind
-        ((end-of-file #'end-of-file-handler)
-         (usocket:bad-file-descriptor-error #'end-of-file-handler)
-         #+sbcl (sb-int:closed-stream-error #'end-of-file-handler))
-      (serve *selected-socket*))))
+    (handler-case
+        (serve *selected-socket*)
+      (end-of-file (c) (end-of-file-handler c))
+      (usocket:bad-file-descriptor-error (c) (end-of-file-handler c))
+      #+sbcl (sb-int:closed-stream-error (c) (end-of-file-handler c)))))
 
 
 (define-condition tcp-pre-listen-hook (condition)
@@ -197,17 +197,17 @@ universal (all local addresses) and port 2770."
                      (make-instance 'socket-info :socket listener
                                     :encoding :tcp-listen))
 
-               (handler-bind
-                   ((#+sbcl sb-int:closed-stream-error
-                      #-sbcl error
-                      #'remove-closed-socket-from-pool))
-                 (loop
-                    for *selected-socket*
-                    in (wait-for-input (hash-table-keys *connection-pool*)
-                                       :timeout 1/2 ;sec
-                                       :ready-only (funcall cycler))
-                    until *server-quit*
-                    do (server-listen))))
+               (handler-case
+                   (loop                          
+                      until *server-quit*
+                      do (loop
+                            for *selected-socket*
+                            in (wait-for-input (hash-table-keys *connection-pool*)
+                                               :timeout 1/2 ;sec
+                                               :ready-only (funcall cycler))
+                            do (server-listen)))
+                 #+sbcl (sb-int:closed-stream-error (c)
+                          (remove-closed-socket-from-pool c))))
           (progn
             (caesar:report :stopped-listening
                            "Stopped listening" 
