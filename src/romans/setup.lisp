@@ -74,7 +74,7 @@ architecture. While support for other architectures is surely
 possible, and patches are encouraged, neither the curator nor primary
 contributors are currently using them.
 
-   * Intel's non-Itanium 64-bit systems are AMD-alikes; e.g. the Intel
+   * Intel's (non-Itanium) 64-bit systems are AMD-alikes; e.g. the Intel
      Core series.
 
 If your architecture *is* an X86-64 system, and your compiler simply
