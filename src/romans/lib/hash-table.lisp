@@ -1,10 +1,10 @@
 (in-package :romans)
 
-(defmacro |hash| ((&key (size nil size-?) &rest params) plist-or-alist)
+(defmacro |hash| ((&rest params) plist-or-alist)
   (let ((alistp (and (consp (car plist-or-alist))
-                     (atomp (cdr (car plist-or-alist))))))
+                     (atom (cdr (car plist-or-alist))))))
     `(let ((h (make-hash-table 
-               ,@(if size-?
+               ,@(if (getf params :size)
                      params
                      (cons params (list :size (if alistp 
                                                   (length plist-or-alist)
