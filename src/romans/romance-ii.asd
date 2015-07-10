@@ -45,8 +45,6 @@
                             (:file "control-utils")
                             (:file "json-utils")
                             (:file "repl-glue")
-                            ;; (:file "start-repl"
-                            ;;        :depends-on ((:module "Gaius-Julius-Caesar")))
                             (:file "hash-table")
                             (:file "string-utils")
                             (:file "i18n+l10n"
