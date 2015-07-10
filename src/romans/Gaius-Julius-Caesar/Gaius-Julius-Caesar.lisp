@@ -364,7 +364,7 @@ Please provide an unique name or address to join one cluster"
                                              "Indira" "Prime" "Rama" "Whitney")))))
   (when (find-cluster :cluster-name cluster-name)
     (error "Cluster named “~a” already exists, but I was asked to start it." cluster-name))
-  (appius:start-server/tcp-listener))
+  (funcall (intern "START-SERVER/TCP-LISTENER" (find-package "APPIUS"))))
 
 (defun join-cluster (&optional (cluster *cluster*))
   (format *trace-output* "~&Contacting cluster ~a to join them…" cluster)
