@@ -44,7 +44,9 @@
 
 (define-condition protocol-unhandled-error (error)
   ((socket-info :initarg :socket-info :reader error-socket-info))
-  (:report "no handler for this socket state: ~A"))
+  (:report (lambda (c s)
+             (format s "no handler for this socket state: ~A" 
+                     (socket-info-state (error-socket-info c))))))
 
 (defmethod serve-socket ((stream t) (encoding t) (state t)
                          (socket t) (info t))
