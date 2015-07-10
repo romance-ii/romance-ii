@@ -20,9 +20,26 @@ that, right?)")
            #:find-thread
            #:machine-meminfo
            #:machine-vmstat
+           #:process-command
+           #:process-command-line
+           #:process-control-groups
+           #:process-core-dump-filter
+           #:process-environment
+           #:process-file
            #:process-id
+           #:process-io-stats
+           #:process-login-uid
+           #:process-mount-info
+           #:process-mount-points
            #:process-name
+           #:process-oom-adjust
+           #:process-oom-score
+           #:process-oom-score-adjust
+           #:process-sched
+           #:process-security-attributes
            #:process-state-gerund
+           #:process-status
+           #:process-wait-channel
            #:read-from-thread
            #:report
            #:run-external
