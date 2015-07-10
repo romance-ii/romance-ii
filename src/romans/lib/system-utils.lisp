@@ -42,7 +42,8 @@
                              :key (compose #'string-upcase #'string))
       for asdf-dir = (make-pathname
                       :directory (pathname-directory
-                                  (asdf:system-source-directory system))
+                                  (or (asdf:system-source-directory system)
+                                      #p"."))
                       :name :wild :type :wild)
       for license =
         (or
