@@ -45,7 +45,7 @@
 (define-condition protocol-unhandled-error (error)
   ((socket-info :initarg :socket-info :reader error-socket-info))
   (:report (lambda (c s)
-             (format s "no handler for this socket state: ~A" 
+             (format s "no handler for this socket state: ~A"
                      (socket-info-state (error-socket-info c))))))
 
 (defmethod serve-socket ((stream t) (encoding t) (state t)
@@ -97,7 +97,7 @@
          :test-function (lambda (c)
                           (declare (ignore c))
                           *selected-socket*))
-       (disconnect-politely-from-operator 
+       (disconnect-politely-from-operator
         (lambda ()
           (socket-polite-disconnect "Disconnected by operator action"))
          :report-function (lambda (s)
@@ -105,7 +105,7 @@
          :test-function (lambda (c)
                           (declare (ignore c))
                           *selected-socket*))
-       (disconnect-politely-with-note 
+       (disconnect-politely-with-note
         (lambda (note)
           (socket-polite-disconnect note))
          :report-function (lambda (s)
@@ -198,7 +198,7 @@ universal (all local addresses) and port 2770."
                                     :encoding :tcp-listen))
 
                (handler-case
-                   (loop                          
+                   (loop
                       until *server-quit*
                       do (loop
                             for *selected-socket*
@@ -210,7 +210,7 @@ universal (all local addresses) and port 2770."
                           (remove-closed-socket-from-pool c))))
           (progn
             (caesar:report :stopped-listening
-                           "Stopped listening" 
+                           "Stopped listening"
                            :connection-pool *connection-pool*)
             (signal 'tcp-unwinding-hook :connection-pool *connection-pool*)
             (when (and *connection-pool*
@@ -303,7 +303,7 @@ universal (all local addresses) and port 2770."
 (defun connection-pool-moderation ()
   "when one guy's getting too many connections and another one is light,
 alter the usual round-robin selection to balance the load"
-(todo))
+  (todo))
 
 (defun migration-things-todo ()
   "when bringing up/down Appius nodes, migrate users around to balance
