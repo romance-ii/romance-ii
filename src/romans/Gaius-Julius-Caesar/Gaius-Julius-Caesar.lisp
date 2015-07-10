@@ -8,15 +8,37 @@
   (todo))
 
 
-
 
 
 (defun machine-vmstat ()
   (split-and-collect-file "/proc/vmstat"))
 
+(defun multiply-bytes (object)
+  (check-type object string)
+  (assert (char= #\B (last-elt object)))
+  (let ((base (parse-integer object :junk-allowed t))
+        (multiplier (char object
+                          (1+ (position #\Space object :from-end t :test #'char=)))))
+    (* base
+       (ecase multiplier
+         (#\k 1024)
+         (#\M (* 1024 1024))
+         (#\G (* 1024 1024 1024))
+         (#\T (* 1024 1024 1024 1024))
+         (#\P (* 1024 1024 1024 1024 1024))
+         (#\E (* 1024 1024 1024 1024 1024 1024))
+         (#\Y (* 1024 1024 1024 1024 1024 1024 1024))))))
+
+(defun multiply-bytes-maybe (object)
+  (if (and (stringp object)
+           (char= (last-elt object) #\B))
+      (multiply-bytes object)
+      object))
+
 (defun machine-meminfo ()
-  (split-and-collect-file "/proc/meminfo" #\:
-                          #'cffi:translate-camelcase-name))
+  (mapcar #'multiply-bytes-maybe
+          (split-and-collect-file "/proc/meminfo" #\:
+                                  #'cffi:translate-camelcase-name)))
 
 (defun all-process-ids ()
   (loop for entry in (directory "/proc/*")
