@@ -63,7 +63,10 @@
                          (:file "socket-structures"
                                 :depends-on ("package"))
                          (:file "Appius-Claudius-Caecus"
-                                :depends-on ("package" "socket-structures"))))
+                                :depends-on ("package" "socket-structures"))
+                         (:file "pre-login"
+                                :depends-on ("package" "socket-structures"
+                                                       "Appius-Claudius-Caecus"))))
    (:module "Clodia-Metelli-Pulcher"
             :depends-on ("common" "lib" "Gaius-Julius-Caesar")
             :components ((:file "package")
