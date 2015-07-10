@@ -80,14 +80,17 @@
                   :socket *selected-socket*)
   (invoke-restart 'disconnected note))
 
-(defun socket-disconnected ()
+(defun socket-disconnected (&optional (socket *selected-socket*))
   ;; TODO QoS
   (signal 'socket-disconnect-hook)
   (caesar::report :disconnected "Socket disconnecting"
-                  :socket *selected-socket*)
-  (socket-close *selected-socket*)
-  ;;(remhash *selected-socket* *socket-accumulators*)
-  (remhash *selected-socket* *connection-pool*))
+                  :socket socket)
+  (handler-case
+      (socket-close socket)
+    (error (err)
+      (warn err)))
+  ;;(remhash socket *socket-accumulators*)
+  (remhash socket *connection-pool*))
 
 (defun server-listen ()
   (restart-bind
@@ -220,10 +223,7 @@ universal (all local addresses) and port 2770."
                                      (hash-table-count *connection-pool*))
                              :connection-pool *connection-pool*)
               (loop for socket being each hash-key in *connection-pool*
-                 do (ignore-errors
-                      (socket-close socket))
-                 do (ignore-errors
-                      (remhash socket *connection-pool*))))))))))
+                 do (socket-disconnected socket)))))))))
 
 
 
