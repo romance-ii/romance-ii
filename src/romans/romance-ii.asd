@@ -45,11 +45,15 @@
                             (:file "control-utils")
                             (:file "json-utils")
                             (:file "repl-glue")
+                            ;; (:file "start-repl"
+                            ;;        :depends-on ((:module "Gaius-Julius-Caesar")))
                             (:file "hash-table")
                             (:file "string-utils")
                             (:file "i18n+l10n"
                                    :depends-on ("string-utils"))
                             (:file "system-utils")))
+   (:file "lib/start-repl"
+          :depends-on ("Gaius-Julius-Caesar"))
    (:module "Aelius-Galenus"
             :depends-on ("common" "lib" "Gaius-Julius-Caesar")
             :components ((:file "package")
