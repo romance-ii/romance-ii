@@ -1,7 +1,5 @@
 (in-package :caesar)
 
-(import 'romance::split-and-collect-file)
-
 (defclass process ()
   ((pid :type fixnum :initarg :pid :initform (sb-posix::getpid) :reader process-id)))
 
