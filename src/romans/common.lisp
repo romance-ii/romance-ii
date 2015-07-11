@@ -8,11 +8,20 @@
 (require 'trivial-gray-streams)
 
 (defpackage :romance
-  (:use :cl :alexandria 
+  (:use :cl :alexandria
         :bordeaux-threads :local-time :split-sequence :cl-fad :parse-number
         :trivial-gray-streams)
   (:nicknames :romans :romance-ii :romance2)
   (:shadowing-import-from :cl-fad :copy-file :copy-stream) ; conflicts with Alexandria.
+  (:shadowing-import-from #+sbcl :sb-int
+                          #+ccl :ccl
+                          #-(or sbcl ccl)
+                          (warn-impl simple-file-error
+                                     "The SIMPLE-FILE-ERROR condition type must be imported into
+the ROMANCE package. It is probably in your compiler's INT or EXT
+package (or similar). Perhaps it's even named the same? Try (APROPOS
+\"SIMPLE-FILE-ERROR\").")
+                          :simple-file-error)
   (:documentation
    "Common code used by other modules in Romance Ⅱ.")
   (:export

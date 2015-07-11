@@ -1,16 +1,5 @@
 (in-package :romance)
 
-#+sbcl
-(import 'sb-int:simple-file-error)
-#+ccl
-(import 'sb-int:simple-file-error)
-#-(or sbcl ccl)
-(warn-impl simple-file-error 
-           "The SIMPLE-FILE-ERROR condition type must be imported into
-the ROMANCE package. It is probably in your compiler's INT or EXT
-package (or similar). Perhaps it's even named the same? Try (APROPOS
-\"SIMPLE-FILE-ERROR\").")
-
 (defun strcat (&rest strings)
   (reduce (curry #'concatenate 'string)
           (mapcar (lambda (element)
