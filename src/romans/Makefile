@@ -27,11 +27,11 @@ BINS=		$(BINDIR)/romance \
 
 #		$(BUILDDIR)/lib/libbulletphysics.so ??
 
-SOLIBS=	$(LIBDIR)/libcl-bullet2l.so	\
-		$(LIBDIR)/libLinearMath.so	\
-		$(LIBDIR)/libBulletCollision.so	\
-		$(LIBDIR)/libBulletDynamics.so	\
-		$(LIBDIR)/libBulletSoftBody.so
+SOLIBS=	# $(LIBDIR)/libcl-bullet2l.so	\
+# 	$(LIBDIR)/libLinearMath.so	\
+# 	$(LIBDIR)/libBulletCollision.so	\
+# 	$(LIBDIR)/libBulletDynamics.so	\
+# 	$(LIBDIR)/libBulletSoftBody.so
 
 all: $(SOLIBS) $(BINS)
 
