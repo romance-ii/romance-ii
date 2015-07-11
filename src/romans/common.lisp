@@ -473,10 +473,10 @@ package (or similar). Perhaps it's even named the same? Try (APROPOS
 
 (in-package :romance)
 
-(defun start-server/generic (&optional argv)
+(defun start-server (&optional argv)
   (let ((module (make-keyword (string-upcase (car argv)))))
     (case module
-      (:caesar 
+      (:caesar
        (funcall (intern "START-SERVER" (find-package module))))
       (:copyrights (format t (copyrights t)))
       (:repl (start-repl))
