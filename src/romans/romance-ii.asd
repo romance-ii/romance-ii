@@ -16,6 +16,7 @@
                #+romance-with-physics  :cl-bullet2l
                :cl-fad
                :cl-oauth
+               :cl-readline
                :cl-unicode
                :cffi
                :gsll
