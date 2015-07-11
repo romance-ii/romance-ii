@@ -58,7 +58,7 @@
 (defvar *operator-handle-signals* nil
   "A list of threads to be signaled when a signal arrives.")
 
-(defgeneric handle-report (module machine message-keyword user-string 
+(defgeneric handle-report (module machine message-keyword user-string
                            &key &allow-other-keys))
 
 (defun keyword-journal-message-id (keyword)
@@ -71,17 +71,17 @@
 (defun find-throwing-frame ()
   (let ((foundp nil))
     (ignore-errors
-      (trivial-backtrace:map-backtrace 
+      (trivial-backtrace:map-backtrace
        (lambda (frame)
          (let ((function (trivial-backtrace::frame-func frame)))
-           (cond 
+           (cond
              ((member function '(signal throw error warn)) (setf foundp t))
              (foundp (return-from find-throwing-frame frame)))))))))
 
 (defun frame-funcall (frame)
   (format nil "(~S~{ (~S←~S ~})"
           (trivial-backtrace::frame-func frame)
-          (or 
+          (or
            (map 'list
                 (lambda (var)
                   (list (trivial-backtrace::var-name var)
@@ -91,7 +91,7 @@
 
 ;; (defun journal-condition (module machine message user-string &optional condition throwing-frame)
 ;;   (let* ((throwing-frame throwing-frame)
-;;          (debug-source (sb-di:code-location-debug-source 
+;;          (debug-source (sb-di:code-location-debug-source
 ;;                         (sb-di:frame-code-location throwing-frame))))
 ;;     (systemd:journal-send
 ;;      (cons (cons (list :message user-string
@@ -107,13 +107,13 @@
 ;;            (when-let ((message-id (keyword-journal-message-id message)))
 ;;              :message-id message-id)))))
 
-(defmethod handle-report :before (module machine message-keyword user-string 
+(defmethod handle-report :before (module machine message-keyword user-string
                                   &rest keys)
-  (apply #'systemd:journal-send 
+  (apply #'systemd:journal-send
          (let ((args (list :message user-string
                            :message-id (keyword-journal-message-id message-keyword)
                            :priority (keyword-priority-map message-keyword)
-                           :syslog-identifier (concatenate 'string "Romance/" 
+                           :syslog-identifier (concatenate 'string "Romance/"
                                                            (string module) "@"
                                                            (string machine)))))
            (when-let ((code-file (getf keys :source-file)))
@@ -125,9 +125,9 @@
            (when-let ((errno (getf keys :libc-errno)))
              (appendf args (list :errno errno)))
            args))
-  (format *trace-output* "~&~%〈CIC〉 “~a”~{~%〈CIC〉 ⋅ ~:(~a:~) ~a~}" 
+  (format *trace-output* "~&~%〈CIC〉 “~a”~{~%〈CIC〉 ⋅ ~:(~a:~) ~a~}"
           user-string
-          (append (list :module module :machine machine 
+          (append (list :module module :machine machine
                         :message message-keyword) keys))
   (finish-output *trace-output*))
 
@@ -142,20 +142,20 @@
                           &key activity capacity vmstats)
   (collect-qos module machine activity capacity vmstats))
 
-(defmethod handle-report ((module t) (machine t) (message (eql :begin-oversight)) 
+(defmethod handle-report ((module t) (machine t) (message (eql :begin-oversight))
                           (user-string t)
                           &key)
   (format *standard-output* "~&[CIC] Beginning module ~:(~a~) on machine ~:(~a~).~[  “~a”~]"
           module machine user-string)
   (finish-output *standard-output*))
-(defmethod handle-report ((module t) (machine t) (message (eql :end-oversight)) 
+(defmethod handle-report ((module t) (machine t) (message (eql :end-oversight))
                           (user-string t)
                           &key )
   (format *standard-output* "~&[CIC] Ending module ~:(~a~) on machine ~:(~a~).~[  “~a”~]"
           module machine user-string)
   (finish-output *standard-output*))
 
-(defmethod handle-report ((module t) (machine t) (message (eql :machine-down)) 
+(defmethod handle-report ((module t) (machine t) (message (eql :machine-down))
                           (user-string t)
                           &key time-to-live)
   "The machine MACHINE is going down. Schedule replacement for any tasks
@@ -170,7 +170,7 @@
   (when *operator-handle-signals*
     (funcall *operator-handle-signals* module machine message user-string keys)))
 
-(defmethod handle-report ((module t) (machine t) (message (eql :lisp-error)) 
+(defmethod handle-report ((module t) (machine t) (message (eql :lisp-error))
                           (user-string t)
                           &rest keys &key condition)
   "A Lisp program issued an ERROR."
@@ -206,18 +206,19 @@
 
 
 
-(defun oversight-handle (case)
-  `(,case
-       (lambda (condition)
-         (caesar:report ,(make-keyword (concatenate 'string "LISP-" (string case)))
-                        (format nil
-                                ,(concatenate 'string "Application signaled "
-                                              (a/an (string case)) 
-                                              " condition:~%~S~% “~:*~A”")
-                                condition)
-                        :condition condition
-                        :restarts (compute-restarts)
-                        :condition-restarts (compute-restarts condition)))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun oversight-handle (case)
+    `(,case
+         (lambda (condition)
+           (caesar:report ,(make-keyword (concatenate 'string "LISP-" (string case)))
+                          (format nil
+                                  ,(concatenate 'string "Application signaled "
+                                                (a/an (string case))
+                                                " condition:~%~S~% “~:*~A”")
+                                  condition)
+                          :condition condition
+                          :restarts (compute-restarts)
+                          :condition-restarts (compute-restarts condition))))))
 
 (define-condition hook-timeout (warning)
   ((elapsed-time :initarg :elapsed-time :reader timeout-elapsed-time)))
@@ -257,7 +258,7 @@
 
 (defun timeout-handler%hard (soft-timeout hard-timeout)
   (declare (ignore soft-timeout))
-  `((t 
+  `((t
      (report :hard-timeout "Function exceeded hard timeout and is being aborted"
              :condition condition
              :elapsed-time elapsed
@@ -288,10 +289,10 @@
                                    ,@(timeout-handler%early soft-timeout hard-timeout)
                                    ,@(timeout-handler%soft soft-timeout hard-timeout)
                                    ,@(timeout-handler%hard soft-timeout hard-timeout))))))
-                 (,@(if (realp hard-timeout) 
+                 (,@(if (realp hard-timeout)
                         (list 'with-timeout (list hard-timeout))
                         (list 'values))
-                    (,@(if (realp soft-timeout) 
+                    (,@(if (realp soft-timeout)
                            (list 'with-timeout (list soft-timeout))
                            (list 'values))
                        ,@body))))))
@@ -302,7 +303,7 @@
   `(handler-bind
        ((report
          (lambda (r)
-           (apply #'handle-report 
+           (apply #'handle-report
                   (or (report-module r) *module*)
                   (or (report-machine r) (machine-instance))
                   (report-message r)
@@ -320,16 +321,16 @@
                  (,(oversight-handle 'error)
                   ,(oversight-handle 'warning))
                (caesar:report :begin-oversight "Beginning oversight by Caesar")
-               (unwind-protect 
+               (unwind-protect
                     (restart-bind
-                        ((exit-module 
+                        ((exit-module
                           (lambda ()
                             (return-from
                              ,(format-symbol *package* "~A-MODULE" mod-keyword)
                               nil))
                            :report-function (lambda (stream)
                                               (princ ,(format nil "Exit the ~:(~a~) module"
-                                                              mod-keyword) 
+                                                              mod-keyword)
                                                      stream))))
                       ,@body)
                  (caesar:report :end-oversight "Ending oversight by Caesar")))))))))
@@ -360,7 +361,7 @@ Please provide an unique name or address to join one cluster"
 (defun start-cluster (&key (cluster-name (random-elt
                                           (remove-if
                                            (curry #'find-cluster :cluster-name)
-                                           '("Beefy" "Composite" "Ganesh" "Goethe" 
+                                           '("Beefy" "Composite" "Ganesh" "Goethe"
                                              "Indira" "Prime" "Rama" "Whitney")))))
   (when (find-cluster :cluster-name cluster-name)
     (error "Cluster named “~a” already exists, but I was asked to start it." cluster-name))
@@ -379,8 +380,8 @@ Please provide an unique name or address to join one cluster"
 
 (defun manage-cluster (&optional (cluster *cluster*))
   (format *trace-output* "~&Now managing cluster ~a." cluster)
-  (restart-case 
-      (loop 
+  (restart-case
+      (loop
          (ensure-servers-live)
          (poll-qos-reports))
     (stop-caesar-managing ()
