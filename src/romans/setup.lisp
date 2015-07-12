@@ -18,11 +18,19 @@
 Setting up environment to compile Romance Ⅱ… If you run into problems,
 check the manual in the “doc” folder.")
 
+
+;;; Check  that  we're being  LOADed.  COMPILEing  this won't  have  the
+;;; expected effects.
+
 (unless *load-pathname*
   (error "This file must be `load'ed, not `compile'd. (LOAD \"setup\")"))
 
 (eval-when (:compile-toplevel)
   (error "This file must be `load'ed, not `compile'd. (LOAD \"setup\")"))
+
+
+;;; Check that the  environment is plausibly similar  enough that things
+;;; will actually work.
 
 #-sbcl
 (warn "Your compiler is not SBCL. Some things may be weird.
@@ -49,18 +57,27 @@ If you're on a Common Lisp system that doesn't mention COMMON-LISP in
 its *FEATURES*, please advise us with a copy of CL:*FEATURES*:~%~S"
       *features*)
 
+
 #-linux
 (warn "*FEATURES* omits LINUX.
 
-Romance Ⅱ is being developed on Linux®. While support for some other
-operating systems is certainly possible, keep in mind, that the more
-your operating system differs from Linux, the less likely things are
-to Just Work. Patches for other OS are accepted, as long as they don't
+Romance Ⅱ  is being developed  on Linux®.  While support for  some other
+operating systems  is certainly  possible, keep in  mind, that  the more
+your operating system differs from Linux,  the less likely things are to
+Just Work.  Patches for  other OS  are accepted, as  long as  they don't
 break Linux support.
 
 If your OS *is* a Linux, and your compiler simply does not specify
 the :LINUX keyword in *FEATURES*, please advise us with this copy of
 your CL:*FEATURES*: ~%~S" *features*)
+
+;;; CLisp doesn't set *FEATURES*, but  it does set (MACHINE-TYPE), so we
+;;; can set it, here, for consistency.
+
+#-x86-64
+(when (or (string-equal "x86-64" (machine-type))
+          (string-equal "x86_64" (machine-type)))
+  (pushnew :x86-64 *features*))
 
 #-x86-64
 (warn "*FEATURES* omits X64-64.
@@ -102,27 +119,36 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 
   (setf sb-ext:*muffled-warnings* 'uninteresting-redefinition))
 
-(defparameter *path/etc* (make-pathname :directory "/etc/"))
-(defparameter *path/share* (make-pathname :directory "/usr/share/"))
-(defparameter *path/r2share*
+
+;;; Set the paths for a normal, production installation. These are DEFVARs now, so you can override them.
+
+(defvar *path/etc* (make-pathname :directory "/etc/"))
+(defvar *path/share* (make-pathname :directory "/usr/share/"))
+(defvar *path/r2share*
   (make-pathname :directory "/usr/share/romance-ii"))
-(defparameter *path/bin* (make-pathname :directory "/usr/bin/"))
-(defparameter *path/var* (make-pathname :directory "/var/lib/romance-ii/"))
-(defparameter *path/tmp* (make-pathname :directory "/tmp/"))
-(defparameter *path/var/tmp* (make-pathname :directory "/var/tmp/"))
-(defparameter *path/r2src* 
+(defvar *path/bin* (make-pathname :directory "/usr/bin/"))
+(defvar *path/var* (make-pathname :directory "/var/lib/romance-ii/"))
+(defvar *path/tmp* (make-pathname :directory "/tmp/"))
+(defvar *path/var/tmp* (make-pathname :directory "/var/tmp/"))
+(defvar *path/r2src* 
   (truename 
    (merge-pathnames "../" 
                     (make-pathname :directory (pathname-directory *load-pathname*)))))
-(defparameter *path/r2project*
+(defvar *path/r2project*
   (truename (merge-pathnames "../../" 
                              (make-pathname :directory (pathname-directory *load-pathname*)))))
 
-(dolist (path '("romans/"
-                "romans/lib/smedict-old/"
-                "romans/lib/sb-texinfo/"))
+
+;;; Set up the ASDF Registry
+
+(dolist (path '(#p"romans/"
+                #p"romans/lib/smedict-old/"
+                #p"romans/lib/sb-texinfo/"))
   (pushnew (merge-pathnames path *path/r2src*)
            asdf:*central-registry* :test 'equal))
+
+;;; Get the OS  name. Note, we consider “Android”  different enough from
+;;; GNU/Linux to warrant its own heading.
 
 (defvar *os-name* (or #+android "Android"
                       #+ios "iOS"
@@ -132,6 +158,11 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
                       #+unix "UNIX"
                       #+posix "POSIX"
                       "unknown"))
+
+
+;;; Bind some  symbols that  will be useful  later. The  crazy interning
+;;; mess has been necessary for various reasons.
+
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (unless (boundp (intern "+BUILD-OS+" :cl-user))
@@ -149,6 +180,9 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
                               #-(or X86-64) "/usr/lib/"
                               )))
 
+
+;;; Preload the basics
+
 (format *trace-output* "~&Quicklisp-quickloading some core dependencies~2%")
 
 (mapcar 
@@ -162,6 +196,8 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 (pushnew *path/lib*
          cffi:*foreign-library-directories*
          :test 'equal)
+
+
 
 (format *trace-output* "~&
   ★ Romance Ⅱ set-up script completed. ★
@@ -181,6 +217,8 @@ LIBDIR: ~S
 (unless (ignore-errors (ql:help) t)
   (warn "Quicklisp doesn't appear to be loaded?"))
 
-(declaim (optimize (speed 0) (safety 2) (debug 3) (space 0)))
+
+
+(declaim (optimize (speed 0) (safety 3) (debug 3) (space 0)))
 
 :romance-ii
