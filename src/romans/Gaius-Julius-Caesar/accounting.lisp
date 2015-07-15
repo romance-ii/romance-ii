@@ -1,6 +1,6 @@
 (in-package :caesar)
 
-(cffi:defcstruct utmp
+(cffi:defcstruct (utmp :conc-name utmp-)
   (type$ :int16)
   (pid :int32)
   (line$ :uint8 :count 32)
@@ -75,7 +75,7 @@ terminating #\\Null (zero) terminator, when it is present")
 
 ;; TODO: get a unit test in here for that mess.
 
-(cffi:defcstruct acct
+(cffi:defcstruct (acct :conc-name acct-)
   (flags :uint8)
   (version :uint8)                     ; must be =3
   (tty :uint16)
@@ -97,7 +97,16 @@ terminating #\\Null (zero) terminator, when it is present")
   (command$ :uint8 :count 17))
 
 (defun acct-command (acct)
-  (strz-or-string (command$ acct)))
+  (strz-or-string (acct-command$ acct)))
+
+(defun read-fixed-byte-count (byte-count stream)
+  (handler-case 
+      (loop for i from 0 upto byte-count
+         for byte = (read-byte stream t)
+         collect byte)
+    (end-of-file (c) 
+      (declare (ignore c)) 
+      nil)))
 
 (defun read-utmp (&optional (utmp-file-name #+linux #p"/var/run/utmp"
                                             #-linux (error "Where is utmp?")))
@@ -107,19 +116,15 @@ terminating #\\Null (zero) terminator, when it is present")
     (let* ((utmp-size (cffi:foreign-type-size 'utmp))
            (utmp-byte-array (list :array :uint8 utmp-size)))
       (loop for struct-bytes = 
-           (handler-case 
-               (loop for byte from 0 upto utmp-size
-                  for byte in (read-byte utmp-file t)
-                  collect byte)
-             (end-of-file :eof))
-         until (eql :eof struct-bytes)
+           (read-fixed-byte-count utmp-size utmp-file)
+         until (null struct-bytes)
          collect 
            (let (c-struct)
              (unwind-protect 
                   (progn (setf c-struct (cffi:convert-to-foreign 
                                          struct-bytes 
                                          utmp-byte-array))
-                         (cffi:convert-from-foreign c-struct 'utmp))
+                         (cffi:convert-from-foreign c-struct '(:struct utmp)))
                (cffi:free-converted-object c-struct utmp-byte-array t)))))))
 
 (defun read-wtmp (&optional (wtmp-file-name #+linux #p"/var/log/wtmp"
