@@ -13,7 +13,7 @@
 
 
 
-(defun start-server (argv)
+(defun start-server (&optional argv)
   (romance:server-start-banner "Asinius"
                                "Gaius Asinius Pollio"
                                "Database persistence layer")

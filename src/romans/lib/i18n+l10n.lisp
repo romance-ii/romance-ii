@@ -12,13 +12,29 @@
 (define-condition language-not-implemented-warning (warning)
   ((language :initarg :language :reader language-not-implemented)
    (fn :initarg :function :reader language-not-implemented-function))
-  (:report (lambda (s c)
+  (:report (lambda (c s)
              (format s "There is not an implementation of ƒ ~A for language ~A ~@[~{~*(~A/~A)~}~]"
                      (slot-value c 'fn)
                      (slot-value c 'language)
                      (assoc (language-not-implemented c) +language-names+)))))
 
-(defmacro defun-lang (function (&rest lambda-list) &body bodies)
+(define-condition language-coverage-warning (simple-warning)
+  ((covered :reader languages-covered :initarg :covered)
+   (method :reader language-function :initarg :method)))
+
+(defmethod initialize-instance :after ((self language-coverage-warning) &key covered method)
+  (setf (slot-value self 'sb-kernel::format-control)
+        "Defining ƒ ~A with partial language support: ~{~{~%  • ~5A: ~20A ~:[ ✗ ~; ✓ ~]~}~}"
+        
+        (slot-value self 'sb-kernel::format-arguments)
+        (list method 
+              (mapcar (lambda (language)
+                        (list (car language)
+                              (third language)
+                              (member (car language) covered)))
+                      +language-names+))))
+
+(defmacro define-language-function (function (&rest lambda-list) &body bodies)
   (let ((underlying (intern (concatenate 'string (string function) "%"))))
     (let ((implemented (mapcar #'car bodies)))
       (unless (every (lambda (language) (member language implemented)) 
@@ -29,7 +45,9 @@
                         (list (car language)
                               (third language)
                               (member (car language) implemented)))
-                      +language-names+))))
+                      +language-names+))
+        (warn 'language-coverage-warning
+              :covered implemented :method function)))
     `(progn 
        (defgeneric ,underlying (language ,@lambda-list)
          ,@(mapcar (lambda (body)
@@ -118,7 +136,7 @@
 
 ;; Determine the gender and declension of a word
 
-(defun-lang gender-of (noun)
+(define-language-function gender-of (noun)
   (:en (if-let ((gender (gethash (string-upcase noun) english-gender-dictionary)))
          gender
          :n))
@@ -144,8 +162,10 @@
                 :m
                 :f))))))
 
-(defun-lang declension-of (noun)
+(define-language-function declension-of (noun)
   (:en nil)
+  (:es nil)
+  (:fr nil)
   (:ga (if-let ((overrule (gethash noun irish-declension-dictionary)))
          overrule
          (cond
@@ -276,14 +296,14 @@ It's technically allowed' but discouraged, in ALL CAPS writing."
                  last-vowel))
             (vowels (subseq ,word last-vowels-start (1+ last-vowel)))
             (ending (subseq ,word last-vowels-start)))
-       (flet ((replace-vowels (replacement)
-                (strcat (subseq ,word 0 last-vowels-start) replacement 
-                        (subseq ,word (1+ last-vowel))))
-              (replace-ending (replacement)
-                (strcat (subseq ,word 0 last-vowels-start) replacement))
-              (add-after-vowels (addition)
-                (strcat (subseq ,word 0 (1+ last-vowel)) addition 
-                        (subseq ,word (1+ last-vowel)))))
+       (labels ((replace-vowels (replacement)
+                  (strcat (subseq ,word 0 last-vowels-start) replacement 
+                          (subseq ,word (1+ last-vowel))))
+                (replace-ending (replacement)
+                  (strcat (subseq ,word 0 last-vowels-start) replacement))
+                (add-after-vowels (addition)
+                  (strcat (subseq ,word 0 (1+ last-vowel)) addition 
+                          (subseq ,word (1+ last-vowel)))))
          ,@body))))
 
 (defun caolú (word)
@@ -405,7 +425,7 @@ Note that LEATHNÚ applies this to the final consonant, instead."
       (t word))))
 
 
-(defun-lang syllable-count (string)
+(define-language-function syllable-count (string)
   (:en (loop 
           with counter = 0
           with last-vowel-p = nil
@@ -455,7 +475,7 @@ Note that LEATHNÚ applies this to the final consonant, instead."
             
           finally (return (max 1 counter)))))
 
-(defun-lang diphthongp (letters)
+(define-language-function diphthongp (letters)
   (:en (member (string-downcase letters) 
                (@$ ow ou ie igh oi oo ea ee ai) :test 'string-starts-with))
   (:ga (member (string-downcase letters)
@@ -465,7 +485,7 @@ Note that LEATHNÚ applies this to the final consonant, instead."
 (defun vowelp (letter)
   (find letter "aoeuiáóéúíýàòèùìỳäöëüïÿāōēūīãõẽũĩỹąęųįøæœåŭ"))
 
-(defun-lang long-vowel-p (syllable)
+(define-language-function long-vowel-p (syllable)
   (:en (if (and (= 2 (length syllable))
                 (not (vowelp (elt syllable 0)))
                 (alpha-char-p (elt syllable 0))
@@ -487,6 +507,10 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                                  (not (eql #\w (elt syllable (1+ first-vowel-pos))))
                                  (not (eql #\x (elt syllable
                                                     (1+ first-vowel-pos))))))))))))
+  (:es (or (member '(#\e #\i) syllable)
+           (< 1 (count-if #'vowelp syllable))))
+  (:fr (or (member '(#\e #\i) syllable)
+           (< 1 (count-if #'vowelp syllable))))
   (:ga (etypecase syllable
          (character
           (find syllable "áóéúí"))
@@ -750,7 +774,7 @@ well enough for many (most) English words. At least, am improvement upon
 
 
 
-(defun-lang plural (count string)
+(define-language-function plural (count string)
   (:en
    (if (= 1 count) 
        string
@@ -871,7 +895,7 @@ well enough for many (most) English words. At least, am improvement upon
         1000 mil)
   :test 'equalp)
 
-(defun-lang counting (count string)
+(define-language-function counting (count string)
   (:en (cond
          ((zerop count) (a/an/some% :en 0 string))
          ((< count 21) (funcall (letter-case string)
@@ -896,7 +920,7 @@ well enough for many (most) English words. At least, am improvement upon
 (assert (equal (counting% :es 1 "gato") "un gato"))
 (assert (equal (counting% :es 1 "casa") "una casa"))
 
-(defun-lang a/an (string)
+(define-language-function a/an (string)
   (:en (let ((letter (elt string 0)))
          (case letter
            ((#\a #\e #\i #\o #\u #\h)
@@ -915,7 +939,7 @@ well enough for many (most) English words. At least, am improvement upon
                           (:f "une "))) string))
   (:ga string))
 
-(defun-lang a/an/some (count string)
+(define-language-function a/an/some (count string)
   (:en (case count
          (0 (concatenate 'string (funcall (letter-case string) "no ")
                          (plural% :en 0 string)))

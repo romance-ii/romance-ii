@@ -59,7 +59,9 @@ with the same `place'"
 
 
 (define-condition todo-item (error)
-  ((note :initarg :note :reader todo-note)))
+  ((note :initarg :note :reader todo-note))
+  (:report (lambda (c s)
+             (format s "TODO — ~a" (todo-note c)))))
 
 (defmethod todo (&optional (string "TODO: This function is not yet implemented")
                  &rest keys)

@@ -40,6 +40,7 @@ package (or similar). Perhaps it's even named the same? Try (APROPOS
    #:c-style-identifier
    #:c-style-identifier-p
    #:doseq
+   #:elt-in
    #:escape-by-doubling
    #:escape-c-style
    #:escape-lispy
@@ -58,8 +59,10 @@ package (or similar). Perhaps it's even named the same? Try (APROPOS
    #:maybe-numeric
    #:modincf
    #:membership
+   #:pin
    #:plural
    #:repeat
+   #:reference-path
    #:split-and-collect-file
    #:server-start-banner
    #:start-repl
@@ -472,6 +475,19 @@ package (or similar). Perhaps it's even named the same? Try (APROPOS
 (require :babel)
 
 (in-package :romance)
+
+
+
+
+(defun pin (min value max)
+  (min (max min value) max))
+
+(defun elt-in (sequence index &rest more-indices)
+  (if more-indices
+      (apply (curry #'elt-in (elt sequence index)) more-indices)
+      (elt sequence index)))
+
+
 
 (defun start-server (&optional argv)
   (let ((module (make-keyword (string-upcase (car argv)))))

@@ -37,10 +37,16 @@
 
 (defmethod serve ((socket stream-usocket))
   (let ((info (gethash socket *connection-pool*)))
-    (serve-socket (socket-info-stream info)
-                  (socket-info-encoding info)
-                  (socket-info-state info)
-                  socket info)))
+    (restart-bind
+        ((continue
+           #'values
+           :report-function 
+           (lambda (s) 
+             (princ "Skip this socket, and continue handling others" s))))
+      (serve-socket (socket-info-stream info)
+                    (socket-info-encoding info)
+                    (socket-info-state info)
+                    socket info))))
 
 (define-condition protocol-unhandled-error (error)
   ((socket-info :initarg :socket-info :reader error-socket-info))
@@ -60,6 +66,21 @@
           "~C~CSERVER MESSAGE CODE ~S~%~C"
           (code-char 3) (code-char 0) code (code-char 4)))
 
+(defun send-raw (socket-info format &rest args)
+  (check-type socket-info socket-info)
+  (check-type format string)
+  (format (socket-stream
+           (socket-info-socket socket-info)) format args))
+
+(defgeneric send-message (socket-stream encoding structure)
+  (:method ((socket-stream stream) (encoding t) (structure t))
+    (warn "No send-message for socket-stream ~s, encoding ~s"
+          socket-stream encoding)
+    (format socket-stream "~s" structure))
+  (:method ((socket-stream t) (encoding t) (structure t))
+    (error "No send-message for socket-stream ~s"
+           socket-stream)))
+
 (defvar *selected-socket*)
 
 (defun end-of-file-handler (condition)
@@ -72,9 +93,12 @@
 (define-condition socket-disconnect-hook (condition) ())
 
 (defun socket-to-client-p (&optional (socket *selected-socket*))
-  (and (typep socket 'usocket:stream-usocket)))
+  (and (typep socket 'usocket:stream-usocket)
+       (not (typep socket 'usocket:stream-server-usocket))))
 
-(defun socket-polite-disconnect (&optional (note "Disconnection request from server"))
+(defun socket-polite-disconnect 
+    (&optional (note 
+                "Disconnection request from server"))
   ;; TODO QoS
   (when (and note
              (socket-to-client-p)) 
@@ -150,85 +174,101 @@
   (when-let (stream (stream-error-stream closed-stream-error))
     (remhash stream *connection-pool*)))
 
+(defun advertise-cluster-endpoint (address port)
+  (todo "advertise-cluster-endpoint"))
+
+(defun main-socket-loop (cycler)
+  (loop
+     until *server-quit*
+     do (loop
+           for *selected-socket*
+           in (wait-for-input (hash-table-keys *connection-pool*)
+                              :timeout 1/2 ;sec
+                              :ready-only (funcall cycler))
+           do (server-listen))))
+
+(defun unwind-from-tcp-server ()
+  (caesar:report :stopped-listening
+                 "Stopped listening"
+                 :connection-pool *connection-pool*)
+  (signal 'tcp-unwinding-hook :connection-pool *connection-pool*)
+  (when (and *connection-pool*
+             (plusp (hash-table-count *connection-pool*)))
+    (caesar:report :left-over-connections
+                   (format nil "Closing ~:D sockets left in pool"
+                           (hash-table-count *connection-pool*))
+                   :connection-pool *connection-pool*)
+    (loop for socket being each hash-key in *connection-pool*
+       do (socket-disconnected socket))))
+
+(defmacro with-tcp-restarts (() &body body)
+  `(restart-bind
+       
+       ((use-other-interface
+         (lambda (address)
+           (start-server/tcp-listener address port))
+          :report-function
+          (lambda (s)
+            (princ "Listen on another interface" s))
+          :interactive-function
+          (lambda ()
+            (format *query-io* "~&Enter the address of the interface on which to listen
+
+\(~S for all interfaces) ⇒ "
+                    *wildcard-host*)
+            (list (read *query-io*)))
+          :test-function
+          (lambda (c)
+            (typep c 'address-in-use-error)))
+        
+        (use-other-port
+         (lambda (port)
+           (start-server/tcp-listener address port))
+          :report-function (lambda (s)
+                             (princ "Listen on another port" s))
+          :interactive-function
+          (lambda ()
+            (format *query-io* "~&Enter the port number on which to listen:
+
+ \(Default is 2770) ⇒ ")
+            (list (read *query-io*)))
+          :test-function
+          (lambda (c)
+            (typep c 'address-in-use-error))))
+     ,@body))
+
+(defun prepare-to-listen/tcp (address port)
+  (caesar::report :begin-listening
+                  (format nil "Listening for TCP connections on ~{~d.~d.~d.~d~} port ~S"
+                          (coerce address 'list) port))
+  (signal 'tcp-pre-listen-hook :address address :port port))
+
+(defun tcp-server (address port cycler)
+  (let ((listener (socket-listen address port
+                                 :reuse-address t
+                                 :backlog #x20)))
+    (setf (gethash listener *connection-pool*)
+          (make-instance 'socket-info :socket listener
+                         :encoding :tcp-listen))
+    (advertise-cluster-endpoint address port)
+
+    (handler-case
+        (main-socket-loop cycler)
+      #+sbcl (sb-int:closed-stream-error (c)
+               (remove-closed-socket-from-pool c)))))
+
 (defun start-server/tcp-listener (&optional (address *wildcard-host*)
                                     (port 2770))
   "Start listening at the given address and port. Defaults to
 universal (all local addresses) and port 2770."
   (check-type port (integer 1024 65535) "Valid TCP port number")
   (caesar:with-oversight (appius/tcp-server)
-    (restart-bind
-
-        ((use-other-interface
-          (lambda (address)
-            (start-server/tcp-listener address port))
-           :report-function
-           (lambda (s)
-             (princ "Listen on another interface" s))
-           :interactive-function
-           (lambda ()
-             (format *query-io* "~&Enter the address of the interface on which to listen
-
-\(~S for all interfaces) ⇒ "
-                     *wildcard-host*)
-             (list (read *query-io*)))
-           :test-function
-           (lambda (c)
-             (typep c 'address-in-use-error)))
-
-         (use-other-port
-          (lambda (port)
-            (start-server/tcp-listener address port))
-           :report-function (lambda (s)
-                              (princ "Listen on another port" s))
-           :interactive-function
-           (lambda ()
-             (format *query-io* "~&Enter the port number on which to listen:
-
- \(Default is 2770) ⇒ ")
-             (list (read *query-io*)))
-           :test-function
-           (lambda (c)
-             (typep c 'address-in-use-error))))
-
-      (caesar::report :begin-listening
-                      (format nil "Listening for TCP connections on ~{~d.~d.~d.~d~} port ~S"
-                              (coerce address 'list) port))
-      (signal 'tcp-pre-listen-hook :address address :port port)
-      (let (listener
-            (cycler  (make-t-every-n-times $reaper-cycles$)))
+    (with-tcp-restarts ()
+      (prepare-to-listen/tcp address port)
+      (let ((cycler  (make-t-every-n-times $reaper-cycles$)))
         (unwind-protect
-             (progn
-               (setf listener (socket-listen address port
-                                             :reuse-address t
-                                             :backlog #x20)
-                     (gethash listener *connection-pool*)
-                     (make-instance 'socket-info :socket listener
-                                    :encoding :tcp-listen))
-
-               (handler-case
-                   (loop
-                      until *server-quit*
-                      do (loop
-                            for *selected-socket*
-                            in (wait-for-input (hash-table-keys *connection-pool*)
-                                               :timeout 1/2 ;sec
-                                               :ready-only (funcall cycler))
-                            do (server-listen)))
-                 #+sbcl (sb-int:closed-stream-error (c)
-                          (remove-closed-socket-from-pool c))))
-          (progn
-            (caesar:report :stopped-listening
-                           "Stopped listening"
-                           :connection-pool *connection-pool*)
-            (signal 'tcp-unwinding-hook :connection-pool *connection-pool*)
-            (when (and *connection-pool*
-                       (plusp (hash-table-count *connection-pool*)))
-              (caesar:report :left-over-connections
-                             (format nil "Closing ~:D sockets left in pool"
-                                     (hash-table-count *connection-pool*))
-                             :connection-pool *connection-pool*)
-              (loop for socket being each hash-key in *connection-pool*
-                 do (socket-disconnected socket)))))))))
+             (tcp-server address port cycler)
+          (unwind-from-tcp-server))))))
 
 
 

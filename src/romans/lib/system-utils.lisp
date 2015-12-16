@@ -170,4 +170,13 @@ git
          (or *compile-file-truename* *load-truename*)
          *features*))
 
+
+
+(defun reference-path (&rest relative-path)
+  (let ((directory-part (butlast relative-path))
+        (file-name-path (lastcar relative-path)))
+    (merge-pathnames-as-file
+     romans-compiler-setup:*path/r2project*
+     (make-pathname :directory (append (list :relative ".." "reference") directory-part)
+                    :name file-name-path))))
 

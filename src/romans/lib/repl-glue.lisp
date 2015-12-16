@@ -188,6 +188,51 @@ If you're totally lost here, try (HELP :START)
 (defun bye ()
   (invoke-restart (find-restart 'exit-module)))
 
+(defun print-asdf-system-info (system)
+  (format t "~&~|~%ASDF System ~A:~{~%  ~:(~A~): ~A~}"
+          word
+          (loop for fun in '(asdf:system-long-name
+                             asdf:system-description
+                             asdf:system-homepage
+                             asdf:system-author
+                             asdf:system-licence
+                             asdf:system-mailto
+                             asdf:system-maintainer
+                             asdf:system-long-description
+                             asdf:system-bug-tracker
+                             asdf:system-definition-pathname
+                             asdf:system-defsystem-depends-on
+                             asdf:system-depends-on
+                             asdf:system-weakly-depends-on
+                             asdf:system-source-control 	
+                             asdf:system-source-directory
+                             asdf:system-source-file)
+             for val = (funcall fun system)
+             when val
+             appending (list (subseq (symbol-name fun) 7)
+                             val))))
+
+(defun print-package-info (package)
+  (format t "~&~|~% ~:@(~A~) is a package, which exports these symbols:~%"
+          word)
+  (let ((package-symbols 
+         (sort (loop for sym being the external-symbols of package
+                  collect sym) #'string< :key #'symbol-name)))
+    (when-let ((bound (remove-if-not #'boundp package-symbols))) 
+      (format t "~% Values bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
+              word
+              bound))
+    (when-let ((fbound (remove-if-not #'fboundp package-symbols)))
+      (format t "~% Functions bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
+              word
+              fbound))
+    (when-let ((unbound (remove-if (lambda (sym)
+                                     (or (fboundp sym)
+                                         (boundp sym))) package-symbols)))
+      (format t "~% Other symbols in package ~A:~{~%   ~32A~^ ~32A~}~%"
+              word
+              unbound))))
+
 (defmacro help (&optional (word :intro)) 
   (typecase word 
     (keyword
@@ -214,49 +259,10 @@ If you're totally lost here, try (HELP :START)
                      doc-type word info))))
        
        (when-let ((system (asdf:find-system word nil)))
-         (format t "~&~|~%ASDF System ~A:~{~%  ~:(~A~): ~A~}"
-                 word
-                 (loop for fun in '(asdf:system-long-name
-                                    asdf:system-description
-                                    asdf:system-homepage
-                                    asdf:system-author
-                                    asdf:system-licence
-                                    asdf:system-mailto
-                                    asdf:system-maintainer
-                                    asdf:system-long-description
-                                    asdf:system-bug-tracker
-                                    asdf:system-definition-pathname
-                                    asdf:system-defsystem-depends-on
-                                    asdf:system-depends-on
-                                    asdf:system-weakly-depends-on
-                                    asdf:system-source-control 	
-                                    asdf:system-source-directory
-                                    asdf:system-source-file)
-                    for val = (funcall fun system)
-                    when val
-                    appending (list (subseq (symbol-name fun) 7)
-                                    val))))
+         (print-asdf-system-info system))
        
        (when-let ((package (find-package (string word))))
-         (format t "~&~|~% ~:@(~A~) is a package, which exports these symbols:~%"
-                 word)
-         (let ((package-symbols 
-                (sort (loop for sym being the external-symbols of package
-                         collect sym) #'string< :key #'symbol-name)))
-           (when-let ((bound (remove-if-not #'boundp package-symbols))) 
-             (format t "~% Values bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
-                     word
-                     bound))
-           (when-let ((fbound (remove-if-not #'fboundp package-symbols)))
-             (format t "~% Functions bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
-                     word
-                     fbound))
-           (when-let ((unbound (remove-if (lambda (sym)
-                                            (or (fboundp sym)
-                                                (boundp sym))) package-symbols)))
-             (format t "~% Other symbols in package ~A:~{~%   ~32A~^ ~32A~}~%"
-                     word
-                     unbound)))))))
+         (print-package-info package)))))
 
 (defmacro hello (name)
   (let ((named (typecase name
