@@ -13,10 +13,16 @@
            #:*path/r2project*))
 (in-package :romans-compiler-setup)
 
+
 (format *trace-output* "~& ★ Romance Ⅱ set-up script ★
 
 Setting up environment to compile Romance Ⅱ… If you run into problems,
 check the manual in the “doc” folder.")
+
+(load "~/quicklisp/setup" :verbose nil)
+
+(require 'asdf)
+(require 'quicklisp)
 
 (unless *load-pathname*
   (error "This file must be `load'ed, not `compile'd. (LOAD \"setup\")"))
@@ -118,7 +124,8 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
   (truename (merge-pathnames "../../" 
                              (make-pathname :directory (pathname-directory *load-pathname*)))))
 
-(dolist (path '("romans/"
+(dolist (path '("../brfputils"
+                "romans/"
                 "romans/lib/smedict-old/"
                 "romans/lib/sb-texinfo/"))
   (pushnew (merge-pathnames path *path/r2src*)

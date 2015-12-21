@@ -10,39 +10,47 @@
                   (remove-if #'null strings))))
 
 (define-constant +whitespace+
-    (coerce #(;; Defined in ASCII
-              #\Space #\Tab #\Page #\Linefeed #\Return #\Null
-              ;; defined in ISO-8859-*
-              #\No-Break_Space #\Reverse-Linefeed
-              ;; defined in Unicode
-              #\Ogham_space_mark #\Mongolian_Vowel_Separator
-              #\En_quad #\Em_quad #\En_Space #\Em_Space
-              #\Three-per-Em_Space #\Four-per-Em_Space
-              #\Six-per-Em_Space #\Figure_Space #\Punctuation_Space
-              #\Thin_Space #\Hair_Space
-              #\Zero_Width_Space #\Narrow_No-Break_Space
-              #\Medium_Mathematical_Space #\Ideographic_Space
-              #\Zero_Width_No-Break_Space)
-            'simple-string)
-  :test #'equal
-  :documentation "A list of all whitespace chars in Unicode. Superset of
+    #.(coerce #-ccl #(;; Defined in ASCII
+                      #\Space #\Tab #\Page #\Linefeed #\Return #\Null
+                      ;; defined in ISO-8859-*
+                      #\No-Break_Space #\Reverse-Linefeed
+                      ;; defined in Unicode
+                      #\Ogham_space_mark #\Mongolian_Vowel_Separator
+                      #\En_quad #\Em_quad #\En_Space #\Em_Space
+                      #\Three-per-Em_Space #\Four-per-Em_Space
+                      #\Six-per-Em_Space #\Figure_Space #\Punctuation_Space
+                      #\Thin_Space #\Hair_Space
+                      #\Zero_Width_Space #\Narrow_No-Break_Space
+                      #\Medium_Mathematical_Space #\Ideographic_Space
+                      #\Zero_Width_No-Break_Space)
+              #+ccl
+              #(#\u+20 #\u+9 #\u+C #\u+A #\u+D #\u+0 #\u+A0 #\u+8D
+                #\u+1680 #\u+180E #\u+2000 #\u+2001 #\u+2002 #\u+2003 #\u+2004 #\u+2005
+                #\u+2006 #\u+2007 #\u+2008 #\u+2009 #\u+200A #\u+200B #\u+202F #\u+205F
+                #\u+3000 #\u+FEFF)
+              'simple-string)
+    :test #'equal
+    :documentation "A list of all whitespace chars in Unicode. Superset of
   the ASCII whitespace chars we expect to encounter.")
 
 
 (define-constant +inline-whitespace+
-    (coerce #(;; Defined in ASCII
-              #\Space #\Tab
-              ;; defined in ISO-8859-*
-              #\No-Break_Space
-              ;; defined in Unicode
-              #\Ogham_space_mark #\Mongolian_Vowel_Separator
-              #\En_quad #\Em_quad #\En_Space #\Em_Space
-              #\Three-per-Em_Space #\Four-per-Em_Space
-              #\Six-per-Em_Space #\Figure_Space #\Punctuation_Space
-              #\Thin_Space #\Hair_Space
-              #\Zero_Width_Space #\Narrow_No-Break_Space
-              #\Medium_Mathematical_Space #\Ideographic_Space
-              #\Zero_Width_No-Break_Space)
+    (coerce #-ccl #(;; Defined in ASCII
+                    #\Space #\Tab
+                    ;; defined in ISO-8859-*
+                    #\No-Break_Space
+                    ;; defined in Unicode
+                    #\Ogham_space_mark #\Mongolian_Vowel_Separator
+                    #\En_quad #\Em_quad #\En_Space #\Em_Space
+                    #\Three-per-Em_Space #\Four-per-Em_Space
+                    #\Six-per-Em_Space #\Figure_Space #\Punctuation_Space
+                    #\Thin_Space #\Hair_Space
+                    #\Zero_Width_Space #\Narrow_No-Break_Space
+                    #\Medium_Mathematical_Space #\Ideographic_Space
+                    #\Zero_Width_No-Break_Space)
+            #+ccl #(#\u+20 #\u+9 #\u+A0 #\u+1680 #\u+180E #\u+2000 #\u+2001 #\u+2002
+                    #\u+2003 #\u+2004 #\u+2005 #\u+2006 #\u+2007 #\u+2008 #\u+2009 #\u+200A
+                    #\u+200B #\u+202F #\u+205F #\u+3000 #\u+FEFF)
             'simple-string)
   :test #'equal
   :documentation "A list of all whitespace chars in Unicode that occur
@@ -53,12 +61,16 @@
 
 
 (define-constant +often-naughty-chars+
-    (coerce #(#\\ #\! #\| #\# #\$ #\% #\& #\?
-              #\{ #\[ #\( #\) #\] #\} #\= #\^ #\~
-              #\' #\" #\` #\< #\> #\*
-              #\Space #\Tab #\Page #\Linefeed #\Return #\Null
-              #\No-Break_Space #\Reverse-Linefeed
-              #\Zero_Width_No-Break_Space)
+    (coerce #-ccl #(#\\ #\! #\| #\# #\$ #\% #\& #\?
+                    #\{ #\[ #\( #\) #\] #\} #\= #\^ #\~
+                    #\' #\" #\` #\< #\> #\*
+                    #\Space #\Tab #\Page #\Linefeed #\Return #\Null
+                    #\No-Break_Space #\Reverse-Linefeed
+                    #\Zero_Width_No-Break_Space)
+            #+ccl #(#\u+5C #\u+21 #\u+7C #\u+23 #\u+24 #\u+25 #\u+26 #\u+3F
+                    #\u+7B #\u+5B #\u+28 #\u+29 #\u+5D #\u+7D #\u+3D #\u+5E
+                    #\u+7E #\u+27 #\u+22 #\u+60 #\u+3C #\u+3E #\u+2A #\u+20
+                    #\u+9 #\u+C #\u+A #\u+D #\u+0 #\u+A0 #\u+8D #\u+FEFF)
             'simple-string)
   :test #'equal
   :documentation "A list of characters which often have special

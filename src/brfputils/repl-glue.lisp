@@ -19,7 +19,7 @@
                     (cons "USER"
                           (package-nicknames :brfp-user)))))
 
-(defvar *user-ident* (make-hash-table :weakness :key :test 'equal))
+(defvar *user-ident* (make-hash-table #-ccl :weakness #-ccl :key :test 'equal))
 
 (defun user-ident (&optional (new-name nil new-name-?))
   (prog1 (gethash (current-thread) *user-ident*)

@@ -30,6 +30,7 @@ package (or similar). Perhaps it's even named the same? Try (APROPOS
    #:+inline-whitespace+
    #:+often-naughty-chars+
    #:+whitespace+
+   #:36r
    #:a/an
    #:a/an/some
    #:any
@@ -64,6 +65,8 @@ package (or similar). Perhaps it's even named the same? Try (APROPOS
    #:membership
    #:plural
    #:repeat
+   #:remove-commas
+   #:schemey-record
    #:split-and-collect-file
    #:server-start-banner
    #:start-repl
@@ -352,6 +355,22 @@ package (or similar). Perhaps it's even named the same? Try (APROPOS
    cl-fad:walk-directory
    cl-fad:with-open-temporary-file
    cl-fad:with-output-to-temporary-file
+   cl-ppcre:*ALLOW-NAMED-REGISTERS* 	cl-ppcre:*ALLOW-QUOTING*
+   cl-ppcre:*OPTIMIZE-CHAR-CLASSES* 	cl-ppcre:*PROPERTY-RESOLVER*
+   cl-ppcre:*REGEX-CHAR-CODE-LIMIT* 	cl-ppcre:*USE-BMH-MATCHERS*
+   cl-ppcre:ALL-MATCHES 	cl-ppcre:ALL-MATCHES-AS-STRINGS
+   cl-ppcre:CREATE-OPTIMIZED-TEST-FUNCTION 	cl-ppcre:CREATE-SCANNER
+   cl-ppcre:DEFINE-PARSE-TREE-SYNONYM 	cl-ppcre:DO-MATCHES
+   cl-ppcre:DO-MATCHES-AS-STRINGS 	cl-ppcre:DO-REGISTER-GROUPS
+   cl-ppcre:DO-SCANS 	cl-ppcre:PARSE-STRING
+   cl-ppcre:PARSE-TREE-SYNONYM 	cl-ppcre:PPCRE-ERROR
+   cl-ppcre:PPCRE-INVOCATION-ERROR 	cl-ppcre:PPCRE-SYNTAX-ERROR
+   cl-ppcre:PPCRE-SYNTAX-ERROR-POS 	cl-ppcre:PPCRE-SYNTAX-ERROR-STRING
+   cl-ppcre:QUOTE-META-CHARS 	cl-ppcre:REGEX-APROPOS
+   cl-ppcre:REGEX-APROPOS-LIST 	cl-ppcre:REGEX-REPLACE
+   cl-ppcre:REGEX-REPLACE-ALL 	cl-ppcre:REGISTER-GROUPS-BIND
+   cl-ppcre:SCAN 	cl-ppcre:SCAN-TO-STRINGS
+   cl-ppcre:SPLIT
    local-time:*clock*
    local-time:*default-timezone*
    local-time:+asctime-format+

@@ -101,9 +101,10 @@ terminating #\\Null (zero) terminator, when it is present")
 
 (defun read-fixed-byte-count (byte-count stream)
   (handler-case 
-      (loop for i from 0 upto byte-count
-         for byte = (read-byte stream t)
-         collect byte)
+      (coerce (loop for i from 0 upto byte-count
+                 for byte = (read-byte stream t)
+                 collect byte)
+              '(vector (unsigned-byte 8)))
     (end-of-file (c) 
       (declare (ignore c)) 
       nil)))
@@ -111,8 +112,8 @@ terminating #\\Null (zero) terminator, when it is present")
 (defun read-utmp (&optional (utmp-file-name #+linux #p"/var/run/utmp"
                                             #-linux (error "Where is utmp?")))
   (with-open-file (utmp-file utmp-file-name :direction :input
-                             :element-type 'utmp
-                             :external-format '(unsigned-byte 8))
+                             :element-type '(unsigned-byte 8)
+                             :external-format :raw)
     (let* ((utmp-size (cffi:foreign-type-size 'utmp))
            (utmp-byte-array (list :array :uint8 utmp-size)))
       (loop for struct-bytes = 

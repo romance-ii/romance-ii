@@ -32,26 +32,16 @@
                :trivial-garbage
                :trivial-gray-streams
                :usocket
-               :wordnet
+               #+old-wordnet :wordnet
 
+               :brfputils
+               
                )
 
   :encoding :utf-8
 
   :components
-  ((:file "common")
-   (:module "lib"
-            :depends-on ("common")
-            :components (#+ (and debug bored) (:file "class-graph")
-                            (:file "control-utils")
-                            (:file "json-utils")
-                            (:file "repl-glue")
-                            (:file "hash-table")
-                            (:file "string-utils")
-                            (:file "i18n+l10n"
-                                   :depends-on ("string-utils"))
-                            (:file "system-utils")))
-   (:file "lib/start-repl"
+  ((:file "lib/start-repl"
           :depends-on ("Gaius-Julius-Caesar"))
    (:module "Aelius-Galenus"
             :depends-on ("common" "lib" "Gaius-Julius-Caesar")
