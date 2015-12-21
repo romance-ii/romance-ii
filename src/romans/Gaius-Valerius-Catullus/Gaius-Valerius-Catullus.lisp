@@ -41,8 +41,7 @@
   (utterance-formatting-string
    (utterance->human predicate language-code) language-code))
 
-(defmethod utterance-formatting-string
-    (predicate (language-code (eql :en)))
+(defmethod utterance-formatting-string (predicate (language-code (eql :en)))
   (string-case predicate
     ("/r/Antonym" "~0@*~A and ~2@*~A are antonyms.")
     ("/r/AtLocation" "~0@*~A is at the location ~2@*~A.")
@@ -107,8 +106,7 @@
 (defgeneric utterance->human/sub-expression
     (keyword utterance language-code))
 
-(defmethod utterance->human/sub-expression ((keyword t) utterance
-                                            (language-code (eql :en)))
+(defmethod utterance->human/sub-expression ((keyword t) utterance (language-code (eql :en)))
   (format nil "~A: [~{~A~^ ~}]" keyword utterance))
 
 (defmethod utterance->human/sub-expression ((keyword (eql :untranslateable))
@@ -126,8 +124,7 @@
 
 (defgeneric utterance->human/fact (utterance language-code))
 
-(defmethod
-    utterance->human/fact (utterance (language-code (eql :en)))
+(defmethod utterance->human/fact (utterance (language-code (eql :en)))
   (destructuring-bind (subj pred obj) utterance
     (format nil (utterance-formatting-string pred :en)
             (utterance->human subj :en)
@@ -998,9 +995,10 @@ function will create top-level superpositions, such as:
    OR expression that is a cross-product of all nested expressions;
  • Any WRITEME
 
-⁂See TEST-PARSER for not really docs in the form of tests
+⁂See TEST-PARSER for not-really-docs in the form of tests
 "
   (logic-trace "~&Superpostition of any OR expressions in:~&~A" (treely phrase))
+  
   (let ((*superpose-or/recursion-guard* (or (and *superpose-or/recursion-guard*
                                                  (1- *superpose-or/recursion-guard*))
                                             (progn
@@ -1127,92 +1125,92 @@ Then, I ran that through one more try, and got:~%~A"
     (format t "~&Testing parser components (interactively)"))
   (setf *tests-pass* 0 *tests-fail* 0)
   (itest (null (forgotten-punctuation +syntactic-punctuation+))
-          ()
-          "Forgotten punctuation: ~S
+         ()
+         "Forgotten punctuation: ~S
 All punctuation in +SYNTACTIC-PUNCTUATION+
 must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
-          (forgotten-punctuation +syntactic-punctuation+))
+         (forgotten-punctuation +syntactic-punctuation+))
   (itest (null (forgotten-punctuation +word-terminating-punctuation+))
-          ()
-          "Forgotten punctuation: ~S
+         ()
+         "Forgotten punctuation: ~S
 All punctuation in +WORD-TERMINATING-PUNCTUATION+
 must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
-          (forgotten-punctuation +word-terminating-punctuation+))
+         (forgotten-punctuation +word-terminating-punctuation+))
   (fresh-line)
   (itest (equalp (superpose-or '(or a (or b c))) 
-                  '(or a b c))
-          () "A list containing nested OR expressions must reduce to a single list.")
+                 '(or a b c))
+         () "A list containing nested OR expressions must reduce to a single list.")
   (itest (equalp (inject-into-list '(thing (or (1 2) (3 4))) 1 '(1 2))
-                  '(thing 1 2))
-          () "Replacing a sublist with a new list must work at the end.")
+                 '(thing 1 2))
+         () "Replacing a sublist with a new list must work at the end.")
   (itest (equalp (inject-into-list '(a b c) 0 '(1 2 3))
-                  '(1 2 3 b c))
-          () "Relpacing a sub-list with a new list must work at the beginning.")
+                 '(1 2 3 b c))
+         () "Relpacing a sub-list with a new list must work at the beginning.")
   (itest (equalp (superpose-or '(thing (or 1 2)))
-                  '(or (thing 1) (thing 2)))
-          () "A buried OR expression must be lifted to the highest level.")
+                 '(or (thing 1) (thing 2)))
+         () "A buried OR expression must be lifted to the highest level.")
   (itest (equalp (superpose-or '(thing (or (:one 1) (:two 2))))
-                  '(or (thing :one 1) (thing :two 2)))
-          () "A buried OR expression must be lifted to the highest level.")
+                 '(or (thing :one 1) (thing :two 2)))
+         () "A buried OR expression must be lifted to the highest level.")
   (itest (equalp (superpose-or '(thing (:one (or (1 2) (3 4)))))
-                  '(or (thing (:one 1 2)) (thing (:one 3 4))))
-          () "A buried OR expression must be lifted to the highest level.")
+                 '(or (thing :one 1 2) (thing :one 3 4)))
+         () "A buried OR expression must be lifted to the highest level.")
   (itest (equalp (superpose-or '(or it)) 
-                  'it)
-          () "An OR expression with only one alternative must be simplified to a constant.")
+                 'it)
+         () "An OR expression with only one alternative must be simplified to a constant.")
   (itest (equalp (superpose-or '(or it it it)) 
-                  'it)
-          () "An OR expression with only one alternative (even if
+                 'it)
+         () "An OR expression with only one alternative (even if
          re-expressed more than once) must be simplified to
          a constant.")
   (itest (equalp (superpose-or '(or (1 2 3 4) (1 (or 2 2) (or 3 3) (or 4)))) 
-                  '(1 2 3 4))
-          () "An OR expression which reduces to anly one alternative
+                 '(1 2 3 4))
+         () "An OR expression which reduces to anly one alternative
           must be simplified to a constant after all nested OR
           expressions have likewise been normalized.")
   (itest (equalp (superpose-or '("thing" (or :one :two)))
-                  '(or ("thing" :one) ("thing" :two)))
-          () "An OR expression being lifted must deal with any type of
+                 '(or ("thing" :one) ("thing" :two)))
+         () "An OR expression being lifted must deal with any type of
           nested sequence (including a string or array) as well as
           atoms or constructed cells.")
   (itest (equalp (superpose-or '("thing" (or (:one 1) (:two 2))))
-                  '(or ("thing" :one 1) ("thing" :two 2)))
-          () "An OR expression being lifted must deal with any type of
+                 '(or ("thing" :one 1) ("thing" :two 2)))
+         () "An OR expression being lifted must deal with any type of
           nested sequence (including a string or array) as well as
           atoms or constructed cells.")
   (itest (equalp (inject-into-list '(dog (or :noun :verb)) 1 :noun)
-                  '(dog :noun))
-          nil "Burgeoning should replace element 1 of a 2-part list")
+                 '(dog :noun))
+         nil "Burgeoning should replace element 1 of a 2-part list")
   (itest (equalp (inject-into-list '((or cat dog) :pet) 0 'cat)
-                  '(cat :pet))
-          nil "Burgeoning should replace element 0 of a 2-part list")
+                 '(cat :pet))
+         nil "Burgeoning should replace element 0 of a 2-part list")
   (itest (equalp (inject-into-list '(dog :being (or :noun :verb)) 2 :noun)
-                  '(dog :being :noun))
-          nil "Burgeoning should replace element 2 of a 3-part list")
+                 '(dog :being :noun))
+         nil "Burgeoning should replace element 2 of a 3-part list")
   (itest (equalp (inject-into-list '((or :noun :verb)) 0 :noun)
-                  '(:noun))
-          nil "Burgeoning should replace element 0 of a 1-part list")
+                 '(:noun))
+         nil "Burgeoning should replace element 0 of a 1-part list")
   (itest (equalp (collapse '(and a (not a)))
-                  nil)
-          nil "An assertion to be A ∧ ¬A must reduce to NIL")
+                 nil)
+         nil "An assertion to be A ∧ ¬A must reduce to NIL")
   (itest (equalp (collapse '(and a a))
-                  'a)
-          nil "A repeated AND assertion must reduce to a constant.")
+                 'a)
+         nil "A repeated AND assertion must reduce to a constant.")
   (itest (equalp (collapse '(or a (not a)))
-                  t)
-          nil "An assertion of A ∨ ¬A must reduce to T")
+                 t)
+         nil "An assertion of A ∨ ¬A must reduce to T")
   (itest (equalp (collapse '(and t nil))
-                  nil)
-          nil "An assertion of truth and falsity must reduce to false.")
+                 nil)
+         nil "An assertion of truth and falsity must reduce to false.")
   (itest (equalp (collapse '(or t nil))
-                  t)
-          nil "An assertion of truth or falsity must reduce to truth.")
+                 t)
+         nil "An assertion of truth or falsity must reduce to truth.")
   (itest (equalp (collapse '(or nil b)) 'b)
-          nil "An assertion of OR with only one true value reduces to
+         nil "An assertion of OR with only one true value reduces to
                   that value.")
   (itest (equalp (collapse '(and (or t nil) nil))
-                  nil)
-          nil "( ( T ∨ NIL ) ∧ NIL ) ⇒ NIL")
+                 nil)
+         nil "( ( T ∨ NIL ) ∧ NIL ) ⇒ NIL")
   (cerror "Good, keep going" "Passed all the simplest tests")
   (let ((sentence "Why is the cat purple?"))
     (print sentence)
@@ -1220,8 +1218,8 @@ must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
     (princ "Lex:")
     (let ((lexed (lex-sentence sentence :en)))
       (itest (equalp lexed
-                      '("Why" "is" "the" "cat" "purple" "?"))
-              nil "Lexing this sentence should yield the given result")
+                     '("Why" "is" "the" "cat" "purple" "?"))
+             nil "Lexing this sentence should yield the given result")
       (print lexed)
       (fresh-line)
       (princ "Tag:")
@@ -1234,8 +1232,8 @@ must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
                         (or ("purple" :noun) ("purple" :verb) ("purple" :adjective))
                         ("?" :punctuation :sentence-terminal :interrogative))))
         (itest (equalp tagged expected) (tagged expected)
-                "Expected to tag ~A~%as: ~A~%but instead got~%~A"
-                (treely lexed) (treely expected) (treely tagged))
+               "Expected to tag ~A~%as: ~A~%but instead got~%~A"
+               (treely lexed) (treely expected) (treely tagged))
         (print (treely tagged))
         (fresh-line)
         (princ "Print tagged:")
@@ -1270,8 +1268,8 @@ must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
                   (#3# :ARTICLE :DEFINITE) (#4# :VERB) (#5# :ADJECTIVE)
                   (#6# :PUNCTUATION :SENTENCE-TERMINAL :INTERROGATIVE)))))
           (itest (equalp tagged-superposition expected-superposition)
-                  (tagged-superposition expected-superposition)
-                  "The tagged sentence contains superpositions, which need to be normalized
+                 (tagged-superposition expected-superposition)
+                 "The tagged sentence contains superpositions, which need to be normalized
 into a singular top-level superposed sentence (this is a sort of first normal form,
 which is a cross product of the interior superpositions). This process should have
 returned:
@@ -1279,7 +1277,7 @@ returned:
 
 Instead, the following was returned:
 ~A"
-                  (treely expected-superposition) (treely tagged-superposition))
+                 (treely expected-superposition) (treely tagged-superposition))
           (print-tagged tagged-superposition)
           (fresh-line)
           (let ((parses
