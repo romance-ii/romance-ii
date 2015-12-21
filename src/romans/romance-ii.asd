@@ -37,7 +37,7 @@
                :usocket
                #+old-wordnet :wordnet
 
-               :brfputils
+               :elephant
                
                )
 
