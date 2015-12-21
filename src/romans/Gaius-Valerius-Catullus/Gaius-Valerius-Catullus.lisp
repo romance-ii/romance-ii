@@ -24,7 +24,13 @@
          when (string-equal (second path) (symbol-name language-code))
          return (list :english-word xlat)
          finally (list :foreign-term utterance))
-      (list :untranslatable utterance)))
+      (let ((path (split-sequence #\/ utterance
+                                  :remove-empty-subseqs t)))
+        (assert (and (<= 3 (length path))
+                     (string-equal "c" (first path))
+                     (<= 2 (length (second path)) 3)))
+        (append (list :untranslatable (make-keyword (second path))) 
+                (nthcdr 2 path)))))
 
 (defgeneric utterance->human (utterance language-code))
 
