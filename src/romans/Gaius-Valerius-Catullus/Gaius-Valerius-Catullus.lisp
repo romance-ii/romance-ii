@@ -467,12 +467,70 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defvar *initialized* nil)
 
+(define-constant +conceptnet5-download-root+ "http://conceptnet5.media.mit.edu/downloads/current/"
+  :test #'string-equal
+  :documentation "The URI under which the ConceptNet5 files can be downloaded.")
+
+(defun download-current-conceptnet5-files (wildcard)
+  (let ((download-to  (make-pathname :directory (pathname-directory wildcard))))
+    (format *trace-output* "~& Going to try to download ConceptNet5~% from ~a~% to ~a"
+            +conceptnet5-download-root+ download-to)
+    (let* ((index (progn
+                    (format *trace-output* "~&Looking for latest version of ConceptNet5 …")
+                    (drakma:http-request +conceptnet5-download-root+)))
+           (ref-uri (concatenate 'string +conceptnet5-download-root+ 
+                                 (multiple-value-bind (begin end beginnings endings)
+                                     (scan "<a href=\"(conceptnet5_flat_csv_[\\d\\.]+\\.tar\\.bz2)\""
+                                           index)
+                                   (declare (ignore begin end))
+                                   (assert (and (vectorp beginnings)
+                                                (plusp (length beginnings))) ()
+                                                "Looking for <a href=\"(conceptnet5_flat_csv_[\\d\\.]+\\.tar\\.bz2)\" at ~a, but did not find it"
+                                                +conceptnet5-download-root+)
+                                   (subseq index (elt beginnings 0) (elt endings 0)))))
+           (tar-bz2 (progn (format *trace-output* " Downloading ~a … (This will be several 100's of MiB, so it could take a moment) " ref-uri)
+                           (drakma:http-request ref-uri))))
+      (format *trace-output* " Decompressing and expanding tarball …")
+      (uiop/stream:with-temporary-file (:pathname temp-file
+                                                  :prefix "tmp.download.ConceptNet5.db.csv"
+                                                  :suffix "" :type ".tar.bz2"
+                                                  :directory download-to)
+        
+        (with-output-to-file (temp-stream temp-file :if-exists :supersede :element-type '(unsigned-byte 8))
+          (map nil (rcurry #'write-byte temp-stream) tar-bz2))
+        (uiop:run-program (format nil "cd '~a'; tar -xjvf '~a'" download-to temp-file) 
+                          :input nil :output *trace-output* :error-output *trace-output*))
+      (dolist (csv-file (directory (merge-pathnames (make-pathname :directory '(:relative "data" "assertions")
+                                                                   :name :wild :type "csv")
+                                                    download-to)))
+        (rename-file csv-file (make-pathname :directory (pathname-directory download-to)
+                                             :name (pathname-name csv-file)
+                                             :type "csv"))))))
+
+(defun ensure-conceptnet5-db-unzipped (wildcard)
+  (unless (plusp (length (directory wildcard)))
+    (format *trace-output* "~&CSV “database” not present; ")
+    (let ((bz2s (directory (make-pathname 
+                            :directory (pathname-directory wildcard)
+                            :name :wild :type "csv.bz2"))))
+      (cond ((plusp (length bz2s)) 
+             (format *trace-output* " … found BZip2 compressed copy; decompressing:~%")
+             (dolist (bz2 bz2s)
+               (uiop:run-program (format nil "bzip -d '~a'" bz2) :output *trace-output* :error-output *trace-output* :input nil))
+             (format *trace-output* " … done."))
+            (:otherwise (format *trace-output* " … and BZip2 compressed copies also not found.")))))
+  (unless (plusp (length (directory wildcard)))
+    (download-current-conceptnet5-files wildcard)))
+
 (defun load-conceptnet5-csv-database
     (&optional
-       (wildcard (make-pathname :host "r2src"
-                                :directory '(:absolute "conceptnet5-csv" "assertions")
-                                :name :wild
-                                :type "csv")))
+       (wildcard (merge-pathnames (make-pathname :directory '(:relative "conceptnet5-csv" "assertions")
+                                                 :name :wild
+                                                 :type "csv")
+                                  ROMANS-COMPILER-SETUP:*PATH/R2SRC*)))
+  (ensure-conceptnet5-db-unzipped wildcard)
+  (unless (plusp (length (directory wildcard)))
+    (error "Cannot find ConceptNet5 CSV “database” files; cannot proceed."))
   (format *trace-output* "~&~%Loading ConceptNet5 dataset from ~S" wildcard)
   (in-db (time (conceptnet5-read-files wildcard)))
   (format *trace-output*
