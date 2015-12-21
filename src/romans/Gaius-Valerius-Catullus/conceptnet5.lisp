@@ -17,7 +17,7 @@
 (defmacro in-db (&body body)
   `(restart-case
        (handler-case
-           (progn 
+           (progn
              (unless *concept-db*
                (connect-concepts-db))
              ,@body))
@@ -33,7 +33,7 @@
 (defun connect-concepts-db ()
   (setf *concept-db* (sqlite:connect
                       (merge-pathnames (make-pathname :directory '(:relative "concoptnet5-csv" "assertions")
-                                                      :name "conceptnet5" 
+                                                      :name "conceptnet5"
                                                       :type "sqlite.db")
                                        romans-compiler-setup:*path/r2src*)
                       #+ (or) ":memory:"))
@@ -89,39 +89,39 @@
        '("CREATE TABLE atoms (symbol VARCHAR)"
          "CREATE INDEX symbolic ON atoms (symbol)"
          "CREATE TABLE concepts (s INT, p INT, o INT)"
-         "CREATE INDEX spo ON concepts (s, p, o)"
-         "CREATE INDEX sp ON concepts (s, p)"
-         "CREATE INDEX po ON concepts (p, o)"
-         "CREATE INDEX so ON concepts (s, o)"
          "CREATE INDEX s ON concepts (s)"
          "CREATE INDEX p ON concepts (p)"
-         "CREATE INDEX o ON concepts (o)")))
+         "CREATE INDEX o ON concepts (o)"
+         "CREATE INDEX sp ON concepts (s, p)"
+         "CREATE INDEX so ON concepts (s, o)"
+         "CREATE INDEX po ON concepts (p, o)"
+         "CREATE INDEX spo ON concepts (s, p, o)")))
 
 (defvar &select-atom-id)
 (defvar &insert-atom)
 (defvar &insert-concept)
-(defvar &select-concept-spo)
-(defvar &select-concept-sp)
-(defvar &select-concept-po)
-(defvar &select-concept-so)
 (defvar &select-concept-s)
 (defvar &select-concept-p)
 (defvar &select-concept-o)
+(defvar &select-concept-sp)
+(defvar &select-concept-so)
+(defvar &select-concept-po)
+(defvar &select-concept-spo)
 
 (defun intern-cn5-symbol (symbol)
   (declare (type string symbol))
   (in-db
-   (if-let ((id (progn
-                  (sqlite:reset-statement &select-atom-id)
-                  (sqlite:bind-parameter &select-atom-id 1 symbol)
-                  (sqlite:step-statement &select-atom-id)
-                  (sqlite:statement-column-value &select-atom-id 0))))
-     id
-     (with-lock-held (*concept-db-lock*)
-       (sqlite:reset-statement &insert-atom)
-       (sqlite:bind-parameter &insert-atom 1 symbol)
-       (sqlite:step-statement &insert-atom)
-       (sqlite:last-insert-rowid *concept-db*)))))
+    (if-let ((id (progn
+                   (sqlite:reset-statement &select-atom-id)
+                   (sqlite:bind-parameter &select-atom-id 1 symbol)
+                   (sqlite:step-statement &select-atom-id)
+                   (sqlite:statement-column-value &select-atom-id 0))))
+      id
+      (with-lock-held (*concept-db-lock*)
+        (sqlite:reset-statement &insert-atom)
+        (sqlite:bind-parameter &insert-atom 1 symbol)
+        (sqlite:step-statement &insert-atom)
+        (sqlite:last-insert-rowid *concept-db*)))))
 
 (defun add-concept (subj pred obj
                     &aux
@@ -129,13 +129,13 @@
                       (p (intern-cn5-symbol pred))
                       (o (intern-cn5-symbol obj)))
   (in-db
-   (with-lock-held (*concept-db-lock*)
-     (sqlite:reset-statement &insert-concept)
-     (sqlite:bind-parameter &insert-concept 1 s)
-     (sqlite:bind-parameter &insert-concept 2 p)
-     (sqlite:bind-parameter &insert-concept 3 o)
-     (sqlite:step-statement &insert-concept)
-     (sqlite:last-insert-rowid *concept-db*))))
+    (with-lock-held (*concept-db-lock*)
+      (sqlite:reset-statement &insert-concept)
+      (sqlite:bind-parameter &insert-concept 1 s)
+      (sqlite:bind-parameter &insert-concept 2 p)
+      (sqlite:bind-parameter &insert-concept 3 o)
+      (sqlite:step-statement &insert-concept)
+      (sqlite:last-insert-rowid *concept-db*))))
 
 (defgeneric find-facts (s p o)
   (:documentation "Find facts in the conceptual database that match
@@ -147,7 +147,7 @@
                                    s-spec p-spec o-spec)))
         (p-index (if s-spec 2 1))
         (o-index (+ 1 (if s-spec 1 0) (if p-spec 1 0))))
-    `(defmethod find-facts 
+    `(defmethod find-facts
          ((subj ,(if s-spec 'string '(eql '*)))
           (pred ,(if p-spec 'string '(eql '*)))
           (obj  ,(if o-spec 'string '(eql '*))))
@@ -187,12 +187,12 @@
        for (pred subj obj) = (subseq parts 1 4)
        do (add-concept subj pred obj)
        when (or nil (= 0 (random 10000)))
-       do (format *trace-output* "~& - Record #~:D states:	~A"
+       do (format *trace-output* "~& - Record #~:D states: ~A"
                   line-count (utterance->human (list subj pred obj) :en))
        finally (format *trace-output* "~& Finished with ~:D records" line-count))))
 
 (defun conceptnet5-read-files (wildcard)
-  (mapcar #'conceptnet5-file->sexp (directory wildcard)))
+  (map nil #'conceptnet5-file->sexp (directory wildcard)))
 
 (defun print-fact (s p o)
   (format t "~&~A" (utterance->human (list s p o) :en)))
