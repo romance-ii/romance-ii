@@ -1,12 +1,10 @@
 (defpackage :publius-cornelius-tacitus
   (:nicknames :tacitus)
-  (:documentation  "Publius   Cornelius  Tacitus,  or   Gaius  Cornelius
-  Tacitus (born  ad )56—died c.  120), Roman orator and  public official,
-  probably the greatest historian and one of the greatest prose stylists
-  who wrote in the Latin language.
+  (:documentation "Publius Cornelius Tacitus, or  Gaius Cornelius Tacitus (born ad 156 — died  c. 120), Roman orator and
+  public  official,  probably  the  greatest historian  and  one  of  the  greatest  prose  stylists who  wrote  in  the
+  Latin language.
 
-The Tacitus  package produces  the TexInfo  documentation from  the Lisp
-source code.")
+The Tacitus package produces the TexInfo documentation from the Lisp source code.")
   (:export #:make-documentation)
   (:use :cl :alexandria))
 
