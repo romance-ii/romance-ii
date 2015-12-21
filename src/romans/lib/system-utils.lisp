@@ -1,4 +1,4 @@
-(in-package :brfp)
+(in-package :romans)
 
 (defun prerequisite-systems (&optional (child :romance-ii))
   (check-type child string-designator)
@@ -17,9 +17,10 @@
      (lambda (sys)
        (member sys
                #+sbcl '(:sb-grovel :sb-posix :sb-rotate-byte
-                        :sb-grovel :sb-bsd-sockets)
-               #-sbcl '()))
-     (remove-duplicates (append (mapcan #'prerequisite-systems prereqs) prereqs)))))
+                        :sb-grovel :sb-bsd-sockets)))
+     (remove-duplicates
+      (append (mapcan #'prerequisite-systems prereqs)
+              prereqs)))))
 
 
 (define-constant +license-words+
@@ -32,9 +33,7 @@
    (make-pathname :directory '(:relative "doc" "legal" "licenses")
                   :name (string-downcase (string system))
                   :type "txt")
-   (or #+romans romans-compiler-setup:*path/r2project*
-       *load-truename*
-       *compile-file-truename*)))
+   romans-compiler-setup:*path/r2project*))
 
 (defun find-copyrights (&optional (longp nil))
   (append
@@ -85,7 +84,7 @@
                              (make-pathname :directory '(:relative "doc" "legal" "licenses")
                                             :name "bullet2"
                                             :type "txt")
-                             #+romans romans-compiler-setup:*path/r2project*)))
+                             romans-compiler-setup:*path/r2project*)))
        (list (list :bullet2 "MIT")))))
 
 
@@ -171,4 +170,13 @@ git
          (or *compile-file-truename* *load-truename*)
          *features*))
 
+
+
+(defun reference-path (&rest relative-path)
+  (let ((directory-part (butlast relative-path))
+        (file-name-path (lastcar relative-path)))
+    (merge-pathnames-as-file
+     romans-compiler-setup:*path/r2project*
+     (make-pathname :directory (append (list :relative ".." "reference") directory-part)
+                    :name file-name-path))))
 

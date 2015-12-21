@@ -20,7 +20,6 @@ Example: To start or join a cluster, you can run:
 
 REPL, HELP, or COPYRIGHTS are also options.")))))
 
-
 (defun romanize-print (stream string)
   (let ((len (length string))
         (string (substitute #\C #\G
@@ -32,7 +31,7 @@ REPL, HELP, or COPYRIGHTS are also options.")))))
 
 (defun server-start-banner (short-name long-name purpose)
   (romanize-print *standard-output* short-name)
-  
+
   (format *standard-output* "~&~|
 ;
 ; ----------------------------------------------------------------------
@@ -58,7 +57,7 @@ Software ~A ~A
           (lisp-implementation-type) (lisp-implementation-version)
           (software-type) (software-version)
           (copyrights))
-  
+
   (romanize-print *standard-output* long-name))
 
 (defun command-line-help ()

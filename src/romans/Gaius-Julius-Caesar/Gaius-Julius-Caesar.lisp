@@ -71,12 +71,13 @@
 (defun find-throwing-frame ()
   (let ((foundp nil))
     (ignore-errors
-      (trivial-backtrace:map-backtrace
-       (lambda (frame)
-         (let ((function (trivial-backtrace::frame-func frame)))
-           (cond
-             ((member function '(signal throw error warn)) (setf foundp t))
-             (foundp (return-from find-throwing-frame frame)))))))))
+     (trivial-backtrace:map-backtrace
+      (lambda (frame)
+        (let ((function (trivial-backtrace::frame-func frame)))
+          (cond
+            ((member function '(signal throw error warn))
+             (setf foundp t))
+            (foundp (return-from find-throwing-frame frame)))))))))
 
 (defun frame-funcall (frame)
   (format nil "(~S~{ (~S←~S ~})"
@@ -213,7 +214,7 @@
            (caesar:report ,(make-keyword (concatenate 'string "LISP-" (string case)))
                           (format nil
                                   ,(concatenate 'string "Application signaled "
-                                                (a/an (string case))
+                                                (string-downcase (a/an (string case)))
                                                 " condition:~%~S~% “~:*~A”")
                                   condition)
                           :condition condition
@@ -311,45 +312,98 @@
                   (report-keys r)))))
      ,@body))
 
+(defun start-module-in-thread (mod-keyword module-start)
+  (bordeaux-threads:make-thread
+   module-start
+   :name (string (gensym (format nil "~:(~a~) thread " mod-keyword)))))
+
 (defmacro with-oversight ((module &key soft-timeout hard-timeout) &body body)
-  (let ((mod-keyword (make-keyword (string-upcase (string module)))))
+  (let* ((mod-keyword (make-keyword (string-upcase (string module))))
+         (module-block (format-symbol *package* 
+                                      "~A-MODULE" mod-keyword))
+         (module-start (format-symbol *package* 
+                                      "~A-START" mod-keyword)))
     `(let ((*module* ',mod-keyword))
-       (block ,(format-symbol *package* "~A-MODULE" mod-keyword)
-         (with-report-acceptor
-           (with-timeout-handler (,soft-timeout ,hard-timeout)
-             (handler-bind
-                 (,(oversight-handle 'error)
-                  ,(oversight-handle 'warning))
-               (caesar:report :begin-oversight "Beginning oversight by Caesar")
-               (unwind-protect
-                    (restart-bind
-                        ((exit-module
-                          (lambda ()
-                            (return-from
-                             ,(format-symbol *package* "~A-MODULE" mod-keyword)
-                              nil))
-                           :report-function (lambda (stream)
-                                              (princ ,(format nil "Exit the ~:(~a~) module"
-                                                              mod-keyword)
-                                                     stream))))
-                      ,@body)
-                 (caesar:report :end-oversight "Ending oversight by Caesar")))))))))
+       (block ,module-block
+         (labels
+             ((,module-start ()
+                (with-report-acceptor
+                  (with-timeout-handler (,soft-timeout ,hard-timeout)
+                    (handler-bind
+                        (,(oversight-handle 'error)
+                         ,(oversight-handle 'warning))
+                      (caesar:report :begin-oversight
+                                     "Beginning oversight by Caesar")
+                      (unwind-protect
+                           (restart-bind
+                               ((restart-module-in-new-thread
+                                 (lambda ()
+                                   (start-module-in-thread ,mod-keyword (function ,module-start))
+                                   t)
+                                  :report-function
+                                  (lambda (stream)
+                                    (princ
+                                     ,(format nil "Restart the ~:(~a~) module in a new thread"
+                                              mod-keyword)
+                                     stream)))
+                                (exit-module
+                                 (lambda ()
+                                   (return-from
+                                    ,module-block
+                                     nil))
+                                  :report-function 
+                                  (lambda (stream)
+                                    (princ ,(format nil "Exit the ~:(~a~) module"
+                                                    mod-keyword)
+                                           stream))))
+                             ,@body)
+                        (caesar:report :end-oversight "Ending oversight by Caesar")))))))
+           (,module-start))))))
 
 
 
 
 (defvar *cluster* nil)
 
+(defvar *mdns-service-type* "_romance2")
+
+(defun find-avahi-server ()
+  (dbus:with-open-bus (bus (dbus:session-server-addresses))
+    (dbus:with-introspected-object 
+        (avahi bus 
+               "/"
+               "org.freedesktop.Avahi.ServiceResolver")
+      (avahi "org.freedesktop.Avahi.ServiceResolver" "Found"))))
+
+(defun find-all-clusters ()
+  (todo))
+
+(defun cluster-address (cluster)
+  (when cluster
+    (todo)))
+
+(defun cluster-name (cluster)
+  (when cluster
+    (todo)))
+
 (defun find-cluster (&key cluster-name cluster-address)
-  (let ((found (remove-if #'null
-                          (append (when cluster-address
-                                    (todo))
-                                  (when cluster-name
-                                    (todo))
-                                  (unless (or cluster-name cluster-address)
-                                    (todo))))))
+  (let ((found (remove-if
+                #'null
+                (append (when cluster-address
+                          (remove-if-not
+                           (complement (curry #'equalp cluster-name))
+                           (find-all-clusters)
+                           :key #'cluster-address))
+                        (when cluster-name
+                          (remove-if-not
+                           (complement (curry #'equalp cluster-name))
+                           (find-all-clusters)
+                           :key #'cluster-name))
+                        (unless (or cluster-name cluster-address)
+                          (find-all-clusters))))))
     (case (length found)
-      (0 (format *trace-output* "~&Could not find any cluster~@[ named ~a~]~@[ at address ~a~]"
+      (0 (format *trace-output*
+                 "~&Could not find any cluster~@[ named ~a~]~@[ at address ~a~]"
                  cluster-name cluster-address)
          nil)
       (1 (car found))
@@ -358,14 +412,30 @@
 Please provide an unique name or address to join one cluster"
                         cluster-name cluster-address found)))))
 
-(defun start-cluster (&key (cluster-name (random-elt
-                                          (remove-if
-                                           (curry #'find-cluster :cluster-name)
-                                           '("Beefy" "Composite" "Ganesh" "Goethe"
-                                             "Indira" "Prime" "Rama" "Whitney")))))
+(defparameter *default-cluster-names*
+  '("Beefy" "Composite" "Ganesh" "Goethe"
+    "Indira" "Prime" "Rama" "Whitney"))
+
+(define-constant +server-packages+
+    '(:appius :asinius :clodia :frontinus :galen :lutatius :narcissus :rabirius :regillus :vitruvius)
+  :test #'equalp)
+
+(defun start-cluster (&key cluster-name)
+  (unless cluster-name
+    (loop for name in (shuffle *default-cluster-names*)
+       until (not (find-cluster :cluster-name name))
+       finally (setf cluster-name name)))
+  (unless cluster-name
+    (while (not (and cluster-name
+                     (find-cluster :cluster-name cluster-name))) 
+      (setf cluster-name
+            (string (gensym (random-elt *default-cluster-names*))))))
   (when (find-cluster :cluster-name cluster-name)
     (error "Cluster named “~a” already exists, but I was asked to start it." cluster-name))
-  (funcall (intern "START-SERVER/TCP-LISTENER" (find-package "APPIUS"))))
+  (let ((*cluster* cluster-name))
+    (dolist (package +server-packages+)
+      (start-module-in-thread (format-symbol package "Package ~:(~a~)" package)
+                              (intern "START-SERVER" (find-package package))))))
 
 (defun join-cluster (&optional (cluster *cluster*))
   (format *trace-output* "~&Contacting cluster ~a to join them…" cluster)

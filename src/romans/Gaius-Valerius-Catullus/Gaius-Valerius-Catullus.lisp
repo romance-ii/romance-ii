@@ -49,7 +49,6 @@
     ("/r/DefinedAs" "~0@*~A is defined as being ~2@*~A.")
     ("/r/Derivative" "~2@*~A is derived from ~0@*~A.")
     ("/r/DerivedFrom" "~0@*~A is derived from ~2@*~A.")
-    ("/r/DerivedFrom" "~0@*~A is derived from ~2@*~A.")
     ("/r/DesireOf" "~0@*~A is the desire of ~2@*~A.")
     ("/r/Desires" "~0@*~A desires ~2@*~A.")
     ("/r/Entails" "~0@*~A entails ~2@*~A.")
@@ -1312,7 +1311,7 @@ Instead, the following was returned:
 
 
 
-(defun server-start (argv)
+(defun server-start (&optional argv)
   (declare (ignorable argv))
   (romance:server-start-banner "Catullus"
                                "Gaius Valerius Catullus"

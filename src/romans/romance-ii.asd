@@ -3,9 +3,10 @@
   :author "Bruce-Robert Fenn Pocock"
   :version "2.0.5"
   :maintainer "Bruce-Robert Fenn Pocock"
-  :mailto "brpocock+romance2@star-hope.org"
+  ;; CLisp objects to :mailto and :long-name
+  #-clisp  :mailto #-clisp "brpocock+romance2@star-hope.org"
   :licence "AGPLv3"
-  :long-name "Romance Ⅱ Game System"
+  #-clisp :long-name #-clisp "Romance Ⅱ Game System"
 
   :depends-on (
 
@@ -19,11 +20,13 @@
                :cl-readline
                :cl-unicode
                :cffi
+               :dbus
                :gsll
                :langutils
                :local-time
                :parse-number
                :postmodern
+               :png-read
                :prepl
                :split-sequence
                :sqlite

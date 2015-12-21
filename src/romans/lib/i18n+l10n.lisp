@@ -1,4 +1,4 @@
-(in-package :brfp)
+(in-package :romans)
 
 ;;; Internationalization and Localization Support
 
@@ -6,21 +6,35 @@
     '((:en "English" "English" "Language")
       (:es "Español" "Spanish" "Idioma")
       (:fr "Français" "French" "Langue")
-      (:ga "Gaeilge" "Irish" "Teanga")
-      (:ru "Русский" "Russian" "Язык")
-      (:la "Lingua Latina" "Latin" "Lingua"))
+      (:ga "Gaeilge" "Irish" "Teanga"))
   :test 'equalp)
 
 (define-condition language-not-implemented-warning (warning)
   ((language :initarg :language :reader language-not-implemented)
    (fn :initarg :function :reader language-not-implemented-function))
-  (:report (lambda (s c)
+  (:report (lambda (c s)
              (format s "There is not an implementation of ƒ ~A for language ~A ~@[~{~*(~A/~A)~}~]"
                      (slot-value c 'fn)
                      (slot-value c 'language)
                      (assoc (language-not-implemented c) +language-names+)))))
 
-(defmacro defun-lang (function (&rest lambda-list) &body bodies)
+(define-condition language-coverage-warning (simple-warning)
+  ((covered :reader languages-covered :initarg :covered)
+   (method :reader language-function :initarg :method)))
+
+(defmethod initialize-instance :after ((self language-coverage-warning) &key covered method)
+  (setf (slot-value self 'sb-kernel::format-control)
+        "Defining ƒ ~A with partial language support: ~{~{~%  • ~5A: ~20A ~:[ ✗ ~; ✓ ~]~}~}"
+        
+        (slot-value self 'sb-kernel::format-arguments)
+        (list method 
+              (mapcar (lambda (language)
+                        (list (car language)
+                              (third language)
+                              (member (car language) covered)))
+                      +language-names+))))
+
+(defmacro define-language-function (function (&rest lambda-list) &body bodies)
   (let ((underlying (intern (concatenate 'string (string function) "%"))))
     (let ((implemented (mapcar #'car bodies)))
       (unless (every (lambda (language) (member language implemented)) 
@@ -31,7 +45,9 @@
                         (list (car language)
                               (third language)
                               (member (car language) implemented)))
-                      +language-names+))))
+                      +language-names+))
+        (warn 'language-coverage-warning
+              :covered implemented :method function)))
     `(progn 
        (defgeneric ,underlying (language ,@lambda-list)
          ,@(mapcar (lambda (body)
@@ -61,6 +77,7 @@
 
 
 ;;; Genders of words which cannot be guessed by their declensions
+
 
 (defvar irish-gender-dictionary (make-hash-table :test 'equal))
 (dolist (word (@$ adharc  baintreach  báisteach  buíon  caor  cearc 
@@ -116,25 +133,10 @@
   (setf (gethash (string word) english-gender-dictionary) :m))
 
 
-(defun latin-normalize (string)
-  (regex-replace-pairs '(("i" "j")
-                         ("v" "u")
-                         ("w" "uu")
-                         ("æ" "ae")
-                         ("œ" "oe"))
-                       (string-downcase string)))
 
-(defun latin-presentation-form (string)
-  (funcall (letter-case string)
-           (regex-replace-pairs '(("ae" "æ")
-                                  ("oe" "œ")
-                                  ("u" "v"))
-                                (string-downcase string))))
-
-
 ;; Determine the gender and declension of a word
 
-(defun-lang gender-of (noun)
+(define-language-function gender-of (noun)
   (:en (if-let ((gender (gethash (string-upcase noun) english-gender-dictionary)))
          gender
          :n))
@@ -145,44 +147,25 @@
   (:fr (if (member (last-elt noun) '(#\e #\E))
            :f
            :m))
-  (:la (or (gethash (latin-normalize noun) latin-gender-dictionary)
-           (case (declension-of noun)
-             (1 :f)
-             (2 (string-ends-with-case noun
-                  ("us" :m)
-                  ("um" :n)))
-             (3 :m) ; totally random guess
-             (4 :f)
-             (5 :f))))
-  (:ga (or (gethash (string-downcase noun) irish-gender-dictionary)
-           (string-ends-with-case noun
-             (("e" "í") :f)
-             ((@$ a o e u i
-                  á ó é ú í 
-                  ín) :m)
-             ((@$ áil úil ail úint cht irt) :f)
-             ((@$ éir eoir óir úir) :m)
-             (("óg" "eog" "lann") :f)
-             (otherwise 
-              (if (irish-broad-ending-p noun)
-                  :m
-                  :f))))))
+  (:ga (if-let ((gender (gethash (string-downcase noun) irish-gender-dictionary)))
+         gender
+         (string-ends-with-case noun
+           (("e" "í") :f)
+           ((@$ a o e u i
+                á ó é ú í 
+                ín) :m)
+           ((@$ áil úil ail úint cht irt) :f)
+           ((@$ éir eoir óir úir) :m)
+           (("óg" "eog" "lann") :f)
+           (otherwise 
+            (if (irish-broad-ending-p noun)
+                :m
+                :f))))))
 
-(defun-lang declension-of (noun)
+(define-language-function declension-of (noun)
   (:en nil)
-  (:la (if-let (genitive (gethash (latin-normalize noun) latin-genitives))
-         (string-ends-with-case genitive
-           ("ae" 1)
-           ("ēī" 5)
-           ("ī" 2)
-           ("is" 3)
-           ("ūs" 4)))                       
-       (string-ends-with-case noun      ; bad fallback
-         ("a" 1)
-         ("us" 2)                       ; could be 4, but less likely…
-         ("um" 2)
-         ("ēs" 5)
-         (otherwise 3))) 
+  (:es nil)
+  (:fr nil)
   (:ga (if-let ((overrule (gethash noun irish-declension-dictionary)))
          overrule
          (cond
@@ -199,209 +182,6 @@
                 (not (irish-broad-ending-p noun))) 2)
            ((irish-broad-ending-p noun) 1)
            (t (warn "Can't guess declension () of “~a”" noun))))))
-
-(defvar latin-genitives (make-hash-table :test #'equal))
-(defvar latin-gender-dictionary (make-hash-table :test #'equal))
-
-(let ((array (mapcar (lambda (word)
-                       (let ((parts (split-sequence #\space (substitute #\space #\, word) :remove-empty-subseqs t :count 3)))
-                         (if (char= (elt (elt parts 1) 0) #\-)
-                             (list (elt parts 0) (keyword* (elt parts 1)) (keyword* (elt parts 2)))
-                             (list (elt parts 0) (elt parts 1) (keyword* (elt parts 2))))))
-                     '("accola -ae m"
-                       "advena -ae m"
-                       "agricola, -ae, m"
-                       "agripeta, -ae m"
-                       "alienigena -ae m"
-                       "alipta -ae m"
-                       "aliptes aliptae m"
-                       "amniclola -ae m"
-                       "anagnostes anagnostae m"
-                       "analecta, -ae m"
-                       "anguigena, -ae m"
-                       "anthias, -ae m"
-                       "archipirata, -ae m"
-                       "artopta, -ae m"
-                       "athleta, -ae m"
-                       "auriga, -ae m"
-                       "Abnoba, -ae m"
-                       "Acestes, Acestae m"
-                       "Achates, -ae m"
-                       "Acmonides, -ae m"
-                       "Actorides, -ae m"
-                       "Aeeta, -ae m"
-                       "Aeneas, -ae m"
-                       "Aenides, -ae m"
-                       "Agamemnonides, -ae m"
-                       "Agrippa, -ae m"
-                       "Ahala, -ae m"
-                       "Amisia, -ae m"
-                       "Amphiaraides, -ae m"
-                       "Ampycides, -ae m"
-                       "Amyntas, -ae m"
-                       "Amyntiades, -ae m"
-                       "Anas, Anae m"
-                       "Anaxagoras, -ae m"
-                       "Anchises, -ae m"
-                       "Anchisiades, -ae m"
-                       "Antiphates, -ae m"
-                       "Antisthenes, -ae m"
-                       "Aonides, -ae m"
-                       "Apolloniates, -ae m"
-                       "Appenninicola, -ae c"
-                       "Appenninigena, -ae c"
-                       "Arabarches, -ae m"
-                       "Archias, -ae m"
-                       "Arestorides, -ae m"
-                       "Asopiades, -ae m"
-                       "Astacides, -ae m"
-                       "Athamantiades, -ae m"
-                       "Atlantiades, -ae m"
-                       "Atrida Atridae m"
-                       "Atrides, Atridae m"
-                       "Atta, -ae m"
-                       "Aurigena, -ae m"
-                       "Axona, -ae m"
-                       "brabeuta, -ae m"
-                       "bucaeda, -ae m"
-                       "Bacchiadae, -ārum m"
-                       "Bagoas, -ae m"
-                       "Bagrada, -ae m"
-                       "Baptae, -ārum m"
-                       "Barcas, -ae m"
-                       "Bastarnae -ārum m"
-                       "Basternae, -ārum m"
-                       "Battiades, -ae m"
-                       "Belgae, -ārum m"
-                       "Bellerophontes, -ae m"
-                       "Belides, -ae m"
-                       "Bootes, -ae m"
-                       "Boreas, -ae m"
-                       "cacula, -ae m"
-                       "caecias, -ae m"
-                       "cataphractes, -ae m"
-                       "cerastes, -ae m"
-                       "choraules, -ae m"
-                       "citharista, -ae m"
-                       "clepta, -ae m"
-                       "cometes, -ae m"
-                       "conchita, -ae m"
-                       "conlega, -ae m"
-                       "convenae, -ārum c"
-                       "conviva, -ae m"
-                       "coprea, -ae m"
-                       "Caligula, -ae m"
-                       "Caracalla, -ae m"
-                       "Catilina, -ae m"
-                       "Cecropides, -ae m"
-                       "Celtae, -ārum m"
-                       "Charondas, -ae m"
-                       "Chrysas, -ae m"
-                       "Chryses, -ae m"
-                       "Cinga, -ae m"
-                       "Cinna, -ae m"
-                       "Cinyras, -ae m"
-                       "Clinias, -ae m"
-                       "Cliniades, -ae m"
-                       "Columella, -ae m"
-                       "Cotta, -ae m"
-                       "Crotoniates, -ae m"
-                       "Crotopiades, -ae m"
-                       "danista, -ae m"
-                       "dioecetes, -ae m"
-                       "draconigena, -ae m"
-                       "drapeta, -ae m"
-                       "Dalmatae, -ārum m"
-                       "Dolabella, -ae m"
-                       "etesiae, -ārum m"
-                       "Eleates, -ae m"
-                       "Eumolpidae, -ārum m"
-                       "faeniseca, -ae m"
-                       "fratricida, -ae m"
-                       "geometres, -ae m"
-                       "grammatista, -ae m"
-                       "gumia, -ae m"
-                       "Galatae, -ārum m"
-                       "Galba, -ae m"
-                       "Gangaridae, -ārum m "
-                       "Geta, -ae, m"
-                       "Gorgias, -ae m"
-                       "Graiugena, -ae m"
-                       "Gyas, -ae m"
-                       "Gyges, -ae m"
-                       "halophanta, -ae m"
-                       "heuretes, -ae m"
-                       "hybrida hybridae m"
-                       "hibrida -ae m"
-                       "hippotoxota, -ae m"
-                       "homicida, -ae c"
-                       "Heraclides, -ae m"
-                       "Herma -ae m"
-                       "Hermes Hermae m"
-                       "Hilotae, -ārum m"
-                       "Ilotae Itolārum m"
-                       "Hippias, -ae m"
-                       "Hippomenes, -ae m"
-                       "Hippotades, -ae m"
-                       "ignigena, -ae m"
-                       "incola, -ae m"
-                       "Ianigena, -ae m"
-                       "Iarbas (Iarba), -ae"
-                       "Iliades, -ae m"
-                       "Iuba, -ae m"
-                       "Iugurtha, -ae m"
-                       "Iura, -ae m"
-                       "lanista, -ae m"
-                       "latebricola, -ae m"
-                       "lixa, -ae m"
-                       "Ladas, -ae m"
-                       "Lamia, -ae m"
-                       "Lapithae, -ārum m"
-                       "Leonidas, -ae m"
-                       "nauta, -ae m"
-                       "parricida, -ae m"
-                       "pirata, -ae m"
-                       "poeta, -ae m"
-                       "Proca, -ae m"
-                       "tata, -ae m"
-                       "umbraticola, -ae m"
-                       "xiphias, -ae m"
-                       ))))
-  (flet ((apply-genitive (gen* nom)
-           (etypecase gen*
-             (string gen*)
-             (keyword (ecase gen*
-                        (:-ae (if (char= (last-elt nom) #\a)
-                                  (strcat nom "e")
-                                  (strcat nom "ae")))
-                        ((:-arum :-ārum) (strcat (if (string-ends "ae" nom)
-                                                     (subseq nom (- (length nom) 2)) 
-                                                     nom)
-                                                 "ārum"))
-                        ((:-ī :-i) (strcat (if (or (string-ends "um" nom)
-                                                   (string-ends "us" nom))
-                                               (subseq nom 0 (- (length nom) 2))
-                                               nom)
-                                           "ī"))
-                        ((:-orum :-ōrum) (strcat (if (string-ends "ae" nom)
-                                                     (subseq nom (- (length nom) 2)) 
-                                                     nom)
-                                                 "ōrum"))
-                        (:-is (strcat nom "is"))
-                        (:-ium (strcat nom "ium"))
-                        ((:-us :-ūs) (strcat (if (string-ends "us" nom)
-                                                 (subseq nom 0 (- (length nom) 2)) 
-                                                 nom)
-                                             "ūs"))
-                        ((:-ei :-ēī) (if (string-ends "ēs" nom)
-                                         (strcat (subseq nom 0 (- (length nom) 1)) "ī")
-                                         (strcat nom "ēī"))))))))
-    (dolist (word array)
-      (destructuring-bind (nom gen* &optional gender) word
-        (let ((gen (apply-genitive gen* nom)))
-          (setf (gethash (latin-normalize nom) latin-genitives) (latin-normalize gen))
-          (when gender
-            (setf (gethash (latin-normalize nom) latin-gender-dictionary) gender)))))))
 
 (let ((words (@$ aidiacht aiste anáil bacach bád bádóir
                  báicéir baincéir bainis béal buidéal caint
@@ -425,10 +205,10 @@
      for c-decl = (declension-of% :ga word)
      do (assert (and (eql gender c-g) (eql declension c-decl))
                 nil
-                "~a is ~a, ~:r declension (computed ~:[✗~;✓~]~a ~:[✗~;✓~], ~:r declension)"
+                "~a is ~a, ~:r declension (computed ~@[~*✗~]~a ~@[~*✗~], ~:r declension)"
                 word gender declension
-                (eql gender c-g) (or c-g "could not decide")
-                (eql declension c-decl) (or c-decl "could not compute"))))
+                (not (eql gender c-g)) c-g
+                (not (eql declension c-decl)) (or c-decl 0))))
 
 
 ;;; Presentation and internalized forms.
@@ -485,7 +265,7 @@ word may be “eclipsed” to change its sound. "
   "In Irish, eclipsis-added characters shouldn't be capitalized with the
 rest of the word; e.g. as an “bPoblacht.“
 
-It's technically allowed, but discouraged, in ALL CAPS writing."
+It's technically allowed' but discouraged, in ALL CAPS writing."
   (cond
     ((member (subseq word 0 2)
              '("MB" "GC" "ND" "NG" "BP" "DT")
@@ -516,14 +296,14 @@ It's technically allowed, but discouraged, in ALL CAPS writing."
                  last-vowel))
             (vowels (subseq ,word last-vowels-start (1+ last-vowel)))
             (ending (subseq ,word last-vowels-start)))
-       (flet ((replace-vowels (replacement)
-                (strcat (subseq ,word 0 last-vowels-start) replacement 
-                        (subseq ,word (1+ last-vowel))))
-              (replace-ending (replacement)
-                (strcat (subseq ,word 0 last-vowels-start) replacement))
-              (add-after-vowels (addition)
-                (strcat (subseq ,word 0 (1+ last-vowel)) addition 
-                        (subseq ,word (1+ last-vowel)))))
+       (labels ((replace-vowels (replacement)
+                  (strcat (subseq ,word 0 last-vowels-start) replacement 
+                          (subseq ,word (1+ last-vowel))))
+                (replace-ending (replacement)
+                  (strcat (subseq ,word 0 last-vowels-start) replacement))
+                (add-after-vowels (addition)
+                  (strcat (subseq ,word 0 (1+ last-vowel)) addition 
+                          (subseq ,word (1+ last-vowel)))))
          ,@body))))
 
 (defun caolú (word)
@@ -572,7 +352,7 @@ It's technically allowed, but discouraged, in ALL CAPS writing."
                          (subseq tail 0 1)
                          tail))
                (prefix (subseq word (1- ending-start))))
-
+          
           (cl-ppcre:regex-replace
            "(dn|nd)"
            (cl-ppcre:regex-replace
@@ -613,11 +393,11 @@ It's technically allowed, but discouraged, in ALL CAPS writing."
      "Continue, and look foolish when speaking Irish"
      #-irish-cerror
      warn 
-
+     
      "The LEATHNÚ function (used in Irish grammar) is being tested
-with a set of known-good word-forms, but something has gone awry
-and it has failed to properly “broaden” the ending of one or
-more of the words in the test set.
+        with a set of known-good word-forms, but something has gone awry
+        and it has failed to properly “broaden” the ending of one or
+        more of the words in the test set.
 
 Slender forms: ~{~A~^, ~}
 Computed broad forms: ~{~A~^, ~}
@@ -627,7 +407,7 @@ Correct broad forms: ~{~A~^, ~}"
 
 (defun leathnaítear (word)
   "LEATHNAÍTEAR (lenition) is used to change the leading consonant in
-certain situations in Irish grammar.
+  certain situations in Irish grammar.
 
 This does NOT enforce the dntls+dts nor m+bp exceptions.
 
@@ -645,21 +425,21 @@ Note that LEATHNÚ applies this to the final consonant, instead."
       (t word))))
 
 
-(defun-lang syllable-count (string)
+(define-language-function syllable-count (string)
   (:en (loop 
           with counter = 0
           with last-vowel-p = nil
-
+            
           for char across (string-downcase string)
           for vowelp = (member char '(#\a #\o #\e #\u #\i))
-
+            
           when (or (and vowelp
                         (not last-vowel-p))
                    (member char '(#\é #\ö #\ï)))
           do (incf counter)
-
+            
           do (setf last-vowel-p vowelp)
-
+            
           finally (return (max 1 
                                (if (and (char= char #\e)
                                         (not last-vowel-p))
@@ -668,44 +448,44 @@ Note that LEATHNÚ applies this to the final consonant, instead."
   (:es (loop 
           with counter = 0
           with last-i-p = nil
-
+            
           for char across (string-downcase string)
           for vowelp = (member char '(#\a #\o #\e #\u #\i))
-
+            
           when (or (and vowelp
                         (not last-i-p))
                    (member char '(#\á #\ó #\é #\ú #\í)))
           do (incf counter)
-
+            
           do (setf last-i-p (eql char #\i))
-
+            
           finally (return (max 1 counter))))
   (:ga (loop 
           with counter = 0
           with last-vowel-p = nil
-
+            
           for char across (string-downcase string)
           for vowelp = (irish-vowel-p char)
-
+            
           when (and vowelp
                     (not last-vowel-p))
           do (incf counter)
-
+            
           do (setf last-vowel-p vowelp)
-
+            
           finally (return (max 1 counter)))))
 
-(defun-lang diphthongp (letters)
+(define-language-function diphthongp (letters)
   (:en (member (string-downcase letters) 
                (@$ ow ou ie igh oi oo ea ee ai) :test 'string-starts-with))
   (:ga (member (string-downcase letters)
                '("ae" "eo" "ao" "abh" "amh" "agh" "adh")
-               :test #'string-beginning)))
+               :test #'string-starts-with)))
 
 (defun vowelp (letter)
   (find letter "aoeuiáóéúíýàòèùìỳäöëüïÿāōēūīãõẽũĩỹąęųįøæœåŭ"))
 
-(defun-lang long-vowel-p (syllable)
+(define-language-function long-vowel-p (syllable)
   (:en (if (and (= 2 (length syllable))
                 (not (vowelp (elt syllable 0)))
                 (alpha-char-p (elt syllable 0))
@@ -727,6 +507,10 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                                  (not (eql #\w (elt syllable (1+ first-vowel-pos))))
                                  (not (eql #\x (elt syllable
                                                     (1+ first-vowel-pos))))))))))))
+  (:es (or (member '(#\e #\i) syllable)
+           (< 1 (count-if #'vowelp syllable))))
+  (:fr (or (member '(#\e #\i) syllable)
+           (< 1 (count-if #'vowelp syllable))))
   (:ga (etypecase syllable
          (character
           (find syllable "áóéúí"))
@@ -761,7 +545,7 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                 (subseq string 0 (- len less))))
          (cond
            ((and (= 4 declension)	; 4* -iú
-                 (string-ends "iú" string))
+                 (string-ends-with string "iú"))
             ;; observed, brfp
             (strcat (lessen 2) "ithe"))
            ((and (= 4 declension)	; 4* -ú
@@ -781,7 +565,7 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                  (not (eql (elt string (- len 2)) #\t))
                  (not (eql (elt string (- len 2)) #\l)))
             (strcat (lessen 1) "t" (last-elt string)))
-
+           
            ((and (= 4 declension)	; 4 - a
                  (eql (last-elt string) #\a))
             (strcat string "í"))
@@ -795,7 +579,7 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                                               (- len 2)
                                               len))
                      (long-vowel-p% :ga (elt string (- len 1)))))
-
+            
             (strcat string "tha")       ; or -the
             )
            ((and (not multi-syllabic)	; 1♂,2♀ long+[ln]  (1-syl.)
@@ -854,7 +638,7 @@ Note that LEATHNÚ applies this to the final consonant, instead."
             ;; • add -(a)í
             ;; • -(e)adh, -(e)ach → (a)í
             ;; • -e → í
-
+            
             )
            ((and (= 2 declension)	; 2♀
                  (eq :f gender))
@@ -862,7 +646,7 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                     (if (irish-broad-ending-p string) 
                         "a"
                         "e")))
-
+           
            ((and (not multi-syllabic)	; 1♂,2♀,3♂,4* — (1-syl)
                  (or (and (eq :m gender)
                           (= 1 declension)
@@ -875,7 +659,7 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                      (= 4 declension)))
             (strcat string "anna")      ; -(e)anna??
             )
-
+           
            ((or (and (= 2 syllables)	; 1♂, -[lnr]; 2♀*, 3 -i[lnr], 4* — 2 syl.
                      (eq :m gender)
                      (= 1 declension)
@@ -890,22 +674,22 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                          (string-ends-with string "in")
                          (string-ends-with string "ir")))
                 (= 4 declension))
-
+            
             (strcat string "acha")	; or -eacha
             )
-
+           
            ((and (= 1 declension)	; 1♂*
                  (eq :m gender))
             (caolú string)
             #+ (or)
             ((and (= 1 declension)
                   (eq :m gender))
-;;; XXX probably special-case based on ending?
+            ;;; XXX probably special-case based on ending?
              (strcat (coimriú string) "e")))
-
+           
            ((= 3 declension)	; 3*
             (strcat (coimriú string) "a"))
-
+           
            (t (warn "Unable to figure out the plural form of “~A” (~:R decl. ~A)"
                     string declension gender)
               string)))))))
@@ -928,11 +712,9 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                   Swiss Québécois omnibus
                   Cherokee Cree Comanche Delaware Hopi
                   Iroquois Kiowa Navajo Ojibwa Sioux Zuni))
-  (setf (gethash word english-defective-plurals) word))
+  (setf (gethash word english-defective-plurals) t))
 
 (defvar english-irregular-plurals (make-hash-table :test 'equal)
-  "Words whose plurals cannot be guessed using the heuristics")
-(defvar english-irregular-plurals-reverse (make-hash-table :test 'equal)
   "Words whose plurals cannot be guessed using the heuristics")
 (loop for (s pl) in '(("child" "children") ("ox" "oxen")
                       ("cow" "kine") ("foot" "feet")
@@ -941,120 +723,58 @@ Note that LEATHNÚ applies this to the final consonant, instead."
                       ("genus" "genera") ("campus" "campuses")
                       ("viscus" "viscera") ("virus" "viruses")
                       ("opus" "opera") ("corpus" "corpera")
-                      ("cherub" "cherubim") 
-                      ("person" "people") ; contentious, but usually right
+                      ("cherub" "cherubim")
                       ("seraph" "seraphim") ("kibbutz" "kibbutzim")
                       ("inuk" "inuit") ("inukshuk" "inukshuit")
                       ("Iqalummiuq" "Iqalummiut")
                       ("Nunavimmiuq" "Nunavimmiut") 
                       ("Nunavummiuq" "Nunavummiut")
                       ("aide-de-camp" "aides-de-camp"))
-   do (setf (gethash s english-irregular-plurals) pl)
-   do (setf (gethash pl english-irregular-plurals-reverse) s))
+   do (setf (gethash s english-irregular-plurals) pl))
 
 (defun make-english-plural (string)
   "Attempt to pluralize STRING using some heuristics that should work
-well enough for many (most) English words. At least, an improvement upon
+well enough for many (most) English words. At least, am improvement upon
 ~:P …"
-  (when (search "person" string :test #'char-equal)
-    (setf string (regex-replace-pairs '(("PERSON" . "PEOPLE")
-                                        ("person" . "people")) string)))
-  (funcall (letter-case string)
-           (let ((s (string-downcase string)))
-             (flet ((lessen (n)
-                      (subseq s 0 (- (length s) n))))
-               (or (gethash s english-defective-plurals)
-                   (gethash s english-irregular-plurals)
-                   (string-ends-with-case s
-                     ;; Naturally, all of these are completely hueristic
-                     ;; and often incomplete, but they appear to cover
-                     ;; most irregular words without affecting too very
-                     ;; many words that they shouldn't.
-                     ("penny" (strcat (lessen 4) "ence"))
-                     ("eau" (strcat s "x"))
-                     (("ies" "ese" "fish") s)
-                     ("ife" (strcat (lessen 2) "ves"))
-                     (("eef" "eaf" "oaf") (strcat (lessen 1) "ves"))
-                     ("on" (strcat (lessen 2) "a"))
-                     ("ma" (strcat s "ta"))
-                     (("ix" "ex") (strcat (lessen 1) "ces"))
-                     ("nx" (strcat (lessen 1) "ges"))
-                     (("tum" "dum" "rum") (strcat (lessen 2) "a"))
-                     (("nus" "rpus" "tus" "cus" "bus" 
-                             "lus" "eus" "gus" "mus") (strcat (lessen 2) "i"))
-                     (("mna" "ula" "dia") (strcat (lessen 1) "ae"))
-                     ("pus" (strcat (lessen 2) "odes"))
-                     ("man" (strcat (lessen 2) "en"))
-                     (("s" "x") (strcat s "es"))
-                     ("ey" (strcat s "s"))
-                     ("y" (let ((penult (elt s (- (length s) 2)))
-                                (antepenult (elt s (- (length s) 3))))
-                            (if (and (or (eql #\r penult) (char= #\l penult))
-                                     (vowelp antepenult))
-                                (strcat (lessen 1) (char-string penult) "ies")
-                                (strcat (lessen 1) "ies"))))
-
-                     (otherwise
-                      (strcat s "s"))))))))
-
-(defun make-english-singular (string)
-  (when (search "people" string :test #'char-equal)
-    (setf string (regex-replace-pairs '(("PEOPLE" . "PERSON")
-                                        ("people" . "person")) string)))
-  (funcall (letter-case string)
-           (let ((s (string-downcase string)))
-             (flet ((lessen (n)
-                      (subseq s 0 (- (length s) n))))
-               (or (gethash s english-defective-plurals) 
-                   (gethash s english-irregular-plurals-reverse)
-                   (string-ends-with-case s
-                     ("pence" (strcat (lessen 4) "enny"))
-                     ("eaux" (lessen 1))
-                     (("ese" "fish") s)
-                     (("eeves" "eaves" "oaves") (strcat (lessen 3) "f"))
-                     ("ives" (strcat (lessen 3) "fe"))
-                     ("mata" (lessen 2))
-                     (("eces" "ices") (strcat (lessen 3) "x"))
-                     (("ynges" "anges") (strcat (lessen 3) "x"))
-                     ("ae" (lessen 1))
-                     ("a" (strcat (lessen 1) "um")) ; could have easily been "on" though.
-                     ("i" (strcat (lessen 1) "us"))
-                     ("podes" (strcat (lessen 4) "us"))
-                     ("men" (strcat (lessen 2) "an"))
-                     ("im" (lessen 2))
-                     (("ses" "xes") (lessen 2))
-                     ("ies" (strcat (lessen 3) "y"))
-                     ("s" (lessen 1))
-                     (otherwise s)))))))
-
-(loop for (sing pl) on (@$
-                        person-in-place people-in-places
-                        country countries
-                        monkey monkeys
-                        penny pence
-                        corpus corpera
-                        octopus octopodes
-                        deer deer
-                        mouse mice
-                        sword swords
-                        address addresses
-                        person-hour people-hours
-                        woman women
-                        child children
-                        loaf loaves
-                        knife knives
-                        car cars
-                        phalanx phalanges
-                        larynx larynges
-                        ) by #'cddr
-   do (assert (equal (make-english-singular pl) sing))
-   do (assert (equal (make-english-plural sing) pl)))
-
-
+  (let ((s (string-downcase string)))
+    (flet ((lessen (n)
+             (subseq s 0 (- (length s) n))))
+      (if (gethash s english-defective-plurals) 
+          s
+          (if-let ((irregular-plural (gethash s english-irregular-plurals)))
+            irregular-plural
+            (string-ends-with-case s
+              ;; Naturally, all of these are completely hueristic
+              ;; and often incomplete, but they appear to cover
+              ;; most irregular words without affecting too very
+              ;; many words that they shouldn't.
+              ("penny" (strcat (lessen 4) "ence"))
+              ("eau" (strcat s "x"))
+              (("ies" "ese" "fish") s)
+              ("ife" (strcat (lessen 2) "ves"))
+              (("eef" "eaf") (strcat (lessen 1) "ves"))
+              ("on" (strcat (lessen 2) "a"))
+              ("ma" (strcat s "ta"))
+              (("ix" "ex") (strcat (lessen 1) "ces"))
+              ("nx" (strcat (lessen 1) "ges"))
+              (("tum" "dum" "rum") (strcat (lessen 2) "a"))
+              (("nus" "rpus" "tus" "cus" "bus" 
+                      "lus" "eus" "gus" "mus") (strcat (lessen 2) "i"))
+              (("mna" "ula" "dia") (strcat (lessen 1) "ae"))
+              ("pus" (strcat (lessen 2) "odes"))
+              ("man" (strcat (lessen 2) "en"))
+              (("s" "x") (strcat s "es"))
+              ("y" (let ((penult (elt s (- (length s) 2))))
+                     (if (or (eql #\r penult) (char= #\l penult))
+                         (strcat (lessen 1) (char-string penult) "ies")
+                         (strcat (lessen 1) "ies"))))
+              
+              (otherwise
+               (strcat s "s"))))))))
 
 
 
-(defun-lang plural (count string)
+(define-language-function plural (count string)
   (:en
    (if (= 1 count) 
        string
@@ -1063,12 +783,12 @@ well enough for many (most) English words. At least, an improvement upon
         (make-english-plural string))))
   (:fr (if (= 1 count) 
            string
-           (cond                        ; FIXME
+           (cond
              (t (funcall (letter-case string)
                          (strcat string "s"))))))
   (:es (if (= 1 count) 
            string
-           (cond                        ; FIXME
+           (cond
              (t (funcall (letter-case string)
                          (strcat string "s"))))))
   (:ga 
@@ -1077,11 +797,9 @@ well enough for many (most) English words. At least, an improvement upon
        (funcall (letter-case string)
                 (irish-plural-form string)))))
 
-(defun-lang singular (plural-string)
-  (:en (make-english-singular plural-string)))
-
 
-;;; Make sure that we create correct plural forms
+
+
 (defun post-irish-plurals ()
   (let ((singulars (@$ bád fear béal íasc síol bacach taoiseach gaiscíoch
                        deireadh saol
@@ -1113,7 +831,7 @@ well enough for many (most) English words. At least, an improvement upon
                      súila deora cubraigha)))
     (let ((computed (loop for s in singulars
                        collecting (plural% :ga 2 s))))
-
+      
       (loop for s in singulars
          for pl in plurals
          for c-pl in computed
@@ -1177,7 +895,7 @@ well enough for many (most) English words. At least, an improvement upon
         1000 mil)
   :test 'equalp)
 
-(defun-lang counting (count string)
+(define-language-function counting (count string)
   (:en (cond
          ((zerop count) (a/an/some% :en 0 string))
          ((< count 21) (funcall (letter-case string)
@@ -1202,7 +920,7 @@ well enough for many (most) English words. At least, an improvement upon
 (assert (equal (counting% :es 1 "gato") "un gato"))
 (assert (equal (counting% :es 1 "casa") "una casa"))
 
-(defun-lang a/an (string)
+(define-language-function a/an (string)
   (:en (let ((letter (elt string 0)))
          (case letter
            ((#\a #\e #\i #\o #\u #\h)
@@ -1221,7 +939,7 @@ well enough for many (most) English words. At least, an improvement upon
                           (:f "une "))) string))
   (:ga string))
 
-(defun-lang a/an/some (count string)
+(define-language-function a/an/some (count string)
   (:en (case count
          (0 (concatenate 'string (funcall (letter-case string) "no ")
                          (plural% :en 0 string)))

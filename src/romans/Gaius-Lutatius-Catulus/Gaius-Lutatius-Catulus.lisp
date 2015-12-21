@@ -128,7 +128,7 @@ defined (e.g. putting bracelets on your head)"))
 ;;; ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
 
-(defun start-server (argv)
+(defun start-server (&optional argv)
   (declare (ignorable argv))
   (romance:server-start-banner "Lutatius"
                                "Gaius Lutatius Catulus"

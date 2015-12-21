@@ -1,12 +1,12 @@
-(in-package :brfp)
+(in-package :romans)
 
 (require :prepl)
 (require :local-time)
 (require :trivial-garbage)
 
-(defpackage :brfp-user 
-  (:nicknames :romance2-user :romans-user :romance-ii-user :romance-user)
-  (:use :cl :brfp)
+(defpackage :romance-user 
+  (:nicknames :romance2-user :romans-user :romance-ii-user)
+  (:use :cl :romans)
   (:export #:help #:hello #:bye))
 
 
@@ -14,12 +14,12 @@
 ;; lain claim to it before us.
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (unless (find-package "USER")
-    (rename-package :brfp-user
-                    :brfp-user
+    (rename-package :romance-user
+                    :romance-user
                     (cons "USER"
-                          (package-nicknames :brfp-user)))))
+                          (package-nicknames :romance-user)))))
 
-(defvar *user-ident* (make-hash-table #-ccl :weakness #-ccl :key :test 'equal))
+(defvar *user-ident* (make-hash-table :weakness :key :test 'equal))
 
 (defun user-ident (&optional (new-name nil new-name-?))
   (prog1 (gethash (current-thread) *user-ident*)
@@ -142,7 +142,6 @@ use (function symbol) or #'symbol.
 
 ~|
 This is a long document; you might need to scroll up to find the start." )
-
 (defmethod repl-help ((keyword t))
   " Sorry: No help topic with that ID exists. Try (HELP :INTRO) for a
 brief overview; (HELP :COMM), (HELP :REPL), or (HELP
@@ -184,10 +183,55 @@ If you're totally lost here, try (HELP :START)
 
 
 
-(in-package :brfp-user)
+(in-package :romance-user)
 
 (defun bye ()
   (invoke-restart (find-restart 'exit-module)))
+
+(defun print-asdf-system-info (system)
+  (format t "~&~|~%ASDF System ~A:~{~%  ~:(~A~): ~A~}"
+          word
+          (loop for fun in '(asdf:system-long-name
+                             asdf:system-description
+                             asdf:system-homepage
+                             asdf:system-author
+                             asdf:system-licence
+                             asdf:system-mailto
+                             asdf:system-maintainer
+                             asdf:system-long-description
+                             asdf:system-bug-tracker
+                             asdf:system-definition-pathname
+                             asdf:system-defsystem-depends-on
+                             asdf:system-depends-on
+                             asdf:system-weakly-depends-on
+                             asdf:system-source-control 	
+                             asdf:system-source-directory
+                             asdf:system-source-file)
+             for val = (funcall fun system)
+             when val
+             appending (list (subseq (symbol-name fun) 7)
+                             val))))
+
+(defun print-package-info (package)
+  (format t "~&~|~% ~:@(~A~) is a package, which exports these symbols:~%"
+          word)
+  (let ((package-symbols 
+         (sort (loop for sym being the external-symbols of package
+                  collect sym) #'string< :key #'symbol-name)))
+    (when-let ((bound (remove-if-not #'boundp package-symbols))) 
+      (format t "~% Values bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
+              word
+              bound))
+    (when-let ((fbound (remove-if-not #'fboundp package-symbols)))
+      (format t "~% Functions bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
+              word
+              fbound))
+    (when-let ((unbound (remove-if (lambda (sym)
+                                     (or (fboundp sym)
+                                         (boundp sym))) package-symbols)))
+      (format t "~% Other symbols in package ~A:~{~%   ~32A~^ ~32A~}~%"
+              word
+              unbound))))
 
 (defmacro help (&optional (word :intro)) 
   (typecase word 
@@ -215,49 +259,10 @@ If you're totally lost here, try (HELP :START)
                      doc-type word info))))
        
        (when-let ((system (asdf:find-system word nil)))
-         (format t "~&~|~%ASDF System ~A:~{~%  ~:(~A~): ~A~}"
-                 word
-                 (loop for fun in '(asdf:system-long-name
-                                    asdf:system-description
-                                    asdf:system-homepage
-                                    asdf:system-author
-                                    asdf:system-licence
-                                    asdf:system-mailto
-                                    asdf:system-maintainer
-                                    asdf:system-long-description
-                                    asdf:system-bug-tracker
-                                    asdf:system-definition-pathname
-                                    asdf:system-defsystem-depends-on
-                                    asdf:system-depends-on
-                                    asdf:system-weakly-depends-on
-                                    asdf:system-source-control 	
-                                    asdf:system-source-directory
-                                    asdf:system-source-file)
-                    for val = (funcall fun system)
-                    when val
-                    appending (list (subseq (symbol-name fun) 7)
-                                    val))))
+         (print-asdf-system-info system))
        
        (when-let ((package (find-package (string word))))
-         (format t "~&~|~% ~:@(~A~) is a package, which exports these symbols:~%"
-                 word)
-         (let ((package-symbols 
-                (sort (loop for sym being the external-symbols of package
-                         collect sym) #'string< :key #'symbol-name)))
-           (when-let ((bound (remove-if-not #'boundp package-symbols))) 
-             (format t "~% Values bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
-                     word
-                     bound))
-           (when-let ((fbound (remove-if-not #'fboundp package-symbols)))
-             (format t "~% Functions bound in package ~A:~{~%   ~32A~^ ~32A~}~%"
-                     word
-                     fbound))
-           (when-let ((unbound (remove-if (lambda (sym)
-                                            (or (fboundp sym)
-                                                (boundp sym))) package-symbols)))
-             (format t "~% Other symbols in package ~A:~{~%   ~32A~^ ~32A~}~%"
-                     word
-                     unbound)))))))
+         (print-package-info package)))))
 
 (defmacro hello (name)
   (let ((named (typecase name

@@ -36,7 +36,7 @@ $(SERVERDIR)/bin/$(SERVERFULLNAME):	$(shell find src/romans -type f)
 	mkdir -p $(SERVERDIR)/bin
 	ln build/$(SERVERFULLNAME)-$(VERSION)/bin/romance -f $@
 	for f in build/$(SERVERFULLNAME)-$(VERSION)/bin/* ; do \
-		ln -sf $@ $(SERVERDIR)/bin/$(PROJECT)-$$(basename $$f) ; done
+		ln -sf $(basename $@) $(SERVERDIR)/bin/$(PROJECT)-$$(basename $$f) ; done
 
 $(SERVERDIR)/lib/libcl-bullet2l.so:	\
 	$(SERVERDIR)/bin/$(SERVERFULLNAME) \
@@ -46,6 +46,6 @@ $(SERVERDIR)/lib/libcl-bullet2l.so:	\
 
 
 
-doc:	\
+doc:
 	$(MAKE) -C doc/devel all
 
