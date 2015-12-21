@@ -33,8 +33,8 @@
 (defun connect-concepts-db ()
   (setf *concept-db* (sqlite:connect
                       (merge-pathnames (make-pathname :directory '(:relative "conceptnet5-csv" "assertions")
-                                                      :name "conceptnet5"
-                                                      :type "sqlite.db")
+                                                      :name "conceptnet5.sqlite"
+                                                      :type "db")
                                        romans-compiler-setup:*path/r2src*)
                       #+ (or) ":memory:"))
   (in-db
