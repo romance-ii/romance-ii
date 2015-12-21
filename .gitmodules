@@ -41,3 +41,6 @@
 [submodule "sb-texinfo"]
 	path = src/romans/lib/sb-texinfo
 	url = git@github.com:nikodemus/sb-texinfo
+[submodule "elephant"]
+	path = src/elephant
+	url = git@github.com:romance-ii/elephant
