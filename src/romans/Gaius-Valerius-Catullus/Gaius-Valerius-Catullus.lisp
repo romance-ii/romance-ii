@@ -29,7 +29,7 @@
         (assert (and (<= 3 (length path))
                      (string-equal "c" (first path))
                      (<= 2 (length (second path)) 3)))
-        (append (list :untranslatable (make-keyword (second path))) 
+        (append (list :untranslatable (make-keyword (second path)))
                 (nthcdr 2 path)))))
 
 (defgeneric utterance->human (utterance language-code))
@@ -478,7 +478,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
     (let* ((index (progn
                     (format *trace-output* "~&Looking for latest version of ConceptNet5 …")
                     (drakma:http-request +conceptnet5-download-root+)))
-           (ref-uri (concatenate 'string +conceptnet5-download-root+ 
+           (ref-uri (concatenate 'string +conceptnet5-download-root+
                                  (multiple-value-bind (begin end beginnings endings)
                                      (scan "<a href=\"(conceptnet5_flat_csv_[\\d\\.]+\\.tar\\.bz2)\""
                                            index)
@@ -495,10 +495,10 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                                                   :prefix "tmp.download.ConceptNet5.db.csv"
                                                   :suffix "" :type ".tar.bz2"
                                                   :directory download-to)
-        
+
         (with-output-to-file (temp-stream temp-file :if-exists :supersede :element-type '(unsigned-byte 8))
           (map nil (rcurry #'write-byte temp-stream) tar-bz2))
-        (uiop:run-program (format nil "cd '~a'; tar -xjvf '~a'" download-to temp-file) 
+        (uiop:run-program (format nil "cd '~a'; tar -xjvf '~a'" download-to temp-file)
                           :input nil :output *trace-output* :error-output *trace-output*))
       (dolist (csv-file (directory (merge-pathnames (make-pathname :directory '(:relative "data" "assertions")
                                                                    :name :wild :type "csv")
@@ -510,10 +510,10 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 (defun ensure-conceptnet5-db-unzipped (wildcard)
   (unless (plusp (length (directory wildcard)))
     (format *trace-output* "~&CSV “database” not present; ")
-    (let ((bz2s (directory (make-pathname 
+    (let ((bz2s (directory (make-pathname
                             :directory (pathname-directory wildcard)
                             :name :wild :type "csv.bz2"))))
-      (cond ((plusp (length bz2s)) 
+      (cond ((plusp (length bz2s))
              (format *trace-output* " … found BZip2 compressed copy; decompressing:~%")
              (dolist (bz2 bz2s)
                (uiop:run-program (format nil "bzip -d '~a'" bz2) :output *trace-output* :error-output *trace-output* :input nil))
@@ -963,10 +963,60 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                    ((consp parts) (cons word parts))
                    (t (list word parts))))))))
 
+(defun strictly-antonym-p (a b)
+  nil)                                  ; TODO
+
+(defun strictly-synonym-p (a b)
+  nil)                                  ; TODO
+
+(defun opposite-p (a b)
+  (or (equalp a (list 'not b))
+      (equalp b (list 'not a))
+      (and (consp a)
+           (eql (car a) 'not)
+           (strictly-synonym-p (cdr a) b))
+      (and (consp b)
+           (eql (car b) 'not)
+           (strictly-synonym-p (cdr b) a))
+      (strictly-antonym-p a b)))
+
+(defun any-opposites (list)
+  (cond
+    ((atom list) nil)
+    ((endp list) nil)
+    (t (let ((one (first list))
+             (others (rest list)))
+         (or (find-if (curry #'opposite-p one) others)
+             (apply #'any-opposites others))))))
+
 (defun collapse (phrase)
   (cond
     ((atom phrase) phrase)
     ((null phrase) nil)
+
+    ((and (eql 'and (first phrase))
+          (not (equalp phrase (remove-duplicates phrase :test #'equalp))))
+     (collapse (remove-duplicates phrase :test #'equalp)))
+
+    ((and (eql 'and (first phrase))
+          (any-opposites (rest phrase)))
+     nil)
+
+    ((and (eql 'and (first phrase))
+          (member nil phrase))
+     nil)
+
+    ((and (eql 'or (first phrase))
+          (member t phrase))
+     t)
+
+    ((and (eql 'or (first phrase))
+          (any-opposites (rest phrase)))
+     t)
+
+    ((and (eql 'and (first phrase))
+          (= 2 (length phrase)))
+     (second phrase))
     ;;    ((and-list-p phrase) (error "TODO"))
     (t (error "TODO"))))
 
@@ -1004,7 +1054,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
   (logic-trace "~&Superposition (immediate) of the logical OR assertion:~%~A" (treely phrase))
   (let ((members (remove-duplicates (cdr phrase) :test #'equalp)))
     (if (null (cdr members))
-        (car members) 
+        (car members)
         (cons (car phrase) members))))
 
 (defun inject-into-list (list pos inject)
@@ -1027,7 +1077,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defun superpose-or/next-depth (phrase)
   (logic-trace "~&Lifting a nested OR assertion from a lower level:~%~A" (treely phrase))
-  (cons (car phrase) 
+  (cons (car phrase)
         (mapcan (lambda (part)
                   (if (or-list-p part)
                       (cdr part)
@@ -1036,7 +1086,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 (defun superpose-or/cross-product (phrase)
   (logic-trace "~&Going to perform a cross-product on:~%~A" (treely phrase))
   (let ((pos (position 'or phrase :key #'car?)))
-    (if pos 
+    (if pos
         (progn (logic-trace "~&Found the OR list at index ~:D" pos)
                (let ((alternatives (cdr (elt phrase pos))))
                  (logic-trace "~&Creating the cross-product with these alternatives:~{~% •~A~}" alternatives)
@@ -1054,7 +1104,7 @@ This contains further OR lists which can be superposed."
 (defvar *superpose-or/recursion-guard* nil)
 
 (defun superpose-or (phrase)
-  "If a phrase contains any expressions of the form (OR x …), this 
+  "If a phrase contains any expressions of the form (OR x …), this
 function will create top-level superpositions, such as:
 
  • Nested OR expressions will be lifted to create a single top-level
@@ -1064,7 +1114,7 @@ function will create top-level superpositions, such as:
 ⁂See TEST-PARSER for not-really-docs in the form of tests
 "
   (logic-trace "~&Superpostition of any OR expressions in:~&~A" (treely phrase))
-  
+
   (let ((*superpose-or/recursion-guard* (or (and *superpose-or/recursion-guard*
                                                  (1- *superpose-or/recursion-guard*))
                                             (progn
@@ -1073,41 +1123,40 @@ function will create top-level superpositions, such as:
     (logic-trace "~&(Recursion guard is currently set to allow ~R further level~:P)" *superpose-or/recursion-guard*)
     (unless (plusp *superpose-or/recursion-guard*)
       (break "Recursion guard stricken; you probably need to abort."))
-    (cond 
+    (cond
       ((atom phrase) phrase)
       ((null phrase) nil)
                                         ;     ✗ ((null (cdr phrase)) (list (superpose-or (car phrase))))
-      
+
       ;; No alternatives: (OR x) ⇒ x
       ((and (or-list-p phrase)
-            (null (cdr (cdr phrase)))) (second phrase))
+            (null (cdr (cdr phrase))))
+       (logic-trace "~&A choice of only one alternative is no choice at all. Reducing to ~a" (treely (second phrase)))
+       (second phrase))
 
-      ;; (OR x (OR y z)) ⇒ (OR x y z) 
-      ;; 
+      ((and (or-list-p phrase)
+            (let ((without-duplicates (remove-duplicates phrase :test #'equalp)))
+              (not (equalp phrase without-duplicates))))
+       (let ((without-duplicates (remove-duplicates phrase :test #'equalp)))
+         (logic-trace "~&The phrase contained duplicate members; after reducing them, the revised phrase is:~&~A" (treely without-duplicates))
+         (superpose-or without-duplicates)))
+
+      ;; (OR x (OR y z)) ⇒ (OR x y z)
+      ;;
       ;; (sort of associative property)
       ((and (or-list-p phrase)
-            (any #'or-list-p (cdr phrase))) (superpose-or/next-depth phrase))
+            (any #'or-list-p (cdr phrase))) (superpose-or (superpose-or/next-depth phrase)))
 
       ;; (x (OR y z)) ⇒ (OR (x y) (x z))
       ;;
       ;; (simplify as a cross-“product”)
-      ((any #'or-list-p (cdr phrase)) (superpose-or/cross-product phrase))
+      ((any #'or-list-p (cdr phrase)) (superpose-or (superpose-or/cross-product phrase)))
 
       ;; nested OR is farther down; need to elevate or eliminate it at
       ;; that lower level.
-      ((any-or phrase) (logic-trace "~& There's an OR phrase in there, but it's buried.
-I'm going to try to dig for it, and probably fail.")
-       (let* ((n (mapcar (compose #'superpose-or) phrase))
-              (m (superpose-or n)))
-         (logic-trace "~3&OK, so I started with:~%~A
-
-I saw some OR lists buried in there, so I tried to apply OR
-superposition logic to each of the top-level elements:~{~% •~A~}
-
-That got me: ~%~A
-Then, I ran that through one more try, and got:~%~A"
-                      (treely phrase) phrase (treely n) (treely m))
-         m))
+      ((any-or (rest phrase)) (logic-trace "~& There's an OR phrase in there, but it's buried.
+I'm going to try to dig it out to the top level.")
+       (superpose-or (mapcar #'superpose-or phrase)))
 
       ;; any other simplifications possible should occur here
       ((or-list-p phrase) (superpose-or/immediate phrase))
@@ -1163,27 +1212,22 @@ Then, I ran that through one more try, and got:~%~A"
 
 (defmacro itest (expr vars &rest report)
   (declare (ignore vars))
-  `(if *interactive-test*
-       (progn
-         (format *terminal-io* "~& ★ Test: ~%")
-         (format *terminal-io* ,@report)
-         (format *terminal-io* "~&~% Test expression: ~%~S" ',expr)
-         (if (y-or-n-p "Run this test?")
-             (let ((out ,expr))
-               (if out
-                   (progn
-                     (incf *tests-pass*)
-                     (format *terminal-io* "~& ✓ Test PASSED ⇒ ~S" out))
-                   (progn
-                     (incf *tests-fail*)
-                     (format *terminal-io* "~& ✗ Test FAILED")
-                     (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report)))))
-             (format *terminal-io* "~& ⁂ Test SKIPPED")))
-       (if ,expr
-           (incf *tests-pass*)
-           (progn 
-             (incf *tests-fail*)
-             (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report))))))
+  `(cond
+     (*interactive-test* (format *terminal-io* "~& ★ Test: ~%")
+                         (format *terminal-io* ,@report)
+                         (format *terminal-io* "~&~% Test expression: ~%~S" ',expr)
+                         (if (y-or-n-p "Run this test?")
+                             (let ((out ,expr))
+                               (cond
+                                 (out (incf *tests-pass*)
+                                      (format *terminal-io* "~& ✓ Test PASSED ⇒ ~S" out))
+                                 (:otherwise (incf *tests-fail*)
+                                             (format *terminal-io* "~& ✗ Test FAILED")
+                                             (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report)))))
+                             (format *terminal-io* "~& ⁂ Test SKIPPED")))
+     (,expr (incf *tests-pass*))
+     (:otherwise (incf *tests-fail*)
+                 (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report)))))
 
 (defun test-parser ()
   (format t "~&Testing parser components; any failure should signal an error.")
@@ -1203,7 +1247,7 @@ All punctuation in +WORD-TERMINATING-PUNCTUATION+
 must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
          (forgotten-punctuation +word-terminating-punctuation+))
   (fresh-line)
-  (itest (equalp (superpose-or '(or a (or b c))) 
+  (itest (equalp (superpose-or '(or a (or b c)))
                  '(or a b c))
          () "A list containing nested OR expressions must reduce to a single list.")
   (itest (equalp (inject-into-list '(thing (or (1 2) (3 4))) 1 '(1 2))
@@ -1221,15 +1265,15 @@ must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
   (itest (equalp (superpose-or '(thing (:one (or (1 2) (3 4)))))
                  '(or (thing :one 1 2) (thing :one 3 4)))
          () "A buried OR expression must be lifted to the highest level.")
-  (itest (equalp (superpose-or '(or it)) 
+  (itest (equalp (superpose-or '(or it))
                  'it)
          () "An OR expression with only one alternative must be simplified to a constant.")
-  (itest (equalp (superpose-or '(or it it it)) 
+  (itest (equalp (superpose-or '(or it it it))
                  'it)
          () "An OR expression with only one alternative (even if
          re-expressed more than once) must be simplified to
          a constant.")
-  (itest (equalp (superpose-or '(or (1 2 3 4) (1 (or 2 2) (or 3 3) (or 4)))) 
+  (itest (equalp (superpose-or '(or (1 2 3 4) (1 (or 2 2) (or 3 3) (or 4))))
                  '(1 2 3 4))
          () "An OR expression which reduces to anly one alternative
           must be simplified to a constant after all nested OR
@@ -1363,7 +1407,7 @@ Instead, the following was returned:
             (terpri) (terpri)
             (format t "Found ~:D distinct ways to parse:~{~%~S~}"
                     (length parses) parses))))))
-  
+
   (format *trace-output* "~& Tests completed~%~%Ran ~:D tests~% ✓ ~:D test~:P passed~% ✗ ~:D test~:P failed"
           (+ *tests-pass* *tests-fail*) *tests-pass* *tests-fail*)
   (when (plusp *tests-fail*)
