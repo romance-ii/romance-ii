@@ -585,10 +585,12 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 (define-constant +english-word-symbols+
     '(#\& "and"
       #\# (or ("pound" :unit-of-weight (or :singular :plural))
-           ("number" :ordinal-marker :precedes-value))
-      #\$ ("dollar" :currency (or :singular :plural) :precedes-value)
+           ("number" :ordinal-marker :precedes-value)
+           ((:phrase "count" "each") :cardinal-marker :succeeds-value))
+      #\$ ((or "dollar" "Peso") :currency (or :singular :plural) :precedes-value)
       #\@ "at"
       #\£ ("pound" :currency :precedes-value)
+      #\€ ("Euro" :currency :precedes-value)
       #\¬ :not
       #\∈ (or (:phrase "element" "of") (:phrase ("is" (or :singular :plural)) "element" "of"))
       #\∋ (:phrase ("contain" (or :singular :plural)) "as" ("element" (or :singular :plural)))
@@ -606,6 +608,9 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
       #\☉ (or "Sun" "center" "day")
       #\★ "star"
       #\+ "plus"
+      #\✝ (or "Cross" "Christian" "crucifix")
+      #\☠ (or "poison" (:phrase "skull" "and" "cross-bones") (:phrase "computer" "programmer")
+           (:phrase "Admiral" "Grace" "Hopper"))
       #\= ("equal" (or :singular :plural) (or "to"))
       #\≈ (:phrase "approximately" ("equal" (or :singular :plural)) (or "to"))
       #\≠ (:phrase "not" ("equal" (or :singular :plural)) (or "to"))
@@ -614,7 +619,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
       #\¶ (or "pi" "paragraph")
       #\♥ (or "heart" "love" "loves")
       #\© "copyright"
-      #\® "trademark" ;; ignoring the registered stuff, who cares?
+      #\® (:phrase "registered" "trademark")
       #\™ "trademark"
       #\% "percent"
       #\‰ "per-mille"
