@@ -548,7 +548,12 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defun init ()
   (unless (member :conceptnet5 *initialized*)
-    (load-conceptnet5-csv-database))
+    (handler-bind
+        ((file-error 
+          (lambda (c)
+            (declare (ignore c))
+            (load-conceptnet5-csv-database))))
+      (connect-concepts-db)))
   (unless (member :langutils *initialized*)
     (load-langutils)))
 
@@ -1430,6 +1435,7 @@ Instead, the following was returned:
   (romance:server-start-banner "Catullus"
                                "Gaius Valerius Catullus"
                                "Intelligent Agents and Language Server")
+  (init)
   (test-parser)
   (format t "~& Conversation REPL starting…")
   (converse-repl))
