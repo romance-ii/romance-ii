@@ -1,6 +1,6 @@
 (defpackage :publius-cornelius-tacitus
   (:nicknames :tacitus)
-  (:documentation  "Publius   Cornelies  Tacitus,  or   Gaius  Cornelius
+  (:documentation  "Publius   Cornelius  Tacitus,  or   Gaius  Cornelius
   Tacitus (born  ad )56—died c.  120), Roman orator and  public official,
   probably the greatest historian and one of the greatest prose stylists
   who wrote in the Latin language.
