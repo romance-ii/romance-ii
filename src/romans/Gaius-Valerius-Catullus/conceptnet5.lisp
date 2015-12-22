@@ -20,15 +20,17 @@
            (progn
              (unless *concept-db*
                (connect-concepts-db))
-             ,@body))
+             (sqlite:with-transaction *concept-db*
+               ,@body)))
      (reconnect-to-conceptnet-db ()
        (connect-concepts-db))
      (initialize-db ()
        (init-conceptnet-db))
      (demolish-db-without-hope-of-recovery ()
-       (mapcar (lambda (q) (sqlite:execute-non-query *concept-db* q))
-               '("DROP TABLE concepts"
-                 "DROP TABLE atoms")))))
+       (if (yes-or-no-p "Are you sure you wish to destroy the database of general knowledge facts forever?")
+           (mapcar (lambda (q) (sqlite:execute-non-query *concept-db* q))
+                   '("DROP TABLE concepts"
+                     "DROP TABLE atoms"))))))
 
 (defun connect-concepts-db ()
   (setf *concept-db* (sqlite:connect
@@ -85,17 +87,18 @@
            "SELECT rowid,s,p,o FROM concepts WHERE o=?"))))
 
 (defun init-conceptnet-db ()
-  (map nil (curry #'sqlite:execute-non-query *concept-db*)
-       '("CREATE TABLE atoms (symbol VARCHAR)"
-         "CREATE INDEX symbolic ON atoms (symbol)"
-         "CREATE TABLE concepts (s INT, p INT, o INT)"
-         "CREATE INDEX s ON concepts (s)"
-         "CREATE INDEX p ON concepts (p)"
-         "CREATE INDEX o ON concepts (o)"
-         "CREATE INDEX sp ON concepts (s, p)"
-         "CREATE INDEX so ON concepts (s, o)"
-         "CREATE INDEX po ON concepts (p, o)"
-         "CREATE INDEX spo ON concepts (s, p, o)")))
+  (in-db
+    (map nil (curry #'sqlite:execute-non-query *concept-db*)
+         '("CREATE TABLE atoms (symbol VARCHAR)"
+           "CREATE INDEX symbolic ON atoms (symbol)"
+           "CREATE TABLE concepts (s INT, p INT, o INT)"
+           "CREATE INDEX s ON concepts (s)"
+           "CREATE INDEX p ON concepts (p)"
+           "CREATE INDEX o ON concepts (o)"
+           "CREATE INDEX sp ON concepts (s, p)"
+           "CREATE INDEX so ON concepts (s, o)"
+           "CREATE INDEX po ON concepts (p, o)"
+           "CREATE INDEX spo ON concepts (s, p, o)"))))
 
 (defvar &select-atom-id)
 (defvar &insert-atom)
