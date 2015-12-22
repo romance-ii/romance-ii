@@ -97,11 +97,12 @@
     ("/r/UsedFor/" "One might use a ~0@*~A for ~2@*~A.")
     ("/r/dbpedia/field" "~0@*~a is in the field of endeavours of ~2@*~a.")
     ("/r/dbpedia/genre" "~0@*~a is in the genre of ~2@*~a.")
+    ("/r/dbpedia/influencedBy" "~0@*~a was influenced in their work by ~2@*~a")
     ("/r/wordnet/adjectivePertainsTo" "~0@*~A is an adjective which pertains to ~2@*~A.")
     ("/r/wordnet/adverbPertainsTo" "~0@*~A is an adverb which pertains to ~2@*~A.")
     ("/r/wordnet/participleOf" "~0@*~A is a participle (in inflection) of ~2@*~A.")
     (t (cerror "ignore and continue" "Untranslated predicate: ~A" predicate)
-       "“~A” —~A→ “~A”")))
+       "“~A” —~s→ “~A”")))
 
 (defgeneric language-name (code in-language))
 (defmethod language-name (code (language-code (eql :en)))
