@@ -175,7 +175,8 @@
 (dolist (s? '(t nil))
   (dolist (p? '(t nil))
     (dolist (o? '(t nil))
-      (eval (list 'find-facts-pattern s? p? o?)))))
+      (when (or s? p? o?)
+        (eval (list 'find-facts-pattern s? p? o?))))))
 
 (defun conceptnet5-file->sexp (file)
   (format *trace-output* "~& Loading ConceptNet5 data from ~S~%" file)
