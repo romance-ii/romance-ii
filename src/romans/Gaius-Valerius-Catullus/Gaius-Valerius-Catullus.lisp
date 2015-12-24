@@ -648,7 +648,8 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
   (unless (plusp (length (directory wildcard)))
     (error "Cannot find ConceptNet5 CSV “database” files; cannot proceed."))
   (format *trace-output* "~&~%Loading ConceptNet5 dataset from ~S" wildcard)
-  (in-db (time (conceptnet5-read-files wildcard)))
+  (in-db (:transaction nil)
+         (time (conceptnet5-read-files wildcard)))
   (format *trace-output*
           "~&~%Done, loaded ConceptNet5; ~:D interned tokens, ~:D cross-indexed assertions"
           (sqlite:execute-single *concept-db* "SELECT COUNT(*) FROM atoms")
