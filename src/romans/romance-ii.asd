@@ -44,15 +44,16 @@
   :encoding :utf-8
 
   :components
-  ((:file "lib/start-repl"
+  ((:file "common") 
+   (:file "lib/start-repl"
           :depends-on ("Gaius-Julius-Caesar"))
    (:module "Aelius-Galenus"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Aelius-Galenus"
                                 :depends-on ("package"))))
    (:module "Appius-Claudius-Caecus"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "socket-structures"
                                 :depends-on ("package"))
@@ -62,7 +63,7 @@
                                 :depends-on ("package" "socket-structures"
                                                        "Appius-Claudius-Caecus"))))
    (:module "Clodia-Metelli-Pulcher"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "memory"
                                 :depends-on ("package"))
@@ -76,12 +77,12 @@
                                 :depends-on ("package")))
             :depends-on ("common" "lib"))
    (:module "Gaius-Asinius-Pollio"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Gaius-Asinius-Pollio"
                                 :depends-on ("package"))))
    (:module "Gaius-Julius-Caesar"
-            :depends-on ("common" "lib")
+            :depends-on ("common")
             :components ((:file "package")
                          (:file "journald" :depends-on ("package"))
                          (:file "Gaius-Julius-Caesar"
@@ -97,44 +98,44 @@
                          (:file "process-info"
                                 :depends-on ("package" "Gaius-Julius-Caesar"))))
    (:module "Gaius-Lutatius-Catulus"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Gaius-Lutatius-Catulus"
                                 :depends-on ("package"))))
    (:module "Gaius-Valerius-Catullus"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "conceptnet5"
                                 :depends-on ("package"))
                          (:file "Gaius-Valerius-Catullus"
                                 :depends-on ("package" "conceptnet5"))))
    (:module "Lucius-Aemilius-Regillus"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Lucius-Aemilius-Regillus"
                                 :depends-on ("package"))))
    (:module "Marcus-Vitruvius-Pollio"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Marcus-Vitruvius-Pollio"
                                 :depends-on ("package"))))
    (:module "Narcissus"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Narcissus"
                                 :depends-on ("package"))))
    (:module "Rabirius"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Rabirius"
                                 :depends-on ("package"))))
    (:module "Sextus-Julius-Frontinus"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Sextus-Julius-Frontinus"
                                 :depends-on ("package"))))
    (:module "Rahab"
-            :depends-on ("common" "lib" "Gaius-Julius-Caesar")
+            :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
                          (:file "Rahab"
                                 :depends-on ("package"))))))
