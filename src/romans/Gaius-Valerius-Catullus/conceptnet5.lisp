@@ -14,14 +14,16 @@
 (defvar &select-concept-p nil)
 (defvar &select-concept-o nil)
 
-(defmacro in-db (&body body)
+(defmacro in-db ((&key (transaction nil)) &body body)
   `(restart-case
        (handler-case
            (progn
              (unless *concept-db*
                (connect-concepts-db))
-             (sqlite:with-transaction *concept-db*
-               ,@body)))
+             ,(if transaction 
+                  `(sqlite:with-transaction *concept-db*
+                     ,@body)
+                  `(progn ,@body))))
      (reconnect-to-conceptnet-db ()
        (connect-concepts-db))
      (initialize-db ()
@@ -39,55 +41,54 @@
                                                       :type "db")
                                        romans-compiler-setup:*path/r2src*)
                       #+ (or) ":memory:"))
-  (in-db
+  (in-db (:transaction nil)
     (let ((check (sqlite:prepare-statement *concept-db*
                                            "select 1 from atoms where symbol is not null limit 1")))
       (sqlite:reset-statement check)
       (sqlite:step-statement check)))
-  (in-db
-    (setf &select-atom-id
-          (sqlite:prepare-statement
-           *concept-db*
-           "SELECT rowid FROM atoms WHERE symbol=?"))
-    (setf &insert-atom
-          (sqlite:prepare-statement
-           *concept-db*
-           "INSERT OR FAIL INTO atoms (symbol) VALUES (?)"))
-    (setf &insert-concept
-          (sqlite:prepare-statement
-           *concept-db*
-           "INSERT OR FAIL INTO concepts (s,p,o) VALUES (?,?,?)"))
-    (setf &select-concept-spo
-          (sqlite:prepare-statement
-           *concept-db*
-           "SELECT rowid,s,p,o FROM concepts WHERE s=? AND p=? AND o=?"))
-    (setf &select-concept-sp
-          (sqlite:prepare-statement
-           *concept-db*
-           "SELECT rowid,s,p,o FROM concepts WHERE s=? AND p=?"))
-    (setf &select-concept-po
-          (sqlite:prepare-statement
-           *concept-db*
-           "SELECT rowid,s,p,o FROM concepts WHERE p=? AND o=?"))
-    (setf &select-concept-so
-          (sqlite:prepare-statement
-           *concept-db*
-           "SELECT rowid,s,p,o FROM concepts WHERE s=? AND o=?"))
-    (setf &select-concept-s
-          (sqlite:prepare-statement
-           *concept-db*
-           "SELECT rowid,s,p,o FROM concepts WHERE s=?"))
-    (setf &select-concept-p
-          (sqlite:prepare-statement
-           *concept-db*
-           "SELECT rowid,s,p,o FROM concepts WHERE p=?"))
-    (setf &select-concept-o
-          (sqlite:prepare-statement
-           *concept-db*
-           "SELECT rowid,s,p,o FROM concepts WHERE o=?"))))
+  (setf &select-atom-id
+        (sqlite:prepare-statement
+         *concept-db*
+         "SELECT rowid FROM atoms WHERE symbol=?"))
+  (setf &insert-atom
+        (sqlite:prepare-statement
+         *concept-db*
+         "INSERT OR FAIL INTO atoms (symbol) VALUES (?)"))
+  (setf &insert-concept
+        (sqlite:prepare-statement
+         *concept-db*
+         "INSERT OR FAIL INTO concepts (s,p,o) VALUES (?,?,?)"))
+  (setf &select-concept-spo
+        (sqlite:prepare-statement
+         *concept-db*
+         "SELECT rowid,s,p,o FROM concepts WHERE s=? AND p=? AND o=?"))
+  (setf &select-concept-sp
+        (sqlite:prepare-statement
+         *concept-db*
+         "SELECT rowid,s,p,o FROM concepts WHERE s=? AND p=?"))
+  (setf &select-concept-po
+        (sqlite:prepare-statement
+         *concept-db*
+         "SELECT rowid,s,p,o FROM concepts WHERE p=? AND o=?"))
+  (setf &select-concept-so
+        (sqlite:prepare-statement
+         *concept-db*
+         "SELECT rowid,s,p,o FROM concepts WHERE s=? AND o=?"))
+  (setf &select-concept-s
+        (sqlite:prepare-statement
+         *concept-db*
+         "SELECT rowid,s,p,o FROM concepts WHERE s=?"))
+  (setf &select-concept-p
+        (sqlite:prepare-statement
+         *concept-db*
+         "SELECT rowid,s,p,o FROM concepts WHERE p=?"))
+  (setf &select-concept-o
+        (sqlite:prepare-statement
+         *concept-db*
+         "SELECT rowid,s,p,o FROM concepts WHERE o=?")))
 
 (defun init-conceptnet-db ()
-  (in-db
+  (in-db (:transaction nil)
     (map nil (curry #'sqlite:execute-non-query *concept-db*)
          '("CREATE TABLE atoms (symbol VARCHAR)"
            "CREATE INDEX symbolic ON atoms (symbol)"
@@ -113,25 +114,24 @@
 
 (defun intern-cn5-symbol (symbol)
   (declare (type string symbol))
-  (in-db
-    (if-let ((id (progn
-                   (sqlite:reset-statement &select-atom-id)
-                   (sqlite:bind-parameter &select-atom-id 1 symbol)
-                   (sqlite:step-statement &select-atom-id)
-                   (sqlite:statement-column-value &select-atom-id 0))))
-      id
-      (with-lock-held (*concept-db-lock*)
-        (sqlite:reset-statement &insert-atom)
-        (sqlite:bind-parameter &insert-atom 1 symbol)
-        (sqlite:step-statement &insert-atom)
-        (sqlite:last-insert-rowid *concept-db*)))))
+  (if-let ((id (progn
+                 (sqlite:reset-statement &select-atom-id)
+                 (sqlite:bind-parameter &select-atom-id 1 symbol)
+                 (sqlite:step-statement &select-atom-id)
+                 (sqlite:statement-column-value &select-atom-id 0))))
+    id
+    (with-lock-held (*concept-db-lock*)
+      (sqlite:reset-statement &insert-atom)
+      (sqlite:bind-parameter &insert-atom 1 symbol)
+      (sqlite:step-statement &insert-atom)
+      (sqlite:last-insert-rowid *concept-db*))))
 
 (defun add-concept (subj pred obj
                     &aux
                       (s (intern-cn5-symbol subj))
                       (p (intern-cn5-symbol pred))
                       (o (intern-cn5-symbol obj)))
-  (in-db
+  (in-db (:transaction t)
     (with-lock-held (*concept-db-lock*)
       (sqlite:reset-statement &insert-concept)
       (sqlite:bind-parameter &insert-concept 1 s)
@@ -158,7 +158,7 @@
                 (unless s-spec `((ignore subj)))
                 (unless p-spec `((ignore pred)))
                 (unless o-spec `((ignore obj ))))
-       (in-db
+       (in-db (:transaction nil)
          (sqlite:reset-statement ,statement)
          ,(when s-spec `(sqlite:bind-parameter ,statement 1 subj))
          ,(when p-spec `(sqlite:bind-parameter ,statement ,p-index pred))
