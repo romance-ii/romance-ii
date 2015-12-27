@@ -28,7 +28,13 @@
                                   :remove-empty-subseqs t)))
         (assert (and (<= 3 (length path))
                      (string-equal "c" (first path))
-                     (<= 2 (length (second path)) 3)))
+                     (<= 2 (length (second path)) 7)
+                     (every (lambda (char)
+                              (or (char<= #\a char #\z)
+                                  (char<= #\A char #\Z)
+                                  (char= char #\-)
+                                  (char= char #\_)))
+                            (second path))))
         (append (list :untranslatable (make-keyword (second path)))
                 (nthcdr 2 path)))))
 
@@ -189,7 +195,9 @@ after processing."
     (:/r/dbpedia/language-Family "~0@*~a is a language in the family of languages which is ~2@*~a.")
     #+ (or)    (:/r/dbpedia/language-Family "~0@*~a is a language which is spoken in the location ~2@*~a.")
     (:/r/dbpedia/influenced-By "~0@*~a was influenced in their work by ~2@*~a")
+    (:/r/dbpedia/influenced "~2@*~a was influenced in their work by ~0@*~a")
     (:/r/dbpedia/main-Interest "~0@*~a is mainly interested in ~2@*~a")
+    (:/r/dbpedia/notable-idea "~0@*~a is notable for the idea ~2@*~a")
     (:/r/wordnet/adjective-Pertains-To "~0@*~A is an adjective which pertains to ~2@*~A.")
     (:/r/wordnet/adverb-Pertains-To "~0@*~A is an adverb which pertains to ~2@*~A.")
     (:/r/wordnet/participle-Of "~0@*~A is a participle (in inflection) of ~2@*~A.")
@@ -370,7 +378,7 @@ To quit, enter: Bye!
       (format t "~&☹I have no reply to that.")))
 
 (defun converse-read ()
-  (format t "~&~10TReady >")
+  (format t "~&~10TReady ⇒")
   (read-line))
 
 (defun descend-langutils-tokens (chain)
