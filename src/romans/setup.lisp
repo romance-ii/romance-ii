@@ -126,7 +126,7 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 
 (defvar *path/etc* (make-pathname :directory '(:absolute "etc")))
 (defvar *path/share* (make-pathname :directory '(:absolute "usr" "share")))
-(defvar *path/r2share* (make-pathname :directory '(:absolite "usr" "share" "romance-ii")))
+(defvar *path/r2share* (make-pathname :directory '(:absolute "usr" "share" "romance-ii")))
 (defvar *path/bin* (make-pathname :directory '(:absolute "usr" "bin")))
 (defvar *path/var* (make-pathname :directory '(:absolute "var" "lib" "romance-ii")))
 (defvar *path/tmp* (make-pathname :directory '(:absolute "tmp")))

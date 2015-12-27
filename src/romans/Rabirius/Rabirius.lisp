@@ -30,8 +30,10 @@
   (sb-ext:seed-random-state
    (make-array '(2) :element-type '(unsigned-byte 32)
                :initial-contents (list
-                                  (coerce (round (* (/ pixel-x map-width) (expt 2 32))) '(unsigned-byte 32))
-                                  (coerce (round (* (/ pixel-y map-height) (expt 2 32))) '(unsigned-byte 32))))))
+                                  (coerce (round (* (/ pixel-x map-width) (expt 2 32)))
+                                          '(unsigned-byte 32))
+                                  (coerce (round (* (/ pixel-y map-height) (expt 2 32)))
+                                          '(unsigned-byte 32))))))
 
 (defconstant +pixel->meters+ 100)
 (defconstant +offset-scalar+ 1000)
@@ -100,8 +102,8 @@
 
 (defun server-start (&optional argv)
   (declare (ignore argv))
-  (romance:server-start-banner "Rabirius"
-                               "Rabirius"
-                               "Geography")
+  (romans:server-start-banner "Rabirius"
+                              "Rabirius"
+                              "Geography")
   (format t "~& Not doing anything (yet)"))
 

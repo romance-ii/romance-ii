@@ -13,21 +13,23 @@
 (defun machine-vmstat ()
   (split-and-collect-file "/proc/vmstat"))
 
+(defun binary-metric-multiplier (multiplier)
+  (ecase multiplier
+    (#\k 1024)
+    (#\M (* 1024 1024))
+    (#\G (* 1024 1024 1024))
+    (#\T (* 1024 1024 1024 1024))
+    (#\P (* 1024 1024 1024 1024 1024))
+    (#\E (* 1024 1024 1024 1024 1024 1024))
+    (#\Y (* 1024 1024 1024 1024 1024 1024 1024))))
+
 (defun multiply-bytes (object)
   (check-type object string)
   (assert (char= #\B (last-elt object)))
   (let ((base (parse-integer object :junk-allowed t))
         (multiplier (char object
                           (1+ (position #\Space object :from-end t :test #'char=)))))
-    (* base
-       (ecase multiplier
-         (#\k 1024)
-         (#\M (* 1024 1024))
-         (#\G (* 1024 1024 1024))
-         (#\T (* 1024 1024 1024 1024))
-         (#\P (* 1024 1024 1024 1024 1024))
-         (#\E (* 1024 1024 1024 1024 1024 1024))
-         (#\Y (* 1024 1024 1024 1024 1024 1024 1024))))))
+    (* base (binary-metric-multiplier multiplier))))
 
 (defun multiply-bytes-maybe (object)
   (if (and (stringp object)
@@ -201,7 +203,7 @@
             :message-keyword message-keyword
             :user-string user-string :keys keys :machine (machine-instance))))
 
-(defmethod romance::todo :around (&optional message &rest keys)
+(defmethod romans::todo :around (&optional message &rest keys)
   (apply #'report :todo message keys)
   (call-next-method))
 
@@ -479,9 +481,9 @@ Please provide an unique name or address to join one cluster"
       argument))
 
 (defun start-server (&rest argv)
-  (romance:server-start-banner "Caesar"
-                               "Gaius Julius Cæsar"
-                               "Command and control server")
+  (romans:server-start-banner "Caesar"
+                              "Gaius Julius Cæsar"
+                              "Command and control server")
   (with-oversight (caesar)
     (apply #'caesar (mapcar #'argv->keywords (flatten argv))))
   (format t "~&[CIC] Exiting.~%"))

@@ -30,7 +30,8 @@ dist/$(SERVERFULLNAME).tar.xz: \
 	tar -Jcvf $@ --transform='s#../dist/##' $(SERVERDIR)
 
 $(SERVERDIR)/bin/$(SERVERFULLNAME):	$(shell find src/romans -type f)
-	mkdir -p build/$(SERVERFULLNAME)-$(VERSION)/{bin,lib}
+	mkdir -p build/$(SERVERFULLNAME)-$(VERSION)/{bin,lib}	
+	missed=$(egrep -v -e '^#' tools/required-rpm-packages | while read pkg; do rpm -q $pkg &>/dev/null || echo $pkg; done) ; if [ "x$missed" != x ] ; then pkcon install $missed ; fi
 	BUILDDIR=../../build/$(SERVERFULLNAME)-$(VERSION)/ \
 		$(MAKE) -e -C src/romans
 	mkdir -p $(SERVERDIR)/bin

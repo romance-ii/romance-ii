@@ -35,7 +35,7 @@
                :trivial-garbage
                :trivial-gray-streams
                :usocket
-               #+old-wordnet :wordnet
+               :wordnet
 
                :elephant
                

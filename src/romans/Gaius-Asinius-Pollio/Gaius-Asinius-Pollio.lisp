@@ -14,7 +14,7 @@
 
 
 (defun start-server (&optional argv)
-  (romance:server-start-banner "Asinius"
-                               "Gaius Asinius Pollio"
-                               "Database persistence layer")
+  (romans:server-start-banner "Asinius"
+                              "Gaius Asinius Pollio"
+                              "Database persistence layer")
   (format t "~&Gaius Asinius Pollio: No-op."))
