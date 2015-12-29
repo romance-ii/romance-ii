@@ -37,7 +37,7 @@
                :usocket
                :wordnet
 
-               :elephant
+               :oliphaunt
                
                )
 
