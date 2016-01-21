@@ -11,3 +11,6 @@ This module also handles the ConceptNet5 database.
 Gaius Valerius Catullus was a noted poet/songwriter.")
   (:export #:converse-repl #:server-start #:test-parser))
 
+(defpackage :catullus-db-secrets
+  (:use :cl))
+

@@ -1,9 +1,5 @@
 (in-package :catullus)
 
-;; (defmacro TODO (&rest params)
-;;   `(cerror "ignore and continue"
-;;            "Unimplemented function called with~%~S" (list ,@params)))
-
 (defvar *logical-output* nil)
 
 (defmacro logic-trace (&rest args)
@@ -303,9 +299,9 @@ after processing."
          utterance))))
 
 (defmethod utterance->human ((utterance integer) language-code)
-  (let ((p (sqlite:execute-single *concept-db*
-                                  "SELECT symbol FROM atoms WHERE rowid=?"
-                                  utterance)))
+  (let ((p (db-execute-single *concept-db*
+                              "SELECT symbol FROM atoms WHERE rowid=?"
+                              utterance)))
     (if (and (< 3 (length p)) (string= "/r/" (subseq p 0 3)))
         p
         (utterance->human p language-code))))
@@ -657,11 +653,11 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
     (error "Cannot find ConceptNet5 CSV “database” files; cannot proceed."))
   (format *trace-output* "~&~%Loading ConceptNet5 dataset from ~S" wildcard)
   (in-db (:transaction nil)
-         (time (conceptnet5-read-files wildcard)))
+    (time (conceptnet5-read-files wildcard)))
   (format *trace-output*
           "~&~%Done, loaded ConceptNet5; ~:D interned tokens, ~:D cross-indexed assertions"
-          (sqlite:execute-single *concept-db* "SELECT COUNT(*) FROM atoms")
-          (sqlite:execute-single *concept-db* "SELECT COUNT(*) FROM concepts"))
+          (db-execute-single *concept-db* "SELECT COUNT(*) FROM atoms")
+          (db-execute-single *concept-db* "SELECT COUNT(*) FROM concepts"))
   (push :conceptnet5 *initialized*))
 
 (defun load-langutils (&optional
@@ -737,6 +733,8 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
       #\🌙 (or "moon" "night")
       #\☉ (or "Sun" "center" "day")
       #\★ "star"
+      #\* (or "asterisk" "footnote" "star" (:phrase "multiply" "by"))
+      #\× (or "times" (:phrase "multiply" "by"))
       #\+ "plus"
       #\✝ (or "Cross" "Christian" "crucifix")
       #\☠ (or "poison" (:phrase "skull" "and" "cross-bones") (:phrase "computer" "programmer")
@@ -747,7 +745,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
       #\¢ ("cent" :currency (or :singular :plural))
       #\§ "section"
       #\¶ (or "pi" "paragraph")
-      #\♥ (or "heart" "love" "loves")
+      #\♥ (or ("heart" :noun) ("love" (or :noun :verb)) ("loves" :verb))
       #\© "copyright"
       #\® (:phrase "registered" "trademark")
       #\™ "trademark"
