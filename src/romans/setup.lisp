@@ -173,6 +173,8 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
   (pushnew (merge-pathnames path *path/r2src*)
            asdf:*central-registry* :test 'equal))
 
+(load (merge-pathnames #p"elephant/oliphaunt.asd" *path/r2src*))
+
 ;;; Get the OS  name. Note, we consider “Android”  different enough from
 ;;; GNU/Linux to warrant its own heading.
 
