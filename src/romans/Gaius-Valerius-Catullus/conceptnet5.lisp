@@ -1,12 +1,18 @@
 (in-package :catullus)
-;; This work includes data from ConceptNet 5, which was compiled by the Commonsense Computing Initiative. ConceptNet 5 is freely available under the Creative Commons Attribution-ShareAlike license (CC BY SA 3.0) from http://conceptnet5.media.mit.edu. The included data was created by contributors to Commonsense Computing projects, contributors to Wikimedia projects, Games with a Purpose, Princeton University's WordNet, DBPedia, OpenCyc, and Umbel. 
+
+;; This  work  includes  data  from  ConceptNet  5,   which  was  compiled  by  the  Commonsense  Computing  Initiative.
+;; ConceptNet 5  is freely  available under  the Creative  Commons Attribution-ShareAlike  license (CC  BY SA  3.0) from
+;; http://conceptnet5.media.mit.edu. The  included data was created  by contributors to Commonsense  Computing projects,
+;; contributors  to  Wikimedia  projects, Games  with  a  Purpose,  Princeton  University's WordNet,  DBPedia,  OpenCyc,
+;; and Umbel.
+
 (defvar *concept-db* nil)
 (defvar *new-inserts* nil)
-(defvar *concept-db-disc* nil)
+(defvar *concept-db-connection* :disconnected)
 (defvar *concept-db-lock* (make-lock "ConceptDB Update Lock"))
-(defvar *concept-db-last-flush-to-disc* 0)
-(defvar *concept-db-flush-to-disc-interval* 300)
-(defvar *flush-to-disc-lock* (make-lock "ConceptDB Flush Lock"))
+(defvar *concept-db-last-flush-to-db* 0)
+(defvar *concept-db-flush-to-db-interval* 300)
+(defvar *flush-to-db-lock* (make-lock "ConceptDB Flush Lock"))
 
 
 (defvar database-host "gaius-valerius-catullus.adventuring.click")
@@ -25,28 +31,56 @@
 (defvar &select-concept-p nil)
 (defvar &select-concept-o nil)
 
+(defvar *select-cache* (make-hash-table :test 'equalp))
+
+(defun invalidate-db-cache ()
+  (clrhash *select-cache*))
+
+(defun db-filter-execution (query args)
+  (map 'list
+       (lambda (row) (mapplist (key value) row
+                       (list (keyword* key) value)))
+       (dbi:fetch-all (apply #'dbi:execute (dbi:prepare *concept-db* query) args))))
+
+(defun sql-translate-arg (arg)
+  (cond ((member arg '(:null :true :false)) arg)
+        ((null arg) :null)
+        ((eql arg t) :true)
+        ((symbolp arg) (string-downcase arg))
+        (t arg)))
+
+(defun db-execute (query &rest raw-args)
+  (let ((args (mapcar #'sql-translate-arg
+                      raw-args)))
+    (handler-case
+        (cond ((or (string-equal "select " query :end2 7)
+                   (string-equal "describe " query :end2 9)
+                   (string-equal "show " query :end2 5))
+               
+               (multiple-value-bind (cached foundp)
+                   (gethash (list query args) *select-cache*)
+                 (when foundp
+                   (format *error-output* "~& [SQL]* ~s ~s" query args)
+                   (return-from db-query cached)))
+               
+               (format *error-output* "~& [SQL] ~s ~s" query args)
+               (let ((found (db-filter-execution query args)))
+                 (setf (gethash (list query args) *select-cache*) found)
+                 found))
+              
+              (t (format *error-output* "~& [SQL] ~s ~s" query args)
+                 (invalidate-db-cache)
+                 (db-filter-execution query args)))
+      (dbi.error:<dbi-database-error> (c)
+        (warn "~2%{{{ ERROR in SQL engine }}}~%~a~%~s~%~s~2%~s ~a"
+              query raw-args args c c)
+        (signal c)))))
+
+(defun db-execute-single (query &rest args)
+  (cadar (apply #'db-execute query args)))
+
 (defmacro db-nest-transaction ((db) &body body)
-  `(sqlite:with-transaction ,db ,@body))
-
-(defmacro db-execute-non-query (db &rest query)
-  `(sqlite:execute-non-query ,db ,@query))
-
-(defmacro db-execute-query (db &rest query)
-  `(sqlite:execute-query ,db ,@query))
-
-(defmacro db-prepare-statement (db &rest statement)
-  `(sqlite:prepare-statement ,db ,@statement))
-
-(defmacro db-reset-statement (st)
-  `(sqlite:reset-statement ,st))
-(defmacro db-bind-parameter (st i value)
-  `(sqlite:bind-parameter ,st ,i ,value))
-(defmacro db-step-statement (st)
-  `(sqlite:step-statement ,st))
-(defmacro db-statement-column-value (st i)
-  `(sqlite:statement-column-value ,st ,i))
-(defmacro db-last-insert-row-id (db)
-  `(sqlite:last-insert-rowid ,db))
+  `(dbi:with-transaction ,db ,@body))
 
 (defmacro in-db ((&key (transaction nil)) &body body)
   `(TAGBODY
@@ -58,7 +92,7 @@
                   (connect-concepts-db))
                 (prog1 ,(if transaction 
                             `(db-nest-transaction (*concept-db*)
-                                                  ,@body)
+                               ,@body)
                             `(progn ,@body)))))
         (initialize-db ()
           (init-conceptnet-db)
@@ -69,81 +103,42 @@
                               '("DROP TABLE concepts"
                                 "DROP TABLE atoms")))))))
 
-(defun flush-to-disc ()
-  (in-db (:transaction t)
-    (with-lock-held (*concept-db-lock*)
+(defun flush-to-db ()
+  (when (sb-thread:grab-mutex *flush-to-db-lock* :waitp nil :timeout 0)
+    (in-db (:transaction t)
       (loop for (s p o) in *new-inserts*
-         do (add-concept-db s p o))))
-  (setf *concept-db-last-flush-to-disc* (get-universal-time))
-  (release-lock *flush-to-disc-lock*)) 
+         do (add-concept-db s p o)))
+    (setf *concept-db-last-flush-to-db* (get-universal-time))
+    (release-lock *flush-to-db-lock*))) 
 
-(defun flush-to-disc-maybe ()
-  (if (< (+ *concept-db-last-flush-to-disc* 
-            *concept-db-flush-to-disc-interval*)
+(defun flush-to-db-maybe ()
+  (if (< (+ *concept-db-last-flush-to-db* 
+            *concept-db-flush-to-db-interval*)
          (get-universal-time))
       (when (ignore-errors
-              (sb-thread:grab-mutex *flush-to-disc-lock* :waitp nil :timeout 0))
+              (sb-thread:grab-mutex *flush-to-db-lock* :waitp nil :timeout 0))
         (format *trace-output* "~&Flushing in-core DB to disc also…")
-        (make-thread #'flush-to-disc :name "Syncing new facts to disc DB"))))
+        (flush-to-db))))
+
 (defun connect-concepts-db ()
-  (setf *concept-db* (sqlite:connect
-                      (merge-pathnames (make-pathname :directory '(:relative "conceptnet5-csv" "assertions")
-                                                      :name "conceptnet5.sqlite"
-                                                      :type "db")
-                                       romans-compiler-setup:*path/r2src*))
+  (setf *concept-db* 
+        (dbi:connect :mysql :host database-host :db database-name :user database-user :password database-password)
+        #+sqlite-backing-concept-db (sqlite:connect
+                                     (merge-pathnames (make-pathname :directory '(:relative "conceptnet5-csv" "assertions")
+                                                                     :name "conceptnet5.sqlite"
+                                                                     :type "db")
+                                                      romans-compiler-setup:*path/r2src*))
         
         #+conceptnet-memory ":memory:")
   #+conceptnet-memory
-  (setf *concept-db-disc* (sqlite:connect
-                           (merge-pathnames (make-pathname :directory '(:relative "conceptnet5-csv" "assertions")
-                                                           :name "conceptnet5.sqlite"
-                                                           :type "db")
-                                            romans-compiler-setup:*path/r2src*)))
+  (setf *concept-db-connection* (sqlite:connect
+                                 (merge-pathnames (make-pathname :directory '(:relative "conceptnet5-csv" "assertions")
+                                                                 :name "conceptnet5.sqlite"
+                                                                 :type "db")
+                                                  romans-compiler-setup:*path/r2src*)))
   (in-db (:transaction nil)
-    (let ((check (db-prepare-statement *concept-db*
-                                       "select 1 from atoms where symbol is not null limit 1")))
-      (db-reset-statement check)
-      (db-step-statement check)))
-  (setf &select-atom-id
-        (db-prepare-statement
-         *concept-db*
-         "SELECT rowid FROM atoms WHERE symbol=?"))
-  (setf &insert-atom
-        (db-prepare-statement
-         *concept-db*
-         "INSERT OR FAIL INTO atoms (symbol) VALUES (?)"))
-  (setf &insert-concept
-        (db-prepare-statement
-         *concept-db*
-         "INSERT OR FAIL INTO concepts (s,p,o) VALUES (?,?,?)"))
-  (setf &select-concept-spo
-        (db-prepare-statement
-         *concept-db*
-         "SELECT rowid,s,p,o FROM concepts WHERE s=? AND p=? AND o=?"))
-  (setf &select-concept-sp
-        (db-prepare-statement
-         *concept-db*
-         "SELECT rowid,s,p,o FROM concepts WHERE s=? AND p=?"))
-  (setf &select-concept-po
-        (db-prepare-statement
-         *concept-db*
-         "SELECT rowid,s,p,o FROM concepts WHERE p=? AND o=?"))
-  (setf &select-concept-so
-        (db-prepare-statement
-         *concept-db*
-         "SELECT rowid,s,p,o FROM concepts WHERE s=? AND o=?"))
-  (setf &select-concept-s
-        (db-prepare-statement
-         *concept-db*
-         "SELECT rowid,s,p,o FROM concepts WHERE s=?"))
-  (setf &select-concept-p
-        (db-prepare-statement
-         *concept-db*
-         "SELECT rowid,s,p,o FROM concepts WHERE p=?"))
-  (setf &select-concept-o
-        (db-prepare-statement
-         *concept-db*
-         "SELECT rowid,s,p,o FROM concepts WHERE o=?")))
+    (assert (= 1 (db-execute-single *concept-db*
+                                    "select 1 from atoms where symbol is not null limit 1")))))
 
 (defun init-conceptnet-db ()
   (in-db (:transaction nil)
@@ -159,47 +154,23 @@
            "CREATE INDEX po ON concepts (p, o)"
            "CREATE INDEX spo ON concepts (s, p, o)"))))
 
-(defvar &select-atom-id)
-(defvar &insert-atom)
-(defvar &insert-concept)
-(defvar &select-concept-s)
-(defvar &select-concept-p)
-(defvar &select-concept-o)
-(defvar &select-concept-sp)
-(defvar &select-concept-so)
-(defvar &select-concept-po)
-(defvar &select-concept-spo)
-
 (defun intern-cn5-symbol (symbol)
-  (declare (type string symbol))
-  (if-let ((id (progn
-                 (db-reset-statement &select-atom-id)
-                 (db-bind-parameter &select-atom-id 1 symbol)
-                 (db-step-statement &select-atom-id)
-                 (db-statement-column-value &select-atom-id 0))))
+  (check-type symbol string)
+  (if-let ((id (db-execute-single "SELECT id FROM atoms WHERE symbol=?" symbol)))
     id
     (with-lock-held (*concept-db-lock*)
-      (db-reset-statement &insert-atom)
-      (db-bind-parameter &insert-atom 1 symbol)
-      (db-step-statement &insert-atom)
-      (db-last-insert-rowid *concept-db*))))
+      (db-execute-single "INSERT INTO atoms (symbol) VALUES (?) RETURNING id" symbol))))
 
 (defun add-concept (s p o)
   (push (list s p o) *new-inserts*)
-  #+ (or) (princ "." *trace-output*)
-  (flush-to-disc-maybe))
+  (flush-to-db-maybe))
 
 (defun add-concept-db (subj pred obj
                        &aux
                          (s (intern-cn5-symbol subj))
                          (p (intern-cn5-symbol pred))
                          (o (intern-cn5-symbol obj)))
-  (db-reset-statement &insert-concept)
-  (db-bind-parameter &insert-concept 1 s)
-  (db-bind-parameter &insert-concept 2 p)
-  (db-bind-parameter &insert-concept 3 o)
-  (db-step-statement &insert-concept)
-  (db-last-insert-rowid *concept-db*))
+  (db-execute-single "INSERT INTO concepts (s,p,o) VALUES (?,?,?) RETURNING id" s p o))
 
 (defgeneric find-facts (s p o)
   (:documentation "Find facts in the conceptual database that match
@@ -207,8 +178,8 @@
   parameters can be replaced with '* as a wildcard."))
 
 (defmacro find-facts-pattern (s-spec p-spec o-spec)
-  (let ((statement (intern (format nil "&SELECT-CONCEPT-~:[~;S~]~:[~;P~]~:[~;O~]"
-                                   s-spec p-spec o-spec)))
+  (let ((statement (format nil "SELECT id FROM atoms WHERE ~:[TRUE~;s=?~] AND ~:[TRUE~;p=?~] AND ~:[TRUE~;o=?~]"
+                           s-spec p-spec o-spec))
         (p-index (if s-spec 2 1))
         (o-index (+ 1 (if s-spec 1 0) (if p-spec 1 0))))
     `(defmethod find-facts
@@ -221,34 +192,27 @@
                 (unless o-spec `((ignore obj ))))
        (let ((filter (compose ,(if s-spec
                                    '#'identity
-                                   '(curry #'remove-if-not 
+                                   '(curry #'delete-if-not 
                                      (lambda (fact)
                                        (equal subj (first fact)))))
                               ,(if p-spec
                                    '#'identity
-                                   '(curry #'remove-if-not 
+                                   '(curry #'delete-if-not 
                                      (lambda (fact)
                                        (equal pred (second fact)))))
                               ,(if o-spec
                                    '#'identity
-                                   '(curry #'remove-if-not 
+                                   '(curry #'delete-if-not 
                                      (lambda (fact)
                                        (equal obj (third fact))))))))
-         (if-let (found (funcall filter *new-inserts*))
-           found
-           (in-db (:transaction nil)
-             (db-reset-statement ,statement)
-             ,(when s-spec `(db-bind-parameter ,statement 1 subj))
-             ,(when p-spec `(db-bind-parameter ,statement ,p-index pred))
-             ,(when o-spec `(db-bind-parameter ,statement ,o-index obj))
-             (loop while (db-step-statement ,statement)
-                collecting (list (db-statement-column-value ,statement 1)
-                                 (db-statement-column-value ,statement 2)
-                                 (db-statement-column-value ,statement 3))))))
-       ;; ,(when s-spec `(intern-cn5-symbol s))
-       ;; ,(when p-spec `(intern-cn5-symbol p))
-       ;; ,(when o-spec `(intern-cn5-symbol o))
-       )))
+         (let (found (funcall filter *new-inserts*))
+           (append found
+                   (in-db (:transaction nil)
+                     ,(let ((l (list 'db-execute-query statement)))
+                           (when s-spec (appendf l `(intern-cn5-symbol subj)))
+                           (when p-spec (appendf l `(intern-cn5-symbol pred)))
+                           (when o-spec (appendf l `(intern-cn5-symbol obj)))
+                           l))))))))
 
 (dolist (s? '(t nil))
   (dolist (p? '(t nil))
@@ -264,8 +228,6 @@
        until (eql :eof line)
        for line-count from 1
        for parts = (split-sequence #\Tab line :test #'char=)
-       ;; for (pred subj obj ctx vers src eid lic) =
-       ;;   (mapcar (lambda (s) (intern s :cvc)) (subseq parts 1 9))
        for (pred subj obj ctx) = (subseq parts 1 5)
        do (if (equal ctx "/ctx/all")
               (add-concept subj pred obj)
