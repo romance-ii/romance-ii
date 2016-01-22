@@ -7,16 +7,9 @@ then
     curl http://download.opensuse.org/repositories/home:/sionescu/Fedora_22/home:sionescu.repo \
         | sudo tee /etc/yum.repos.d/sionescu.repo
 fi
-sudo dnf -y install libfixposix-devel libfixposix2
-
-#ver=$(grep ^Version src/libfixposix/pkg/libfixposix.spec | cut -d: -f 2 | sed -e 's,[ \t]+,,g')
-#mkdir -p ~/rpmbuild/SOURCES
-#cd ~/rpmbuild/SOURCES
-#tar zcf ~/rpmbuild/SOURCES/libfixposix_${ver}.orig.tar.gz libfixpos
-#rpmbuild -ba src/libfixposix/pkg/libfixposix.spec
-#sudo rpm -vhi ~/rpmbuild/RPMS/$(uname -m)/libfixposix*.rpm
-#(cd src/libfixposix; autoreconf -i -f)
-#mkdir -p obj/libfixposix.$(uname -m)
-#mkdir -p dist/lib
-#cd obj/libfixposix.$(uname -m) ; ../../src/libfixposix/configure --prefix=$(pwd)/../../dist && make install
-
+if rpm -q libfixposix-devel
+then
+	sudo dnf -y update libfixposix-devel libfixposix2
+else
+	sudo dnf -y install libfixposix-devel libfixposix2
+fi
