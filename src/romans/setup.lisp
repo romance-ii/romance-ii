@@ -13,11 +13,13 @@
            #:*path/r2project*))
 (in-package :romans-compiler-setup)
 
-(format *trace-output* "~& ★ Romance Ⅱ set-up script ★
+
+(format *trace-output* "~|~2% ★ Romance Ⅱ set-up script ★
 
 Setting up environment to compile Romance Ⅱ… If you run into problems,
 check the manual in the “doc” folder.")
 
+(load "~/quicklisp/setup" :verbose nil)
 
 ;;; Check  that  we're being  LOADed.  COMPILEing  this won't  have  the
 ;;; expected effects.
@@ -61,10 +63,10 @@ its *FEATURES*, please advise us with a copy of CL:*FEATURES*:~%~S"
 #-linux
 (warn "*FEATURES* omits LINUX.
 
-Romance Ⅱ  is being developed  on Linux®.  While support for  some other
-operating systems  is certainly  possible, keep in  mind, that  the more
-your operating system differs from Linux,  the less likely things are to
-Just Work.  Patches for  other OS  are accepted, as  long as  they don't
+Romance Ⅱ is being developed on Linux®. While support for some other
+operating systems is certainly possible, keep in mind, that the more
+your operating system differs from Linux, the less likely things are
+to Just Work. Patches for other OS are accepted, as long as they don't
 break Linux support.
 
 If your OS *is* a Linux, and your compiler simply does not specify
@@ -122,41 +124,69 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 
 ;;; Set the paths for a normal, production installation. These are DEFVARs now, so you can override them.
 
-(defvar *path/etc* (make-pathname :directory "/etc/"))
-(defvar *path/share* (make-pathname :directory "/usr/share/"))
-(defvar *path/r2share*
-  (make-pathname :directory "/usr/share/romance-ii"))
-(defvar *path/bin* (make-pathname :directory "/usr/bin/"))
-(defvar *path/var* (make-pathname :directory "/var/lib/romance-ii/"))
-(defvar *path/tmp* (make-pathname :directory "/tmp/"))
-(defvar *path/var/tmp* (make-pathname :directory "/var/tmp/"))
-(defvar *path/r2src* 
-  (truename 
-   (merge-pathnames "../" 
-                    (make-pathname :directory (pathname-directory *load-pathname*)))))
+(defvar *path/etc* (make-pathname :directory '(:absolute "etc")))
+(defvar *path/share* (make-pathname :directory '(:absolute "usr" "share")))
+(defvar *path/r2share* (make-pathname :directory '(:absolute "usr" "share" "romance-ii")))
+(defvar *path/bin* (make-pathname :directory '(:absolute "usr" "bin")))
+(defvar *path/var* (make-pathname :directory '(:absolute "var" "lib" "romance-ii")))
+(defvar *path/tmp* (make-pathname :directory '(:absolute "tmp")))
+(defvar *path/var/tmp* (make-pathname :directory '(:absolute "var" "tmp")))
+(defvar *path/r2src* (truename 
+                      (merge-pathnames (make-pathname :directory '(:relative "..")) 
+                                       (make-pathname :directory (pathname-directory *load-pathname*)))))
 (defvar *path/r2project*
-  (truename (merge-pathnames "../../" 
+  (truename (merge-pathnames (make-pathname :directory '(:relative ".." ".."))
                              (make-pathname :directory (pathname-directory *load-pathname*)))))
+(defvar *path/game-project*
+  (truename (merge-pathnames (make-pathname :directory '(:relative ".." ".." ".."))
+                             (make-pathname :directory (pathname-directory *load-pathname*)))))
+(defvar *path/distdir*
+  (merge-pathnames (make-pathname :directory '(:relative "dist")) 
+                   *path/r2project*))
+(defvar *path/libdir*
+  (merge-pathnames (make-pathname :directory '(:relative  "lib")) 
+                   *path/distdir*))
+(defvar *path/incdir*
+  (merge-pathnames (make-pathname :directory '(:relative "include")) 
+                   *path/distdir*))
+(defvar *path/bindir*
+  (merge-pathnames (make-pathname :directory '(:relative "bin")) 
+                   *path/distdir*))
+(defvar *path/sharedir*
+  (merge-pathnames (make-pathname :directory '(:relative "share")) 
+                   *path/distdir*))
+
+(map nil (lambda (path)
+           (ignore-errors (#+sbcl sb-posix:mkdir
+                                  #-sbcl (error "How do you say MKDIR here?") 
+                                  (format nil "~a" path)
+                                  #o775)))
+     (list *path/distdir* *path/libdir* *path/incdir* *path/bindir* *path/sharedir*))
 
 
 ;;; Set up the ASDF Registry
 
-(dolist (path '(#p"romans/"
+(dolist (path '(#p"elephant/"
+                #p"romans/"
                 #p"romans/lib/smedict-old/"
                 #p"romans/lib/sb-texinfo/"))
   (pushnew (merge-pathnames path *path/r2src*)
            asdf:*central-registry* :test 'equal))
+
+(load (merge-pathnames #p"elephant/oliphaunt.asd" *path/r2src*))
 
 ;;; Get the OS  name. Note, we consider “Android”  different enough from
 ;;; GNU/Linux to warrant its own heading.
 
 (defvar *os-name* (or #+android "Android"
                       #+ios "iOS"
-                      #+linux "Linux"
+                      #+(or macos osx) "MacOS"
+                      #+(or linux linux32 linux64) "Linux"
                       #+darwin "Darwin"
                       #+freebsd "FreeBSD"
                       #+unix "UNIX"
                       #+posix "POSIX"
+                      #+(or win32 win64 windows) "Windows"
                       "unknown"))
 
 
@@ -190,12 +220,36 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
    (ql:quickload pkg :silent t :verbose nil :prompt nil :explain nil))
  '(:cffi :alexandria :split-sequence :local-time :bordeaux-threads))
 
+(format *trace-output* "~&Setting up C library deps…")
+
 (pushnew (merge-pathnames "./lib/cl-bullet2l/" *load-truename*)
          cffi:*foreign-library-directories*
          :test 'equal)
 (pushnew *path/lib*
          cffi:*foreign-library-directories*
          :test 'equal)
+(pushnew *path/libdir*
+         cffi:*foreign-library-directories*
+         :test 'equal)
+
+(unless (probe-file (merge-pathnames (make-pathname :name "libfixposix" :type "so")
+                                     *path/libdir*))
+  (format *trace-output* "~&Building libfixposix …")
+  (uiop:run-program (format nil "~a/tools/bin/make-libfixposix" *path/r2project*))
+  (format *trace-output* " … done."))
+
+(flet ((path-push (key value)
+         (sb-posix:setenv key
+                          (format nil "~{~a~^:~}" (remove-if (lambda (el) (or (null el) (equal "NIL" el)))
+                                                             (remove-duplicates 
+                                                              (append (list (princ-to-string value)) 
+                                                                      (split-sequence:split-sequence #\: (sb-posix:getenv key)))
+                                                              :test #'string=)))
+                          1)
+         (format *trace-output* "~& • Set environment variable ~a to “~a”" key (sb-posix:getenv key))))
+  (path-push "C_INCLUDE_PATH" *path/incdir*)
+  (path-push "PATH" *path/bindir*)
+  (path-push "LD_LIBRARY_PATH" *path/libdir*))
 
 
 

@@ -44,3 +44,6 @@
 [submodule "elephant"]
 	path = src/elephant
 	url = git@github.com:romance-ii/elephant
+[submodule "libfixposix"]
+	path = src/libfixposix
+	url = git@github.com:sionescu/libfixposix.git

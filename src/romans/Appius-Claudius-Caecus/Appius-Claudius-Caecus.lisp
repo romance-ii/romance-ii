@@ -357,8 +357,8 @@ the load"
 
 
 (defun start-server (argv)
-  (romance:server-start-banner "Appius" "Appius Claudius Cæcus"
-                               "Network communications server")
+  (romans:server-start-banner "Appius" "Appius Claudius Cæcus"
+                              "Network communications server")
   (caesar::report :debug (format nil "Ignoring ARGV: ~S" argv))
   ;;  (start-server/socket-activation)
   (start-server/tcp-listener)

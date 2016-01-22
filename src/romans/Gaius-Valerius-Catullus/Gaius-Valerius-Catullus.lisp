@@ -1,9 +1,5 @@
 (in-package :catullus)
 
-;; (defmacro TODO (&rest params)
-;;   `(cerror "ignore and continue"
-;;            "Unimplemented function called with~%~S" (list ,@params)))
-
 (defvar *logical-output* nil)
 
 (defmacro logic-trace (&rest args)
@@ -24,7 +20,19 @@
          when (string-equal (second path) (symbol-name language-code))
          return (list :english-word xlat)
          finally (list :foreign-term utterance))
-      (list :untranslatable utterance)))
+      (let ((path (split-sequence #\/ utterance
+                                  :remove-empty-subseqs t)))
+        (assert (and (<= 3 (length path))
+                     (string-equal "c" (first path))
+                     (<= 2 (length (second path)) 7)
+                     (every (lambda (char)
+                              (or (char<= #\a char #\z)
+                                  (char<= #\A char #\Z)
+                                  (char= char #\-)
+                                  (char= char #\_)))
+                            (second path))))
+        (append (list :untranslatable (make-keyword (second path)))
+                (nthcdr 2 path)))))
 
 (defgeneric utterance->human (utterance language-code))
 
@@ -35,81 +43,200 @@
   (utterance-formatting-string
    (utterance->human predicate language-code) language-code))
 
-(defmethod utterance-formatting-string
-    (predicate (language-code (eql :en)))
-  (string-case predicate
-    ("/r/Antonym" "~0@*~A and ~2@*~A are antonyms.")
-    ("/r/AtLocation" "~0@*~A is at the location ~2@*~A.")
-    ("/r/Attribute" "~0@*~A has the attribute that it is ~2@*~A.")
-    ("/r/CapableOf" "~0@*~A can ~2@*~A.")
-    ("/r/Causes" "~0@*~A causes ~2@*~A.")
-    ("/r/CausesDesire" "~0@*~A might cause a desire for ~2@*~A.")
-    ("/r/ConceptuallyRelatedTo" "~0@*~A is a concept which is related to the concept of ~2@*~A.")
-    ("/r/CreatedBy" "~2@*~A creates ~0@*~A.")
-    ("/r/DefinedAs" "~0@*~A is defined as being ~2@*~A.")
-    ("/r/Derivative" "~2@*~A is derived from ~0@*~A.")
-    ("/r/DerivedFrom" "~0@*~A is derived from ~2@*~A.")
-    ("/r/DesireOf" "~0@*~A is the desire of ~2@*~A.")
-    ("/r/Desires" "~0@*~A desires ~2@*~A.")
-    ("/r/Entails" "~0@*~A entails ~2@*~A.")
-    ("/r/HasA" "~0@*~A has a ~2@*~A.")
-    ("/r/HasContext" "~0@*~A occurs in the context of ~2@*~A.")
-    ("/r/HasFirstSubevent" "The first thing to do when doing ~0@*~A, is ~2@*~A")
-    ("/r/HasLastSubevent" "The last thing to do when doing ~0@*~A, is ~2@*~A")
-    ("/r/HasPainCharacter" "~0@*~A has the pain character of ~2@*~A.")
-    ("/r/HasPainIntensity" "~0@*~A has the pain intensity of ~2@*~A.")
-    ("/r/HasPrerequisite" "~2@*~A is required before ~0@*~A.")
-    ("/r/HasProperty" "~2@*~A is a property of a ~0@*~A.")
-    ("/r/HasSubevent" "While doing ~0@*~A, one might ~2@*~A.")
-    ("/r/InheritsFrom" "~0@*~A inherits from ~2@*~A.")
-    ("/r/InstanceOf" "~0@*~A is an instance of ~2@*~A.")
-    ("/r/IsA" "~0@*~A is a ~2@*~A.")
-    ("/r/LocatedNear" "~0@*~A is located near to ~2@*~A.")
-    ("/r/LocationOfAction" "~0@*~A is where one might do ~2@*~A.")
-    ("/r/MadeOf" "~0@*~A is made of ~2@*~A.")
-    ("/r/MemberOf" "~0@*~A is a member of ~2@*~A.")
-    ("/r/MotivatedByGoal" "~0@*~A is motivated by the goal of ~2@*~A.")
-    ("/r/NotCapableOf" "~0@*~A cannot ~2@*~A.")
-    ("/r/NotCauses" "~0@*~A does not cause ~2@*~A.")
-    ("/r/NotDesires" "~0@*~A does not desire ~2@*~A.")
-    ("/r/NotHasA" "~0@*~A does not have a ~2@*~A.")
-    ("/r/NotHasProperty" "~0@*~A does not have the property of being ~2@*~A.")
-    ("/r/NotIsA" "~0@*~A is not a ~2@*~A.")
-    ("/r/NotMadeOf" "~0@*~A is not made of ~2@*~A.")
-    ("/r/NotUsedFor" "~0@*~A is not used for ~2@*~A")
-    ("/r/ObstructedBy" "~0@*~A is obstructed by ~2@*~A.")
-    ("/r/PartOf" "~0@*~A is a part of ~2@*~A.")
-    ("/r/ReceivesAction" "~0@*~A receives the action ~2@*~A (one might be able to ~2@*~A a ~0@*~A).")
-    ("/r/RelatedTo" "~0@*~A is related to ~2@*~A.")
-    ("/r/SimilarSize" "~0@*~A and ~2@*~A are of similar size.")
-    ("/r/SimilarTo" "~0@*~A is similar to ~2@*~A.")
-    ("/r/SymbolOf" "~0@*~A is a symbol of ~2@*~A.")
-    ("/r/Synonym" "~0@*~A and ~2@*~A are synonymous.")
-    ("/r/TranslationOf" "~0@*~A is a translation of ~2@*~A into another language.")
-    ("/r/UsedFor" "One might use a ~0@*~A for ~2@*~A.")
-    ("/r/UsedFor/" "One might use a ~0@*~A for ~2@*~A.")
-    ("/r/wordnet/adjectivePertainsTo" "~0@*~A is an adjective which pertains to ~2@*~A.")
-    ("/r/wordnet/adverbPertainsTo" "~0@*~A is an adverb which pertains to ~2@*~A.")
-    ("/r/wordnet/participleOf" "~0@*~A is a participle (in inflection) of ~2@*~A.")
-    (t (cerror "ignore and continue" "Untranslated predicate: ~A" predicate)
-       "“~A” —~A→ “~A”")))
+(defun normalise-noun (noun)
+  "Given a noun, normalise it as best possible."
+  (if (stringp noun)
+      (cond
+        ((find #\( noun) 
+         (warn "Contains a parenthetical expression, which should be parsed. TODO")
+         noun)
+        (t noun))
+      noun))
 
-(defgeneric language-name (code in-language))
-(defmethod language-name (code (language-code (eql :en)))
-  (format nil "the language with code ~A" code))
+(defun conceptnet-predicate->keyword (predicate)
+  (if (stringp predicate) (make-keyword (cffi:translate-camelcase-name predicate))))
+
+(defun normalise-predicate (subject predicate object)
+  "Given a  predicate with complex  meaning, attempt to  break it down  into a simpler  predicate which is  perhaps more
+understandable  to the  logic  system. Returns  a clause  in  p-s-(o) order,  but  may have  sub-clauses and  such
+after processing."
+  (let ((subject (normalise-noun subject))
+        (object (normalise-noun object))
+        (predicate (conceptnet-predicate->keyword predicate)))
+    ;; if the CASE returns NIL, return the list (P S O)
+    (or (case predicate
+          (:/r/-antonym nil)
+          (:/r/-at-location (list :is-at subject (list :/r/-is-a object :location)))
+          (:/r/-attribute nil)
+          (:/r/-capable-of nil)
+          (:/r/-causes nil)
+          (:/r/-causes-desire (list :/r/-causes subject (list :/r/-desire-of '* object)))
+          (:/r/-conceptually-related-to nil)
+          (:/r/-compound-derived-from (list :/r/-derived-from (list :/r/-is-a subject :compound) object))
+          (:/r/-created-by nil)
+          (:/r/-defined-as nil)
+          (:/r/-derivative (list :/r/-derived-from object subject))
+          (:/r/-derived-from nil)
+          (:/r/-desire-of nil)
+          (:/r/-desires nil)
+          (:/r/-entails nil)
+          (:/r/-etymologically-derived-from nil)
+          (:/r/-has-a nil)
+          (:/r/-has-context nil)
+          (:/r/-has-first-subevent `(and (:/r/-has-a (:/r/-is-a ,subject :event) (:/r/is-a ,object :sub-event))
+                                         (:precedes ,object (and (:/r/-is-a '* :sub-event)
+                                                                 (not (equal '* ,object))))))
+          (:/r/-has-last-subevent `(and (:/r/-has-a (:/r/-is-a ,subject :event) (:/r/is-a ,object :sub-event))
+                                        (:follows ,object (and (:/r/-is-a '* :sub-event)
+                                                               (not (equal '* ,object))))))
+          (:/r/-has-pain-character nil)
+          (:/r/-has-pain-intensity nil)
+          (:/r/-has-prerequisite nil)
+          (:/r/-has-property nil)
+          (:/r/-has-subevent nil)
+          (:/r/-inherits-from nil)
+          (:/r/-instance-of nil)
+          (:/r/-is-a nil)
+          (:/r/-located-near nil)
+          (:/r/-location-of-action nil)
+          (:/r/-made-of nil)
+          (:/r/-member-of nil)
+          (:/r/-motivated-by-goal `(and (:/r/-has-a ,subject (:/r/-is-a ,object :goal))))
+          (:/r/-not-capable-of `(not (:/r/-capable-of ,subject ,object)))
+          (:/r/-not-causes `(not (:/r/-causes ,subject ,object)))
+          (:/r/-not-desires `(not (:/r/-desires ,subject ,object)))
+          (:/r/-not-has-a `(not (:/r/-has-a ,subject ,object)))
+          (:/r/-not-has-property `(not (:/r/-has-property ,subject ,object)))
+          (:/r/-not-is-a `(not (:/r/-is-a ,subject ,object)))
+          (:/r/-not-made-of `(not (:/r/-made-of ,subject ,object)))
+          (:/r/-not-used-for `(not (:/r/-used-for ,subject ,object)))
+          (:/r/-obstructed-by nil)
+          (:/r/-part-of nil)
+          (:/r/-receives-action `(:receives ,subject (:/r/-is-a ,object :action)))
+          (:/r/-related-to nil)
+          (:/r/-similar-size `(:/r/-similar-to (:size-of ,subject) (:size-of ,object)))
+          (:/r/-similar-to nil)
+          (:/r/-symbol-of nil)
+          (:/r/-synonym nil)
+          (:/r/-translation-of nil)
+          (:/r/-used-for nil)
+          (:/r/-used-for/ (normalise-predicate subject :/r/-used-for object))
+          (:/r/dbpedia/field nil)
+          (:/r/dbpedia/genre nil)
+          (:/r/dbpedia/influenced-by nil)
+          (:/r/wordnet/adjective-pertains-to nil)
+          (:/r/wordnet/adverb-pertains-to nil)
+          (:/r/wordnet/participle-of nil)
+          (t (cerror "ignore and continue" "Unrecognized predicate: ~A" predicate)
+             "“~A” —~s→ “~A”"))
+        (list predicate subject object))))
+
+(defmethod utterance-formatting-string (predicate (language-code (eql :en)))
+  (case (conceptnet-predicate->keyword predicate)
+    (:/r/-Antonym "~0@*~A and ~2@*~A are antonyms.")
+    (:/r/-At-Location "~0@*~A is at the location ~2@*~A.")
+    (:/r/-Attribute "~0@*~A has the attribute that it is ~2@*~A.")
+    (:/r/-Capable-Of "~0@*~A can ~2@*~A.")
+    (:/r/-Causes "~0@*~A causes ~2@*~A.")
+    (:/r/-Causes-Desire "~0@*~A might cause a desire for ~2@*~A.")
+    (:/r/-Conceptually-Related-To "~0@*~A is a concept which is related to the concept of ~2@*~A.")
+    (:/r/-Compound-Derived-From "~0@*~A is a compound derived from ~2@*~A.")
+    (:/r/-Created-By "~2@*~A creates ~0@*~A.")
+    (:/r/-Defined-As "~0@*~A is defined as being ~2@*~A.")
+    (:/r/-Derivative "~2@*~A is derived from ~0@*~A.")
+    (:/r/-Derived-From "~0@*~A is derived from ~2@*~A.")
+    (:/r/-Desire-Of "~0@*~A is the desire of ~2@*~A.")
+    (:/r/-Desires "~0@*~A desires ~2@*~A.")
+    (:/r/-Entails "~0@*~A entails ~2@*~A.")
+    (:/r/-Etymologically-Derived-From "~0@*~A is etymologically derived from ~2@*~A.")
+    (:/r/-has-a "~0@*~A has a ~2@*~A.")
+    (:/r/-Has-Context "~0@*~A occurs in the context of ~2@*~A.")
+    (:/r/-Has-First-Subevent "The first thing to do when doing ~0@*~A, is ~2@*~A")
+    (:/r/-Has-Last-Subevent "The last thing to do when doing ~0@*~A, is ~2@*~A")
+    (:/r/-Has-Pain-Character "~0@*~A has the pain character of ~2@*~A.")
+    (:/r/-Has-Pain-Intensity "~0@*~A has the pain intensity of ~2@*~A.")
+    (:/r/-Has-Prerequisite "~2@*~A is required before ~0@*~A.")
+    (:/r/-Has-Property "~2@*~A is a property of a ~0@*~A.")
+    (:/r/-Has-Subevent "While doing ~0@*~A, one might ~2@*~A.")
+    (:/r/-Inherits-From "~0@*~A inherits from ~2@*~A.")
+    (:/r/-Instance-Of "~0@*~A is an instance of ~2@*~A.")
+    (:/r/-Is-A "~0@*~A is a ~2@*~A.")
+    (:/r/-Located-Near "~0@*~A is located near to ~2@*~A.")
+    (:/r/-Location-Of-Action "~0@*~A is where one might do ~2@*~A.")
+    (:/r/-Made-Of "~0@*~A is made of ~2@*~A.")
+    (:/r/-Member-Of "~0@*~A is a member of ~2@*~A.")
+    (:/r/-Motivated-By-Goal "~0@*~A is motivated by the goal of ~2@*~A.")
+    (:/r/-Not-Capable-Of "~0@*~A cannot ~2@*~A.")
+    (:/r/-Not-Causes "~0@*~A does not cause ~2@*~A.")
+    (:/r/-Not-Desires "~0@*~A does not desire ~2@*~A.")
+    (:/r/-Not-Has-A "~0@*~A does not have a ~2@*~A.")
+    (:/r/-Not-Has-Property "~0@*~A does not have the property of being ~2@*~A.")
+    (:/r/-Not-Is-A "~0@*~A is not a ~2@*~A.")
+    (:/r/-Not-Made-Of "~0@*~A is not made of ~2@*~A.")
+    (:/r/-Not-Used-For "~0@*~A is not used for ~2@*~A")
+    (:/r/-Obstructed-By "~0@*~A is obstructed by ~2@*~A.")
+    (:/r/-Part-Of "~0@*~A is a part of ~2@*~A.")
+    (:/r/-Receives-Action "~0@*~A receives the action ~2@*~A (one might be able to ~2@*~A a ~0@*~A).")
+    (:/r/-Related-To "~0@*~A is related to ~2@*~A.")
+    (:/r/-Similar-Size "~0@*~A and ~2@*~A are of similar size.")
+    (:/r/-Similar-To "~0@*~A is similar to ~2@*~A.")
+    (:/r/-Symbol-Of "~0@*~A is a symbol of ~2@*~A.")
+    (:/r/-Synonym "~0@*~A and ~2@*~A are synonymous.")
+    (:/r/-Translation-Of "~0@*~A is a translation of ~2@*~A.")
+    (:/r/-Used-For "One might use a ~0@*~A for ~2@*~A.")
+    (:/r/-Used-For/ "One might use a ~0@*~A for ~2@*~A.")
+    (:/r/dbpedia/field "~0@*~a is in the field of endeavours of ~2@*~a.")
+    (:/r/dbpedia/genre "~0@*~a is in the genre of ~2@*~a.")
+    (:/r/dbpedia/known-For "~0@*~a is known for ~2@*~a.")
+    (:/r/dbpedia/language-Family "~0@*~a is a language in the family of languages which is ~2@*~a.")
+    #+ (or)    (:/r/dbpedia/language-Family "~0@*~a is a language which is spoken in the location ~2@*~a.")
+    (:/r/dbpedia/influenced-By "~0@*~a was influenced in their work by ~2@*~a")
+    (:/r/dbpedia/influenced "~2@*~a was influenced in their work by ~0@*~a")
+    (:/r/dbpedia/main-Interest "~0@*~a is mainly interested in ~2@*~a")
+    (:/r/dbpedia/notable-idea "~0@*~a is notable for the idea ~2@*~a")
+    (:/r/wordnet/adjective-Pertains-To "~0@*~A is an adjective which pertains to ~2@*~A.")
+    (:/r/wordnet/adverb-Pertains-To "~0@*~A is an adverb which pertains to ~2@*~A.")
+    (:/r/wordnet/participle-Of "~0@*~A is a participle (in inflection) of ~2@*~A.")
+    (t (cerror "ignore and continue" "Untranslated predicate: ~A" predicate)
+       "“~A” —~s→ “~A”")))
+
+(defgeneric language-name (code in-language)
+  (:method ((code t) (language-code (eql :en)))
+    (format nil "the language with code ~A" code))
+  (:method ((code string) (language-code t))
+    (if (string-begins "/c/" code)
+        (let ((path (split-sequence #\/ code)))
+          (language-name (make-keyword (string-upcase (second path))) language-code))
+        (language-name (make-keyword (string-upcase code)) language-code)))
+  (:method ((code (eql :en)) (lang (eql :en))) "English")
+  (:method ((code (eql :es)) (lang (eql :en))) "Spanish")
+  (:method ((code (eql :ga)) (lang (eql :en))) "Irish")
+  (:method ((code (eql :fr)) (lang (eql :en))) "French")
+  (:method ((code (eql :ru)) (lang (eql :en))) "Russian")
+  (:method ((code (eql :la)) (lang (eql :en))) "Latin")
+  (:method ((code (eql :de)) (lang (eql :en))) "German")
+  (:method ((code (eql :pt)) (lang (eql :en))) "Portuguese")
+  (:method ((code (eql :zh)) (lang (eql :en))) "Chinese")
+  (:method ((code (eql :ja)) (lang (eql :en))) "Japanese")
+  (:method ((code (eql :cs)) (lang (eql :en))) "Czech")
+  (:method ((code (eql :el)) (lang (eql :en))) "Greek")
+  (:method ((code (eql :fi)) (lang (eql :en))) "Finnish")
+  (:method ((code (eql :it)) (lang (eql :en))) "Italian")
+  (:method ((code (eql :sv)) (lang (eql :en))) "Swedish"))
 
 (defgeneric utterance->human/sub-expression
     (keyword utterance language-code))
 
-(defmethod utterance->human/sub-expression ((keyword t) utterance
-                                            (language-code (eql :en)))
+(defmethod utterance->human/sub-expression ((keyword t) utterance (language-code (eql :en)))
   (format nil "~A: [~{~A~^ ~}]" keyword utterance))
 
 (defmethod utterance->human/sub-expression ((keyword (eql :untranslateable))
                                             utterance
                                             (language-code (eql :en)))
-  (let ((path (split-sequence:split-sequence #\/ utterance
-                                             :remove-empty-subseqs t)))
+  (let ((path (etypecase utterance
+                (string (split-sequence:split-sequence #\/ utterance
+                                                       :remove-empty-subseqs t))
+                (cons utterance))))
     (string-case (car path)
       ("c" (format nil "“~A~{~^ (~A)~}” (in ~A)"
                    (third path) (cdddr path)
@@ -120,8 +247,7 @@
 
 (defgeneric utterance->human/fact (utterance language-code))
 
-(defmethod
-    utterance->human/fact (utterance (language-code (eql :en)))
+(defmethod utterance->human/fact (utterance (language-code (eql :en)))
   (destructuring-bind (subj pred obj) utterance
     (format nil (utterance-formatting-string pred :en)
             (utterance->human subj :en)
@@ -173,9 +299,9 @@
          utterance))))
 
 (defmethod utterance->human ((utterance integer) language-code)
-  (let ((p (sqlite:execute-single *concept-db*
-                                  "SELECT symbol FROM atoms WHERE rowid=?"
-                                  utterance)))
+  (let ((p (db-execute-single *concept-db*
+                              "SELECT symbol FROM atoms WHERE rowid=?"
+                              utterance)))
     (if (and (< 3 (length p)) (string= "/r/" (subseq p 0 3)))
         p
         (utterance->human p language-code))))
@@ -248,7 +374,7 @@ To quit, enter: Bye!
       (format t "~&☹I have no reply to that.")))
 
 (defun converse-read ()
-  (format t "~&~10TReady >")
+  (format t "~&~10TReady ⇒")
   (read-line))
 
 (defun descend-langutils-tokens (chain)
@@ -461,18 +587,77 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defvar *initialized* nil)
 
+(define-constant +conceptnet5-download-root+ "http://conceptnet5.media.mit.edu/downloads/current/"
+  :test #'string-equal
+  :documentation "The URI under which the ConceptNet5 files can be downloaded.")
+
+(defun download-current-conceptnet5-files (wildcard)
+  (let ((download-to  (make-pathname :directory (pathname-directory wildcard))))
+    (format *trace-output* "~& Going to try to download ConceptNet5~% from ~a~% to ~a"
+            +conceptnet5-download-root+ download-to)
+    (let* ((index (progn
+                    (format *trace-output* "~&Looking for latest version of ConceptNet5 …")
+                    (drakma:http-request +conceptnet5-download-root+)))
+           (ref-uri (concatenate 'string +conceptnet5-download-root+
+                                 (multiple-value-bind (begin end beginnings endings)
+                                     (scan "<a href=\"(conceptnet5_flat_csv_[\\d\\.]+\\.tar\\.bz2)\""
+                                           index)
+                                   (declare (ignore begin end))
+                                   (assert (and (vectorp beginnings)
+                                                (plusp (length beginnings))) ()
+                                                "Looking for <a href=\"(conceptnet5_flat_csv_[\\d\\.]+\\.tar\\.bz2)\" at ~a, but did not find it"
+                                                +conceptnet5-download-root+)
+                                   (subseq index (elt beginnings 0) (elt endings 0)))))
+           (tar-bz2 (progn (format *trace-output* " Downloading ~a … (This will be several 100's of MiB, so it could take a moment) " ref-uri)
+                           (drakma:http-request ref-uri))))
+      (format *trace-output* " Decompressing and expanding tarball …")
+      (uiop/stream:with-temporary-file (:pathname temp-file
+                                                  :prefix "tmp.download.ConceptNet5.db.csv"
+                                                  :suffix "" :type ".tar.bz2"
+                                                  :directory download-to)
+
+        (with-output-to-file (temp-stream temp-file :if-exists :supersede :element-type '(unsigned-byte 8))
+          (map nil (rcurry #'write-byte temp-stream) tar-bz2))
+        (uiop:run-program (format nil "cd '~a'; tar -xjvf '~a'" download-to temp-file)
+                          :input nil :output *trace-output* :error-output *trace-output*))
+      (dolist (csv-file (directory (merge-pathnames (make-pathname :directory '(:relative "data" "assertions")
+                                                                   :name :wild :type "csv")
+                                                    download-to)))
+        (rename-file csv-file (make-pathname :directory (pathname-directory download-to)
+                                             :name (pathname-name csv-file)
+                                             :type "csv"))))))
+
+(defun ensure-conceptnet5-db-unzipped (wildcard)
+  (unless (plusp (length (directory wildcard)))
+    (format *trace-output* "~&CSV “database” not present; ")
+    (let ((bz2s (directory (make-pathname
+                            :directory (pathname-directory wildcard)
+                            :name :wild :type "csv.bz2"))))
+      (cond ((plusp (length bz2s))
+             (format *trace-output* " … found BZip2 compressed copy; decompressing:~%")
+             (dolist (bz2 bz2s)
+               (uiop:run-program (format nil "bzip -d '~a'" bz2) :output *trace-output* :error-output *trace-output* :input nil))
+             (format *trace-output* " … done."))
+            (:otherwise (format *trace-output* " … and BZip2 compressed copies also not found.")))))
+  (unless (plusp (length (directory wildcard)))
+    (download-current-conceptnet5-files wildcard)))
+
 (defun load-conceptnet5-csv-database
     (&optional
-       (wildcard (make-pathname :host "r2src"
-                                :directory '(:absolute "conceptnet5-csv" "assertions")
-                                :name :wild
-                                :type "csv")))
+       (wildcard (merge-pathnames (make-pathname :directory '(:relative "conceptnet5-csv" "assertions")
+                                                 :name :wild
+                                                 :type "csv")
+                                  ROMANS-COMPILER-SETUP:*PATH/R2SRC*)))
+  (ensure-conceptnet5-db-unzipped wildcard)
+  (unless (plusp (length (directory wildcard)))
+    (error "Cannot find ConceptNet5 CSV “database” files; cannot proceed."))
   (format *trace-output* "~&~%Loading ConceptNet5 dataset from ~S" wildcard)
-  (in-db (time (conceptnet5-read-files wildcard)))
+  (in-db (:transaction nil)
+    (time (conceptnet5-read-files wildcard)))
   (format *trace-output*
           "~&~%Done, loaded ConceptNet5; ~:D interned tokens, ~:D cross-indexed assertions"
-          (sqlite:execute-single *concept-db* "SELECT COUNT(*) FROM atoms")
-          (sqlite:execute-single *concept-db* "SELECT COUNT(*) FROM concepts"))
+          (db-execute-single *concept-db* "SELECT COUNT(*) FROM atoms")
+          (db-execute-single *concept-db* "SELECT COUNT(*) FROM concepts"))
   (push :conceptnet5 *initialized*))
 
 (defun load-langutils (&optional
@@ -484,7 +669,12 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defun init ()
   (unless (member :conceptnet5 *initialized*)
-    (load-conceptnet5-csv-database))
+    (handler-bind
+        ((file-error 
+          (lambda (c)
+            (declare (ignore c))
+            (load-conceptnet5-csv-database))))
+      (connect-concepts-db)))
   (unless (member :langutils *initialized*)
     (load-langutils)))
 
@@ -521,10 +711,12 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 (define-constant +english-word-symbols+
     '(#\& "and"
       #\# (or ("pound" :unit-of-weight (or :singular :plural))
-           ("number" :ordinal-marker :precedes-value))
-      #\$ ("dollar" :currency (or :singular :plural) :precedes-value)
+           ("number" :ordinal-marker :precedes-value)
+           ((:phrase "count" "each") :cardinal-marker :succeeds-value))
+      #\$ ((or "dollar" "Peso") :currency (or :singular :plural) :precedes-value)
       #\@ "at"
       #\£ ("pound" :currency :precedes-value)
+      #\€ ("Euro" :currency :precedes-value)
       #\¬ :not
       #\∈ (or (:phrase "element" "of") (:phrase ("is" (or :singular :plural)) "element" "of"))
       #\∋ (:phrase ("contain" (or :singular :plural)) "as" ("element" (or :singular :plural)))
@@ -541,16 +733,21 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
       #\🌙 (or "moon" "night")
       #\☉ (or "Sun" "center" "day")
       #\★ "star"
+      #\* (or "asterisk" "footnote" "star" (:phrase "multiply" "by"))
+      #\× (or "times" (:phrase "multiply" "by"))
       #\+ "plus"
+      #\✝ (or "Cross" "Christian" "crucifix")
+      #\☠ (or "poison" (:phrase "skull" "and" "cross-bones") (:phrase "computer" "programmer")
+           (:phrase "Admiral" "Grace" "Hopper"))
       #\= ("equal" (or :singular :plural) (or "to"))
       #\≈ (:phrase "approximately" ("equal" (or :singular :plural)) (or "to"))
       #\≠ (:phrase "not" ("equal" (or :singular :plural)) (or "to"))
       #\¢ ("cent" :currency (or :singular :plural))
       #\§ "section"
       #\¶ (or "pi" "paragraph")
-      #\♥ (or "heart" "love" "loves")
+      #\♥ (or ("heart" :noun) ("love" (or :noun :verb)) ("loves" :verb))
       #\© "copyright"
-      #\® "trademark" ;; ignoring the registered stuff, who cares?
+      #\® (:phrase "registered" "trademark")
       #\™ "trademark"
       #\% "percent"
       #\‰ "per-mille"
@@ -894,10 +1091,60 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                    ((consp parts) (cons word parts))
                    (t (list word parts))))))))
 
+(defun strictly-antonym-p (a b)
+  nil)                                  ; TODO
+
+(defun strictly-synonym-p (a b)
+  nil)                                  ; TODO
+
+(defun opposite-p (a b)
+  (or (equalp a (list 'not b))
+      (equalp b (list 'not a))
+      (and (consp a)
+           (eql (car a) 'not)
+           (strictly-synonym-p (cdr a) b))
+      (and (consp b)
+           (eql (car b) 'not)
+           (strictly-synonym-p (cdr b) a))
+      (strictly-antonym-p a b)))
+
+(defun any-opposites (list)
+  (cond
+    ((atom list) nil)
+    ((endp list) nil)
+    (t (let ((one (first list))
+             (others (rest list)))
+         (or (find-if (curry #'opposite-p one) others)
+             (apply #'any-opposites others))))))
+
 (defun collapse (phrase)
   (cond
     ((atom phrase) phrase)
     ((null phrase) nil)
+
+    ((and (eql 'and (first phrase))
+          (not (equalp phrase (remove-duplicates phrase :test #'equalp))))
+     (collapse (remove-duplicates phrase :test #'equalp)))
+
+    ((and (eql 'and (first phrase))
+          (any-opposites (rest phrase)))
+     nil)
+
+    ((and (eql 'and (first phrase))
+          (member nil phrase))
+     nil)
+
+    ((and (eql 'or (first phrase))
+          (member t phrase))
+     t)
+
+    ((and (eql 'or (first phrase))
+          (any-opposites (rest phrase)))
+     t)
+
+    ((and (eql 'and (first phrase))
+          (= 2 (length phrase)))
+     (second phrase))
     ;;    ((and-list-p phrase) (error "TODO"))
     (t (error "TODO"))))
 
@@ -935,7 +1182,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
   (logic-trace "~&Superposition (immediate) of the logical OR assertion:~%~A" (treely phrase))
   (let ((members (remove-duplicates (cdr phrase) :test #'equalp)))
     (if (null (cdr members))
-        (car members) 
+        (car members)
         (cons (car phrase) members))))
 
 (defun inject-into-list (list pos inject)
@@ -958,7 +1205,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defun superpose-or/next-depth (phrase)
   (logic-trace "~&Lifting a nested OR assertion from a lower level:~%~A" (treely phrase))
-  (cons (car phrase) 
+  (cons (car phrase)
         (mapcan (lambda (part)
                   (if (or-list-p part)
                       (cdr part)
@@ -967,7 +1214,7 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 (defun superpose-or/cross-product (phrase)
   (logic-trace "~&Going to perform a cross-product on:~%~A" (treely phrase))
   (let ((pos (position 'or phrase :key #'car?)))
-    (if pos 
+    (if pos
         (progn (logic-trace "~&Found the OR list at index ~:D" pos)
                (let ((alternatives (cdr (elt phrase pos))))
                  (logic-trace "~&Creating the cross-product with these alternatives:~{~% •~A~}" alternatives)
@@ -985,16 +1232,17 @@ This contains further OR lists which can be superposed."
 (defvar *superpose-or/recursion-guard* nil)
 
 (defun superpose-or (phrase)
-  "If a phrase contains any expressions of the form (OR x …), this 
+  "If a phrase contains any expressions of the form (OR x …), this
 function will create top-level superpositions, such as:
 
  • Nested OR expressions will be lifted to create a single top-level
    OR expression that is a cross-product of all nested expressions;
  • Any WRITEME
 
-⁂See TEST-PARSER for not really docs in the form of tests
+⁂See TEST-PARSER for not-really-docs in the form of tests
 "
   (logic-trace "~&Superpostition of any OR expressions in:~&~A" (treely phrase))
+
   (let ((*superpose-or/recursion-guard* (or (and *superpose-or/recursion-guard*
                                                  (1- *superpose-or/recursion-guard*))
                                             (progn
@@ -1003,41 +1251,40 @@ function will create top-level superpositions, such as:
     (logic-trace "~&(Recursion guard is currently set to allow ~R further level~:P)" *superpose-or/recursion-guard*)
     (unless (plusp *superpose-or/recursion-guard*)
       (break "Recursion guard stricken; you probably need to abort."))
-    (cond 
+    (cond
       ((atom phrase) phrase)
       ((null phrase) nil)
                                         ;     ✗ ((null (cdr phrase)) (list (superpose-or (car phrase))))
-      
+
       ;; No alternatives: (OR x) ⇒ x
       ((and (or-list-p phrase)
-            (null (cdr (cdr phrase)))) (second phrase))
+            (null (cdr (cdr phrase))))
+       (logic-trace "~&A choice of only one alternative is no choice at all. Reducing to ~a" (treely (second phrase)))
+       (second phrase))
 
-      ;; (OR x (OR y z)) ⇒ (OR x y z) 
-      ;; 
+      ((and (or-list-p phrase)
+            (let ((without-duplicates (remove-duplicates phrase :test #'equalp)))
+              (not (equalp phrase without-duplicates))))
+       (let ((without-duplicates (remove-duplicates phrase :test #'equalp)))
+         (logic-trace "~&The phrase contained duplicate members; after reducing them, the revised phrase is:~&~A" (treely without-duplicates))
+         (superpose-or without-duplicates)))
+
+      ;; (OR x (OR y z)) ⇒ (OR x y z)
+      ;;
       ;; (sort of associative property)
       ((and (or-list-p phrase)
-            (any #'or-list-p (cdr phrase))) (superpose-or/next-depth phrase))
+            (any #'or-list-p (cdr phrase))) (superpose-or (superpose-or/next-depth phrase)))
 
       ;; (x (OR y z)) ⇒ (OR (x y) (x z))
       ;;
       ;; (simplify as a cross-“product”)
-      ((any #'or-list-p (cdr phrase)) (superpose-or/cross-product phrase))
+      ((any #'or-list-p (cdr phrase)) (superpose-or (superpose-or/cross-product phrase)))
 
       ;; nested OR is farther down; need to elevate or eliminate it at
       ;; that lower level.
-      ((any-or phrase) (logic-trace "~& There's an OR phrase in there, but it's buried.
-I'm going to try to dig for it, and probably fail.")
-       (let* ((n (mapcar (compose #'superpose-or) phrase))
-              (m (superpose-or n)))
-         (logic-trace "~3&OK, so I started with:~%~A
-
-I saw some OR lists buried in there, so I tried to apply OR
-superposition logic to each of the top-level elements:~{~% •~A~}
-
-That got me: ~%~A
-Then, I ran that through one more try, and got:~%~A"
-                      (treely phrase) phrase (treely n) (treely m))
-         m))
+      ((any-or (rest phrase)) (logic-trace "~& There's an OR phrase in there, but it's buried.
+I'm going to try to dig it out to the top level.")
+       (superpose-or (mapcar #'superpose-or phrase)))
 
       ;; any other simplifications possible should occur here
       ((or-list-p phrase) (superpose-or/immediate phrase))
@@ -1093,27 +1340,22 @@ Then, I ran that through one more try, and got:~%~A"
 
 (defmacro itest (expr vars &rest report)
   (declare (ignore vars))
-  `(if *interactive-test*
-       (progn
-         (format *terminal-io* "~& ★ Test: ~%")
-         (format *terminal-io* ,@report)
-         (format *terminal-io* "~&~% Test expression: ~%~S" ',expr)
-         (if (y-or-n-p "Run this test?")
-             (let ((out ,expr))
-               (if out
-                   (progn
-                     (incf *tests-pass*)
-                     (format *terminal-io* "~& ✓ Test PASSED ⇒ ~S" out))
-                   (progn
-                     (incf *tests-fail*)
-                     (format *terminal-io* "~& ✗ Test FAILED")
-                     (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report)))))
-             (format *terminal-io* "~& ⁂ Test SKIPPED")))
-       (if ,expr
-           (incf *tests-pass*)
-           (progn 
-             (incf *tests-fail*)
-             (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report))))))
+  `(cond
+     (*interactive-test* (format *terminal-io* "~& ★ Test: ~%")
+                         (format *terminal-io* ,@report)
+                         (format *terminal-io* "~&~% Test expression: ~%~S" ',expr)
+                         (if (y-or-n-p "Run this test?")
+                             (let ((out ,expr))
+                               (cond
+                                 (out (incf *tests-pass*)
+                                      (format *terminal-io* "~& ✓ Test PASSED ⇒ ~S" out))
+                                 (:otherwise (incf *tests-fail*)
+                                             (format *terminal-io* "~& ✗ Test FAILED")
+                                             (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report)))))
+                             (format *terminal-io* "~& ⁂ Test SKIPPED")))
+     (,expr (incf *tests-pass*))
+     (:otherwise (incf *tests-fail*)
+                 (break " ✗ Test FAILED ~%~S~%~%~A" ',expr (format nil ,@report)))))
 
 (defun test-parser ()
   (format t "~&Testing parser components; any failure should signal an error.")
@@ -1121,92 +1363,92 @@ Then, I ran that through one more try, and got:~%~A"
     (format t "~&Testing parser components (interactively)"))
   (setf *tests-pass* 0 *tests-fail* 0)
   (itest (null (forgotten-punctuation +syntactic-punctuation+))
-          ()
-          "Forgotten punctuation: ~S
+         ()
+         "Forgotten punctuation: ~S
 All punctuation in +SYNTACTIC-PUNCTUATION+
 must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
-          (forgotten-punctuation +syntactic-punctuation+))
+         (forgotten-punctuation +syntactic-punctuation+))
   (itest (null (forgotten-punctuation +word-terminating-punctuation+))
-          ()
-          "Forgotten punctuation: ~S
+         ()
+         "Forgotten punctuation: ~S
 All punctuation in +WORD-TERMINATING-PUNCTUATION+
 must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
-          (forgotten-punctuation +word-terminating-punctuation+))
+         (forgotten-punctuation +word-terminating-punctuation+))
   (fresh-line)
-  (itest (equalp (superpose-or '(or a (or b c))) 
-                  '(or a b c))
-          () "A list containing nested OR expressions must reduce to a single list.")
+  (itest (equalp (superpose-or '(or a (or b c)))
+                 '(or a b c))
+         () "A list containing nested OR expressions must reduce to a single list.")
   (itest (equalp (inject-into-list '(thing (or (1 2) (3 4))) 1 '(1 2))
-                  '(thing 1 2))
-          () "Replacing a sublist with a new list must work at the end.")
+                 '(thing 1 2))
+         () "Replacing a sublist with a new list must work at the end.")
   (itest (equalp (inject-into-list '(a b c) 0 '(1 2 3))
-                  '(1 2 3 b c))
-          () "Relpacing a sub-list with a new list must work at the beginning.")
+                 '(1 2 3 b c))
+         () "Relpacing a sub-list with a new list must work at the beginning.")
   (itest (equalp (superpose-or '(thing (or 1 2)))
-                  '(or (thing 1) (thing 2)))
-          () "A buried OR expression must be lifted to the highest level.")
+                 '(or (thing 1) (thing 2)))
+         () "A buried OR expression must be lifted to the highest level.")
   (itest (equalp (superpose-or '(thing (or (:one 1) (:two 2))))
-                  '(or (thing :one 1) (thing :two 2)))
-          () "A buried OR expression must be lifted to the highest level.")
+                 '(or (thing :one 1) (thing :two 2)))
+         () "A buried OR expression must be lifted to the highest level.")
   (itest (equalp (superpose-or '(thing (:one (or (1 2) (3 4)))))
-                  '(or (thing (:one 1 2)) (thing (:one 3 4))))
-          () "A buried OR expression must be lifted to the highest level.")
-  (itest (equalp (superpose-or '(or it)) 
-                  'it)
-          () "An OR expression with only one alternative must be simplified to a constant.")
-  (itest (equalp (superpose-or '(or it it it)) 
-                  'it)
-          () "An OR expression with only one alternative (even if
+                 '(or (thing :one 1 2) (thing :one 3 4)))
+         () "A buried OR expression must be lifted to the highest level.")
+  (itest (equalp (superpose-or '(or it))
+                 'it)
+         () "An OR expression with only one alternative must be simplified to a constant.")
+  (itest (equalp (superpose-or '(or it it it))
+                 'it)
+         () "An OR expression with only one alternative (even if
          re-expressed more than once) must be simplified to
          a constant.")
-  (itest (equalp (superpose-or '(or (1 2 3 4) (1 (or 2 2) (or 3 3) (or 4)))) 
-                  '(1 2 3 4))
-          () "An OR expression which reduces to anly one alternative
+  (itest (equalp (superpose-or '(or (1 2 3 4) (1 (or 2 2) (or 3 3) (or 4))))
+                 '(1 2 3 4))
+         () "An OR expression which reduces to anly one alternative
           must be simplified to a constant after all nested OR
           expressions have likewise been normalized.")
   (itest (equalp (superpose-or '("thing" (or :one :two)))
-                  '(or ("thing" :one) ("thing" :two)))
-          () "An OR expression being lifted must deal with any type of
+                 '(or ("thing" :one) ("thing" :two)))
+         () "An OR expression being lifted must deal with any type of
           nested sequence (including a string or array) as well as
           atoms or constructed cells.")
   (itest (equalp (superpose-or '("thing" (or (:one 1) (:two 2))))
-                  '(or ("thing" :one 1) ("thing" :two 2)))
-          () "An OR expression being lifted must deal with any type of
+                 '(or ("thing" :one 1) ("thing" :two 2)))
+         () "An OR expression being lifted must deal with any type of
           nested sequence (including a string or array) as well as
           atoms or constructed cells.")
   (itest (equalp (inject-into-list '(dog (or :noun :verb)) 1 :noun)
-                  '(dog :noun))
-          nil "Burgeoning should replace element 1 of a 2-part list")
+                 '(dog :noun))
+         nil "Burgeoning should replace element 1 of a 2-part list")
   (itest (equalp (inject-into-list '((or cat dog) :pet) 0 'cat)
-                  '(cat :pet))
-          nil "Burgeoning should replace element 0 of a 2-part list")
+                 '(cat :pet))
+         nil "Burgeoning should replace element 0 of a 2-part list")
   (itest (equalp (inject-into-list '(dog :being (or :noun :verb)) 2 :noun)
-                  '(dog :being :noun))
-          nil "Burgeoning should replace element 2 of a 3-part list")
+                 '(dog :being :noun))
+         nil "Burgeoning should replace element 2 of a 3-part list")
   (itest (equalp (inject-into-list '((or :noun :verb)) 0 :noun)
-                  '(:noun))
-          nil "Burgeoning should replace element 0 of a 1-part list")
+                 '(:noun))
+         nil "Burgeoning should replace element 0 of a 1-part list")
   (itest (equalp (collapse '(and a (not a)))
-                  nil)
-          nil "An assertion to be A ∧ ¬A must reduce to NIL")
+                 nil)
+         nil "An assertion to be A ∧ ¬A must reduce to NIL")
   (itest (equalp (collapse '(and a a))
-                  'a)
-          nil "A repeated AND assertion must reduce to a constant.")
+                 'a)
+         nil "A repeated AND assertion must reduce to a constant.")
   (itest (equalp (collapse '(or a (not a)))
-                  t)
-          nil "An assertion of A ∨ ¬A must reduce to T")
+                 t)
+         nil "An assertion of A ∨ ¬A must reduce to T")
   (itest (equalp (collapse '(and t nil))
-                  nil)
-          nil "An assertion of truth and falsity must reduce to false.")
+                 nil)
+         nil "An assertion of truth and falsity must reduce to false.")
   (itest (equalp (collapse '(or t nil))
-                  t)
-          nil "An assertion of truth or falsity must reduce to truth.")
+                 t)
+         nil "An assertion of truth or falsity must reduce to truth.")
   (itest (equalp (collapse '(or nil b)) 'b)
-          nil "An assertion of OR with only one true value reduces to
+         nil "An assertion of OR with only one true value reduces to
                   that value.")
   (itest (equalp (collapse '(and (or t nil) nil))
-                  nil)
-          nil "( ( T ∨ NIL ) ∧ NIL ) ⇒ NIL")
+                 nil)
+         nil "( ( T ∨ NIL ) ∧ NIL ) ⇒ NIL")
   (cerror "Good, keep going" "Passed all the simplest tests")
   (let ((sentence "Why is the cat purple?"))
     (print sentence)
@@ -1214,8 +1456,8 @@ must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
     (princ "Lex:")
     (let ((lexed (lex-sentence sentence :en)))
       (itest (equalp lexed
-                      '("Why" "is" "the" "cat" "purple" "?"))
-              nil "Lexing this sentence should yield the given result")
+                     '("Why" "is" "the" "cat" "purple" "?"))
+             nil "Lexing this sentence should yield the given result")
       (print lexed)
       (fresh-line)
       (princ "Tag:")
@@ -1228,8 +1470,8 @@ must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
                         (or ("purple" :noun) ("purple" :verb) ("purple" :adjective))
                         ("?" :punctuation :sentence-terminal :interrogative))))
         (itest (equalp tagged expected) (tagged expected)
-                "Expected to tag ~A~%as: ~A~%but instead got~%~A"
-                (treely lexed) (treely expected) (treely tagged))
+               "Expected to tag ~A~%as: ~A~%but instead got~%~A"
+               (treely lexed) (treely expected) (treely tagged))
         (print (treely tagged))
         (fresh-line)
         (princ "Print tagged:")
@@ -1264,8 +1506,8 @@ must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
                   (#3# :ARTICLE :DEFINITE) (#4# :VERB) (#5# :ADJECTIVE)
                   (#6# :PUNCTUATION :SENTENCE-TERMINAL :INTERROGATIVE)))))
           (itest (equalp tagged-superposition expected-superposition)
-                  (tagged-superposition expected-superposition)
-                  "The tagged sentence contains superpositions, which need to be normalized
+                 (tagged-superposition expected-superposition)
+                 "The tagged sentence contains superpositions, which need to be normalized
 into a singular top-level superposed sentence (this is a sort of first normal form,
 which is a cross product of the interior superpositions). This process should have
 returned:
@@ -1273,7 +1515,7 @@ returned:
 
 Instead, the following was returned:
 ~A"
-                  (treely expected-superposition) (treely tagged-superposition))
+                 (treely expected-superposition) (treely tagged-superposition))
           (print-tagged tagged-superposition)
           (fresh-line)
           (let ((parses
@@ -1293,7 +1535,7 @@ Instead, the following was returned:
             (terpri) (terpri)
             (format t "Found ~:D distinct ways to parse:~{~%~S~}"
                     (length parses) parses))))))
-  
+
   (format *trace-output* "~& Tests completed~%~%Ran ~:D tests~% ✓ ~:D test~:P passed~% ✗ ~:D test~:P failed"
           (+ *tests-pass* *tests-fail*) *tests-pass* *tests-fail*)
   (when (plusp *tests-fail*)
@@ -1313,9 +1555,10 @@ Instead, the following was returned:
 
 (defun server-start (&optional argv)
   (declare (ignorable argv))
-  (romance:server-start-banner "Catullus"
-                               "Gaius Valerius Catullus"
-                               "Intelligent Agents and Language Server")
+  (romans:server-start-banner "Catullus"
+                              "Gaius Valerius Catullus"
+                              "Intelligent Agents and Language Server")
+  (init)
   (test-parser)
   (format t "~& Conversation REPL starting…")
   (converse-repl))

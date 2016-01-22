@@ -118,8 +118,8 @@ $(BUILDDIR)/$(OSNAME)-Romance-$(CPU):	\
 		--output $(BUILDDIR)/$(OSNAME)-Romance-$(CPU) \
 		--logfile $(BUILDDIR)/build.Romance.$(OSNAME).$(CPU).log \
 		$(BUILDCONSTS) \
-		--dispatched-entry /romance:start-server \
-		--dispatched-entry romance-repl/romance:start-repl \
+		--dispatched-entry /romans:start-server \
+		--dispatched-entry romance-repl/romans:start-repl \
 		--dispatched-entry galen/galen:start-server \
 		--dispatched-entry appius/appius:start-server \
 		--dispatched-entry asinius/asinius:start-server \
