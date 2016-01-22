@@ -9,7 +9,7 @@ then
 fi
 if rpm -q libfixposix-devel
 then
-	sudo dnf -y update libfixposix-devel libfixposix2
+	sudo dnf -y update libfixposix-devel libfixposix2 || : 
 else
 	sudo dnf -y install libfixposix-devel libfixposix2
 fi
