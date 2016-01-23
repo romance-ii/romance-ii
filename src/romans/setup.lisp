@@ -166,14 +166,14 @@ with a copy of your CL:*FEATURES*: ~%~S" *features*)
 
 ;;; Set up the ASDF Registry
 
-(dolist (path '(#p"elephant/"
+(dolist (path '(#p"oliphaunt/"
                 #p"romans/"
                 #p"romans/lib/smedict-old/"
                 #p"romans/lib/sb-texinfo/"))
   (pushnew (merge-pathnames path *path/r2src*)
            asdf:*central-registry* :test 'equal))
 
-(load (merge-pathnames #p"elephant/oliphaunt.asd" *path/r2src*))
+(load (merge-pathnames #p"oliphaunt/oliphaunt.asd" *path/r2src*))
 
 ;;; Get the OS  name. Note, we consider “Android”  different enough from
 ;;; GNU/Linux to warrant its own heading.
