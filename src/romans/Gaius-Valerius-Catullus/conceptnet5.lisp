@@ -28,11 +28,8 @@
 (defmacro db-nest-transaction ((db) &body body)
   `(sqlite:with-transaction ,db ,@body))
 
-(defmacro db-execute-non-query (db &rest query)
-  `(sqlite:execute-non-query ,db ,@query))
-
-(defmacro db-execute-query (db &rest query)
-  `(sqlite:execute-query ,db ,@query))
+(defun db-execute-non-query (db &rest query)
+  (apply #'sqlite:execute-non-query db query))
 
 (defmacro db-prepare-statement (db &rest statement)
   `(sqlite:prepare-statement ,db ,@statement))
