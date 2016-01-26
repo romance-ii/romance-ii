@@ -21,6 +21,7 @@
                :cl-unicode
                :cffi
                :dbus
+               :dbd-mysql
                :gsll
                :langutils
                :local-time

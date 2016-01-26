@@ -38,10 +38,8 @@
 
 (defgeneric utterance-formatting-string (predicate language-code))
 
-(defmethod utterance-formatting-string
-    ((predicate integer) language-code)
-  (utterance-formatting-string
-   (utterance->human predicate language-code) language-code))
+(defmethod utterance-formatting-string ((predicate symbol) language-code)
+  (utterance-formatting-string (utterance->human predicate language-code) language-code))
 
 (defun normalise-noun (noun)
   "Given a noun, normalise it as best possible."
@@ -54,11 +52,13 @@
       noun))
 
 (defun conceptnet-predicate->keyword (predicate)
-  (if (stringp predicate) (make-keyword (cffi:translate-camelcase-name predicate))))
+  (if (stringp predicate) 
+      (make-keyword (cffi:translate-camelcase-name predicate))
+      predicate))
 
 (defun normalise-predicate (subject predicate object)
   "Given a  predicate with complex  meaning, attempt to  break it down  into a simpler  predicate which is  perhaps more
-understandable  to the  logic  system. Returns  a clause  in  p-s-(o) order,  but  may have  sub-clauses and  such
+understandable  to  the  logic  system.  Returns  a  clause  in  p-s-(o)  order,  but  may  have  sub-clauses  and  such
 after processing."
   (let ((subject (normalise-noun subject))
         (object (normalise-noun object))
@@ -131,7 +131,10 @@ after processing."
              "“~A” —~s→ “~A”"))
         (list predicate subject object))))
 
-(defmethod utterance-formatting-string (predicate (language-code (eql :en)))
+(defmethod utterance-formatting-string ((predicate string) language-code)
+  (utterance-formatting-string (conceptnet-predicate->keyword predicate) language-code))
+
+(defmethod utterance-formatting-string ((predicate symbol) (language-code (eql :en)))
   (case (conceptnet-predicate->keyword predicate)
     (:/r/-Antonym "~0@*~A and ~2@*~A are antonyms.")
     (:/r/-At-Location "~0@*~A is at the location ~2@*~A.")
@@ -194,6 +197,7 @@ after processing."
     (:/r/dbpedia/influenced "~2@*~a was influenced in their work by ~0@*~a")
     (:/r/dbpedia/main-Interest "~0@*~a is mainly interested in ~2@*~a")
     (:/r/dbpedia/notable-idea "~0@*~a is notable for the idea ~2@*~a")
+    (:/r/dbpedia/spoken-in "~a is spoken in ~2@*~a")
     (:/r/wordnet/adjective-Pertains-To "~0@*~A is an adjective which pertains to ~2@*~A.")
     (:/r/wordnet/adverb-Pertains-To "~0@*~A is an adverb which pertains to ~2@*~A.")
     (:/r/wordnet/participle-Of "~0@*~A is a participle (in inflection) of ~2@*~A.")
@@ -255,10 +259,13 @@ after processing."
             (utterance->human obj :en))))
 
 (defmethod utterance->human ((utterance cons) (language-code (eql :en)))
-  (if (keywordp (car utterance))
-      (utterance->human/sub-expression (car utterance)
-                                       (cdr utterance) language-code)
-      (utterance->human/fact utterance language-code)))
+  (typecase (car utterance)
+    (character (ecase (car utterance)
+                 (#\; (format nil "~{~a~^ — ~}" (mapcar (rcurry #'utterance->human :en)
+                                                        (rest utterance))))))
+    (keyword (utterance->human/sub-expression (car utterance)
+                                              (cdr utterance) language-code))
+    (t (utterance->human/fact utterance language-code))))
 
 (defun launder_string (string)
   (map 'string (lambda (ch) (case ch
@@ -268,8 +275,8 @@ after processing."
        string))
 
 (defmethod utterance->human ((utterance null) language-code)
-  (cerror "continue" "Got a null in an utterance.")
-  "×")
+  (warn "Got a null in an utterance.")
+  "∅")
 
 (defun destructure-assertion-1 (a)
   (unless (and (string= (subseq a 0 4) "/a/[")
@@ -283,24 +290,29 @@ after processing."
                                      :start 4 :end (- (length a) 2))
     (list :clause subj pred obj)))
 
+(defmethod utterance->human ((predicate symbol) language-code)
+  (utterance-formatting-string (cffi:translate-camelcase-name predicate) language-code))
+
 (defmethod utterance->human ((utterance string) (language-code (eql :en)))
-  (let ((path (split-sequence:split-sequence #\/ utterance
-                                             :remove-empty-subseqs t)))
-    (string-case (car path)
-      ("c" (if (equal "en" (second path))
-               (format nil "~A~{ (~A)~}"
-                       (launder_string (third path)) (mapcar #'launder_string (nthcdr 4 path)))
-               (utterance->human (find-translation utterance language-code) language-code)))
-      ("r" (format nil "~A~{ (~A)~}" (second path) (nthcdr 3 path)))
-      ("a" (utterance->human (destructure-assertion-1 utterance) :en))
-      (t (cerror "Use it unmodified"
-                 "An unrecognized part of speech “~A” was found in “~A”"
-                 (car path) utterance)
-         utterance))))
+  (if (or (find #\/ utterance)
+          (find #\_ utterance))
+      (let ((path (split-sequence:split-sequence #\/ utterance
+                                                 :remove-empty-subseqs t)))
+        (string-case (car path)
+          ("c" (if (equal "en" (second path))
+                   (format nil "~A~{ (~A)~}"
+                           (launder_string (third path)) (mapcar #'launder_string (nthcdr 4 path)))
+                   (utterance->human (find-translation utterance language-code) language-code)))
+          ("r" (format nil "~A~{ (~A)~}" (second path) (nthcdr 3 path)))
+          ("a" (utterance->human (destructure-assertion-1 utterance) :en))
+          (t (cerror "Use it unmodified"
+                     "An unrecognized part of speech “~A” was found in “~A”"
+                     (car path) utterance)
+             utterance)))
+      (utterance->human (concatenate 'string "/c/en/" utterance) :en)))
 
 (defmethod utterance->human ((utterance integer) language-code)
-  (let ((p (db-execute-single *concept-db*
-                              "SELECT symbol FROM atoms WHERE rowid=?"
+  (let ((p (db-execute-single "SELECT symbol FROM atoms WHERE id=?"
                               utterance)))
     (if (and (< 3 (length p)) (string= "/r/" (subseq p 0 3)))
         p
@@ -425,28 +437,35 @@ To quit, enter: Bye!
                (when (< vi (length tagged)) (parse-noun-expression (subseq tagged (1+ vi)))))))
       (t (error "Can't parse complex multi-verb sentences, yet")))))
 
-(defun converse/answer-question (string tagged haggard chunky)
-  (declare (ignorable string tagged haggard chunky))
+(defun converse/answer-question (string tagged haggard)
+  (declare (ignorable string tagged haggard))
   (format *trace-output* "~& Answering question: ~A" string)
-  (format *trace-output* "~& tree: ~S" (parse-tagged-into-tree haggard))
+  ;; (format *trace-output* "~& tree: ~S" (parse-tagged-into-tree haggard))
   (cond
-    ((find-if (lambda (pair) (equal (second pair) "WP")) haggard)
-     (let ((wh (mapcar #'car (remove-if-not (lambda (pair)
-                                              (equal (second pair) "WP")) haggard)))
-           (vb (mapcar #'car (remove-if-not (lambda (pair)
-                                              (member (second pair) '("VBZ" "VBP")))
-                                            haggard)))
-           #+(or)(expr (remove-if (lambda (pair)
-                                    (string-case (second pair)
-                                      ("WP" t)
-                                      ("DT" t)
-                                      ("." t)
-                                      (t nil))) haggard)))
-       (format t "~&>~:(~{~A~^/~}~) ~{~A~} ~A?"
-               wh vb
-               (descend-langutils-tokens
-                (mapcar #'langutils:phrase->token-array chunky)))
-       (format t "~&>~A" (parse-sentence-langnet haggard))))
+    ((find-if (lambda (pair) (equal (second pair) :WP)) haggard)
+     (let ((wh (car (remove-if-not (lambda (pair)
+                                     (eql (second pair) :WP)) haggard)))
+           (vb (car (remove-if-not (lambda (pair)
+                                     (eql (second pair) :VBZ))
+                                   haggard))))
+       
+       (format *trace-output* "~& WH-? ~a  Verb? ~a …" wh vb)
+       (assert (< (position wh haggard :test #'equalp)
+                  (position vb haggard :test #'equalp)))
+       (let* ((trailing (subseq haggard (1+ (position vb haggard :test #'equalp))))
+              (thing (find-if (lambda (x) (eql (second x) :nn)) trailing)))
+         (unless thing
+           (error "I don't know what you're asking me about."))
+         (format *trace-output* "~& You want to know what is “~a” …" thing)
+         (let ((facts (find-facts-about (concatenate 'string "/c/en/"(car thing)))))
+           (cond
+             ((emptyp facts)
+              (format t "~2% Sorry, I don't know anything about “~a”" (car thing)))
+             ((> 5 (length facts))
+              (format t "~2%~{~% • ~a~}" (mapcar (rcurry #'utterance->human :en) facts)))
+             (t (format t "~2%~{~% • ~a~}~%(and I know ~r other fact~:p, too)" 
+                        (mapcar (rcurry #'utterance->human :en) (subseq facts 0 5)) 
+                        (- (length facts) 5))))))))
     (t ;; adjudicate validity of assertion
      (TODO "true or false question, perhaps?"))))
 
@@ -495,7 +514,7 @@ To quit, enter: Bye!
                    (when adjs
                      (push (mapcar
                             (lambda (adj)
-                              (list _ "/r/HasProperty"
+                              (list _ "/r/-has-property"
                                     (concept-for adj :en))) adjs) facts)
                      (setf adjs nil))
                    (when wh
@@ -529,6 +548,88 @@ To quit, enter: Bye!
        (cons morph (mapcar (lambda (tag) (intern tag :keyword)) tags))))
    (split-sequence:split-sequence #\Space tagged)))
 
+(defun tag->description-of-tag (tag)
+  (ecase tag
+    (:CC "Coordinating conjunction")
+    (:CD  "Cardinal number")
+    (:DT  "Determiner")
+    (:EX  "Existential there")
+    (:FW  "Foreign word")
+    (:IN  "Preposition or subordinating conjunction")
+    (:JJ  "Adjective")
+    (:JJR  "Adjective, comparative")
+    (:JJS  "Adjective, superlative")
+    (:LS  "List item marker")
+    (:MD  "Modal")
+    (:NN  "Noun, singular or mass")
+    (:NNS  "Noun, plural")
+    (:NNP  "Proper noun, singular")
+    (:NNPS  "Proper noun, plural")
+    (:PDT  "Predeterminer")
+    (:POS  "Possessive ending")
+    (:PRP  "Personal pronoun")
+    (:PRP$  "Possessive pronoun (prolog version PRP-S)")
+    (:RB  "Adverb")
+    (:RBR  "Adverb, comparative")
+    (:RBS  "Adverb, superlative")
+    (:RP  "Particle")
+    (:SYM  "Symbol")
+    (:TO  "to")
+    (:UH  "Interjection")
+    (:VB  "Verb, base form")
+    (:VBD  "Verb, past tense")
+    (:VBG  "Verb, gerund or present participle")
+    (:VBN  "Verb, past participle")
+    (:VBP  "Verb, non-3rd person singular present")
+    (:VBZ  "Verb, 3rd person singular present")
+    (:WDT  "Wh-determiner")
+    (:WP  "Wh-pronoun")
+    (:WP$  "Possessive wh-pronoun (prolog version WP-S)")
+    (:WRB  "Wh-adverb")
+    (:|.| "full stop")
+    (:|:| "(colon:)")
+    (:|(| "(open paren:)")))
+
+(defun describe-tags (cons)
+  (cond 
+    ((= 1 (length cons))
+     (concatenate 'string (car cons) " (no tag)"))
+    
+    ((= 2 (length cons))
+     (destructuring-bind (word tag) cons
+       (concatenate 'string word " (" (tag->description-of-tag tag) ")")))))
+
+(defun clean-up-string (string)
+  (let ((words (remove-if #'emptyp
+                          (split-sequence #\space 
+                                          (substitute-if #\space 
+                                                         (rcurry #'find +whitespace+) 
+                                                         string)))))
+    (format nil "~{~a~^ ~}"
+            (mapcar (lambda (word)
+                      (cond
+                        ((member (last-elt word) +syntactic-punctuation+)
+                         (concatenate 'string
+                                      (subseq word 0 (1- (length word)))
+                                      " " (vector (last-elt word))))
+                        ((equal #(#\newline) word) (values))
+                        (t word))) 
+                    words))))
+
+(defun converse/hear-statement (phrase)
+  (cond
+    ((and (= 2 (length phrase))
+          (equalp (second (second phrase)) :|.|))
+     (cond
+       ((equalp '("bye" :vb) (car phrase))
+        (throw 'conversation-over :bye))
+       ((equalp '("hello" :uh) (car phrase)) '(#\;
+                                               (nil "hello" nil)
+                                               (("/c/en/i" :/r/-has-a "/c/en/name")
+                                                :/r/-is-a
+                                                "Catullus")))
+       (t '("i" (nil "not" "understand") phrase))))))
+
 (defun converse-eval (string)
   (cond
     ((and (<= 1 (length string))
@@ -537,32 +638,39 @@ To quit, enter: Bye!
      (format t "‽~%")
      (return-from converse-eval nil))
     ((char= #\; (elt string 0)) nil)
-    (t (let* ((tagged (langutils:tag string))
-              (haggard (tagged-to-haggard tagged))
-              ;;(chunky (langutils:chunk string))
-              )
+    (t (let* ((string (clean-up-string string))
+              (tagged (string-trim +whitespace+ (langutils:tag string)))
+              (haggard (tagged-to-haggard tagged)))
          (format *trace-output*
                  "~&~
-trace)string) ~A
-trace)tagged) ~A
-trace)haggard) ~{‘~A’~^ ~}~%~%"
-                 ;; trace)chunky) ~S
-                 string tagged haggard  ;chunky
-                 )
-         (string-case (car (car (last haggard 2)))
-           ("?" (converse/answer-question string tagged haggard ;chunky
-                                          nil))
-           ("!" (TODO))
-           (t (TODO)))))))
+ trace)string) ~A
+ trace)tagged) ~A
+ trace)haggard) “~{~a~^ ~}”
+~%~%"
+                 
+                 string tagged (mapcar #'describe-tags haggard))
+         (if (equal "?" (caar (last haggard)))
+             (converse/answer-question string tagged haggard)
+             (converse/hear-statement haggard))))))
 
 (defun converse-repl ()
   (init)
-  (format t "~|~&~% Conversation REPL; Gaius Valerius Catullus~%~%")
-  (let ((*last-reply*))
-    (loop
-       (converse-dump
-        (converse-eval
-         (converse-read))))))
+  (catch
+      'conversation-over
+    (tagbody
+     converse-repl
+       (restart-case 
+           (block 
+               repl
+             (format t "~|~&~% Conversation REPL; Gaius Valerius Catullus~%~%")
+             (let ((*last-reply*))
+               (loop
+                  (converse-dump
+                   (converse-eval
+                    (converse-read))))))
+         (continue-repl ()
+           :report "Continue the conversation"
+           (go converse-repl))))))
 
 ;;; ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
@@ -655,9 +763,14 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
   (in-db (:transaction nil)
     (time (conceptnet5-read-files wildcard)))
   (format *trace-output*
-          "~&~%Done, loaded ConceptNet5; ~:D interned tokens, ~:D cross-indexed assertions"
-          (db-execute-single *concept-db* "SELECT COUNT(*) FROM atoms")
-          (db-execute-single *concept-db* "SELECT COUNT(*) FROM concepts"))
+          "~&~%Almost done, loaded ConceptNet5; ~:D interned token~:P, ~:D assertion~:P in DB, ~:D assertion~:P pending"
+          (db-execute-single "SELECT COUNT(*) FROM atoms")
+          (db-execute-single "SELECT COUNT(*) FROM concepts")
+          (length *new-inserts*))
+  (time (while (< 2 (length *new-inserts*))
+          (format *trace-output*
+                  "~&~%Still need to flush ~:d assertions to DB…" (length *new-inserts*))
+          (flush-to-db)))
   (push :conceptnet5 *initialized*))
 
 (defun load-langutils (&optional
