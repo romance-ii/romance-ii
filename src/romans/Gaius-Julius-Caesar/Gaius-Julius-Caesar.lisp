@@ -43,10 +43,10 @@
                                   #'cffi:translate-camelcase-name)))
 
 (defun all-process-ids ()
-  (loop for entry in (directory "/proc/*")
-     for pid = (parse-integer (lastcar (pathname-directory entry)) :junk-allowed t)
-     while entry
-     when pid collect it))
+  (remove-if-not (curry #'every #'digit-char-p)
+                 (mapcar (compose #'lastcar
+                                  #'pathname-directory) 
+                         (directory #p"/proc/*/"))))
 
 
 
