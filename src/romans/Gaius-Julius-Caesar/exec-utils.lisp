@@ -34,16 +34,16 @@ program's name."
            (loop for index from 0 by 1
               and item in (append args '(nil))
               do (setf (sb-alien:deref alien-args index)
-                       item))
+                       (princ-to-string item)))
            (loop for index from 0 by 1
               and item in (append environ '(nil))
               do (setf (sb-alien:deref alien-env index)
                        (etypecase item
                          (cons (concatenate 'string
-                                            (string (car item))
+                                            (princ-to-string (car item))
                                             "="
-                                            (string (cdr item))))
-                         (string item))))
+                                            (princ-to-string (cdr item))))
+                         (atom (princ-to-string item)))))
            (let ((returned (sys-execve program alien-args alien-env)))
              (error 'unable-to-exec-error :returned returned)))
       (sb-alien:free-alien alien-args))))
@@ -90,20 +90,19 @@ program's name."
           (process-id proc) (process-state-gerund proc)
           (machine-instance))
   (dolist (thread (all-threads/alpha))
-    (when (thread-alive-p thread)
-      (format t "~& • ~A ~@[☠~]"
-              (thread-name thread) (not (thread-alive-p thread))))))
+    (format t "~& • ~A ~@[☠~]"
+            (thread-name thread) (not (thread-alive-p thread)))))
 
 (defun who ()
   (dolist (thread (all-threads/alpha))
     (format t "~& ~A ⇒ ~A"
             (thread-name thread)
             (read-from-thread thread
-                              (lambda () 
+                              (lambda ()
                                 (user-ident))))))
 
 (defun find-thread (name)
-  (find name (all-threads) :key #'thread-name))
+  (find name (all-threads) :test #'string= :key #'thread-name))
 
 (defvar *read-from-thread-global-whiteboard* nil)
 
