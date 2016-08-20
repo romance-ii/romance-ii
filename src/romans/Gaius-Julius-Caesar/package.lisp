@@ -18,6 +18,7 @@ that, right?)")
            #:collect-qos
            #:get-real-time
            #:find-thread
+           #:local-processes
            #:machine-meminfo
            #:machine-vmstat
            #:process-command
@@ -40,6 +41,7 @@ that, right?)")
            #:process-state-gerund
            #:process-status
            #:process-wait-channel
+           #:processes-in-control-group
            #:read-from-thread
            #:report
            #:run-external

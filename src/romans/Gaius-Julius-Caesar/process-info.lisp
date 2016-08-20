@@ -3,6 +3,10 @@
 (defclass process ()
   ((pid :type fixnum :initarg :pid :initform (sb-posix::getpid) :reader process-id)))
 
+(defmethod print-object ((process process) s)
+  (format s "#<Caesar::Process ~d (~s) ~a>" 
+          (process-id process) (process-name process) (process-state-gerund process)))
+
 (defun this-process ()
   (make-instance 'process :pid (sb-posix:getpid)))
 
@@ -22,11 +26,13 @@
 
 (defmethod process-login-uid ((process process))
   (collect-file (proc-file process "loginuid")))
+
 (defmethod process-security-attributes ((process process))
   (mapcan (lambda (token)
             (list (make-keyword (string-upcase token))
                   (collect-file (proc-file process (concatenate 'string "attr/" token)))))
           '("current" "exec" "fscreate" "keycreate" "prev" "sockcreate")))
+
 (defmethod process-mount-points ((process process))
   (mapcar (lambda (row)
             (when (second row)
@@ -36,6 +42,7 @@
                     (maybe-alist-split (fourth row))
                     (nthcdr 4 row))))
           (collect-file-tabular (proc-file process "mounts") #\Space)))
+
 (defmethod process-mount-info ((process process))
   (mapcar (lambda (row)
             (when (fifth row)
@@ -63,8 +70,8 @@
       (let ((translator (list :state (curry #'split-sequence #\Space)
                               :uid #'split-columns
                               :gid #'split-columns
-                              :groups (lambda (string)
-                                        (mapcar #'maybe-numeric (split-sequence #\Space string)))
+                              :groups (compose (curry #'mapcar #'maybe-numeric) 
+                                               (curry #'split-sequence #\Space))
                               :sig-pnd #'parse-hex
                               :shd-pnd #'parse-hex
                               :sig-blk #'parse-hex
@@ -75,17 +82,19 @@
                               :cap-eff #'parse-hex
                               :cap-bnd #'parse-hex
                               :cpus-allowed #'parse-hex
-                              :mems-allowed (lambda (row)
-                                              (mapcar #'parse-hex (split-sequence #\, row)))
-                              :sig-q (lambda (row)
-                                       (mapcar #'maybe-numeric (split-sequence #\/ row))))))
+                              :mems-allowed (compose (curry #'mapcar #'parse-hex)
+                                                     (curry #'split-sequence #\,))
+                              :sig-q (compose (curry #'mapcar #'maybe-numeric) 
+                                              (curry #'split-sequence #\/)))))
         (loop for line in skim
            for colon = (position #\: line)
            for key = (make-keyword (cffi:translate-camelcase-name
                                     (substitute #\- #\_ (subseq line 0 colon))))
            for rest = (trimmy (subseq line (1+ colon)))
            for fn = (getf translator key)
-           append (list key (if fn (funcall fn rest) (maybe-numeric rest))))))))
+           append (list key (if fn 
+                                (funcall fn rest)
+                                (maybe-numeric rest))))))))
 
 (defmethod process-name ((process process))
   (getf (process-status process) :name))
@@ -99,6 +108,12 @@
 
 (defmethod process-control-groups ((process process))
   (split-and-collect-file (proc-file process "cgroup") #\:))
+
+(defmethod processes-in-control-group ((cgroup string))
+  (remove-if-not (compose (curry #'some (curry #'equal cgroup))
+                          #'process-control-groups)
+                 (local-processes)))
+
 (defmethod process-command-line ((process process))
   (collect-file-lines (proc-file process "cmdline") #\Null))
 
@@ -161,11 +176,21 @@ into a list of PATH entries."
 
 (defmethod process-command ((process process))
   (collect-file (proc-file process "comm")))
+
 (defmethod process-oom-score ((process process))
   (collect-file (proc-file process "oom_score")))
+
 (defmethod process-oom-adjust ((process process))
   (collect-file (proc-file process "oom_adj")))
+
 (defmethod process-oom-score-adjust ((process process))
   (collect-file (proc-file process "oom_score_adj")))
+
 (defmethod process-core-dump-filter ((process process))
   (collect-file (proc-file process "coredump_filter")))
+
+(defun local-processes ()
+  (mapcar (compose (curry #'make-instance 'process :pid) 
+                   #'parse-integer)
+          (all-process-ids)))
+
