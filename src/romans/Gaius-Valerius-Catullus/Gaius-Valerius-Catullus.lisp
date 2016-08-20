@@ -51,6 +51,9 @@
         (t noun))
       noun))
 
+(defun predicate-string (predicate)
+  (string-camelcase (string predicate)))
+
 (defun conceptnet-predicate->keyword (predicate)
   (if (stringp predicate) 
       (make-keyword (cffi:translate-camelcase-name predicate))
@@ -135,74 +138,14 @@ after processing."
   (utterance-formatting-string (conceptnet-predicate->keyword predicate) language-code))
 
 (defmethod utterance-formatting-string ((predicate symbol) (language-code (eql :en)))
-  (case (conceptnet-predicate->keyword predicate)
-    (:/r/-Antonym "~0@*~A and ~2@*~A are antonyms.")
-    (:/r/-At-Location "~0@*~A is at the location ~2@*~A.")
-    (:/r/-Attribute "~0@*~A has the attribute that it is ~2@*~A.")
-    (:/r/-Capable-Of "~0@*~A can ~2@*~A.")
-    (:/r/-Causes "~0@*~A causes ~2@*~A.")
-    (:/r/-Causes-Desire "~0@*~A might cause a desire for ~2@*~A.")
-    (:/r/-Conceptually-Related-To "~0@*~A is a concept which is related to the concept of ~2@*~A.")
-    (:/r/-Compound-Derived-From "~0@*~A is a compound derived from ~2@*~A.")
-    (:/r/-Created-By "~2@*~A creates ~0@*~A.")
-    (:/r/-Defined-As "~0@*~A is defined as being ~2@*~A.")
-    (:/r/-Derivative "~2@*~A is derived from ~0@*~A.")
-    (:/r/-Derived-From "~0@*~A is derived from ~2@*~A.")
-    (:/r/-Desire-Of "~0@*~A is the desire of ~2@*~A.")
-    (:/r/-Desires "~0@*~A desires ~2@*~A.")
-    (:/r/-Entails "~0@*~A entails ~2@*~A.")
-    (:/r/-Etymologically-Derived-From "~0@*~A is etymologically derived from ~2@*~A.")
-    (:/r/-has-a "~0@*~A has a ~2@*~A.")
-    (:/r/-Has-Context "~0@*~A occurs in the context of ~2@*~A.")
-    (:/r/-Has-First-Subevent "The first thing to do when doing ~0@*~A, is ~2@*~A")
-    (:/r/-Has-Last-Subevent "The last thing to do when doing ~0@*~A, is ~2@*~A")
-    (:/r/-Has-Pain-Character "~0@*~A has the pain character of ~2@*~A.")
-    (:/r/-Has-Pain-Intensity "~0@*~A has the pain intensity of ~2@*~A.")
-    (:/r/-Has-Prerequisite "~2@*~A is required before ~0@*~A.")
-    (:/r/-Has-Property "~2@*~A is a property of a ~0@*~A.")
-    (:/r/-Has-Subevent "While doing ~0@*~A, one might ~2@*~A.")
-    (:/r/-Inherits-From "~0@*~A inherits from ~2@*~A.")
-    (:/r/-Instance-Of "~0@*~A is an instance of ~2@*~A.")
-    (:/r/-Is-A "~0@*~A is a ~2@*~A.")
-    (:/r/-Located-Near "~0@*~A is located near to ~2@*~A.")
-    (:/r/-Location-Of-Action "~0@*~A is where one might do ~2@*~A.")
-    (:/r/-Made-Of "~0@*~A is made of ~2@*~A.")
-    (:/r/-Member-Of "~0@*~A is a member of ~2@*~A.")
-    (:/r/-Motivated-By-Goal "~0@*~A is motivated by the goal of ~2@*~A.")
-    (:/r/-Not-Capable-Of "~0@*~A cannot ~2@*~A.")
-    (:/r/-Not-Causes "~0@*~A does not cause ~2@*~A.")
-    (:/r/-Not-Desires "~0@*~A does not desire ~2@*~A.")
-    (:/r/-Not-Has-A "~0@*~A does not have a ~2@*~A.")
-    (:/r/-Not-Has-Property "~0@*~A does not have the property of being ~2@*~A.")
-    (:/r/-Not-Is-A "~0@*~A is not a ~2@*~A.")
-    (:/r/-Not-Made-Of "~0@*~A is not made of ~2@*~A.")
-    (:/r/-Not-Used-For "~0@*~A is not used for ~2@*~A")
-    (:/r/-Obstructed-By "~0@*~A is obstructed by ~2@*~A.")
-    (:/r/-Part-Of "~0@*~A is a part of ~2@*~A.")
-    (:/r/-Receives-Action "~0@*~A receives the action ~2@*~A (one might be able to ~2@*~A a ~0@*~A).")
-    (:/r/-Related-To "~0@*~A is related to ~2@*~A.")
-    (:/r/-Similar-Size "~0@*~A and ~2@*~A are of similar size.")
-    (:/r/-Similar-To "~0@*~A is similar to ~2@*~A.")
-    (:/r/-Symbol-Of "~0@*~A is a symbol of ~2@*~A.")
-    (:/r/-Synonym "~0@*~A and ~2@*~A are synonymous.")
-    (:/r/-Translation-Of "~0@*~A is a translation of ~2@*~A.")
-    (:/r/-Used-For "One might use a ~0@*~A for ~2@*~A.")
-    (:/r/-Used-For/ "One might use a ~0@*~A for ~2@*~A.")
-    (:/r/dbpedia/field "~0@*~a is in the field of endeavours of ~2@*~a.")
-    (:/r/dbpedia/genre "~0@*~a is in the genre of ~2@*~a.")
-    (:/r/dbpedia/known-For "~0@*~a is known for ~2@*~a.")
-    (:/r/dbpedia/language-Family "~0@*~a is a language in the family of languages which is ~2@*~a.")
-    #+ (or)    (:/r/dbpedia/language-Family "~0@*~a is a language which is spoken in the location ~2@*~a.")
-    (:/r/dbpedia/influenced-By "~0@*~a was influenced in their work by ~2@*~a")
-    (:/r/dbpedia/influenced "~2@*~a was influenced in their work by ~0@*~a")
-    (:/r/dbpedia/main-Interest "~0@*~a is mainly interested in ~2@*~a")
-    (:/r/dbpedia/notable-idea "~0@*~a is notable for the idea ~2@*~a")
-    (:/r/dbpedia/spoken-in "~a is spoken in ~2@*~a")
-    (:/r/wordnet/adjective-Pertains-To "~0@*~A is an adjective which pertains to ~2@*~A.")
-    (:/r/wordnet/adverb-Pertains-To "~0@*~A is an adverb which pertains to ~2@*~A.")
-    (:/r/wordnet/participle-Of "~0@*~A is a participle (in inflection) of ~2@*~A.")
+  (if-let ((formatter (find-facts predicate (format nil "/oper/format/~(~a~)" language-code) '*)))
+    (regex-replace-pairs '(("\\~s" . "~0@*~a")
+                           ("\\~p" . "~1@*~a")
+                           ("\\~o" . "~2@*~a")) formatter)
+    
+    
     (t (cerror "ignore and continue" "Untranslated predicate: ~A" predicate)
-       "“~A” —~s→ “~A”")))
+       "“~A” —~s→ “~A”"))))
 
 (defgeneric language-name (code in-language)
   (:method ((code t) (language-code (eql :en)))
@@ -470,7 +413,7 @@ To quit, enter: Bye!
      (TODO "true or false question, perhaps?"))))
 
 (defun space-to-_ (string)
-  (map 'string (lambda (ch) (if (char= ch #\Space) #\_ ch)) string))
+  (substitute #\_ #\space string))
 
 (defun concept-for (thing language)
   (format nil "/c/~(~A~)/~:[~(~A~)~;~{~(~A~)~^/~}~]"
@@ -479,18 +422,34 @@ To quit, enter: Bye!
               (mapcar #'space-to-_ thing)
               thing)))
 
+(defun ask-disambiguate-concept (concept)
+  `(:you :/r/meaning-intended (or 
+                               ,@(mapcar (lambda (sub-concept)
+                                           (list concept :/r/-is-a sub-concept))
+                                         (sub-concepts concept)))))
+
+(defun sub-concepts (concept)
+  (mapcar #'second
+          (db-execute "select symbol from atoms
+ where substr(symbol,1,?)=? 
+    and substr(symbol,?+1,1) in ('/', '_')"
+                      (length concept)
+                      concept
+                      (length concept))))
+
 (defun string-camelcase (string &optional (initial-upper-case-p t))
-  (let ((to-upper initial-upper-case-p)
-        (output ""))
-    (loop for ch across string
-       do (if (member ch '(#\- #\_ #\Space))
-              (setf to-upper t)
-              (progn
-                (appendf output
-                         (if to-upper
-                             (char-upcase ch)
-                             (char-downcase ch)))
-                (setf to-upper nil))))))
+  (let ((to-upper initial-upper-case-p))
+    (coerce (remove-if #'null
+                       (loop for ch across string
+                          collecting (cond 
+                                       ((member ch '(#\- #\_ #\Space))
+                                        (setf to-upper t)
+                                        nil)
+                                       (to-upper
+                                        (setf to-upper nil)
+                                        (char-upcase ch))
+                                       (t (char-downcase ch)))))
+            'string)))
 
 (defun relation-for (thing language)
   (ecase language
