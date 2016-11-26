@@ -1,11 +1,36 @@
 #!/bin/sh
+cat <<END
 
-( cd src/conceptnet5-csv/assertions
-  for f in *bz2
-    do
-      bzip2 -d < $f > $(basename $f)
-    done
-)
+  Downloading Knowledgebase Data Sources
+ ————————————————————————————————————————
+
+This process will take a long time, and a lot of bandwidth.  The data
+sources used to prepare the knowledgebase for the artificial intelligence
+and natural language interfaces are very large — several dozen GiB of data,
+at least.  This process will not be repeated if the upstream sources have
+not changed, though, and will resume if interrupted relatively nicely.
+
+It would be nice to build a torrent source for the assembled data so that it
+can be redistributed without taxing the upstream sources, but that is part
+of what we're aiming to do with this.
+
+Some of the downloading (particularly DBpedia) will take place in background
+processes and try to saturate your downstream.  Once the other (smaller)
+downloads are complete, you'll see progress reports every few minutes until
+that completes.  If you must kill it, look at the list of background
+processes it's watching to see what else to kill; or 
+
+   pgrep -af wget | grep dbpedia
+
+END
+echo "Disc space available before we begin:"
+df -h src/
+echo "(Say good-bye to at least 20GiB of that.)"
+echo ""
+(cd src/dbpedia-2016-04; ./download-dbpedia)&
+(cd src/conceptnet5-csv; ./download-conceptnet5-csv)
+(cd src/extended-wordnet; ./download-extendedwordnet)
+(cd src/nell; ./download-nell)
 bzip2 -d < src/WordNet-3.0/dict/data.noun.bz2 > src/WordNet-3.0/dict/data.noun
 
-
+cd src/dbpedia-2016-04; ./wait-for-checksums
