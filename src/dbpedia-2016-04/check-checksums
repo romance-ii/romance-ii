@@ -1,0 +1,13 @@
+#!/bin/bash
+cd downloads.dbpedia.org
+find . -name _checksums.md5 | while read sums
+do
+  cat $sums | while read sum uri
+  do 
+    if [ "$(md5sum $uri) sum" != "$sum sum" ]
+    then
+      echo "Checksum mismatch: Wanted $sum, found “$(md5sum $uri)”" >&2
+      exit -2
+    fi
+  done
+done
