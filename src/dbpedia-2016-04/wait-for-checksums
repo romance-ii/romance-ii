@@ -17,6 +17,8 @@ do
   echo "Downloads are running, so we'll wait a few minutes and try again."
   echo "So far, downloaded:"
   du -sh downloads.dbpedia.org
+  echo "Available space on volume:"
+  df -h .
   date
   echo ""
   sleep 275
