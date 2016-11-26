@@ -15,6 +15,8 @@ do
     fi
   fi
   echo "Downloads are running, so we'll wait a few minutes and try again."
+  echo "So far, downloaded:"
+  du -sh downloads.dbpedia.org
   date
   echo ""
   sleep 275
