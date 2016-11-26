@@ -6,6 +6,18 @@ curl http://rtw.ml.cmu.edu/resources/results/08m/ \
   | uniq \
   | while read uri
     do
-      wget -c $uri
+      wget -c -q $uri &
     done
 
+while pgrep -af wget | grep NELL
+do
+  echo "Still downloading some of NELL data…"
+  echo "Let's wait a few minutes."
+  sleep 123
+done
+
+echo "Done downloading. Decompressing some…"
+for file in *.gz
+do
+  gzip -dc $file > $(basename $file .gz) &
+done
