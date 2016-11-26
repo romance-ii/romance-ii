@@ -1,4 +1,2 @@
 #!/bin/bash
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/links/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/en/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ &
+wget -q -rm -np http://downloads.dbpedia.org/2016-04/ &
