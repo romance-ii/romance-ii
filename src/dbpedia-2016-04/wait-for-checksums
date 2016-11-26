@@ -15,7 +15,10 @@ do
     fi
   fi
   echo "Downloads are running, so we'll wait a few minutes and try again."
+  date
+  echo ""
   sleep 275
+  date
 done
 echo "All seems well. Done."
 exit 0
