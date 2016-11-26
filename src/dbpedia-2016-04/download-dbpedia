@@ -1,129 +1,129 @@
 #!/bin/bash
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/ext/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/links/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/statistics/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/af/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/als/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/am/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/an/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ar/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/arz/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ast/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/az/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ba/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bar/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/be/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bg/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bn/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bpy/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/br/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bs/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bug/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ca/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ce/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ceb/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ckb/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/cs/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/cv/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/cy/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/da/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/de/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/el/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/en/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/eo/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/es/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/et/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/eu/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fa/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fi/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fo/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fr/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fy/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ga/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/gd/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/gl/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/gu/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/he/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/hi/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/hr/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ht/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/hu/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/hy/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ia/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/id/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/io/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/is/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/it/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ja/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/jv/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ka/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/kk/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/kn/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ko/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ku/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ky/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/la/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/lb/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/lmo/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/lt/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/lv/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mg/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mk/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ml/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mn/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mr/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ms/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mt/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/my/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mzn/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nah/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nap/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nds/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ne/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/new/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nl/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nn/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/no/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/oc/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pa/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pl/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pms/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pnb/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pt/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/qu/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ro/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ru/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sa/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sah/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/scn/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sco/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sh/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/si/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sk/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sl/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sq/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sr/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/su/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sv/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sw/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ta/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/te/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/tg/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/th/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/tl/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/tr/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/tt/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/uk/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ur/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/uz/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/vec/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/vi/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/vo/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/wa/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/war/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/yi/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/yo/ &
-wget -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/zh/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/ext/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/links/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/statistics/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/af/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/als/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/am/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/an/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ar/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/arz/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ast/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/az/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ba/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bar/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/be/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bg/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bn/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bpy/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/br/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bs/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/bug/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ca/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ce/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ceb/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ckb/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/cs/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/cv/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/cy/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/da/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/de/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/el/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/en/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/eo/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/es/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/et/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/eu/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fa/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fi/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fo/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fr/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/fy/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ga/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/gd/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/gl/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/gu/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/he/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/hi/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/hr/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ht/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/hu/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/hy/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ia/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/id/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/io/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/is/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/it/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ja/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/jv/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ka/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/kk/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/kn/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ko/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ku/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ky/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/la/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/lb/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/lmo/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/lt/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/lv/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mg/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mk/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ml/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mn/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mr/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ms/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mt/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/my/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/mzn/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nah/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nap/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nds/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ne/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/new/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nl/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/nn/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/no/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/oc/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pa/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pl/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pms/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pnb/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/pt/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/qu/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ro/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ru/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sa/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sah/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/scn/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sco/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sh/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/si/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sk/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sl/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sq/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sr/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/su/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sv/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/sw/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ta/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/te/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/tg/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/th/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/tl/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/tr/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/tt/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/uk/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/ur/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/uz/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/vec/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/vi/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/vo/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/wa/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/war/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/yi/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/yo/ &
+wget -c -q -rm -np http://downloads.dbpedia.org/2016-04/core-i18n/zh/ &

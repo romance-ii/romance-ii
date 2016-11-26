@@ -6,6 +6,6 @@ curl http://rtw.ml.cmu.edu/resources/results/08m/ \
   | uniq \
   | while read uri
     do
-      wget $uri
+      wget -c $uri
     done
 
