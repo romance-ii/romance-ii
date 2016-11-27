@@ -40,6 +40,9 @@
 (defun db-execute-query (db &rest query)
   (apply #'sqlite:execute-to-list db query))
 
+(defun db-execute-single (db &rest query)
+  (apply #'sqlite:execute-single db query))
+
 (defun db-prepare-statement (db &rest statement)
   (apply #'sqlite:prepare-statement db statement))
 
@@ -80,21 +83,23 @@
                                 "DROP TABLE atoms")))))))
 
 (defun flush-to-disc ()
-  (in-db (:transaction t)
-    (with-lock-held (*concept-db-lock*)
+  (in-db ()
+    (with-recursive-lock-held (*concept-db-lock*)
       (loop for (s p o) in *new-inserts*
-         do (add-concept-db s p o))))
-  (setf *concept-db-last-flush-to-disc* (get-universal-time))
-  (release-lock *flush-to-disc-lock*)) 
+         do (add-concept-db s p o)))))
 
-(defun flush-to-disc-maybe ()
-  (if (< (+ *concept-db-last-flush-to-disc* 
-            *concept-db-flush-to-disc-interval*)
-         (get-universal-time))
-      (when (ignore-errors
-              (sb-thread:grab-mutex *flush-to-disc-lock* :waitp nil :timeout 0))
-        (format *trace-output* "~&Flushing in-core DB to disc also…")
-        (make-thread #'flush-to-disc :name "Syncing new facts to disc DB"))))
+(defun try-to-flush-to-disc-async () 
+  (with-recursive-lock-held (*flush-to-disc-lock*) 
+    (format *trace-output* "~&Flushing ~:d new fact~:p from in-core DB to disc also…"
+            (length *new-inserts*))
+    (make-thread #'flush-to-disc :name "Syncing new facts to disc DB")
+    (setf *concept-db-last-flush-to-disc* (get-universal-time))))
+
+(defun flush-to-disc-maybe () 
+  (when (< (+ *concept-db-last-flush-to-disc* 
+              *concept-db-flush-to-disc-interval*)
+           (get-universal-time))
+    (try-to-flush-to-disc-async)))
 
 (defun connect-concepts-db ()
   (let ((db-path (merge-pathnames (make-pathname :directory '(:relative :up "db" "assertions")
@@ -213,7 +218,7 @@
   (db-bind-parameter &insert-concept 2 p)
   (db-bind-parameter &insert-concept 3 o)
   (db-step-statement &insert-concept)
-  (db-last-insert-rowid *concept-db*))
+  (db-last-insert-row-id *concept-db*))
 
 (defgeneric find-facts (s p o)
   (:documentation "Find facts in the conceptual database that match
@@ -283,8 +288,8 @@
        for parts = (split-sequence #\Tab line :test #'char=)
        for (pred subj obj ctx) = (subseq parts 1 5)
        do (with-simple-restart
-              (retry-fact "Retry processing the fact ~a —~a—→ ~a"
-                          subj pred obj)
+              (retry-fact "Retry processing fact #~:d: ~a —~a—→ ~a"
+                          line-count subj pred obj)
             (cond
               ((equal ctx "/ctx/all") (add-concept subj pred obj))
               ((char= (char ctx 0) #\{)
@@ -301,10 +306,13 @@
                  (add-concept subj pred obj)))
               (t (error "Unhandled context type: ~a" ctx))))
        when (zerop (random 10000))
-       do (format *trace-output* "~& ~A Record #~:D states: ~A"
-                  (pathname-name file) line-count
-                  (utterance->human (list subj pred obj) :en))
-       finally (format *trace-output* "~& Finished with ~:D records" line-count))))
+       do (with-simple-restart
+              (retry-trace  "Retry tracing fact #~:d: ~a —~a—→ ~a"
+                            line-count subj pred obj)
+            (format *trace-output* "~& ~A Record #~:D states~% ~A"
+                    (pathname-name file) line-count
+                    (utterance->human (list subj pred obj) :en)))
+       finally (format *trace-output* "~&~|~%Finished with ~:D records" line-count))))
 
 (defun conceptnet5-read-files (wildcard)
   (map nil #'conceptnet5-file->sexp (shuffle (directory wildcard))))
