@@ -21,7 +21,6 @@
                :cl-unicode
                :cffi
                :dbus
-               :gsll
                :langutils
                :local-time
                :parse-number
