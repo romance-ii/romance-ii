@@ -25,12 +25,14 @@ processes it's watching to see what else to kill; or
 END
 echo "Disc space available before we begin:"
 df -h src/
-echo "(Say good-bye to at least 20GiB of that.)"
+echo "(Say good-bye to at least 40GiB of that.)"
 echo ""
 (cd src/dbpedia-2016-04; ./download-dbpedia)&
 (cd src/conceptnet5-csv; ./download-conceptnet5-csv)
 (cd src/extended-wordnet; ./download-extendedwordnet)
 (cd src/nell; ./download-nell)
+(cd src/yago; ./download-yago)
+(cd src/texai; ./download-texai)
 bzip2 -d < src/WordNet-3.0/dict/data.noun.bz2 > src/WordNet-3.0/dict/data.noun
 
 cd src/dbpedia-2016-04; ./wait-for-checksums

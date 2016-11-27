@@ -1,0 +1,6 @@
+#!/bin/bash
+wget -c http://resources.mpi-inf.mpg.de/yago-naga/yago/download/yago/yago3_entire_tsv.7z
+xz -dc < yago3_entire_tsv.7z > yago3_entire.tsv
+#!/bin/bash
+wget -c http://resources.mpi-inf.mpg.de/yago-naga/yago/download/yago/yago3_entire_tsv.7z
+xz -dc < yago3_entire_tsv.7z > yago3_entire.tsv
