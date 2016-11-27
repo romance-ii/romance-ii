@@ -1,6 +1,12 @@
 (in-package :catullus)
-;; This work includes data from ConceptNet 5, which was compiled by the Commonsense Computing Initiative. ConceptNet 5 is freely available under the Creative Commons Attribution-ShareAlike license (CC BY SA 3.0) from http://conceptnet5.media.mit.edu. The included data was created by contributors to Commonsense Computing projects, contributors to Wikimedia projects, Games with a Purpose, Princeton University's WordNet, DBPedia, OpenCyc, and Umbel. 
-(defvar *concept-db* nil)
+;; This work includes data from ConceptNet  5, which was compiled by the
+;; Commonsense Computing  Initiative. ConceptNet  5 is  freely available
+;; under the  Creative Commons Attribution-ShareAlike license  (CC BY SA
+;; 3.0)  from http://conceptnet5.media.mit.edu.  The  included data  was
+;; created   by   contributors   to  Commonsense   Computing   projects,
+;; contributors to  Wikimedia projects, Games with  a Purpose, Princeton
+;; University's WordNet, DBPedia, OpenCyc, and Umbel.
+(defparameter *concept-db* nil)
 (defvar *new-inserts* nil)
 (defvar *concept-db-disc* nil)
 (defvar *concept-db-lock* (make-lock "ConceptDB Update Lock"))
@@ -28,25 +34,29 @@
 (defmacro db-nest-transaction ((db) &body body)
   `(sqlite:with-transaction ,db ,@body))
 
-(defmacro db-execute-non-query (db &rest query)
-  `(sqlite:execute-non-query ,db ,@query))
+(defun db-execute-non-query (db &rest query) 
+  (apply #'sqlite:execute-non-query db query))
 
-(defmacro db-execute-query (db &rest query)
-  `(sqlite:execute-query ,db ,@query))
+(defun db-execute-query (db &rest query)
+  (apply #'sqlite:execute-to-list db query))
 
-(defmacro db-prepare-statement (db &rest statement)
-  `(sqlite:prepare-statement ,db ,@statement))
+(defun db-prepare-statement (db &rest statement)
+  (apply #'sqlite:prepare-statement db statement))
 
-(defmacro db-reset-statement (st)
-  `(sqlite:reset-statement ,st))
-(defmacro db-bind-parameter (st i value)
-  `(sqlite:bind-parameter ,st ,i ,value))
-(defmacro db-step-statement (st)
-  `(sqlite:step-statement ,st))
-(defmacro db-statement-column-value (st i)
-  `(sqlite:statement-column-value ,st ,i))
-(defmacro db-last-insert-row-id (db)
-  `(sqlite:last-insert-rowid ,db))
+(defun db-reset-statement (st)
+  (sqlite:reset-statement st))
+
+(defun db-bind-parameter (st i value)
+  (sqlite:bind-parameter st i value))
+
+(defun db-step-statement (st)
+  (sqlite:step-statement st))
+
+(defun db-statement-column-value (st i)
+  (sqlite:statement-column-value st i))
+
+(defun db-last-insert-row-id (db)
+  (sqlite:last-insert-rowid db))
 
 (defmacro in-db ((&key (transaction nil)) &body body)
   `(TAGBODY
@@ -85,14 +95,18 @@
               (sb-thread:grab-mutex *flush-to-disc-lock* :waitp nil :timeout 0))
         (format *trace-output* "~&Flushing in-core DB to disc also…")
         (make-thread #'flush-to-disc :name "Syncing new facts to disc DB"))))
+
 (defun connect-concepts-db ()
-  (setf *concept-db* (sqlite:connect
-                      (merge-pathnames (make-pathname :directory '(:relative "conceptnet5-csv" "assertions")
-                                                      :name "conceptnet5.sqlite"
-                                                      :type "db")
-                                       romans-compiler-setup:*path/r2src*))
-        
-        #+conceptnet-memory ":memory:")
+  (let ((db-path (merge-pathnames (make-pathname :directory '(:relative :up "db" "assertions")
+                                                 :name "conceptnet5.sqlite"
+                                                 :type "db")
+                                  romans-compiler-setup:*path/r2src*)))
+    #-conceptnet-memory
+    (unless (probe-file db-path)
+      (ensure-directories-exist db-path))
+    (setf *concept-db* (sqlite:connect db-path)
+          
+          #+conceptnet-memory ":memory:"))
   #+conceptnet-memory
   (setf *concept-db-disc* (sqlite:connect
                            (merge-pathnames (make-pathname :directory '(:relative "conceptnet5-csv" "assertions")
@@ -182,7 +196,7 @@
       (db-reset-statement &insert-atom)
       (db-bind-parameter &insert-atom 1 symbol)
       (db-step-statement &insert-atom)
-      (db-last-insert-rowid *concept-db*))))
+      (db-last-insert-row-id *concept-db*))))
 
 (defun add-concept (s p o)
   (push (list s p o) *new-inserts*)
@@ -256,6 +270,9 @@
       (when (or s? p? o?)
         (eval (list 'find-facts-pattern s? p? o?))))))
 
+(defvar *datasets* '()
+  "Datasets used which should be attributed")
+
 (defun conceptnet5-file->sexp (file)
   (format *trace-output* "~& Loading ConceptNet5 data from ~S~%" file)
   (with-open-file (in file :direction :input :external-format :utf-8)
@@ -264,12 +281,25 @@
        until (eql :eof line)
        for line-count from 1
        for parts = (split-sequence #\Tab line :test #'char=)
-       ;; for (pred subj obj ctx vers src eid lic) =
-       ;;   (mapcar (lambda (s) (intern s :cvc)) (subseq parts 1 9))
        for (pred subj obj ctx) = (subseq parts 1 5)
-       do (if (equal ctx "/ctx/all")
-              (add-concept subj pred obj)
-              (error "Unhandled context type: ~a" ctx))
+       do (with-simple-restart
+              (retry-fact "Retry processing the fact ~a —~a—→ ~a"
+                          subj pred obj)
+            (cond
+              ((equal ctx "/ctx/all") (add-concept subj pred obj))
+              ((char= (char ctx 0) #\{)
+               (let* ((ctx.json (st-json:read-json-from-string ctx))
+                      (license (st-json:getjso "license" ctx.json)))
+                 (switch (license :test 'equal) 
+                   ("cc:by-sa/4.0" (pushnew (st-json:getjso "dataset" ctx.json)
+                                            *datasets*
+                                            :test 'equal))
+                   ("cc:by/4.0" (pushnew (st-json:getjso "dataset" ctx.json)
+                                         *datasets*
+                                         :test 'equal))
+                   (otherwise (error "Unhandled license type: ~a" license)))
+                 (add-concept subj pred obj)))
+              (t (error "Unhandled context type: ~a" ctx))))
        when (zerop (random 10000))
        do (format *trace-output* "~& ~A Record #~:D states: ~A"
                   (pathname-name file) line-count
@@ -284,4 +314,3 @@
 
 (defun dump-concepts ()
   (TODO))
-

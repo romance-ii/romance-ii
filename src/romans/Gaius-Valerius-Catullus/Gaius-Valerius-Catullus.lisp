@@ -1548,11 +1548,6 @@ Instead, the following was returned:
               (mapcar (rcurry #'treely (+ 2 indent) nil) (cdr sexp)))
       (format nil "~S" sexp)))
 
-
-
-
-
-
 (defun server-start (&optional argv)
   (declare (ignorable argv))
   (romans:server-start-banner "Catullus"
@@ -1562,7 +1557,4 @@ Instead, the following was returned:
   (test-parser)
   (format t "~& Conversation REPL starting…")
   (converse-repl))
-
-
-
 
