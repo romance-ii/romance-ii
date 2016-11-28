@@ -1,5 +1,34 @@
 # Romance Ⅱ MMORPG Game System
 
+## Update: 2016
+
+This code is in a very particular state of flux. 
+
+The Romance core code is being deconstructed into the new codebase using a
+mesh networking protocol, cross-compiled to JavaScript.  This is a fairly
+massive paradigm shift, and a good amount of the utility code is being
+totally abandoned.
+
+On the other hand, this is still being used in unit tests and for
+development of some things that don't yet work or are not useful in the
+cross-compiled environment. This is the sort of stuff that you might fire up
+in a REPL and run interactively to test things, or recently, to translate
+knowledgebases for the AI system.
+
+Eventually, this whole codebase will end up ported over to the Violet Volts
+version, and this repo will either be closed out or merged down or …
+something.
+
+## If you're not us …
+
+This is still some nifty AGPL code, although with all the submodules and
+dependencies and weird build rules, it's not really in a nice portable form
+right now. But get in touch if you think you'd like to use it, and we'd be
+more than happy to try to walk you through the layers of crazy.
+
+
+# The older rules
+
 ## What does it do?
 
 *Romance* is a server platform  (and, with this release, we're beginning
