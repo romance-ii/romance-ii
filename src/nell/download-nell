@@ -8,9 +8,3 @@ curl http://rtw.ml.cmu.edu/resources/results/08m/ \
     do
       wget -c $uri
     done
-
-echo "Done downloading. Decompressing some…"
-for file in *.gz
-do
-  gzip -dc $file > $(basename $file .gz) &
-done
