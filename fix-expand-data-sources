@@ -4,11 +4,17 @@ cat <<END
   Downloading Knowledgebase Data Sources
  ————————————————————————————————————————
 
-This process will take a long time, and a lot of bandwidth.  The data
-sources used to prepare the knowledgebase for the artificial intelligence
-and natural language interfaces are very large — several dozen GiB of data,
-at least.  This process will not be repeated if the upstream sources have
-not changed, though, and will resume if interrupted relatively nicely.
+This process will take a long time, and a lot of bandwidth and disc space.
+
+I do mean “a lot.” The current set of data sources pulled is more than 60GiB
+of general knowledge data — and most of that is in compressed (gzip or
+bzip2) files. At least here in 2016, that's a lot of stuff.
+
+The data sources used to prepare the knowledgebase for the artificial
+intelligence and natural language interfaces are very large — several dozen
+GiB of data, at least.  This process will not be repeated if the upstream
+sources have not changed, though, and will resume if interrupted relatively
+nicely.
 
 It would be nice to build a torrent source for the assembled data so that it
 can be redistributed without taxing the upstream sources, but that is part
@@ -24,8 +30,8 @@ processes it's watching to see what else to kill; or
 
 END
 echo "Disc space available before we begin:"
-df -h src/
-echo "(Say good-bye to at least 40GiB of that.)"
+df --output=source,avail -h src/
+echo "(Say good-bye to at least 60GiB of that.)"
 echo ""
 (cd src/dbpedia-2016-04; ./download-dbpedia)&
 (cd src/conceptnet5-csv; ./download-conceptnet5-csv)
