@@ -1,17 +1,15 @@
 # MAIN TARGETS: all (dist); clean; push (to dev server)
 all: dist
 
+PROJECT=Romance-2-Violet-Volts
+VERSION=5.0-pre-2016-11
+
 clean:
 	-rm -rf build/*
 	-rm -rf $(DISTVDIR)
 	-rm -rf $(SERVERDIR)
 	-find . -name \*~ -exec rm {} \;
 	git submodule foreach git clean -f
-
-include ../program.mak
-include ../versions.mak
-include ../license.mak
-include ../push-to.mak
 
 ########################################################################
 
