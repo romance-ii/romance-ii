@@ -4,7 +4,4 @@ curl http://rtw.ml.cmu.edu/resources/results/08m/ \
   | perl -ne 'print "http://rtw.ml.cmu.edu/resources/results/08m/$1\n" if m[href="(NELL.*(sv|sv.gz))"]' \
   | sort \
   | uniq \
-  | while read uri
-    do
-      wget -c $uri
-    done
+  | parallel --will-cite -P2 --progress --bar wget -c

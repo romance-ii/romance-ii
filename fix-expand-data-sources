@@ -1,4 +1,7 @@
 #!/bin/sh
+
+SIZE=96 # How many GiB should we warn them will be burned?
+
 cat <<END
 
   Downloading Knowledgebase Data Sources
@@ -6,39 +9,91 @@ cat <<END
 
 This process will take a long time, and a lot of bandwidth and disc space.
 
-I do mean “a lot.” The current set of data sources pulled is more than 60GiB
-of general knowledge data — and most of that is in compressed (gzip or
-bzip2) files. At least here in 2016, that's a lot of stuff.
+I do mean “a lot.” The current set of data sources pulled is more than
+${SIZE}GiB of general knowledge data — and most of that is in compressed
+(gzip or bzip2) files.  At least here in 2016, that's a lot of stuff.
 
-The data sources used to prepare the knowledgebase for the artificial
-intelligence and natural language interfaces are very large — several dozen
-GiB of data, at least.  This process will not be repeated if the upstream
-sources have not changed, though, and will resume if interrupted relatively
-nicely.
+These data sources are used to prepare the knowledgebase for the artificial
+intelligence and natural language interfaces.  This process will not be
+repeated if the upstream sources have not changed, though, and will resume
+if interrupted relatively nicely. 
+
+If you have to stop this and change your mind later, don't panic; just run
+$0 in $(pwd) again.
 
 It would be nice to build a torrent source for the assembled data so that it
 can be redistributed without taxing the upstream sources, but that is part
-of what we're aiming to do with this.
+of what we're aiming to do with this, eventually.
+
+END
+
+read -n1 -t5
+
+cat <<END
 
 Some of the downloading (particularly DBpedia) will take place in background
 processes and try to saturate your downstream.  Once the other (smaller)
 downloads are complete, you'll see progress reports every few minutes until
 that completes.  If you must kill it, look at the list of background
-processes it's watching to see what else to kill; or 
+processes it's watching to see what else to kill; eg:
 
    pgrep -af wget | grep dbpedia
 
+If you really aren't planning on seeding the knowledgebase from these
+encyclopædic sources, you don't need to do this.
+
+You can abort now, or at any time… I'll wait a few seconds to let you brace
+yourself …
+
 END
+
+read -n1 -t5
+
 echo "Disc space available before we begin:"
 df --output=source,avail -h src/
-echo "(Say good-bye to at least 60GiB of that.)"
+echo "(Say good-bye to at least ${SIZE}GiB of that.)"
 echo ""
+
+read -n1 -t5
+
+echo ""
+echo " First, I'll start the DBPedia downloads. These are the biggest ones, so"
+echo "they'll be running in parallel while the (relatively) smaller sets also"
+echo "are downloading at the same time."
+echo ""
+
 (cd src/dbpedia-2016-04; ./download-dbpedia)&
+
+echo ""
+echo " While those are downloading, we'll first grab the smaller sets."
+echo ""
+
+echo " • ConceptNet5"
 (cd src/conceptnet5-csv; ./download-conceptnet5-csv)
+echo " • Extended WordNet"
 (cd src/extended-wordnet; ./download-extendedwordnet)
-(cd src/nell; ./download-nell)
-(cd src/yago; ./download-yago)
+echo " • Some sources collated by TexAI"
 (cd src/texai; ./download-texai)
-bzip2 -d < src/WordNet-3.0/dict/data.noun.bz2 > src/WordNet-3.0/dict/data.noun
+echo " • YAGO"
+(cd src/yago; ./download-yago)
+echo ""
+echo " • NELL. These are pretty large. It'll download sets in parallel."
+echo ""
+(cd src/nell; ./download-nell)
+
+cat << END
+ Congratulations!  If you've survived this far, you're into the home
+stretch.
+
+ Those DBPedia downloads are probably still running.  They do have
+checksums, though, so what we're going to do, now, is wait for them all to
+check out.  When that's happened, we can be reasonably sure that we have the
+full set downloaded.
+
+ Depending on your connection speed, this might take a while.  It'll recheck
+every few minutes.  Expect to see a string of checksum failures until the
+parallel downloads all finish up.
+
+END
 
 cd src/dbpedia-2016-04; ./wait-for-checksums
