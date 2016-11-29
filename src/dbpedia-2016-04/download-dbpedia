@@ -12,7 +12,13 @@ timeout 10 parallel --bibtex --will-cite < /dev/null
 # Abort whenever 2 jobs have failed.
 
 exec parallel --will-cite --halt now,fail=2 -P50% wget -q -c -r -m -np <<END
-http://downloads.dbpedia.org/2016-04/
+http://downloads.dbpedia.org/2016-04/2016-04_dataid_catalog.json
+http://downloads.dbpedia.org/2016-04/2016-04_dataid_catalog.ttl
+http://downloads.dbpedia.org/2016-04/dbpedia_2016-04.nt
+http://downloads.dbpedia.org/2016-04/dbpedia_2016-04.owl
+http://downloads.dbpedia.org/2016-04/index.html
+http://downloads.dbpedia.org/2016-04/lines-bytes-packed.csv
+http://downloads.dbpedia.org/2016-04/wikipedias.csv
 http://downloads.dbpedia.org/2016-04/core/
 http://downloads.dbpedia.org/2016-04/ext/
 http://downloads.dbpedia.org/2016-04/links/

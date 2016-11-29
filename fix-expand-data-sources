@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SIZE=130 # How many GiB should we warn them will be burned?
+SIZE=140 # How many GiB should we warn them will be burned?
 # See also the table on “page 2” — if this needs updating, that probably
 # does, too.
 
@@ -35,10 +35,10 @@ cat <<END
 
 Here are the biggest “offenders:”
 
-  3G	src/yago
-  6G	src/conceptnet5-csv
-  35G	src/nell
-  90G	src/dbpedia-2016-04
+	  6G	conceptnet5-csv
+	 11G	yago
+	 20G	nell
+	104G	dbpedia-2016-04
 
 Some of the downloading (particularly DBpedia) will take place in background
 processes and try to saturate your downstream.  Once the other (smaller)
@@ -90,7 +90,7 @@ echo " • NELL. These are pretty large. It'll download sets in parallel."
 echo ""
 (cd src/nell; ./download-nell)
 
-cat << END
+cat <<END
  Congratulations!  If you've survived this far, you're into the home
 stretch.
 
