@@ -1,6 +1,6 @@
 #!/bin/bash
-./check-checksums 2>&1 \
-    | grep -v ': OK' \
+./check-checksums \
+    | grep ': FAILED' \
     | cut -d: -f1 \
     | sed -e 's, ./,http://downloads.dbpedia.org/2016-04/,' \
     | while read uri
