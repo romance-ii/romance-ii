@@ -7,18 +7,52 @@
 (in-package :Catullus)
 
 (defvar *turtle-file*)
+
 (defun read-turtle-file (pathname)
   "Read  a Turtle  (Terse RDF  Triple Language)  file. The  file can  be
 compressed, and will be transparently decompressed as it's being read.."
-  (let ((*turtle-file* pathname))
-    (cond ((file-is-bzip2-p pathname)
-           (uiop:run-program (list "/usr/bin/bzip2" "-d" "-c" pathname) 
-                             :output #'turtle->sexp))
-          (t (with-input-from-file (stream pathname 
-                                           :element-type 'character)
-               (turtle->sexp stream))))))
+  (restart-case
+      (let ((*turtle-file* pathname))
+        (cond ((file-is-bzip2-p pathname)
+               (uiop:run-program (list "/usr/bin/bzip2" "-d" "-c" 
+                                       (file-name-surely pathname)) 
+                                 :output #'turtle->sexp))
+              (t (with-input-from-file (stream pathname 
+                                               :element-type 'character)
+                   (turtle->sexp stream)))))
+    (skip-file () nil)
+    (retry-file () (read-turtle-file pathname))))
+
+(defun read-all-turtle-files-in (directory)
+  (lambda (directory)
+    (dolist (file (directory (make-pathname :name :wild
+                                            :type :wild
+                                            :version :newest
+                                            :defaults directory)))
+      (if (search ".ttl" (namestring file) :test #'char-equal)
+          (read-turtle-file file)
+          (warn "Ignoring file ~a: Does not have a .ttl" file)))))
+
+(defun read-turtle-files-beneath (top-directory)
+  (uiop/filesystem:collect-sub*directories
+   top-directory (constantly t) (constantly t)
+   (read-all-turtle-files-in top-directory)))
+
+(defun read-dbpedia ()
+  (read-turtle-files-beneath
+   (merge-pathnames
+    (make-pathname :directory '(:relative
+                                :up 
+                                "dbpedia-2016-04"
+                                "downloads.dbpedia.org"
+                                "2016-04")) (asdf:system-source-directory :romance-ii))))
 
 
+
+(defun file-name-surely (pathname)
+  (etypecase pathname
+    (pathname (namestring pathname))
+    (string pathname)))
 
 (define-constant +bzip2-magic-cookie+ (map 'vector #'char-code
                                            "BZh91AY&SY")
@@ -52,28 +86,28 @@ compressed, and will be transparently decompressed as it's being read.."
 
 (defun turtle-read-number (stream first-char)
   (loop
-     with string = (make-array 10
-                               :element-type 'character
-                               :fill-pointer t
-                               :initial-contents (vector first-char))
-     with decimalp = nil
-     with exponentp = nil
+    with string = (make-array 10
+                              :element-type 'character
+                              :fill-pointer t
+                              :initial-contents (vector first-char))
+    with decimalp = nil
+    with exponentp = nil
 
-     for peek = (peek-char nil stream)
-     do (case peek
-          ((#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
-           (vector-push-extend (read-char stream) string))
-          (#\.
-           (when decimalp
-             (error "Two decimals in one number?"))
-           (vector-push-extend (read-char stream) string)
-           (setf decimalp t))
-          ((#\e #\E)
-           (when exponentp
-             (error "Two exponents on one number?"))
-           (vector-push-extend (read-char stream) string)
-           (setf exponentp t))
-          (otherwise (return-from turtle-read-number string)))))
+    for peek = (peek-char nil stream)
+    do (case peek
+         ((#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
+          (vector-push-extend (read-char stream) string))
+         (#\.
+          (when decimalp
+            (error "Two decimals in one number?"))
+          (vector-push-extend (read-char stream) string)
+          (setf decimalp t))
+         ((#\e #\E)
+          (when exponentp
+            (error "Two exponents on one number?"))
+          (vector-push-extend (read-char stream) string)
+          (setf exponentp t))
+         (otherwise (return-from turtle-read-number string)))))
 
 (defun turtle-read-blank-phrase (stream)
   (error "Unimplemented"))
@@ -94,7 +128,7 @@ compressed, and will be transparently decompressed as it's being read.."
       (#\# (format *trace-output*
                    "~&;; # ~a"
                    (turtle-read-before-delimiter stream #\newline))
-           t)
+       t)
       (#\@ (turtle-read-prefix-or-base-or-error stream))
       (#\< (set-next (turtle-read-iri stream)))
       (#\, (turtle-read-alternative-for-last-word stream))
@@ -125,10 +159,10 @@ compressed, and will be transparently decompressed as it's being read.."
   (loop with string = (make-array 15
                                   :element-type 'character
                                   :fill-pointer 0)
-     while (alpha-char-p (peek-char nil stream nil))
-     do (vector-push-extend (read-char stream nil nil)
-                            string)
-     finally (return string)))
+        while (alpha-char-p (peek-char nil stream nil))
+        do (vector-push-extend (read-char stream nil nil)
+                               string)
+        finally (return string)))
 
 (defun turtle-read-prefix-or-base-or-? (stream else)
   (let ((next-word (turtle-read-letters stream)))
@@ -162,23 +196,23 @@ compressed, and will be transparently decompressed as it's being read.."
                                    :element-type 'character
                                    :fill-pointer t
                                    :initial-contents start)
-      with colonp = (find #\: string)
-        
-      for char = (peek-char nil stream)
-        
-      when (rdf-pn-name-char-p char)
-      do (vector-push-extend (read-char stream) string)
-        
-      when (char= #\: char)
-      do (progn 
-           (when colonp
-             (error "Two colons in one name"))
-           (setf colonp t)
-           (vector-push-extend (read-char stream) string))
-        
-      when (not (or (rdf-pn-name-char-p char)
-                    (char= #\: char)))
-      do (return string))))
+         with colonp = (find #\: string)
+         
+         for char = (peek-char nil stream)
+         
+         when (rdf-pn-name-char-p char)
+           do (vector-push-extend (read-char stream) string)
+              
+         when (char= #\: char)
+           do (progn 
+                (when colonp
+                  (error "Two colons in one name"))
+                (setf colonp t)
+                (vector-push-extend (read-char stream) string))
+              
+         when (not (or (rdf-pn-name-char-p char)
+                       (char= #\: char)))
+           do (return string))))
 
 (defmacro turtle-read-word% (place stream &optional (start ""))
   `(setf ,place (turtle-reading-word% ,stream ,start)))
@@ -209,7 +243,7 @@ compressed, and will be transparently decompressed as it's being read.."
 
 (defun skip-whitespace (stream)
   (loop while (whitespacep (peek-char nil stream))
-     do (read-char stream)))
+        do (read-char stream)))
 
 (defun turtle-read-prefix (stream)
   (skip-whitespace stream))
@@ -234,14 +268,14 @@ compressed, and will be transparently decompressed as it's being read.."
                                   :element-type 'character
                                   :adjustable t
                                   :fill-pointer 0)
-     for char = (read-char stream nil nil)
-       
-     do (cond ((char= char #\Null) t)  ; Skip NULL
-              ((char= char #\\)
-               (vector-push-extend (read-char stream) string))
-              ((char= char delimiter)
-               (return string))
-              (t (vector-push-extend char string)))))
+        for char = (read-char stream nil nil)
+        
+        do (cond ((char= char #\Null) t) ; Skip NULL
+                 ((char= char #\\)
+                  (vector-push-extend (read-char stream) string))
+                 ((char= char delimiter)
+                  (return string))
+                 (t (vector-push-extend char string)))))
 
 (defun set-next (string)
   (cond ((eql :? *turtle-s*) (setf *turtle-s* string))

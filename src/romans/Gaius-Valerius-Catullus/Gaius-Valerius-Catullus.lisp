@@ -1,3 +1,4 @@
+
 (in-package :catullus)
 
 (defvar *logical-output* nil)
@@ -139,20 +140,23 @@
         (t noun))
       noun))
 
-(defun dbpedia-uri-p (predicate)
-  (and (stringp predicate)
-       (string-begins "http://dbpedia.org/" predicate)))
-
-(defun dbpedia-uri->keyword (predicate)
-  (make-keyword (cffi:translate-camelcase-name
-                 (concatenate 'string 
-                              "@dbpedia/"
-                              (subseq predicate 19)))))
+(defparameter *ontology-uri-map*
+  '(("http://dbpedia.org/" :@dbpedia/)
+    ("http://purl.org/dc/elements/1.1/" :@dc/)
+    ("http://purl.org/dc/terms/" :@dcterm/)))
 
 (defun conceptnet-predicate->keyword (predicate)
+  (when (stringp predicate)
+    (loop for (uri prefix) in *ontology-uri-map*
+          when (string-begins uri predicate)
+            do (return-from conceptnet-predicate->keyword
+                 (make-keyword 
+                  (concatenate 'string
+                               (string prefix)
+                               (string 
+                                (cffi:translate-camelcase-name
+                                 (subseq predicate (length uri)))))))))
   (cond 
-    ((dbpedia-uri-p predicate)
-     (dbpedia-uri->keyword predicate))
     ((and (stringp predicate)
           (char= #\/ (char predicate 0)))
      (make-keyword (cffi:translate-camelcase-name predicate)))
@@ -1673,4 +1677,16 @@ Instead, the following was returned:
 (define-predicate-translations
   (:@dbpedia/ontology/wiki-page-wiki-link-text 
    :en "~0@*~a is linked-to by ~2@*~a")
+  (:@dcterm/title
+   :en "~a is titled ~*~a")
+  (:@dcterm/creator
+   :en "~a was created by ~*~a")
+  (:@dcterm/subject
+   :en "~a is an example of ~*~a")
+  (:@dcterm/description
+   :en "~a is described by ~*~a")
+  (:@dcterm/publisher
+   :en "~a was published by ~*~a")
+  (:@dcterm/contributor
+   :en "~2@*~a contributed to ~0@*~a") 
   )
