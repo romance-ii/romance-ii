@@ -203,9 +203,8 @@
       (db-step-statement &insert-atom)
       (db-last-insert-row-id *concept-db*))))
 
-(defun add-concept (s p o)
+(defmethod add-concept ((s string) (p string) (o string)) 
   (push (list s p o) *new-inserts*)
-  #+ (or) (princ "." *trace-output*)
   (flush-to-disc-maybe))
 
 (defun add-concept-db (subj pred obj
@@ -278,6 +277,41 @@
 (defvar *datasets* '()
   "Datasets used which should be attributed")
 
+(defun trace-sample-record (file line-count subj pred obj)
+  (when (zerop (random 10000))
+    (with-simple-restart
+        (retry-trace  "Retry tracing fact #~:d: ~a —~a—→ ~a"
+                      line-count subj pred obj)
+      #+ (or)
+      (format *trace-output* "~&Fact #~:d: ~a —~a—→ ~a:"
+              line-count subj pred obj)
+      (format *trace-output* "~& ~A Record #~:D states~% ~A"
+              (pathname-name file) line-count
+              (utterance->human (list subj pred obj) :en)))))
+
+(defun process-conceptnet5-fact (file line-count subj pred obj ctx) 
+  (declare (ignore file))
+  (with-simple-restart
+      (retry-fact "Retry processing fact #~:d: ~a —~a—→ ~a"
+                  line-count subj pred obj)
+    (cond
+      ((equal ctx "/ctx/all")
+       (add-concept subj pred obj))
+      
+      ((char= (char ctx 0) #\{)
+       (let* ((ctx.json (st-json:read-json-from-string ctx))
+              (license (st-json:getjso "license" ctx.json)))
+         (switch (license :test 'equal) 
+           ("cc:by-sa/4.0" (pushnew (st-json:getjso "dataset" ctx.json)
+                                    *datasets*
+                                    :test 'equal))
+           ("cc:by/4.0" (pushnew (st-json:getjso "dataset" ctx.json)
+                                 *datasets*
+                                 :test 'equal))
+           (otherwise (error "Unhandled license type: ~a" license)))
+         (add-concept subj pred obj)))
+      (t (error "Unhandled context type: ~a" ctx)))))
+
 (defun conceptnet5-file->sexp (file)
   (format *trace-output* "~& Loading ConceptNet5 data from ~S~%" file)
   (with-open-file (in file :direction :input :external-format :utf-8)
@@ -287,31 +321,9 @@
        for line-count from 1
        for parts = (split-sequence #\Tab line :test #'char=)
        for (pred subj obj ctx) = (subseq parts 1 5)
-       do (with-simple-restart
-              (retry-fact "Retry processing fact #~:d: ~a —~a—→ ~a"
-                          line-count subj pred obj)
-            (cond
-              ((equal ctx "/ctx/all") (add-concept subj pred obj))
-              ((char= (char ctx 0) #\{)
-               (let* ((ctx.json (st-json:read-json-from-string ctx))
-                      (license (st-json:getjso "license" ctx.json)))
-                 (switch (license :test 'equal) 
-                   ("cc:by-sa/4.0" (pushnew (st-json:getjso "dataset" ctx.json)
-                                            *datasets*
-                                            :test 'equal))
-                   ("cc:by/4.0" (pushnew (st-json:getjso "dataset" ctx.json)
-                                         *datasets*
-                                         :test 'equal))
-                   (otherwise (error "Unhandled license type: ~a" license)))
-                 (add-concept subj pred obj)))
-              (t (error "Unhandled context type: ~a" ctx))))
-       when (zerop (random 10000))
-       do (with-simple-restart
-              (retry-trace  "Retry tracing fact #~:d: ~a —~a—→ ~a"
-                            line-count subj pred obj)
-            (format *trace-output* "~& ~A Record #~:D states~% ~A"
-                    (pathname-name file) line-count
-                    (utterance->human (list subj pred obj) :en)))
+       do (process-conceptnet5-fact file line-count subj pred obj ctx)
+         
+       do (trace-sample-record file line-count subj pred obj)
        finally (format *trace-output* "~&~|~%Finished with ~:D records" line-count))))
 
 (defun conceptnet5-read-files (wildcard)

@@ -6,30 +6,40 @@
 
 (in-package :Catullus)
 
+(defvar *turtle-file*)
 (defun read-turtle-file (pathname)
-  (with-input-from-file (stream pathname) 
-    (cond ((file-is-bzip2-p stream)
-           (turtle->sexp (chipz:make-decompressing-stream 
-                          :bzip2 stream)))
-          (t (turtle->sexp stream)))))
+  "Read  a Turtle  (Terse RDF  Triple Language)  file. The  file can  be
+compressed, and will be transparently decompressed as it's being read.."
+  (let ((*turtle-file* pathname))
+    (cond ((file-is-bzip2-p pathname)
+           (uiop:run-program (list "/usr/bin/bzip2" "-d" "-c" pathname) 
+                             :output #'turtle->sexp))
+          (t (with-input-from-file (stream pathname 
+                                           :element-type 'character)
+               (turtle->sexp stream))))))
 
-(define-constant +bzip2-magic-cookie+ "BZh91AY&SY"
-  :test #'string=
+
+
+(define-constant +bzip2-magic-cookie+ (map 'vector #'char-code
+                                           "BZh91AY&SY")
+  :test #'equalp
   :documentation "The magic cookie starting a BZip2 file")
 
-(defun file-is-bzip2-p (stream)
-  (prog1
-      (let ((file-header (make-string (length +bzip2-magic-cookie+)
-                                      :initial-element #\GS)))
-        (read-sequence file-header stream)
-        (string= +bzip2-magic-cookie+ file-header))
-    (file-position stream 0)))
+(defun file-is-bzip2-p (pathname)
+  (let ((file-header (make-array (length +bzip2-magic-cookie+)
+                                 :initial-element 42
+                                 :element-type '(unsigned-byte 8))))
+    (with-input-from-file (stream pathname 
+                                  :element-type '(unsigned-byte 8))
+      (read-sequence file-header stream))
+    (equalp +bzip2-magic-cookie+ file-header)))
+
+
 
 (defparameter *turtle-s* :?)
 (defparameter *turtle-p* :?)
 (defparameter *turtle-o* :?)
 (defparameter *turtle-context* :top)
-
 (defparameter *turtle-count* 0)
 
 (defun turtle->sexp (stream)
@@ -49,7 +59,7 @@
      with decimalp = nil
      with exponentp = nil
 
-     for peek = (peek-char stream)
+     for peek = (peek-char nil stream)
      do (case peek
           ((#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
            (vector-push-extend (read-char stream) string))
@@ -71,23 +81,27 @@
 (defun turtle-read-blank-reference (stream)
   (error "Unimplemented"))
 
-(defun turtle-read-term (stream)
+(defun turtle-read-term (stream) 
   (let ((char (read-char stream nil nil)))
     (unless char (return-from turtle-read-term nil))
+    #+ (or) (format *trace-output* "~& • Next term starts with ~:c" char)
     (case char
-      ((#\space #\page #\return #\linefeed #\tab) nil) ; no op
+      ((#\space #\page #\return #\linefeed #\tab) t) ; no op
       ((#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9 #\-)
        (turtle-read-number stream char))
       (#\[ (turtle-read-blank-phrase stream))
       (#\_ (turtle-read-blank-reference stream))
-      (#\# (turtle-read-before-delimiter stream #\newline))
+      (#\# (format *trace-output*
+                   "~&;; # ~a"
+                   (turtle-read-before-delimiter stream #\newline))
+           t)
       (#\@ (turtle-read-prefix-or-base-or-error stream))
-      (#\< (turtle-read-iri stream))
+      (#\< (set-next (turtle-read-iri stream)))
       (#\, (turtle-read-alternative-for-last-word stream))
       (#\. (turtle-end-current-term))
       (#\semicolon (turtle-read-next-predicate-phrase stream))
       (#\apostrophe (turtle-read-quoted-literal stream #\apostrophe))
-      (#\" (turtle-read-quoted-literal stream #\"))
+      (#\" (set-next (turtle-read-quoted-literal stream #\")))
       (otherwise (turtle-read-word stream)))))
 
 (defmacro replace-turtle-word-with-or (place stream)
@@ -110,8 +124,8 @@
 (defun turtle-read-letters (stream)
   (loop with string = (make-array 15
                                   :element-type 'character
-                                  :fill-pointer t)
-     while (alpha-char-p (peek-char stream nil nil))
+                                  :fill-pointer 0)
+     while (alpha-char-p (peek-char nil stream nil))
      do (vector-push-extend (read-char stream nil nil)
                             string)
      finally (return string)))
@@ -150,7 +164,7 @@
                                    :initial-contents start)
       with colonp = (find #\: string)
         
-      for char = (peek-char stream)
+      for char = (peek-char nil stream)
         
       when (rdf-pn-name-char-p char)
       do (vector-push-extend (read-char stream) string)
@@ -189,12 +203,12 @@
   (error "unimplemented BASE — FIXME"))
 
 (defun whitespacep (char)
-  (and char
-       (characterp char)
-       (find char +whitespace+ :test #'char=)))
+  (and (characterp char)
+       (not (graphic-char-p char))
+       (not (char= #\Space char))))
 
 (defun skip-whitespace (stream)
-  (loop while (whitespacep (peek-char stream))
+  (loop while (whitespacep (peek-char nil stream))
      do (read-char stream)))
 
 (defun turtle-read-prefix (stream)
@@ -204,9 +218,9 @@
   (error "multi-line literal TODO"))
 
 (defun turtle-read-quoted-literal (stream delimiter)
-  (if (char= (peek-char stream nil nil) delimiter)
+  (if (char= (peek-char nil stream nil) delimiter)
       (progn (read-char stream nil nil)
-             (if (char= (peek-char stream nil nil) delimiter)
+             (if (char= (peek-char nil stream nil) delimiter)
                  (progn (read-char stream nil nil)
                         (turtle-read-multi-line-quoted-literal
                          stream delimiter))
@@ -222,26 +236,35 @@
                                   :fill-pointer 0)
      for char = (read-char stream nil nil)
        
-     if (not (char= char delimiter))
-     do (vector-push-extend char string)
-     else do (return string)))
+     do (cond ((char= char #\Null) t)  ; Skip NULL
+              ((char= char #\\)
+               (vector-push-extend (read-char stream) string))
+              ((char= char delimiter)
+               (return string))
+              (t (vector-push-extend char string)))))
+
+(defun set-next (string)
+  (cond ((eql :? *turtle-s*) (setf *turtle-s* string))
+        ((eql :? *turtle-p*) (setf *turtle-p* string))
+        ((eql :? *turtle-o*) (setf *turtle-o* string))
+        (t (error "Four words in a phrase?"))))
 
 (defun turtle-read-iri (stream)
   (turtle-read-before-delimiter stream #\>))
 
-(defun accept-new-fact (s p o)
-  (break "I learned that ~a —~a—→ ~a"
-         s p o))
-
 (defun turtle-end-current-term ()
-  (accept-new-fact *turtle-s* *turtle-p* *turtle-o*)
+  (trace-sample-record *turtle-file*
+                       (incf *turtle-count*)
+                       *turtle-s* *turtle-p* *turtle-o*)
+  (add-concept *turtle-s* *turtle-p* *turtle-o*) 
   (setf *turtle-s* :?
         *turtle-p* :?
         *turtle-o* :?))
 
 (defun turtle-read-string-language (stream string)
   (assert (char= #\@ (read-char stream)))
-  (concatenate 'string "/c/" (turtle-read-letters stream) "/" string))
+  (concatenate 'string "@str/" (turtle-read-letters stream) "/" 
+               string))
 
 (defun turtle-read-type-annotation (stream string)
   (assert (char= #\^ (read-char stream)))
@@ -255,7 +278,7 @@
   (turtle-read-word% *turtle-o* stream))
 
 (defun turtle-read-string-attributes (stream string)
-  (case (peek-char stream nil nil)
+  (case (peek-char nil stream nil)
     (#\@ (turtle-read-string-language stream string))
     (#\^ (turtle-read-type-annotation stream string))
     (otherwise string)))
@@ -268,3 +291,5 @@
         ((eql :? *turtle-o*)
          (turtle-read-object stream))
         (t (error "Fourth term?"))))
+
+

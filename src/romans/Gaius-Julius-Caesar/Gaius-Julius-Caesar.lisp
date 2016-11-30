@@ -7,28 +7,20 @@
 (defun heartbeat-failure-detection ()
   (todo))
 
-
 
 
 (defun machine-vmstat ()
   (split-and-collect-file "/proc/vmstat"))
 
 (defun binary-metric-multiplier (multiplier)
-  (ecase multiplier
-    (#\k 1024)
-    (#\M (* 1024 1024))
-    (#\G (* 1024 1024 1024))
-    (#\T (* 1024 1024 1024 1024))
-    (#\P (* 1024 1024 1024 1024 1024))
-    (#\E (* 1024 1024 1024 1024 1024 1024))
-    (#\Y (* 1024 1024 1024 1024 1024 1024 1024))))
+  (expt 1024 (or (position multiplier "BkMGTPEY") 0)))
 
-(defun multiply-bytes (object)
-  (check-type object string)
-  (assert (char= #\B (last-elt object)))
-  (let ((base (parse-integer object :junk-allowed t))
-        (multiplier (char object
-                          (1+ (position #\Space object :from-end t :test #'char=)))))
+(defun multiply-bytes (bytes-counter)
+  (check-type bytes-counter string)
+  (assert (char= #\B (last-elt bytes-counter)))
+  (let ((base (parse-integer bytes-counter :junk-allowed t))
+        (multiplier (char bytes-counter
+                          (1+ (position #\Space bytes-counter :from-end t :test #'char=)))))
     (* base (binary-metric-multiplier multiplier))))
 
 (defun multiply-bytes-maybe (object)
@@ -47,7 +39,6 @@
      for pid = (parse-integer (lastcar (pathname-directory entry)) :junk-allowed t)
      while entry
      when pid collect it))
-
 
 
 
@@ -109,6 +100,8 @@
 ;;                          :x-condition-type message)))
 ;;            (when-let ((message-id (keyword-journal-message-id message)))
 ;;              :message-id message-id)))))
+
+
 
 (defmethod handle-report :before (module machine message-keyword user-string
                                   &rest keys)
@@ -225,10 +218,13 @@
 
 (define-condition hook-timeout (warning)
   ((elapsed-time :initarg :elapsed-time :reader timeout-elapsed-time)))
+
 (define-condition hook-early-timeout (hook-timeout)
   ())
+
 (define-condition hook-soft-timeout (hook-timeout)
   ())
+
 (define-condition hook-hard-timeout (hook-timeout)
   ())
 
@@ -419,7 +415,7 @@ Please provide an unique name or address to join one cluster"
     "Indira" "Prime" "Rama" "Whitney"))
 
 (define-constant +server-packages+
-    '(:appius :asinius :clodia :frontinus :galen :lutatius :narcissus :rabirius :regillus :vitruvius)
+    '(:appius :asinius :clodia :frontinus :galen :lutatius :narcissus :catullus :rabirius :regillus :vitruvius)
   :test #'equalp)
 
 (defun start-cluster (&key cluster-name)
@@ -443,7 +439,6 @@ Please provide an unique name or address to join one cluster"
   (format *trace-output* "~&Contacting cluster ~a to join them…" cluster)
   (finish-output)
   (todo))
-
 
 (defun ensure-servers-live ()
   (todo))

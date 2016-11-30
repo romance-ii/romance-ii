@@ -77,23 +77,23 @@ terminating #\\Null (zero) terminator, when it is present")
 
 (cffi:defcstruct (acct :conc-name acct-)
   (flags :uint8)
-  (version :uint8)                     ; must be =3
+  (version :uint8)                      ; must be =3
   (tty :uint16)
   (exit-code :uint32)
   (uid :uint32)
   (gid :uint32)
   (pid :uint32)
   (ppid :uint32)
-  (process-create-time :uint32)        ; sec > Epoch
+  (process-create-time :uint32)         ; sec > Epoch
   (elapsed-time :float)
   (user-cpu-time comp-t)
   (system-cpu-time comp-t)
-  (average-memory comp-t); in KiB
-  (pad$character-io :uint16)           ; unused
-  (pad$blocks-io :uint16)              ; unused
+  (average-memory comp-t)               ; in KiB
+  (pad$character-io :uint16)            ; unused
+  (pad$blocks-io :uint16)               ; unused
   (minor-page-faults comp-t)
   (major-page-faults comp-t)
-  (pad$swaps :uint16)                  ; unused
+  (pad$swaps :uint16)                   ; unused
   (command$ :uint8 :count 17))
 
 (defun acct-command (acct)
@@ -125,8 +125,10 @@ terminating #\\Null (zero) terminator, when it is present")
                   (progn (setf c-struct (cffi:convert-to-foreign 
                                          struct-bytes 
                                          utmp-byte-array))
-                         (cffi:convert-from-foreign c-struct '(:struct utmp)))
-               (cffi:free-converted-object c-struct utmp-byte-array t)))))))
+                         (cffi:convert-from-foreign c-struct
+                                                    '(:struct utmp)))
+               (cffi:free-converted-object c-struct 
+                                           utmp-byte-array t)))))))
 
 (defun read-wtmp (&optional (wtmp-file-name #+linux #p"/var/log/wtmp"
                                             #-linux (error "Where is wtmp?")))

@@ -132,14 +132,33 @@
   "Given a noun, normalise it as best possible."
   (if (stringp noun)
       (cond
-        ((find #\( noun) 
-         (warn "Contains a parenthetical expression, which should be parsed. TODO")
+        ((find #\( noun)
+         (error "~s contains a parenthetical expression, which should be parsed. TODO"
+                noun)
          noun)
         (t noun))
       noun))
 
+(defun dbpedia-uri-p (predicate)
+  (and (stringp predicate)
+       (string-begins "http://dbpedia.org/" predicate)))
+
+(defun dbpedia-uri->keyword (predicate)
+  (make-keyword (cffi:translate-camelcase-name
+                 (concatenate 'string 
+                              "@dbpedia/"
+                              (subseq predicate 19)))))
+
 (defun conceptnet-predicate->keyword (predicate)
-  (if (stringp predicate) (make-keyword (cffi:translate-camelcase-name predicate))))
+  (cond 
+    ((dbpedia-uri-p predicate)
+     (dbpedia-uri->keyword predicate))
+    ((and (stringp predicate)
+          (char= #\/ (char predicate 0)))
+     (make-keyword (cffi:translate-camelcase-name predicate)))
+    ((keywordp predicate)
+     predicate)
+    (t (error "Don't know keyword for predicate ~s" predicate))))
 
 (defgeneric normalise-predicate (subject predicate object)
   (:documentation "Given  a predicate  with complex meaning,  attempt to
@@ -373,6 +392,11 @@ but may have sub-clauses and such after processing.")
       ("r" (format nil "~A~{ (~A)~}" (second path) (nthcdr 3 path)))
       ("a" (utterance->human (destructure-assertion-1 utterance) :en))
       (("http:" "https:" "ftp:" "sftp:") (format nil "URL <~a>" utterance))
+      ("@str" (if (equal "en" (second path))
+                  (concatenate 'string "“" (third path) "”")
+                  (format nil "“~a” (in ~a)"
+                          (third path)
+                          (language-name (second path) :en))))
       (t (cerror "Use it unmodified"
                  "An unrecognized part of speech “~A” was found in “~A”"
                  (car path) utterance)
@@ -1638,3 +1662,15 @@ Instead, the following was returned:
   (format t "~& Conversation REPL starting…")
   (converse-repl))
 
+(defmacro define-predicate-translations (&body translations)
+  `(progn
+     ,@(loop for (predicate language format-string) in translations
+          collect `(defmethod utterance-formatting-string
+                       ((predicate (eql ,predicate)) 
+                        (language (eql ,language)))
+                     ,format-string))))
+
+(define-predicate-translations
+  (:@dbpedia/ontology/wiki-page-wiki-link-text 
+   :en "~0@*~a is linked-to by ~2@*~a")
+  )

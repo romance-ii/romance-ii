@@ -132,16 +132,16 @@
       (every (curry (complement #'char=) #\Null) file-name-string)))
 
 (defun path-expand (path-string)
-  "Expand a PATH-like environment string, splitting on #\: (#\; on
-Windows); entries will be coërced to pathnames with probe-file (thus,
-correctly making directory objects as appropriate), unless they don't
+  "Expand  a PATH-like  environment  string, splitting  on  #\: (#\;  on
+Windows); entries  will be coërced  to pathnames with  probe-file (thus,
+correctly making  directory objects  as appropriate), unless  they don't
 exist, in which case they remain name-strings."
   (mapcar (lambda (path-entry)
             (or (probe-file path-entry) path-entry))
           (split-sequence +path-separator-char+ path-string)))
 
 (defun maybe-path-expand (assoc-pair)
-  "If the associative pair's key ends in “PATH,” then split the value
+  "If the  associative pair's key ends  in “PATH,” then split  the value
 into a list of PATH entries."
   (destructuring-bind (key . value) assoc-pair
     (let* ((key-string (string key))

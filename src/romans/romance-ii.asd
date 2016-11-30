@@ -106,8 +106,10 @@
             :components ((:file "package")
                          (:file "conceptnet5"
                                 :depends-on ("package"))
+                         (:file "read-ttl"
+                                :depends-on ("package" "conceptnet5"))
                          (:file "Gaius-Valerius-Catullus"
-                                :depends-on ("package" "conceptnet5"))))
+                                :depends-on ("package" "conceptnet5" "read-ttl"))))
    (:module "Lucius-Aemilius-Regillus"
             :depends-on ("common" "Gaius-Julius-Caesar")
             :components ((:file "package")
