@@ -74,7 +74,13 @@
 (defun db-last-insert-row-id (db)
   (sqlite:last-insert-rowid db))
 
-(defmacro in-db ((&key (transaction nil)) &body body)
+(defmacro in-db ((&key (transaction nil)
+                       (read-only nil)) &body body)
+  (assert (not (and transaction read-only))
+          (transaction read-only)
+          "Cannot start a transaction with a read-only connection.")
+  (when read-only
+    (error "Read-only access is not available with the SQLite engine"))
   `(TAGBODY
     in-db
       (restart-case
@@ -150,7 +156,7 @@
     #-conceptnet-memory
     (unless (probe-file db-path)
       (ensure-directories-exist db-path))
-    (setf *concept-db* (sqlite:connect db-path)
+    (setf *concept-db* (sqlite:connect db-path 10)
           
           #+conceptnet-memory ":memory:"))
   #+conceptnet-memory
