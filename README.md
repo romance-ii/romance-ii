@@ -1,5 +1,12 @@
 # Romance Ⅱ MMORPG Game System
 
+## Warning
+
+While some development does land on this branch, the Tootsville Ⅴ development is taking up the bulk
+of our time over on the https://github.com/romance-ii/violet-volts/ repository. Ultimately, things
+will be harmonized between the two repositories in some way, but this repo is largely stagnant in
+early 2017.
+
 ## What does it do?
 
 *Romance* is a server platform  (and, with this release, we're beginning
