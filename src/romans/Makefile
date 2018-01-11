@@ -15,9 +15,10 @@ BUILDAPPSRC=../../src/tools/buildapp
 
 DYNSPACE=4096 # MiB
 
-BINS=		$(BINDIR)/romance \
+BINS=		$(BINDIR)/romance2 \
 		$(BINDIR)/romance-repl \
 		$(BINDIR)/galen \
+		$(BINDIR)/catullus \
 		$(BINDIR)/appius \
 		$(BINDIR)/asinius \
 		$(BINDIR)/caesar \
@@ -124,6 +125,7 @@ $(BUILDDIR)/$(OSNAME)-Romance-$(CPU):	\
 		--dispatched-entry appius/appius:start-server \
 		--dispatched-entry asinius/asinius:start-server \
 		--dispatched-entry caesar/caesar:start-server \
+		--dispatched-entry catullus/catullus:start-server \
 		--dispatched-entry lutatius/lutatius:start-server \
 		--dispatched-entry narcissus/narcissus:start-server \
 		--dispatched-entry clodia/clodia:start-server \
@@ -132,7 +134,7 @@ $(BUILDDIR)/$(OSNAME)-Romance-$(CPU):	\
 		--asdf-tree . \
 		--dynamic-space-size $(DYNSPACE)
 
-$(BINDIR)/romance: $(BUILDDIR)/$(OSNAME)-Romance-$(CPU)
+$(BINDIR)/romance2: $(BUILDDIR)/$(OSNAME)-Romance-$(CPU)
 	ln -f $< $@
 
 $(BINDIR)/romance-repl: $(BUILDDIR)/$(OSNAME)-Romance-$(CPU)
@@ -142,6 +144,9 @@ $(BINDIR)/galen: $(BUILDDIR)/$(OSNAME)-Romance-$(CPU)
 	ln -f $< $@
 
 $(BINDIR)/appius: $(BUILDDIR)/$(OSNAME)-Romance-$(CPU)
+	ln -f $< $@
+
+$(BINDIR)/catullus: $(BUILDDIR)/$(OSNAME)-Romance-$(CPU)
 	ln -f $< $@
 
 $(BINDIR)/asinius: $(BUILDDIR)/$(OSNAME)-Romance-$(CPU)

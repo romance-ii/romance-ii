@@ -1,4 +1,3 @@
-
 (in-package :catullus)
 
 (defvar *logical-output* nil)
@@ -37,300 +36,146 @@
 
 (defgeneric utterance->human (utterance language-code))
 
-(defgeneric utterance-formatting-string (predicate language-code)
-  (:method ((predicate integer) language-code)
-    (utterance-formatting-string
-     (utterance->human predicate language-code)
-     language-code))
-  (:method ((predicate (eql :/r/-distinct-from)) (lang (eql :en)))
-    "~0@*~a is distinct from ~2@*~a.")
-  (:method ((predicate (eql :/r/dbpedia/genus)) (lang (eql :en)))
-    "~0@*~a is a specific kind of ~2@*~a.")
-  (:method ((predicate (eql :/r/-form-of)) (lang (eql :en)))
-    "~0@*~a is a form of ~2@*~a.")
-  (:method ((predicate string) language-code)
-    (utterance-formatting-string
-     (conceptnet-predicate->keyword predicate)
-     language-code))
-  (:method (predicate (language-code string))
-    (utterance-formatting-string 
-     predicate
-     (make-keyword (string-upcase language-code))))
-  (:method (predicate (language-code (eql :en)))
-    (case predicate
-      (:/r/-Antonym "~0@*~A and ~2@*~A are antonyms.")
-      (:/r/-At-Location "~0@*~A is at the location ~2@*~A.")
-      (:/r/-Attribute "~0@*~A has the attribute that it is ~2@*~A.")
-      (:/r/-Capable-Of "~0@*~A can ~2@*~A.")
-      (:/r/-Causes "~0@*~A causes ~2@*~A.")
-      (:/r/-Causes-Desire "~0@*~A might cause a desire for ~2@*~A.")
-      (:/r/-Conceptually-Related-To "~0@*~A is a concept which is related to the concept of ~2@*~A.")
-      (:/r/-Compound-Derived-From "~0@*~A is a compound derived from ~2@*~A.")
-      (:/r/-Created-By "~2@*~A creates ~0@*~A.")
-      (:/r/-Defined-As "~0@*~A is defined as being ~2@*~A.")
-      (:/r/-Derivative "~2@*~A is derived from ~0@*~A.")
-      (:/r/-Derived-From "~0@*~A is derived from ~2@*~A.")
-      (:/r/-Desire-Of "~0@*~A is the desire of ~2@*~A.")
-      (:/r/-Desires "~0@*~A desires ~2@*~A.")
-      (:/r/-Entails "~0@*~A entails ~2@*~A.")
-      (:/r/-Etymologically-Derived-From
-       "~0@*~A is etymologically derived from ~2@*~A.")
-      (:/r/-Etymologically-related-to
-       "~0@*~A is etymologically related to ~2@*~A.")
-      (:/r/-external-u-r-l "~0@*~A is described on the GGG at ~2@*~A.")
-      (:/r/-has-a "~0@*~A has a ~2@*~A.")
-      (:/r/-Has-Context "~0@*~A occurs in the context of ~2@*~A.")
-      (:/r/-Has-First-Subevent "The first thing to do when doing ~0@*~A, is ~2@*~A")
-      (:/r/-Has-Last-Subevent "The last thing to do when doing ~0@*~A, is ~2@*~A")
-      (:/r/-Has-Pain-Character "~0@*~A has the pain character of ~2@*~A.")
-      (:/r/-Has-Pain-Intensity "~0@*~A has the pain intensity of ~2@*~A.")
-      (:/r/-Has-Prerequisite "~2@*~A is required before ~0@*~A.")
-      (:/r/-Has-Property "~2@*~A is a property of a ~0@*~A.")
-      (:/r/-Has-Subevent "While doing ~0@*~A, one might ~2@*~A.")
-      (:/r/-Inherits-From "~0@*~A inherits from ~2@*~A.")
-      (:/r/-Instance-Of "~0@*~A is an instance of ~2@*~A.")
-      (:/r/-Is-A "~0@*~A is a ~2@*~A.")
-      (:/r/-Located-Near "~0@*~A is located near to ~2@*~A.")
-      (:/r/-Location-Of-Action "~0@*~A is where one might do ~2@*~A.")
-      (:/r/-Made-Of "~0@*~A is made of ~2@*~A.")
-      (:/r/-Member-Of "~0@*~A is a member of ~2@*~A.")
-      (:/r/-Motivated-By-Goal "~0@*~A is motivated by the goal of ~2@*~A.")
-      (:/r/-Not-Capable-Of "~0@*~A cannot ~2@*~A.")
-      (:/r/-Not-Causes "~0@*~A does not cause ~2@*~A.")
-      (:/r/-Not-Desires "~0@*~A does not desire ~2@*~A.")
-      (:/r/-Not-Has-A "~0@*~A does not have a ~2@*~A.")
-      (:/r/-Not-Has-Property "~0@*~A does not have the property of being ~2@*~A.")
-      (:/r/-Not-Is-A "~0@*~A is not a ~2@*~A.")
-      (:/r/-Not-Made-Of "~0@*~A is not made of ~2@*~A.")
-      (:/r/-Not-Used-For "~0@*~A is not used for ~2@*~A")
-      (:/r/-Obstructed-By "~0@*~A is obstructed by ~2@*~A.")
-      (:/r/-Part-Of "~0@*~A is a part of ~2@*~A.")
-      (:/r/-Receives-Action "~0@*~A receives the action ~2@*~A (one might be able to ~2@*~A a ~0@*~A).")
-      (:/r/-Related-To "~0@*~A is related to ~2@*~A.")
-      (:/r/-Similar-Size "~0@*~A and ~2@*~A are of similar size.")
-      (:/r/-Similar-To "~0@*~A is similar to ~2@*~A.")
-      (:/r/-Symbol-Of "~0@*~A is a symbol of ~2@*~A.")
-      (:/r/-Synonym "~0@*~A and ~2@*~A are synonymous.")
-      (:/r/-Translation-Of "~0@*~A is a translation of ~2@*~A.")
-      (:/r/-Used-For "One might use a ~0@*~A for ~2@*~A.")
-      (:/r/-Used-For/ "One might use a ~0@*~A for ~2@*~A.")
-      (:/r/dbpedia/field "~0@*~a is in the field of endeavours of ~2@*~a.")
-      (:/r/dbpedia/genre "~0@*~a is in the genre of ~2@*~a.")
-      (:/r/dbpedia/known-For "~0@*~a is known for ~2@*~a.")
-      (:/r/dbpedia/language-Family "~0@*~a is a language in the family of languages which is ~2@*~a.")
-      #+ (or)    (:/r/dbpedia/language-Family "~0@*~a is a language which is spoken in the location ~2@*~a.")
-      (:/r/dbpedia/influenced-By "~0@*~a was influenced in their work by ~2@*~a")
-      (:/r/dbpedia/influenced "~2@*~a was influenced in their work by ~0@*~a")
-      (:/r/dbpedia/main-Interest "~0@*~a is mainly interested in ~2@*~a")
-      (:/r/dbpedia/notable-idea "~0@*~a is notable for the idea ~2@*~a")
-      (:/r/wordnet/adjective-Pertains-To "~0@*~A is an adjective which pertains to ~2@*~A.")
-      (:/r/wordnet/adverb-Pertains-To "~0@*~A is an adverb which pertains to ~2@*~A.")
-      (:/r/wordnet/participle-Of "~0@*~A is a participle (in inflection) of ~2@*~A.")
-      (t (cerror "ignore and continue" "Untranslated predicate: ~A" predicate)
-         "“~A” —~s→ “~A”"))))
+(defgeneric utterance-formatting-string (predicate language-code))
+
+(defmethod utterance-formatting-string ((predicate symbol) language-code)
+  (utterance-formatting-string (utterance->human predicate language-code) language-code))
 
 (defun normalise-noun (noun)
   "Given a noun, normalise it as best possible."
   (if (stringp noun)
       (cond
-        ((find #\( noun)
-         (error "~s contains a parenthetical expression, which should be parsed. TODO"
-                noun)
+        ((find #\( noun) 
+         (warn "Contains a parenthetical expression, which should be parsed. TODO")
          noun)
         (t noun))
       noun))
 
-(defparameter *ontology-uri-map*
-  '(("http://dbpedia.org/" :@dbpedia/)
-    ("http://purl.org/dc/elements/1.1/" :@dc/)
-    ("http://purl.org/dc/terms/" :@dcterm/)))
+(defun predicate-string (predicate)
+  (string-camelcase (string predicate)))
 
 (defun conceptnet-predicate->keyword (predicate)
-  (when (stringp predicate)
-    (loop for (uri prefix) in *ontology-uri-map*
-          when (string-begins uri predicate)
-            do (return-from conceptnet-predicate->keyword
-                 (make-keyword 
-                  (concatenate 'string
-                               (string prefix)
-                               (string 
-                                (cffi:translate-camelcase-name
-                                 (subseq predicate (length uri)))))))))
-  (cond 
-    ((and (stringp predicate)
-          (char= #\/ (char predicate 0)))
-     (make-keyword (cffi:translate-camelcase-name predicate)))
-    ((keywordp predicate)
-     predicate)
-    (t (error "Don't know keyword for predicate ~s" predicate))))
+  (if (stringp predicate) 
+      (make-keyword (cffi:translate-camelcase-name predicate))
+      predicate))
 
-(defgeneric normalise-predicate (subject predicate object)
-  (:documentation "Given  a predicate  with complex meaning,  attempt to
-break  it  down   into  a  simpler  predicate  which   is  perhaps  more
-understandable to the  logic system. Returns a clause  in p-s-(o) order,
-but may have sub-clauses and such after processing.")
-  (:method (s p o)
-    (error "Unhandled predicate ~a" p))
-  (:method (subject (predicate (eql :/r/-at-location)) object)
-    (list :is-at subject (list :/r/-is-a object :location)))
-  (:method (subject (predicate (eql :/r/-causes-desire)) object)
-    (list :/r/-causes subject (list :/r/-desire-of '* object)))
-  (:method (subject (predicate (eql :/r/-compound-derived-from)) object)
-    (list :/r/-derived-from (list :/r/-is-a subject :compound) object))
-  (:method (subject (predicate (eql :/r/-derivative)) object)
-    (list :/r/-derived-from object subject))
-  (:method (subject (predicate (eql :/r/-has-first-subevent)) object)
-    `(and (:/r/-has-a (:/r/-is-a ,subject :event) (:/r/is-a ,object :sub-event))
-          (:precedes ,object (and (:/r/-is-a '* :sub-event)
-                                  (not (equal '* ,object))))))
-  (:method (subject (predicate (eql :/r/-has-last-subevent)) object)
-    `(and (:/r/-has-a (:/r/-is-a ,subject :event) (:/r/is-a ,object :sub-event))
-          (:follows ,object (and (:/r/-is-a '* :sub-event)
-                                 (not (equal '* ,object))))))
-  (:method (subject (predicate (eql :/r/-motivated-by-goal)) object)
-    `(and (:/r/-has-a ,subject (:/r/-is-a ,object :goal))))
-  (:method (subject (predicate (eql :/r/-not-capable-of)) object)
-    `(not (:/r/-capable-of ,subject ,object)))
-  (:method (subject (predicate (eql :/r/-not-causes)) object)
-    `(not (:/r/-causes ,subject ,object)))
-  (:method (subject (predicate (eql :/r/-not-desires)) object)
-    `(not (:/r/-desires ,subject ,object)))
-  (:method (subject (predicate (eql :/r/-not-has-a)) object)
-    `(not (:/r/-has-a ,subject ,object)))
-  (:method (subject (predicate (eql :/r/-not-has-property)) object)
-    `(not (:/r/-has-property ,subject ,object)))
-  (:method (subject (predicate (eql :/r/-not-is-a)) object)
-    `(not (:/r/-is-a ,subject ,object)))
-  (:method (subject (predicate (eql :/r/-not-made-of)) object)
-    `(not (:/r/-made-of ,subject ,object)))
-  (:method (subject (predicate (eql :/r/-not-used-for)) object)
-    `(not (:/r/-used-for ,subject ,object))) 
-  (:method (subject (predicate (eql :/r/-receives-action)) object)
-    `(:receives ,subject (:/r/-is-a ,object :action))) 
-  (:method (subject (predicate (eql :/r/-similar-size)) object)
-    `(:/r/-similar-to (:size-of ,subject) (:size-of ,object))))
+(defun normalise-predicate (subject predicate object)
+  "Given a  predicate with complex  meaning, attempt to  break it down  into a simpler  predicate which is  perhaps more
+understandable  to  the  logic  system.  Returns  a  clause  in  p-s-(o)  order,  but  may  have  sub-clauses  and  such
+after processing."
+  (let ((subject (normalise-noun subject))
+        (object (normalise-noun object))
+        (predicate (conceptnet-predicate->keyword predicate)))
+    ;; if the CASE returns NIL, return the list (P S O)
+    (or (case predicate
+          (:/r/-antonym nil)
+          (:/r/-at-location (list :is-at subject (list :/r/-is-a object :location)))
+          (:/r/-attribute nil)
+          (:/r/-capable-of nil)
+          (:/r/-causes nil)
+          (:/r/-causes-desire (list :/r/-causes subject (list :/r/-desire-of '* object)))
+          (:/r/-conceptually-related-to nil)
+          (:/r/-compound-derived-from (list :/r/-derived-from (list :/r/-is-a subject :compound) object))
+          (:/r/-created-by nil)
+          (:/r/-defined-as nil)
+          (:/r/-derivative (list :/r/-derived-from object subject))
+          (:/r/-derived-from nil)
+          (:/r/-desire-of nil)
+          (:/r/-desires nil)
+          (:/r/-entails nil)
+          (:/r/-etymologically-derived-from nil)
+          (:/r/-has-a nil)
+          (:/r/-has-context nil)
+          (:/r/-has-first-subevent `(and (:/r/-has-a (:/r/-is-a ,subject :event) (:/r/is-a ,object :sub-event))
+                                         (:precedes ,object (and (:/r/-is-a '* :sub-event)
+                                                                 (not (equal '* ,object))))))
+          (:/r/-has-last-subevent `(and (:/r/-has-a (:/r/-is-a ,subject :event) (:/r/is-a ,object :sub-event))
+                                        (:follows ,object (and (:/r/-is-a '* :sub-event)
+                                                               (not (equal '* ,object))))))
+          (:/r/-has-pain-character nil)
+          (:/r/-has-pain-intensity nil)
+          (:/r/-has-prerequisite nil)
+          (:/r/-has-property nil)
+          (:/r/-has-subevent nil)
+          (:/r/-inherits-from nil)
+          (:/r/-instance-of nil)
+          (:/r/-is-a nil)
+          (:/r/-located-near nil)
+          (:/r/-location-of-action nil)
+          (:/r/-made-of nil)
+          (:/r/-member-of nil)
+          (:/r/-motivated-by-goal `(and (:/r/-has-a ,subject (:/r/-is-a ,object :goal))))
+          (:/r/-not-capable-of `(not (:/r/-capable-of ,subject ,object)))
+          (:/r/-not-causes `(not (:/r/-causes ,subject ,object)))
+          (:/r/-not-desires `(not (:/r/-desires ,subject ,object)))
+          (:/r/-not-has-a `(not (:/r/-has-a ,subject ,object)))
+          (:/r/-not-has-property `(not (:/r/-has-property ,subject ,object)))
+          (:/r/-not-is-a `(not (:/r/-is-a ,subject ,object)))
+          (:/r/-not-made-of `(not (:/r/-made-of ,subject ,object)))
+          (:/r/-not-used-for `(not (:/r/-used-for ,subject ,object)))
+          (:/r/-obstructed-by nil)
+          (:/r/-part-of nil)
+          (:/r/-receives-action `(:receives ,subject (:/r/-is-a ,object :action)))
+          (:/r/-related-to nil)
+          (:/r/-similar-size `(:/r/-similar-to (:size-of ,subject) (:size-of ,object)))
+          (:/r/-similar-to nil)
+          (:/r/-symbol-of nil)
+          (:/r/-synonym nil)
+          (:/r/-translation-of nil)
+          (:/r/-used-for nil)
+          (:/r/-used-for/ (normalise-predicate subject :/r/-used-for object))
+          (:/r/dbpedia/field nil)
+          (:/r/dbpedia/genre nil)
+          (:/r/dbpedia/influenced-by nil)
+          (:/r/wordnet/adjective-pertains-to nil)
+          (:/r/wordnet/adverb-pertains-to nil)
+          (:/r/wordnet/participle-of nil)
+          (t (cerror "ignore and continue" "Unrecognized predicate: ~A" predicate)
+             "“~A” —~s→ “~A”"))
+        (list predicate subject object))))
 
-(defmethod normalise-predicate :around (subject predicate object)
-  (call-next-method (normalise-noun subject)
-                    (conceptnet-predicate->keyword predicate)
-                    (normalise-noun object)))
+(defmethod utterance-formatting-string ((predicate string) language-code)
+  (utterance-formatting-string (conceptnet-predicate->keyword predicate) language-code))
 
-
-(defgeneric language-name (code in-language) 
-  (:documentation   "What  is   the   name,  in   IN-LANGUAGE,  of   the
-  language CODE?"))
+(defmethod utterance-formatting-string ((predicate symbol) (language-code (eql :en)))
+  (if-let ((formatter (find-facts predicate (format nil "/oper/format/~(~a~)" language-code) '*)))
+    (regex-replace-pairs '(("\\~s" . "~0@*~a")
+                           ("\\~p" . "~1@*~a")
+                           ("\\~o" . "~2@*~a")) formatter)
+    
+    
+    (progn (cerror "ignore and continue" "Untranslated predicate: ~A" predicate)
+           "“~A” —~s→ “~A”")))
 
-(defmethod language-name ((code symbol) (language-code (eql :en)))
-  (if (equal (string-upcase (symbol-name code))
-             (symbol-name code))
-      (progn
-        (cerror "Ignore and continue"
-                "I don't know the English name for the language with code ~a" 
-                code)
-        (format nil "the language with code ~A" code))
-      (language-name (keywordify (symbol-name code)) 
-                     language-code)))
-
-(defmethod language-name ((code string) language-code)
-  (if (string-begins "/c/" code)
-      (let ((path (split-sequence #\/ code)))
-        (language-name (make-keyword (string-upcase (second path))) language-code))
-      (language-name (make-keyword (string-upcase code)) language-code)))
-
-(defmacro define-language-name (code name)
-  `(defmethod language-name
-       ((code (eql ,code)) (lang (eql :en))) ,name))
-
-(dolist (pair '((:ar "Arabic")
-                (:be "Belarusian")
-                (:ca "Catalan")
-                (:cs "Czech")
-                (:da "Danish")
-                (:de "German")
-                (:el "Greek")
-                (:en "English")
-                (:es "Spanish")
-                (:et "Estonian")
-                (:eu "Basque")
-                (:fi "Finnish")
-                (:fr "French")
-                (:ga "Irish")
-                (:gd "Scots Gaelic")
-                (:gl "Galician")
-                (:he "Hebrew") 
-                (:hi "Hindi")
-                (:hu "Hungarian")
-                (:ia "Interlingua")
-                (:io "Ido")
-                (:is "Iselandic")
-                (:it "Italian")
-                (:ja "Japanese")
-                (:jv "Javanese")
-                (:ko "Korean")
-                (:kn "Kannada")
-                (:ku "Kurdish")
-                (:la "Latin")
-                (:lb "Letzeburgesch")
-                (:lt "Lithuanian")
-                (:lv "Latvian")
-                (:mk "Macedonian")
-                (:ms "Malay")
-                (:no "Norwegian")
-                (:nds "Low Saxon")
-                (:nl "Dutch")
-                (:pa "Eastern Punjabi")
-                (:pl "Polish")
-                (:pt "Portuguese")
-                (:ro "Romanian")
-                (:ru "Russian")
-                (:sh "Serbo-Croatian")
-                (:sk "Slovak")
-                (:sq "Albanian")
-                (:sv "Swedish")
-                (:sw "Swahili")
-                (:ta "Tamil")
-                (:te "Telugu")
-                (:th "Thai")
-                (:tr "Turkish")
-                (:ur "Urdu")
-                (:uz "Uzbek")
-                (:vi "Viet")
-                (:war "Waray")
-                (:yo "Yoruba")
-                (:yua "Yucateco")
-                (:zh "Chinese")))
-  (destructuring-bind (code name) pair
-    (define-language-name code name)))
-
-
+(defgeneric language-name (code in-language)
+  (:method ((code t) (language-code (eql :en)))
+    (format nil "the language with code ~A" code))
+  (:method ((code string) (language-code t))
+    (if (string-begins "/c/" code)
+        (let ((path (split-sequence #\/ code)))
+          (language-name (make-keyword (string-upcase (second path))) language-code))
+        (language-name (make-keyword (string-upcase code)) language-code)))
+  (:method ((code (eql :en)) (lang (eql :en))) "English")
+  (:method ((code (eql :es)) (lang (eql :en))) "Spanish")
+  (:method ((code (eql :ga)) (lang (eql :en))) "Irish")
+  (:method ((code (eql :fr)) (lang (eql :en))) "French")
+  (:method ((code (eql :ru)) (lang (eql :en))) "Russian")
+  (:method ((code (eql :la)) (lang (eql :en))) "Latin")
+  (:method ((code (eql :de)) (lang (eql :en))) "German")
+  (:method ((code (eql :pt)) (lang (eql :en))) "Portuguese")
+  (:method ((code (eql :zh)) (lang (eql :en))) "Chinese")
+  (:method ((code (eql :ja)) (lang (eql :en))) "Japanese")
+  (:method ((code (eql :cs)) (lang (eql :en))) "Czech")
+  (:method ((code (eql :el)) (lang (eql :en))) "Greek")
+  (:method ((code (eql :fi)) (lang (eql :en))) "Finnish")
+  (:method ((code (eql :it)) (lang (eql :en))) "Italian")
+  (:method ((code (eql :sv)) (lang (eql :en))) "Swedish"))
 
 (defgeneric utterance->human/sub-expression
     (keyword utterance language-code))
 
 (defmethod utterance->human/sub-expression ((keyword t) utterance (language-code (eql :en)))
   (format nil "~A: [~{~A~^ ~}]" keyword utterance))
-
-(defmethod attribute->string ((attribute (eql :n)))
-  "noun")
-(defmethod attribute->string ((attribute (eql :v)))
-  "verb")
-(defmethod attribute->string ((attribute (eql :a)))
-  "adjective")
-(defmethod attribute->string ((attribute (eql :r)))
-  "adverb")
-(defmethod attribute->string ((attribute string))
-  (attribute->string (keywordify attribute)))
-(defmethod attribute->string ((attribute symbol))
-  (format nil "(attribute: ~a)" attribute))
-
-(defmethod utterance->human/sub-expression ((keyword (eql :untranslatable)) 
-                                            utterance (language-code (eql :en)))
-  (destructuring-bind (other-lang other-word &rest attrs)
-      utterance
-    (let ((attrs (mapcar #'attribute->string attrs)))
-      (format nil "“~a” (which I don't know how to translate from ~a into English~[~;, but it is a ~{~a~}~:;, but it is ~{~a~^, ~}~])"
-              other-word (language-name other-lang :en)
-              (length attrs) attrs))))
 
 (defmethod utterance->human/sub-expression ((keyword (eql :untranslateable))
                                             utterance
@@ -357,10 +202,13 @@ but may have sub-clauses and such after processing.")
             (utterance->human obj :en))))
 
 (defmethod utterance->human ((utterance cons) (language-code (eql :en)))
-  (if (keywordp (car utterance))
-      (utterance->human/sub-expression (car utterance)
-                                       (cdr utterance) language-code)
-      (utterance->human/fact utterance language-code)))
+  (typecase (car utterance)
+    (character (ecase (car utterance)
+                 (#\; (format nil "~{~a~^ — ~}" (mapcar (rcurry #'utterance->human :en)
+                                                        (rest utterance))))))
+    (keyword (utterance->human/sub-expression (car utterance)
+                                              (cdr utterance) language-code))
+    (t (utterance->human/fact utterance language-code))))
 
 (defun launder_string (string)
   (map 'string (lambda (ch) (case ch
@@ -370,8 +218,8 @@ but may have sub-clauses and such after processing.")
        string))
 
 (defmethod utterance->human ((utterance null) language-code)
-  (cerror "continue" "Got a null in an utterance.")
-  "×")
+  (warn "Got a null in an utterance.")
+  "∅")
 
 (defun destructure-assertion-1 (a)
   (unless (and (string= (subseq a 0 4) "/a/[")
@@ -385,46 +233,29 @@ but may have sub-clauses and such after processing.")
                                      :start 4 :end (- (length a) 2))
     (list :clause subj pred obj)))
 
-(defparameter *ontology-decoding-list*
-  '(("http://dbpedia.org/resource/Category:" :@dbpedia/category)))
-
-(defmethod decode-http-concept% ((decoder (eql :@dbpedia/category))
-                                 uri suffix)
-  (declare (ignore uri))
-  ())
-
-(defun decode-http-concept (uri)
-  (loop for (uri decoder) in *ontology-uri-map*
-        when (string-begins uri predicate)
-          do (return (decode-http-concept% decoder
-                                           uri
-                                           (subseq uri (length prefix))))
-        finally (return uri)))
+(defmethod utterance->human ((predicate symbol) language-code)
+  (utterance-formatting-string (cffi:translate-camelcase-name predicate) language-code))
 
 (defmethod utterance->human ((utterance string) (language-code (eql :en)))
-  (let ((path (split-sequence:split-sequence #\/ utterance
-                                             :remove-empty-subseqs t)))
-    (string-case (car path)
-      ("c" (if (equal "en" (second path))
-               (format nil "~A~{ (~A)~}"
-                       (launder_string (third path)) (mapcar #'launder_string (nthcdr 4 path)))
-               (utterance->human (find-translation utterance language-code) language-code)))
-      ("r" (format nil "~A~{ (~A)~}" (second path) (nthcdr 3 path)))
-      ("a" (utterance->human (destructure-assertion-1 utterance) :en))
-      ("http:" (utterance->human (decode-http-concept utterance)))
-      ("@str" (if (equal "en" (second path))
-                  (concatenate 'string "“" (third path) "”")
-                  (format nil "“~a” (in ~a)"
-                          (third path)
-                          (language-name (second path) :en))))
-      (t (cerror "Use it unmodified"
-                 "An unrecognized part of speech “~A” was found in “~A”"
-                 (car path) utterance)
-         utterance))))
+  (if (or (find #\/ utterance)
+          (find #\_ utterance))
+      (let ((path (split-sequence:split-sequence #\/ utterance
+                                                 :remove-empty-subseqs t)))
+        (string-case (car path)
+          ("c" (if (equal "en" (second path))
+                   (format nil "~A~{ (~A)~}"
+                           (launder_string (third path)) (mapcar #'launder_string (nthcdr 4 path)))
+                   (utterance->human (find-translation utterance language-code) language-code)))
+          ("r" (format nil "~A~{ (~A)~}" (second path) (nthcdr 3 path)))
+          ("a" (utterance->human (destructure-assertion-1 utterance) :en))
+          (t (cerror "Use it unmodified"
+                     "An unrecognized part of speech “~A” was found in “~A”"
+                     (car path) utterance)
+             utterance)))
+      (utterance->human (concatenate 'string "/c/en/" utterance) :en)))
 
 (defmethod utterance->human ((utterance integer) language-code)
-  (let ((p (db-execute-single *concept-db*
-                              "SELECT symbol FROM atoms WHERE rowid=?"
+  (let ((p (db-execute-single "SELECT symbol FROM atoms WHERE id=?"
                               utterance)))
     (if (and (< 3 (length p)) (string= "/r/" (subseq p 0 3)))
         p
@@ -549,33 +380,40 @@ To quit, enter: Bye!
                (when (< vi (length tagged)) (parse-noun-expression (subseq tagged (1+ vi)))))))
       (t (error "Can't parse complex multi-verb sentences, yet")))))
 
-(defun converse/answer-question (string tagged haggard chunky)
-  (declare (ignorable string tagged haggard chunky))
+(defun converse/answer-question (string tagged haggard)
+  (declare (ignorable string tagged haggard))
   (format *trace-output* "~& Answering question: ~A" string)
-  (format *trace-output* "~& tree: ~S" (parse-tagged-into-tree haggard))
+  ;; (format *trace-output* "~& tree: ~S" (parse-tagged-into-tree haggard))
   (cond
-    ((find-if (lambda (pair) (equal (second pair) "WP")) haggard)
-     (let ((wh (mapcar #'car (remove-if-not (lambda (pair)
-                                              (equal (second pair) "WP")) haggard)))
-           (vb (mapcar #'car (remove-if-not (lambda (pair)
-                                              (member (second pair) '("VBZ" "VBP")))
-                                            haggard)))
-           #+(or)(expr (remove-if (lambda (pair)
-                                    (string-case (second pair)
-                                      ("WP" t)
-                                      ("DT" t)
-                                      ("." t)
-                                      (t nil))) haggard)))
-       (format t "~&>~:(~{~A~^/~}~) ~{~A~} ~A?"
-               wh vb
-               (descend-langutils-tokens
-                (mapcar #'langutils:phrase->token-array chunky)))
-       (format t "~&>~A" (parse-sentence-langnet haggard))))
+    ((find-if (lambda (pair) (equal (second pair) :WP)) haggard)
+     (let ((wh (car (remove-if-not (lambda (pair)
+                                     (eql (second pair) :WP)) haggard)))
+           (vb (car (remove-if-not (lambda (pair)
+                                     (eql (second pair) :VBZ))
+                                   haggard))))
+       
+       (format *trace-output* "~& WH-? ~a  Verb? ~a …" wh vb)
+       (assert (< (position wh haggard :test #'equalp)
+                  (position vb haggard :test #'equalp)))
+       (let* ((trailing (subseq haggard (1+ (position vb haggard :test #'equalp))))
+              (thing (find-if (lambda (x) (eql (second x) :nn)) trailing)))
+         (unless thing
+           (error "I don't know what you're asking me about."))
+         (format *trace-output* "~& You want to know what is “~a” …" thing)
+         (let ((facts (find-facts-about (concatenate 'string "/c/en/"(car thing)))))
+           (cond
+             ((emptyp facts)
+              (format t "~2% Sorry, I don't know anything about “~a”" (car thing)))
+             ((> 5 (length facts))
+              (format t "~2%~{~% • ~a~}" (mapcar (rcurry #'utterance->human :en) facts)))
+             (t (format t "~2%~{~% • ~a~}~%(and I know ~r other fact~:p, too)" 
+                        (mapcar (rcurry #'utterance->human :en) (subseq facts 0 5)) 
+                        (- (length facts) 5))))))))
     (t ;; adjudicate validity of assertion
      (TODO "true or false question, perhaps?"))))
 
 (defun space-to-_ (string)
-  (map 'string (lambda (ch) (if (char= ch #\Space) #\_ ch)) string))
+  (substitute #\_ #\space string))
 
 (defun concept-for (thing language)
   (format nil "/c/~(~A~)/~:[~(~A~)~;~{~(~A~)~^/~}~]"
@@ -584,18 +422,34 @@ To quit, enter: Bye!
               (mapcar #'space-to-_ thing)
               thing)))
 
+(defun ask-disambiguate-concept (concept)
+  `(:you :/r/meaning-intended (or 
+                               ,@(mapcar (lambda (sub-concept)
+                                           (list concept :/r/-is-a sub-concept))
+                                         (sub-concepts concept)))))
+
+(defun sub-concepts (concept)
+  (mapcar #'second
+          (db-execute "select symbol from atoms
+ where substr(symbol,1,?)=? 
+    and substr(symbol,?+1,1) in ('/', '_')"
+                      (length concept)
+                      concept
+                      (length concept))))
+
 (defun string-camelcase (string &optional (initial-upper-case-p t))
-  (let ((to-upper initial-upper-case-p)
-        (output ""))
-    (loop for ch across string
-       do (if (member ch '(#\- #\_ #\Space))
-              (setf to-upper t)
-              (progn
-                (appendf output
-                         (if to-upper
-                             (char-upcase ch)
-                             (char-downcase ch)))
-                (setf to-upper nil))))))
+  (let ((to-upper initial-upper-case-p))
+    (coerce (remove-if #'null
+                       (loop for ch across string
+                          collecting (cond 
+                                       ((member ch '(#\- #\_ #\Space))
+                                        (setf to-upper t)
+                                        nil)
+                                       (to-upper
+                                        (setf to-upper nil)
+                                        (char-upcase ch))
+                                       (t (char-downcase ch)))))
+            'string)))
 
 (defun relation-for (thing language)
   (ecase language
@@ -619,7 +473,7 @@ To quit, enter: Bye!
                    (when adjs
                      (push (mapcar
                             (lambda (adj)
-                              (list _ "/r/HasProperty"
+                              (list _ "/r/-has-property"
                                     (concept-for adj :en))) adjs) facts)
                      (setf adjs nil))
                    (when wh
@@ -653,6 +507,88 @@ To quit, enter: Bye!
        (cons morph (mapcar (lambda (tag) (intern tag :keyword)) tags))))
    (split-sequence:split-sequence #\Space tagged)))
 
+(defun tag->description-of-tag (tag)
+  (ecase tag
+    (:CC "Coordinating conjunction")
+    (:CD  "Cardinal number")
+    (:DT  "Determiner")
+    (:EX  "Existential there")
+    (:FW  "Foreign word")
+    (:IN  "Preposition or subordinating conjunction")
+    (:JJ  "Adjective")
+    (:JJR  "Adjective, comparative")
+    (:JJS  "Adjective, superlative")
+    (:LS  "List item marker")
+    (:MD  "Modal")
+    (:NN  "Noun, singular or mass")
+    (:NNS  "Noun, plural")
+    (:NNP  "Proper noun, singular")
+    (:NNPS  "Proper noun, plural")
+    (:PDT  "Predeterminer")
+    (:POS  "Possessive ending")
+    (:PRP  "Personal pronoun")
+    (:PRP$  "Possessive pronoun (prolog version PRP-S)")
+    (:RB  "Adverb")
+    (:RBR  "Adverb, comparative")
+    (:RBS  "Adverb, superlative")
+    (:RP  "Particle")
+    (:SYM  "Symbol")
+    (:TO  "to")
+    (:UH  "Interjection")
+    (:VB  "Verb, base form")
+    (:VBD  "Verb, past tense")
+    (:VBG  "Verb, gerund or present participle")
+    (:VBN  "Verb, past participle")
+    (:VBP  "Verb, non-3rd person singular present")
+    (:VBZ  "Verb, 3rd person singular present")
+    (:WDT  "Wh-determiner")
+    (:WP  "Wh-pronoun")
+    (:WP$  "Possessive wh-pronoun (prolog version WP-S)")
+    (:WRB  "Wh-adverb")
+    (:|.| "full stop")
+    (:|:| "(colon:)")
+    (:|(| "(open paren:)")))
+
+(defun describe-tags (cons)
+  (cond 
+    ((= 1 (length cons))
+     (concatenate 'string (car cons) " (no tag)"))
+    
+    ((= 2 (length cons))
+     (destructuring-bind (word tag) cons
+       (concatenate 'string word " (" (tag->description-of-tag tag) ")")))))
+
+(defun clean-up-string (string)
+  (let ((words (remove-if #'emptyp
+                          (split-sequence #\space 
+                                          (substitute-if #\space 
+                                                         (rcurry #'find +whitespace+) 
+                                                         string)))))
+    (format nil "~{~a~^ ~}"
+            (mapcar (lambda (word)
+                      (cond
+                        ((member (last-elt word) +syntactic-punctuation+)
+                         (concatenate 'string
+                                      (subseq word 0 (1- (length word)))
+                                      " " (vector (last-elt word))))
+                        ((equal #(#\newline) word) (values))
+                        (t word))) 
+                    words))))
+
+(defun converse/hear-statement (phrase)
+  (cond
+    ((and (= 2 (length phrase))
+          (equalp (second (second phrase)) :|.|))
+     (cond
+       ((equalp '("bye" :vb) (car phrase))
+        (throw 'conversation-over :bye))
+       ((equalp '("hello" :uh) (car phrase)) '(#\;
+                                               (nil "hello" nil)
+                                               (("/c/en/i" :/r/-has-a "/c/en/name")
+                                                :/r/-is-a
+                                                "Catullus")))
+       (t '("i" (nil "not" "understand") phrase))))))
+
 (defun converse-eval (string)
   (cond
     ((and (<= 1 (length string))
@@ -661,32 +597,39 @@ To quit, enter: Bye!
      (format t "‽~%")
      (return-from converse-eval nil))
     ((char= #\; (elt string 0)) nil)
-    (t (let* ((tagged (langutils:tag string))
-              (haggard (tagged-to-haggard tagged))
-              ;;(chunky (langutils:chunk string))
-              )
+    (t (let* ((string (clean-up-string string))
+              (tagged (string-trim +whitespace+ (langutils:tag string)))
+              (haggard (tagged-to-haggard tagged)))
          (format *trace-output*
                  "~&~
-trace)string) ~A
-trace)tagged) ~A
-trace)haggard) ~{‘~A’~^ ~}~%~%"
-                 ;; trace)chunky) ~S
-                 string tagged haggard  ;chunky
-                 )
-         (string-case (car (car (last haggard 2)))
-           ("?" (converse/answer-question string tagged haggard ;chunky
-                                          nil))
-           ("!" (TODO))
-           (t (TODO)))))))
+ trace)string) ~A
+ trace)tagged) ~A
+ trace)haggard) “~{~a~^ ~}”
+~%~%"
+                 
+                 string tagged (mapcar #'describe-tags haggard))
+         (if (equal "?" (caar (last haggard)))
+             (converse/answer-question string tagged haggard)
+             (converse/hear-statement haggard))))))
 
 (defun converse-repl ()
   (init)
-  (format t "~|~&~% Conversation REPL; Gaius Valerius Catullus~%~%")
-  (let ((*last-reply*))
-    (loop
-       (converse-dump
-        (converse-eval
-         (converse-read))))))
+  (catch
+      'conversation-over
+    (tagbody
+     converse-repl
+       (restart-case 
+           (block 
+               repl
+             (format t "~|~&~% Conversation REPL; Gaius Valerius Catullus~%~%")
+             (let ((*last-reply*))
+               (loop
+                  (converse-dump
+                   (converse-eval
+                    (converse-read))))))
+         (continue-repl ()
+           :report "Continue the conversation"
+           (go converse-repl))))))
 
 ;;; ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
@@ -779,9 +722,14 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
   (in-db (:transaction nil)
     (time (conceptnet5-read-files wildcard)))
   (format *trace-output*
-          "~&~%Done, loaded ConceptNet5; ~:D interned tokens, ~:D cross-indexed assertions"
-          (db-execute-single *concept-db* "SELECT COUNT(*) FROM atoms")
-          (db-execute-single *concept-db* "SELECT COUNT(*) FROM concepts"))
+          "~&~%Almost done, loaded ConceptNet5; ~:D interned token~:P, ~:D assertion~:P in DB, ~:D assertion~:P pending"
+          (db-execute-single "SELECT COUNT(*) FROM atoms")
+          (db-execute-single "SELECT COUNT(*) FROM concepts")
+          (length *new-inserts*))
+  (time (while (< 2 (length *new-inserts*))
+          (format *trace-output*
+                  "~&~%Still need to flush ~:d assertions to DB…" (length *new-inserts*))
+          (flush-to-db)))
   (push :conceptnet5 *initialized*))
 
 (defun load-langutils (&optional
@@ -1216,9 +1164,11 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
                    (t (list word parts))))))))
 
 (defun strictly-antonym-p (a b)
+  (warn "Strictly antonyms? ~a and ~a?" a b)
   nil)                                  ; TODO
 
 (defun strictly-synonym-p (a b)
+  (warn "Strictly synonyms? ~a and ~a?" a b)
   nil)                                  ; TODO
 
 (defun opposite-p (a b)
@@ -1234,42 +1184,46 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defun any-opposites (list)
   (cond
+    ((null list) nil)
     ((atom list) nil)
     ((endp list) nil)
     (t (let ((one (first list))
              (others (rest list)))
          (or (find-if (curry #'opposite-p one) others)
-             (apply #'any-opposites others))))))
+             (funcall #'any-opposites others))))))
 
 (defun collapse (phrase)
   (cond
     ((atom phrase) phrase)
-    ((null phrase) nil)
+    ((null phrase) nil) 
 
-    ((and (eql 'and (first phrase))
+    ((and (member (first phrase) '(and or))
           (not (equalp phrase (remove-duplicates phrase :test #'equalp))))
      (collapse (remove-duplicates phrase :test #'equalp)))
-
-    ((and (eql 'and (first phrase))
-          (any-opposites (rest phrase)))
-     nil)
-
-    ((and (eql 'and (first phrase))
-          (member nil phrase))
-     nil)
-
-    ((and (eql 'or (first phrase))
-          (member t phrase))
-     t)
-
-    ((and (eql 'or (first phrase))
-          (any-opposites (rest phrase)))
-     t)
-
-    ((and (eql 'and (first phrase))
+    
+    ((and (member (first phrase) '(and or))
           (= 2 (length phrase)))
      (second phrase))
-    ;;    ((and-list-p phrase) (error "TODO"))
+    
+    ((and-list-p phrase)
+     (cond 
+       ((member t phrase)
+        (collapse (remove t phrase :test #'eql)))
+       ((member nil phrase)
+        nil)
+       ((any-opposites (rest phrase))
+        nil)
+       (t (error "TODO"))))
+    ((or-list-p phrase)
+     (cond
+       ((member nil phrase)
+        (collapse (remove nil phrase :test #'eql)))
+       ((member t phrase)
+        t)
+       ((any-opposites (rest phrase))
+        t)
+       (t (error "TODO"))))
+
     (t (error "TODO"))))
 
 (defun tagged-to-string (word)
@@ -1291,6 +1245,9 @@ trace)haggard) ~{‘~A’~^ ~}~%~%"
 
 (defun or-list-p (thing)
   (and (consp thing) (eql 'or (car thing))))
+
+(defun and-list-p (thing)
+  (and (consp thing) (eql 'and (car thing))))
 
 (defun list-before (list index)
   (check-type list cons)
@@ -1351,7 +1308,8 @@ This contains further OR lists which can be superposed."
                        cross))))
         (error "No subordinate OR lists found."))))
 
-(defun car? (x) (and (consp x) (car x)))
+(defun car? (x)
+  (and (consp x) (car x)))
 
 (defvar *superpose-or/recursion-guard* nil)
 
@@ -1383,14 +1341,16 @@ function will create top-level superpositions, such as:
       ;; No alternatives: (OR x) ⇒ x
       ((and (or-list-p phrase)
             (null (cdr (cdr phrase))))
-       (logic-trace "~&A choice of only one alternative is no choice at all. Reducing to ~a" (treely (second phrase)))
+       (logic-trace "~&A choice of only one alternative is no choice at all. Reducing to ~a" 
+                    (treely (second phrase)))
        (second phrase))
 
       ((and (or-list-p phrase)
             (let ((without-duplicates (remove-duplicates phrase :test #'equalp)))
               (not (equalp phrase without-duplicates))))
        (let ((without-duplicates (remove-duplicates phrase :test #'equalp)))
-         (logic-trace "~&The phrase contained duplicate members; after reducing them, the revised phrase is:~&~A" (treely without-duplicates))
+         (logic-trace "~&The phrase contained duplicate members; after reducing them, the revised phrase is:~&~A" 
+                      (treely without-duplicates))
          (superpose-or without-duplicates)))
 
       ;; (OR x (OR y z)) ⇒ (OR x y z)
@@ -1468,7 +1428,7 @@ I'm going to try to dig it out to the top level.")
      (*interactive-test* (format *terminal-io* "~& ★ Test: ~%")
                          (format *terminal-io* ,@report)
                          (format *terminal-io* "~&~% Test expression: ~%~S" ',expr)
-                         (if (y-or-n-p "Run this test?")
+                         (if (or t (y-or-n-p "Run this test?"))
                              (let ((out ,expr))
                                (cond
                                  (out (incf *tests-pass*)
@@ -1586,7 +1546,7 @@ must be defined in +PUNCTUATION+ or +PAIRED-PUNCTUATION+"
       (fresh-line)
       (princ "Tag:")
       (let ((tagged (tag-sentence lexed :en))
-            (expected '(("Why" :noun)
+            (expected '(("Why" :mystery)
                         (or ("is" :verb :3person :singular :copula :present :active :indicative)
                          ("is" :assist-verb :3person :singular :present :active))
                         ("the" :article :definite)
@@ -1672,7 +1632,12 @@ Instead, the following was returned:
               (mapcar (rcurry #'treely (+ 2 indent) nil) (cdr sexp)))
       (format nil "~S" sexp)))
 
-(defun server-start (&optional argv)
+
+
+
+
+
+(defun start-server (&optional argv)
   (declare (ignorable argv))
   (romans:server-start-banner "Catullus"
                               "Gaius Valerius Catullus"
@@ -1682,27 +1647,4 @@ Instead, the following was returned:
   (format t "~& Conversation REPL starting…")
   (converse-repl))
 
-(defmacro define-predicate-translations (&body translations)
-  `(progn
-     ,@(loop for (predicate language format-string) in translations
-          collect `(defmethod utterance-formatting-string
-                       ((predicate (eql ,predicate)) 
-                        (language (eql ,language)))
-                     ,format-string))))
 
-(define-predicate-translations
-  (:@dbpedia/ontology/wiki-page-wiki-link-text 
-   :en "~0@*~a is linked-to by ~2@*~a")
-  (:@dcterm/title
-   :en "~a is titled ~*~a")
-  (:@dcterm/creator
-   :en "~a was created by ~*~a")
-  (:@dcterm/subject
-   :en "~a is an example of ~*~a")
-  (:@dcterm/description
-   :en "~a is described by ~*~a")
-  (:@dcterm/publisher
-   :en "~a was published by ~*~a")
-  (:@dcterm/contributor
-   :en "~2@*~a contributed to ~0@*~a") 
-  )

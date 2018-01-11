@@ -1,3 +1,0 @@
-#!/bin/bash
-wget -c https://s3.amazonaws.com/conceptnet/precomputed-data/2016/assertions/conceptnet-assertions-5.5.0.csv.gz
-

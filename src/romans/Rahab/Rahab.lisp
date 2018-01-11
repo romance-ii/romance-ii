@@ -73,7 +73,7 @@
                                         :fill-pointer 0)
                   :type 'string
                   :accessor query-io-stream-output-buffer)
-   (flush-function :initform #'finish-output
+   (flush-function :initform #'prompt
                    :initarg :flush-to
                    :accessor query-io-stream-flush-function
                    :documentation "This is the function called to display output.")))

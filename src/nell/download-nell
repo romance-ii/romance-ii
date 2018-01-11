@@ -1,7 +1,0 @@
-#!/bin/bash
-curl http://rtw.ml.cmu.edu/resources/results/08m/ \
-  | grep href \
-  | perl -ne 'print "http://rtw.ml.cmu.edu/resources/results/08m/$1\n" if m[href="(NELL\.08m\.10[2-9][0-9].*(sv|sv.gz))"]' \
-  | sort -n \
-  | uniq \
-  | parallel --will-cite -P2 --progress --bar wget -c

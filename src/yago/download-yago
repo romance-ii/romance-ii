@@ -1,4 +1,0 @@
-#!/bin/bash
-wget -c http://resources.mpi-inf.mpg.de/yago-naga/yago/download/yago/yago3_entire_tsv.7z
-echo " For now, CHIPZ doesn't know xz=7z, so we decompress this one huge file."
-xz -dc < yago3_entire_tsv.7z > yago3-entire.tsv

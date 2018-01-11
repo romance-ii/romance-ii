@@ -42,7 +42,7 @@
 	path = src/romans/lib/sb-texinfo
 	url = git@github.com:nikodemus/sb-texinfo
 [submodule "elephant"]
-	path = src/elephant
+	path = src/oliphaunt
 	url = git@github.com:romance-ii/elephant
 [submodule "libfixposix"]
 	path = src/libfixposix

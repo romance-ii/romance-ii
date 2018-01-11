@@ -1,7 +1,8 @@
 (in-package :romans)
 
 (defun start-server (&optional argv)
-  (let ((module (make-keyword (string-upcase (car argv)))))
+  (let ((module (make-keyword (string-upcase (and (< 1 (length argv))
+                                                  (second argv))))))
     (case module
       (:caesar
        (funcall (intern "START-SERVER" (find-package module))))
