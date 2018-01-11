@@ -385,6 +385,22 @@ but may have sub-clauses and such after processing.")
                                      :start 4 :end (- (length a) 2))
     (list :clause subj pred obj)))
 
+(defparameter *ontology-decoding-list*
+  '(("http://dbpedia.org/resource/Category:" :@dbpedia/category)))
+
+(defmethod decode-http-concept% ((decoder (eql :@dbpedia/category))
+                                 uri suffix)
+  (declare (ignore uri))
+  ())
+
+(defun decode-http-concept (uri)
+  (loop for (uri decoder) in *ontology-uri-map*
+        when (string-begins uri predicate)
+          do (return (decode-http-concept% decoder
+                                           uri
+                                           (subseq uri (length prefix))))
+        finally (return uri)))
+
 (defmethod utterance->human ((utterance string) (language-code (eql :en)))
   (let ((path (split-sequence:split-sequence #\/ utterance
                                              :remove-empty-subseqs t)))
@@ -395,7 +411,7 @@ but may have sub-clauses and such after processing.")
                (utterance->human (find-translation utterance language-code) language-code)))
       ("r" (format nil "~A~{ (~A)~}" (second path) (nthcdr 3 path)))
       ("a" (utterance->human (destructure-assertion-1 utterance) :en))
-      (("http:" "https:" "ftp:" "sftp:") (format nil "URL <~a>" utterance))
+      ("http:" (utterance->human (decode-http-concept utterance)))
       ("@str" (if (equal "en" (second path))
                   (concatenate 'string "“" (third path) "”")
                   (format nil "“~a” (in ~a)"
